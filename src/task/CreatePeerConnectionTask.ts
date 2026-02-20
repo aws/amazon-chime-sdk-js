@@ -60,6 +60,10 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       this.context.logger.info(
         `peer connection ice connection state changed: ${peer.iceConnectionState}`
       );
+      if (peer.iceConnectionState === 'connected') {
+        /* istanbul ignore next */
+        this.context.meetingSessionTimingManager?.onIceConnected();
+      }
     });
   }
 
@@ -256,6 +260,10 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       this.context.videosPaused.remove(tileState.streamId);
     } else {
       this.logger.warn(`no stream found for tile=${tileState.tileId}`);
+    }
+    if (tileState.groupId !== null) {
+      /* istanbul ignore next */
+      this.context.meetingSessionTimingManager?.onRemoteVideoRemoved(tileState.groupId);
     }
     this.context.videoTileController.removeVideoTile(tileState.tileId);
   }

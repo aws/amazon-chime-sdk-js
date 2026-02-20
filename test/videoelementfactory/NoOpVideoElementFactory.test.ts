@@ -50,5 +50,20 @@ describe('NoOpVideoElementFactory', () => {
     it('can call play method', async () => {
       await expect(element.play()).not.to.be.rejected;
     });
+
+    it('can call requestVideoFrameCallback and cancelVideoFrameCallback', () => {
+      // @ts-ignore
+      const id = element.requestVideoFrameCallback(() => {});
+      expect(id).to.equal(0);
+      // @ts-ignore
+      element.cancelVideoFrameCallback(id);
+    });
+
+    it('can call addEventListener and removeEventListener', () => {
+      // @ts-ignore
+      element.addEventListener('resize', () => {});
+      // @ts-ignore
+      element.removeEventListener('resize', () => {});
+    });
   });
 });

@@ -89,6 +89,8 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
             return;
           }
           if (event.message.type === SdkSignalFrame.Type.JOIN_ACK) {
+            context.meetingSessionTimingManager?.onJoinAckReceived();
+
             // @ts-ignore: force cast to SdkJoinAckFrame
             const joinAckFrame: SdkJoinAckFrame = event.message.joinack;
             if (!joinAckFrame) {
@@ -177,5 +179,12 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
     // after this task completes and the state isn't quite in the right place to make it work without some refactoring. However that
     // means that we will always have an initial subscribe without any received videos.
     this.context.indexFrame = indexFrame;
+
+    // If the first index contains video sources, tell the timing manager to hold
+    // the initial batch open until remote video timing completes.
+    if (indexFrame.sources && indexFrame.sources.length > 0) {
+      /* istanbul ignore next */
+      this.context.meetingSessionTimingManager?.setExpectingRemoteVideo();
+    }
   }
 }

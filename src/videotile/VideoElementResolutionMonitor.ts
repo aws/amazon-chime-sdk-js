@@ -1,6 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { VideoElementFrameMetrics } from './VideoElementFrameMonitor';
+
+/**
+ * Observer for video element events including resolution changes, first-frame detection,
+ * and render metrics.
+ *
+ * This interface has expanded beyond resolution and should eventually be renamed.
+ */
 export interface VideoElementResolutionObserver {
   /**
    * Called when the resolution of the video element changes.
@@ -8,11 +16,26 @@ export interface VideoElementResolutionObserver {
    * @param newHeight The new height of the video element.
    */
   videoElementResolutionChanged(newWidth: number, newHeight: number): void;
+
+  /**
+   * Called when the first video frame is rendered.
+   * @param metadata The VideoFrameCallbackMetadata from requestVideoFrameCallback, if available
+   */
+  videoElementFirstFrameDidRender?(metadata?: VideoFrameCallbackMetadata): void;
+
+  /**
+   * Called periodically with video element render metrics (e.g. rendered FPS).
+   * Only fires on browsers that support requestVideoFrameCallback.
+   * @param metrics The collected metrics
+   */
+  videoElementMetricsDidReceive?(metrics: VideoElementFrameMetrics): void;
 }
 
 /**
- * [[VideoElementResolutionMonitor]] monitors changes in the resolution of a video element
- * and relays that information to observers.
+ * [[VideoElementResolutionMonitor]] monitors a video element for resolution changes,
+ * first-frame rendering, and render metrics.
+ *
+ * This interface has expanded beyond resolution and should eventually be renamed.
  */
 export default interface VideoElementResolutionMonitor {
   /**

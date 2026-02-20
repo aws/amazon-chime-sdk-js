@@ -1624,6 +1624,8 @@ export default class DOMMockBuilder {
       videoHeight: number;
       videoWidth: number;
       private listeners: { [type: string]: MockListener[] } = {};
+      private videoFrameCallbacks: Map<number, (now: number, metadata: object) => void> = new Map();
+      private videoFrameCallbackNextId: number = 1;
       style: { [key: string]: string } = {
         transform: '',
       };
@@ -1697,6 +1699,23 @@ export default class DOMMockBuilder {
             eachListener => eachListener !== listener
           );
         }
+      }
+
+      requestVideoFrameCallback(callback: (now: number, metadata: object) => void): number {
+        const id = this.videoFrameCallbackNextId++;
+        this.videoFrameCallbacks.set(id, callback);
+        // Fire asynchronously via TimeoutScheduler so it works with fake timers
+        new TimeoutScheduler(1).start(() => {
+          if (this.videoFrameCallbacks.has(id)) {
+            this.videoFrameCallbacks.delete(id);
+            callback(Date.now(), { expectedDisplayTime: Date.now() });
+          }
+        });
+        return id;
+      }
+
+      cancelVideoFrameCallback(id: number): void {
+        this.videoFrameCallbacks.delete(id);
       }
 
       attributes: { [index: string]: string } = {};

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added PPS metrics on the Encoded Transform when used.
+- Added meeting session lifecycle timing tracking and signaling via `MeetingSessionTimingManager`.
 
 ### Removed
 

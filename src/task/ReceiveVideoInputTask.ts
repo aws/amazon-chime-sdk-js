@@ -82,6 +82,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
         // no longer be tracking irrelevant local sending bitrates sent via received Bitrate message, nor will
         // we track any spurious allocated stream IDs from the backend.
         this.context.videoStreamIndex.integrateUplinkPolicyDecision([]);
+        this.context.meetingSessionTimingManager?.onLocalVideoRemoved();
       }
       return;
     }
@@ -144,6 +145,8 @@ export default class ReceiveVideoInputTask extends BaseTask {
         this.context.videoDeviceInformation['current_camera_name'] = track.label;
         this.context.videoDeviceInformation['current_camera_id'] = track.id;
       }
+
+      this.context.meetingSessionTimingManager?.onLocalVideoAdded();
     }
   }
 }

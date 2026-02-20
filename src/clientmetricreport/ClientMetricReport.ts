@@ -481,6 +481,10 @@ export default class ClientMetricReport {
       transform: this.countPerSecond,
       type: SdkMetric.Type.VIDEO_RECEIVED_TRANSFORM_PPS,
     },
+    videoRemoteRenderFps: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_REMOTE_RENDER_FPS,
+    },
   };
 
   getMetricMap(

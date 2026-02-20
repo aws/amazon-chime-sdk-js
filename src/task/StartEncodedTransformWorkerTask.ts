@@ -39,8 +39,13 @@ export default class StartEncodedTransformWorkerTask extends BaseTask {
     // Add observers after start() so the managers are initialized
     const metricsTransformManager =
       this.context.encodedTransformWorkerManager.metricsTransformManager();
-    if (metricsTransformManager && this.context.statsCollector) {
-      metricsTransformManager.addObserver(this.context.statsCollector);
+    if (metricsTransformManager) {
+      if (this.context.statsCollector) {
+        metricsTransformManager.addObserver(this.context.statsCollector);
+      }
+      if (this.context.audioVideoController) {
+        metricsTransformManager.addObserver(this.context.audioVideoController);
+      }
     }
 
     const redundantAudioEncodeTransformManager =

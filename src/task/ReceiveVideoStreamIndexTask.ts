@@ -184,6 +184,17 @@ export default class ReceiveVideoStreamIndexTask
         this.context.videoCaptureAndEncodeParameter
       )}`
     );
+    if (resubscribeForDownlink && !this.context.videosToReceive.empty()) {
+      this.context.videosToReceive.forEach((streamId: number) => {
+        const groupId = this.context.videoStreamIndex.groupIdForStreamId(streamId);
+        if (groupId !== undefined) {
+          this.context.meetingSessionTimingManager?.onRemoteVideoAdded(groupId);
+        }
+      });
+    } else {
+      this.context.meetingSessionTimingManager?.clearExpectingRemoteVideo();
+    }
+    this.context.meetingSessionTimingManager?.onResubscribeStart();
     this.context.audioVideoController.update({ needsRenegotiation: false });
   }
 

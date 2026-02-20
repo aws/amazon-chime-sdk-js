@@ -25,6 +25,7 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import { Maybe } from '../utils/Types';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import { VideoTileResolutionObserver } from '../videotilecontroller/VideoTileController';
 import AudioLogEvent from './AudioLogEvent';
 import VideoLogEvent from './VideoLogEvent';
@@ -64,6 +65,7 @@ export default class StatsCollector
   private videoCodecDegradationEncodeFailureCount: number = 0;
   private videoCodecDegradationConcurrentSendersCount: number = 0;
   private resolutionMap = new Map<string, { width: number; height: number }>();
+  private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
   private lastEncodedTransformMediaMetricsTimestamp: number = 0;
@@ -259,8 +261,18 @@ export default class StatsCollector
     this.resolutionMap.set(attendeeId, { width: newWidth, height: newHeight });
   }
 
-  videoTileUnbound(attendeeId: string): void {
+  videoTileUnbound(attendeeId: string, groupId?: number): void {
     this.resolutionMap.delete(attendeeId);
+    if (groupId !== undefined) {
+      this.remoteRenderFpsMap.delete(groupId);
+    }
+  }
+
+  videoTileRenderMetricsDidReceive(groupId: number, metrics: VideoElementFrameMetrics): void {
+    if (groupId === 0) {
+      return;
+    }
+    this.remoteRenderFpsMap.set(groupId, metrics.fps);
   }
 
   /**
@@ -843,6 +855,10 @@ export default class StatsCollector
     if (this.resolutionMap.has(attendeeId)) {
       metricReport.currentMetrics['videoRenderWidth'] = this.resolutionMap.get(attendeeId).width;
       metricReport.currentMetrics['videoRenderHeight'] = this.resolutionMap.get(attendeeId).height;
+    }
+    const groupId = metricReport.groupId;
+    if (groupId !== undefined && this.remoteRenderFpsMap.has(groupId)) {
+      metricReport.currentMetrics['videoRemoteRenderFps'] = this.remoteRenderFpsMap.get(groupId);
     }
   }
 

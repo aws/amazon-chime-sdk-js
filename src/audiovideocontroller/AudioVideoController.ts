@@ -5,6 +5,7 @@ import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetecto
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioVideoControllerFacade from '../audiovideocontroller/AudioVideoControllerFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import { EncodedTransformMediaMetricsObserver } from '../encodedtransformmanager/MediaMetricsEncodedTransformManager';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
@@ -16,7 +17,8 @@ import VideoTileController from '../videotilecontroller/VideoTileController';
 /**
  * [[AudioVideoController]] manages the signaling and peer connections.
  */
-export default interface AudioVideoController extends AudioVideoControllerFacade {
+export default interface AudioVideoController
+  extends AudioVideoControllerFacade, EncodedTransformMediaMetricsObserver {
   /**
    * Iterates through each observer, so that their notification functions may
    * be called.

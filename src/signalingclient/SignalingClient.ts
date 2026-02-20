@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { MeetingSessionCredentials } from '..';
+import MeetingSessionTiming from '../meetingsessiontiming/MeetingSessionTiming';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
   SdkClientMetricFrame,
@@ -148,4 +149,9 @@ export default interface SignalingClient {
    * Leave the primary meeting and stop sharing audio, video (if started), and data messages.
    */
   demoteFromPrimaryMeeting(): void;
+
+  /**
+   * Sends meeting session timing data to the backend.
+   */
+  sendMeetingSessionTiming(timing: MeetingSessionTiming): void;
 }

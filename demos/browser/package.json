@@ -7,7 +7,7 @@
     "build:fast": "vite build --",
     "build": "npm run deps && npm install && tsc --noEmit && npm run build:fast",
     "start:fast": "node dev-server.js",
-    "start:watch": "WATCH_SDK=true node dev-server.js",
+    "start:sdk-autorefresh": "SDK_AUTOREFRESH=true node dev-server.js",
     "start": "npm run deps && npm install && npm run start:fast"
   },
   "devDependencies": {

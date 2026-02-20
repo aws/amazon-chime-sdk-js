@@ -5963,4 +5963,255 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
   });
+
+  describe('onFirstPacketReceived', () => {
+    it('routes audio receive to timing manager', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      const spy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.meetingSessionTimingManager,
+        'onRemoteAudioFirstPacketReceived'
+      );
+      audioVideoController.onFirstPacketReceived('audio', 'receive', 0);
+      expect(spy.calledOnce).to.be.true;
+      await stop();
+    });
+
+    it('routes audio send to timing manager', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      const spy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.meetingSessionTimingManager,
+        'onLocalAudioFirstPacketSent'
+      );
+      audioVideoController.onFirstPacketReceived('audio', 'send', 0);
+      expect(spy.calledOnce).to.be.true;
+      await stop();
+    });
+
+    it('warns when video receive has no stream ID for ssrc', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      const logSpy = sinon.spy(audioVideoController.logger, 'warn');
+      audioVideoController.onFirstPacketReceived('video', 'receive', 99999);
+      expect(logSpy.calledWith(sinon.match('no stream ID found'))).to.be.true;
+      await stop();
+    });
+
+    it('warns when video receive has no group ID for stream', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      const videoStreamIndex = new DefaultVideoStreamIndex(new NoOpDebugLogger());
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videoStreamIndex = videoStreamIndex;
+      sinon.stub(videoStreamIndex, 'streamIdForSSRC').returns(42);
+      sinon.stub(videoStreamIndex, 'groupIdForStreamId').returns(undefined);
+      const logSpy = sinon.spy(audioVideoController.logger, 'warn');
+      audioVideoController.onFirstPacketReceived('video', 'receive', 12345);
+      expect(logSpy.calledWith(sinon.match('no group ID found'))).to.be.true;
+      await stop();
+    });
+
+    it('routes video receive with valid groupId to timing manager', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      const videoStreamIndex = new DefaultVideoStreamIndex(new NoOpDebugLogger());
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videoStreamIndex = videoStreamIndex;
+      sinon.stub(videoStreamIndex, 'streamIdForSSRC').returns(42);
+      sinon.stub(videoStreamIndex, 'groupIdForStreamId').returns(5);
+      const spy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.meetingSessionTimingManager,
+        'onRemoteVideoFirstPacketReceived'
+      );
+      audioVideoController.onFirstPacketReceived('video', 'receive', 12345);
+      expect(spy.calledWith(5)).to.be.true;
+      await stop();
+    });
+
+    it('routes video send to timing manager', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      const spy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.meetingSessionTimingManager,
+        'onLocalVideoFirstFrameSent'
+      );
+      audioVideoController.onFirstPacketReceived('video', 'send', 0);
+      expect(spy.calledOnce).to.be.true;
+      await stop();
+    });
+  });
+
+  describe('onMeetingSessionTimingReady', () => {
+    it('sends timing via signaling client', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      // @ts-ignore
+      const signalingClient = audioVideoController.meetingSessionContext.signalingClient;
+      const spy = sinon.spy(signalingClient, 'sendMeetingSessionTiming');
+      audioVideoController.onMeetingSessionTimingReady({
+        signaling: [],
+        remoteAudio: [],
+        localAudio: [],
+        localVideo: [],
+        remoteVideos: [],
+      });
+      expect(spy.calledOnce).to.be.true;
+      await stop();
+    });
+
+    it('warns when signaling client is not available', () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      const logSpy = sinon.spy(audioVideoController.logger, 'warn');
+      audioVideoController.onMeetingSessionTimingReady({
+        signaling: [],
+        remoteAudio: [],
+        localAudio: [],
+        localVideo: [],
+        remoteVideos: [],
+      });
+      expect(logSpy.calledWith(sinon.match('signaling client is not available'))).to.be.true;
+    });
+  });
+
+  describe('resolution observer callbacks via tile controller', () => {
+    it('videoTileBound and videoTileFirstFrameDidRender route to timing manager', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      const boundSpy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.meetingSessionTimingManager,
+        'onRemoteVideoBound'
+      );
+      const renderSpy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.meetingSessionTimingManager,
+        'onRemoteVideoFirstFrameRendered'
+      );
+      const tile = audioVideoController.videoTileController.addVideoTile();
+      const stream = new MediaStream();
+      // @ts-ignore
+      stream.addTrack(new MediaStreamTrack('mock', 'video'));
+      tile.bindVideoStream('attendee', false, stream, 1, 1, 1, 'ext', 5);
+      const videoElement = document.createElement('video');
+      audioVideoController.videoTileController.bindVideoElement(tile.id(), videoElement);
+      expect(boundSpy.calledWith(5)).to.be.true;
+      // Tick to let RVFC fire
+      await clock.tickAsync(10);
+      expect(renderSpy.calledWith(5)).to.be.true;
+      await stop();
+    });
+
+    it('timing resolution observer videoTileResolutionDidChange is a no-op', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      // @ts-ignore: access private field
+      const obs = audioVideoController._timingResolutionObserver;
+      expect(obs).to.not.be.null;
+      // Should not throw
+      obs.videoTileResolutionDidChange('attendee', 100, 100);
+      await stop();
+    });
+
+    it('videoTileUnbound routes groupId to timing manager', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController
+      );
+      await start();
+      const unboundSpy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.meetingSessionTimingManager,
+        'onRemoteVideoUnbound'
+      );
+      const tile = audioVideoController.videoTileController.addVideoTile();
+      const stream = new MediaStream();
+      // @ts-ignore
+      stream.addTrack(new MediaStreamTrack('mock', 'video'));
+      tile.bindVideoStream('attendee', false, stream, 1, 1, 1, 'ext', 5);
+      const videoElement = document.createElement('video');
+      audioVideoController.videoTileController.bindVideoElement(tile.id(), videoElement);
+      audioVideoController.videoTileController.unbindVideoElement(tile.id());
+      expect(unboundSpy.calledWith(5)).to.be.true;
+      await stop();
+    });
+  });
 });

@@ -4,6 +4,8 @@
 import { MeetingSessionCredentials } from '..';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
+import MeetingSessionTiming from '../meetingsessiontiming/MeetingSessionTiming';
+import MeetingSessionTimingManager from '../meetingsessiontiming/MeetingSessionTimingManager';
 import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
@@ -16,6 +18,12 @@ import {
   SdkJoinFrame,
   SdkLeaveFrame,
   SdkMeetingSessionCredentials,
+  SdkMeetingSessionLocalAudioTiming,
+  SdkMeetingSessionLocalVideoTiming,
+  SdkMeetingSessionRemoteAudioTiming,
+  SdkMeetingSessionRemoteVideoTiming,
+  SdkMeetingSessionSignalingTiming,
+  SdkMeetingSessionTimingFrame,
   SdkPauseResumeFrame,
   SdkPingPongFrame,
   SdkPrimaryMeetingJoinFrame,
@@ -59,7 +67,8 @@ export default class DefaultSignalingClient implements SignalingClient {
 
   constructor(
     private webSocket: WebSocketAdapter,
-    private logger: Logger
+    private logger: Logger,
+    private meetingSessionTimingManager?: MeetingSessionTimingManager
   ) {
     this.observerQueue = new Set<SignalingClientObserver>();
     this.connectionRequestQueue = [];
@@ -137,6 +146,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     message.type = SdkSignalFrame.Type.JOIN;
     message.join = joinFrame;
     this.sendMessage(message);
+    this.meetingSessionTimingManager?.onJoinSent();
   }
 
   subscribe(settings: SignalingClientSubscribe): void {
@@ -187,6 +197,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     message.type = SdkSignalFrame.Type.SUBSCRIBE;
     message.sub = subscribeFrame;
     this.sendMessage(message);
+    this.meetingSessionTimingManager?.onSubscribeSent();
   }
 
   remoteVideoUpdate(
@@ -446,6 +457,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     this.webSocket.addEventListener('open', () => {
       this.wasOpened = true;
       this.sendEvent(new SignalingClientEvent(this, SignalingClientEventType.WebSocketOpen, null));
+      this.meetingSessionTimingManager?.onTransportConnected();
     });
     this.webSocket.addEventListener('message', (event: MessageEvent) => {
       this.sendEvent(
@@ -493,6 +505,70 @@ export default class DefaultSignalingClient implements SignalingClient {
     );
     this.serviceConnectionRequestQueue();
   };
+
+  sendMeetingSessionTiming(timing: MeetingSessionTiming): void {
+    const timingFrame = SdkMeetingSessionTimingFrame.create();
+
+    timingFrame.signaling = timing.signaling.map(s => {
+      return SdkMeetingSessionSignalingTiming.create({
+        startMs: s.startMs,
+        joinSentMs: s.joinSentMs,
+        joinAckReceivedMs: s.joinAckReceivedMs,
+        transportConnectedMs: s.transportConnectedMs,
+        createOfferMs: s.createOfferMs,
+        setLocalDescriptionMs: s.setLocalDescriptionMs,
+        setRemoteDescriptionMs: s.setRemoteDescriptionMs,
+        iceGatheringStartMs: s.iceGatheringStartMs,
+        iceGatheringCompleteMs: s.iceGatheringCompleteMs,
+        iceConnectedMs: s.iceConnectedMs,
+        subscribeSentMs: s.subscribeSentMs,
+        subscribeAckMs: s.subscribeAckMs,
+        timedOut: s.timedOut,
+      });
+    });
+    timingFrame.remoteAudio = timing.remoteAudio.map(ra => {
+      return SdkMeetingSessionRemoteAudioTiming.create({
+        addedMs: ra.addedMs,
+        firstPacketReceivedMs: ra.firstPacketReceivedMs,
+        firstFrameRenderedMs: ra.firstFrameRenderedMs,
+        timedOut: ra.timedOut,
+        removed: ra.removed,
+      });
+    });
+    timingFrame.localAudio = timing.localAudio.map(la => {
+      return SdkMeetingSessionLocalAudioTiming.create({
+        addedMs: la.addedMs,
+        firstFrameCapturedMs: la.firstFrameCapturedMs,
+        firstPacketSentMs: la.firstPacketSentMs,
+        timedOut: la.timedOut,
+        removed: la.removed,
+      });
+    });
+    timingFrame.localVideo = timing.localVideo.map(lv => {
+      return SdkMeetingSessionLocalVideoTiming.create({
+        addedMs: lv.addedMs,
+        firstFrameCapturedMs: lv.firstFrameCapturedMs,
+        firstFrameSentMs: lv.firstFrameSentMs,
+        timedOut: lv.timedOut,
+        removed: lv.removed,
+      });
+    });
+    timingFrame.remoteVideos = timing.remoteVideos.map(rv => {
+      return SdkMeetingSessionRemoteVideoTiming.create({
+        groupId: rv.groupId,
+        addedMs: rv.addedMs,
+        firstPacketReceivedMs: rv.firstPacketReceivedMs,
+        firstFrameRenderedMs: rv.firstFrameRenderedMs,
+        timedOut: rv.timedOut,
+        removed: rv.removed,
+      });
+    });
+
+    const message = SdkSignalFrame.create();
+    message.type = SdkSignalFrame.Type.MEETING_SESSION_TIMING;
+    message.meetingSessionTiming = timingFrame;
+    this.sendMessage(message);
+  }
 
   promoteToPrimaryMeeting(credentials: MeetingSessionCredentials): void {
     const signaledCredentials = SdkMeetingSessionCredentials.create();

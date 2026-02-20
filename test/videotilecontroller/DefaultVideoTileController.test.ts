@@ -518,4 +518,222 @@ describe('DefaultVideoTileController', () => {
   it('returns null if a tile does not exist', () => {
     expect(tileController.captureVideoTile(0)).to.equal(null);
   });
+
+  describe('videoTileFirstFrameDidRender via DOM mock', () => {
+    it('fires for remote tile with groupId', async () => {
+      let firedGroupId: number | undefined;
+      const obs: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileFirstFrameDidRender: (groupId: number) => {
+          firedGroupId = groupId;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(obs);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      const videoElement = document.createElement('video');
+      tileController.bindVideoElement(tile.id(), videoElement);
+      await clock.tickAsync(10);
+      expect(firedGroupId).to.equal(5);
+      tileController.removeVideoTileResolutionObserver(obs);
+    });
+
+    it('does not fire for tile with null groupId', async () => {
+      let firedGroupId: number | undefined;
+      const obs: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileFirstFrameDidRender: (groupId: number) => {
+          firedGroupId = groupId;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(obs);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext');
+      const videoElement = document.createElement('video');
+      tileController.bindVideoElement(tile.id(), videoElement);
+      await clock.tickAsync(10);
+      expect(firedGroupId).to.be.undefined;
+      tileController.removeVideoTileResolutionObserver(obs);
+    });
+  });
+
+  describe('handleVideoElementMetrics via DOM mock', () => {
+    it('does not fire for local tile', async () => {
+      let metricsCalled = false;
+      const obs: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileRenderMetricsDidReceive: () => {
+          metricsCalled = true;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(obs);
+      tileController.startLocalVideoTile();
+      const tile = tileController.getLocalVideoTile();
+      tile.bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1, 'ext');
+      const videoElement = document.createElement('video');
+      tileController.bindVideoElement(tile.id(), videoElement);
+      // Tick enough for first frame + FPS window
+      await clock.tickAsync(1100);
+      expect(metricsCalled).to.be.false;
+      tileController.removeVideoTileResolutionObserver(obs);
+    });
+
+    it('fires for remote tile', async () => {
+      let firedGroupId: number | undefined;
+      const obs: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileRenderMetricsDidReceive: (groupId: number) => {
+          firedGroupId = groupId;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(obs);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      const videoElement = document.createElement('video');
+      tileController.bindVideoElement(tile.id(), videoElement);
+      // Tick enough for first frame + FPS window
+      await clock.tickAsync(1100);
+      expect(firedGroupId).to.equal(5);
+      tileController.removeVideoTileResolutionObserver(obs);
+    });
+  });
+
+  describe('videoTileBound callback', () => {
+    it('fires videoTileBound when binding a remote tile', () => {
+      let boundGroupId: number | undefined;
+      const boundObserver: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileBound: (groupId: number) => {
+          boundGroupId = groupId;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(boundObserver);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      const videoElement = videoElementFactory.create();
+      tileController.bindVideoElement(tile.id(), videoElement);
+      expect(boundGroupId).to.equal(5);
+      tileController.removeVideoTileResolutionObserver(boundObserver);
+    });
+
+    it('does not fire videoTileBound for local tile', () => {
+      let boundCalled = false;
+      const boundObserver: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileBound: () => {
+          boundCalled = true;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(boundObserver);
+      tileController.startLocalVideoTile();
+      const tile = tileController.getLocalVideoTile();
+      tileController.bindVideoElement(tile.id(), videoElementFactory.create());
+      expect(boundCalled).to.be.false;
+      tileController.removeVideoTileResolutionObserver(boundObserver);
+    });
+
+    it('does not fire videoTileBound when groupId is null', () => {
+      let boundCalled = false;
+      const boundObserver: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileBound: () => {
+          boundCalled = true;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(boundObserver);
+      const tile = tileController.addVideoTile();
+      // Don't set groupId (it defaults to null)
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext');
+      tileController.bindVideoElement(tile.id(), videoElementFactory.create());
+      expect(boundCalled).to.be.false;
+      tileController.removeVideoTileResolutionObserver(boundObserver);
+    });
+
+    it('does not fire videoTileBound when videoElement is null', () => {
+      let boundCalled = false;
+      const boundObserver: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileBound: () => {
+          boundCalled = true;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(boundObserver);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      tileController.bindVideoElement(tile.id(), null);
+      expect(boundCalled).to.be.false;
+      tileController.removeVideoTileResolutionObserver(boundObserver);
+    });
+  });
+
+  describe('handleVideoFirstFrameDidRender edge cases', () => {
+    it('does not fire when tile is removed before callback', async () => {
+      let firedGroupId: number | undefined;
+      const obs: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileFirstFrameDidRender: (groupId: number) => {
+          firedGroupId = groupId;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(obs);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      const videoElement = document.createElement('video');
+      tileController.bindVideoElement(tile.id(), videoElement);
+      tileController.removeVideoTile(tile.id());
+      await clock.tickAsync(10);
+      expect(firedGroupId).to.be.undefined;
+      tileController.removeVideoTileResolutionObserver(obs);
+    });
+  });
+
+  describe('handleVideoElementFrameMetrics edge cases', () => {
+    it('does not fire metrics when tile is removed before callback', async () => {
+      let metricsCalled = false;
+      const obs: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileRenderMetricsDidReceive: () => {
+          metricsCalled = true;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(obs);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      const videoElement = document.createElement('video');
+      tileController.bindVideoElement(tile.id(), videoElement);
+      tileController.removeVideoTile(tile.id());
+      await clock.tickAsync(1100);
+      expect(metricsCalled).to.be.false;
+      tileController.removeVideoTileResolutionObserver(obs);
+    });
+
+    it('does not fire metrics for tile with null groupId', async () => {
+      let metricsCalled = false;
+      const obs: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileRenderMetricsDidReceive: () => {
+          metricsCalled = true;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(obs);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext');
+      const videoElement = document.createElement('video');
+      tileController.bindVideoElement(tile.id(), videoElement);
+      await clock.tickAsync(1100);
+      expect(metricsCalled).to.be.false;
+      tileController.removeVideoTileResolutionObserver(obs);
+    });
+  });
 });

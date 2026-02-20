@@ -9,6 +9,7 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionVideoAvailability from '../../src/meetingsession/MeetingSessionVideoAvailability';
+import MeetingSessionTimingManager from '../../src/meetingsessiontiming/MeetingSessionTimingManager';
 import VideoCodecCapability from '../../src/sdp/VideoCodecCapability';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
@@ -247,6 +248,29 @@ describe('ReceiveVideoStreamIndexTask', () => {
       task.resumeIngestion();
 
       expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(ids))).to.be.true;
+    });
+
+    it('calls clearExpectingRemoteVideo when no videos to receive', async () => {
+      const timingManager = new MeetingSessionTimingManager(logger);
+      context.meetingSessionTimingManager = timingManager;
+      const spy = sinon.spy(timingManager, 'clearExpectingRemoteVideo');
+
+      class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
+        wantsResubscribe(): boolean {
+          return true;
+        }
+        chooseSubscriptions(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet();
+        }
+      }
+      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+
+      task.run();
+      await tick(clock, behavior.asyncWaitMs);
+      webSocketAdapter.send(createIndexSignalBuffer());
+      await tick(clock, behavior.asyncWaitMs + 10);
+      expect(spy.calledOnce).to.be.true;
+      timingManager.destroy();
     });
 
     it('Truncates the videos to receive to a specified limit', async () => {

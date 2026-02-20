@@ -74,6 +74,9 @@ export interface ISdkSignalFrame {
 
     /** SdkSignalFrame notification */
     notification?: (ISdkNotificationFrame|null);
+
+    /** SdkSignalFrame meetingSessionTiming */
+    meetingSessionTiming?: (ISdkMeetingSessionTimingFrame|null);
 }
 
 /** Represents a SdkSignalFrame. */
@@ -156,6 +159,9 @@ export class SdkSignalFrame implements ISdkSignalFrame {
 
     /** SdkSignalFrame notification. */
     public notification?: (ISdkNotificationFrame|null);
+
+    /** SdkSignalFrame meetingSessionTiming. */
+    public meetingSessionTiming?: (ISdkMeetingSessionTimingFrame|null);
 
     /**
      * Creates a new SdkSignalFrame instance using the specified properties.
@@ -260,7 +266,8 @@ export namespace SdkSignalFrame {
         PRIMARY_MEETING_JOIN = 25,
         PRIMARY_MEETING_JOIN_ACK = 26,
         PRIMARY_MEETING_LEAVE = 27,
-        NOTIFICATION = 34
+        NOTIFICATION = 34,
+        MEETING_SESSION_TIMING = 43
     }
 }
 
@@ -2960,6 +2967,8 @@ export namespace SdkMetric {
         VIDEO_DISCARDED_PPS = 47,
         VIDEO_PLIS_SENT = 48,
         VIDEO_RECEIVED_JITTER_MS = 49,
+        VIDEO_LOCAL_RENDER_FPS = 52,
+        VIDEO_REMOTE_RENDER_FPS = 56,
         VIDEO_INPUT_HEIGHT = 60,
         VIDEO_ENCODE_HEIGHT = 64,
         VIDEO_SENT_QP_SUM = 66,
@@ -5598,4 +5607,784 @@ export enum SdkVideoCodecCapability {
     H264_CONSTRAINED_HIGH_PROFILE = 6,
     VP9_PROFILE_0 = 8,
     AV1_MAIN_PROFILE = 11
+}
+
+/** Properties of a SdkMeetingSessionTimingFrame. */
+export interface ISdkMeetingSessionTimingFrame {
+
+    /** SdkMeetingSessionTimingFrame signaling */
+    signaling?: (ISdkMeetingSessionSignalingTiming[]|null);
+
+    /** SdkMeetingSessionTimingFrame remoteAudio */
+    remoteAudio?: (ISdkMeetingSessionRemoteAudioTiming[]|null);
+
+    /** SdkMeetingSessionTimingFrame localAudio */
+    localAudio?: (ISdkMeetingSessionLocalAudioTiming[]|null);
+
+    /** SdkMeetingSessionTimingFrame localVideo */
+    localVideo?: (ISdkMeetingSessionLocalVideoTiming[]|null);
+
+    /** SdkMeetingSessionTimingFrame remoteVideos */
+    remoteVideos?: (ISdkMeetingSessionRemoteVideoTiming[]|null);
+}
+
+/** Represents a SdkMeetingSessionTimingFrame. */
+export class SdkMeetingSessionTimingFrame implements ISdkMeetingSessionTimingFrame {
+
+    /**
+     * Constructs a new SdkMeetingSessionTimingFrame.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkMeetingSessionTimingFrame);
+
+    /** SdkMeetingSessionTimingFrame signaling. */
+    public signaling: ISdkMeetingSessionSignalingTiming[];
+
+    /** SdkMeetingSessionTimingFrame remoteAudio. */
+    public remoteAudio: ISdkMeetingSessionRemoteAudioTiming[];
+
+    /** SdkMeetingSessionTimingFrame localAudio. */
+    public localAudio: ISdkMeetingSessionLocalAudioTiming[];
+
+    /** SdkMeetingSessionTimingFrame localVideo. */
+    public localVideo: ISdkMeetingSessionLocalVideoTiming[];
+
+    /** SdkMeetingSessionTimingFrame remoteVideos. */
+    public remoteVideos: ISdkMeetingSessionRemoteVideoTiming[];
+
+    /**
+     * Creates a new SdkMeetingSessionTimingFrame instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkMeetingSessionTimingFrame instance
+     */
+    public static create(properties?: ISdkMeetingSessionTimingFrame): SdkMeetingSessionTimingFrame;
+
+    /**
+     * Encodes the specified SdkMeetingSessionTimingFrame message. Does not implicitly {@link SdkMeetingSessionTimingFrame.verify|verify} messages.
+     * @param message SdkMeetingSessionTimingFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkMeetingSessionTimingFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkMeetingSessionTimingFrame message, length delimited. Does not implicitly {@link SdkMeetingSessionTimingFrame.verify|verify} messages.
+     * @param message SdkMeetingSessionTimingFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkMeetingSessionTimingFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkMeetingSessionTimingFrame message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkMeetingSessionTimingFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkMeetingSessionTimingFrame;
+
+    /**
+     * Decodes a SdkMeetingSessionTimingFrame message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkMeetingSessionTimingFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkMeetingSessionTimingFrame;
+
+    /**
+     * Verifies a SdkMeetingSessionTimingFrame message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkMeetingSessionTimingFrame message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkMeetingSessionTimingFrame
+     */
+    public static fromObject(object: { [k: string]: any }): SdkMeetingSessionTimingFrame;
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionTimingFrame message. Also converts values to other types if specified.
+     * @param message SdkMeetingSessionTimingFrame
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkMeetingSessionTimingFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkMeetingSessionTimingFrame to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionTimingFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** Properties of a SdkMeetingSessionSignalingTiming. */
+export interface ISdkMeetingSessionSignalingTiming {
+
+    /** SdkMeetingSessionSignalingTiming startMs */
+    startMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming joinSentMs */
+    joinSentMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming joinAckReceivedMs */
+    joinAckReceivedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming transportConnectedMs */
+    transportConnectedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming createOfferMs */
+    createOfferMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming setLocalDescriptionMs */
+    setLocalDescriptionMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming setRemoteDescriptionMs */
+    setRemoteDescriptionMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming iceGatheringStartMs */
+    iceGatheringStartMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming iceGatheringCompleteMs */
+    iceGatheringCompleteMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming iceConnectedMs */
+    iceConnectedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming subscribeSentMs */
+    subscribeSentMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming subscribeAckMs */
+    subscribeAckMs?: (number|Long|null);
+
+    /** SdkMeetingSessionSignalingTiming timedOut */
+    timedOut?: (boolean|null);
+}
+
+/** Represents a SdkMeetingSessionSignalingTiming. */
+export class SdkMeetingSessionSignalingTiming implements ISdkMeetingSessionSignalingTiming {
+
+    /**
+     * Constructs a new SdkMeetingSessionSignalingTiming.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkMeetingSessionSignalingTiming);
+
+    /** SdkMeetingSessionSignalingTiming startMs. */
+    public startMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming joinSentMs. */
+    public joinSentMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming joinAckReceivedMs. */
+    public joinAckReceivedMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming transportConnectedMs. */
+    public transportConnectedMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming createOfferMs. */
+    public createOfferMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming setLocalDescriptionMs. */
+    public setLocalDescriptionMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming setRemoteDescriptionMs. */
+    public setRemoteDescriptionMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming iceGatheringStartMs. */
+    public iceGatheringStartMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming iceGatheringCompleteMs. */
+    public iceGatheringCompleteMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming iceConnectedMs. */
+    public iceConnectedMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming subscribeSentMs. */
+    public subscribeSentMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming subscribeAckMs. */
+    public subscribeAckMs: (number|Long);
+
+    /** SdkMeetingSessionSignalingTiming timedOut. */
+    public timedOut: boolean;
+
+    /**
+     * Creates a new SdkMeetingSessionSignalingTiming instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkMeetingSessionSignalingTiming instance
+     */
+    public static create(properties?: ISdkMeetingSessionSignalingTiming): SdkMeetingSessionSignalingTiming;
+
+    /**
+     * Encodes the specified SdkMeetingSessionSignalingTiming message. Does not implicitly {@link SdkMeetingSessionSignalingTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionSignalingTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkMeetingSessionSignalingTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkMeetingSessionSignalingTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionSignalingTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionSignalingTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkMeetingSessionSignalingTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkMeetingSessionSignalingTiming message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkMeetingSessionSignalingTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkMeetingSessionSignalingTiming;
+
+    /**
+     * Decodes a SdkMeetingSessionSignalingTiming message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkMeetingSessionSignalingTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkMeetingSessionSignalingTiming;
+
+    /**
+     * Verifies a SdkMeetingSessionSignalingTiming message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkMeetingSessionSignalingTiming message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkMeetingSessionSignalingTiming
+     */
+    public static fromObject(object: { [k: string]: any }): SdkMeetingSessionSignalingTiming;
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionSignalingTiming message. Also converts values to other types if specified.
+     * @param message SdkMeetingSessionSignalingTiming
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkMeetingSessionSignalingTiming, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkMeetingSessionSignalingTiming to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionSignalingTiming
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** Properties of a SdkMeetingSessionRemoteAudioTiming. */
+export interface ISdkMeetingSessionRemoteAudioTiming {
+
+    /** SdkMeetingSessionRemoteAudioTiming addedMs */
+    addedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionRemoteAudioTiming firstPacketReceivedMs */
+    firstPacketReceivedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionRemoteAudioTiming firstFrameRenderedMs */
+    firstFrameRenderedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionRemoteAudioTiming timedOut */
+    timedOut?: (boolean|null);
+
+    /** SdkMeetingSessionRemoteAudioTiming removed */
+    removed?: (boolean|null);
+}
+
+/** Represents a SdkMeetingSessionRemoteAudioTiming. */
+export class SdkMeetingSessionRemoteAudioTiming implements ISdkMeetingSessionRemoteAudioTiming {
+
+    /**
+     * Constructs a new SdkMeetingSessionRemoteAudioTiming.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkMeetingSessionRemoteAudioTiming);
+
+    /** SdkMeetingSessionRemoteAudioTiming addedMs. */
+    public addedMs: (number|Long);
+
+    /** SdkMeetingSessionRemoteAudioTiming firstPacketReceivedMs. */
+    public firstPacketReceivedMs: (number|Long);
+
+    /** SdkMeetingSessionRemoteAudioTiming firstFrameRenderedMs. */
+    public firstFrameRenderedMs: (number|Long);
+
+    /** SdkMeetingSessionRemoteAudioTiming timedOut. */
+    public timedOut: boolean;
+
+    /** SdkMeetingSessionRemoteAudioTiming removed. */
+    public removed: boolean;
+
+    /**
+     * Creates a new SdkMeetingSessionRemoteAudioTiming instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkMeetingSessionRemoteAudioTiming instance
+     */
+    public static create(properties?: ISdkMeetingSessionRemoteAudioTiming): SdkMeetingSessionRemoteAudioTiming;
+
+    /**
+     * Encodes the specified SdkMeetingSessionRemoteAudioTiming message. Does not implicitly {@link SdkMeetingSessionRemoteAudioTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionRemoteAudioTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkMeetingSessionRemoteAudioTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkMeetingSessionRemoteAudioTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionRemoteAudioTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionRemoteAudioTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkMeetingSessionRemoteAudioTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkMeetingSessionRemoteAudioTiming message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkMeetingSessionRemoteAudioTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkMeetingSessionRemoteAudioTiming;
+
+    /**
+     * Decodes a SdkMeetingSessionRemoteAudioTiming message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkMeetingSessionRemoteAudioTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkMeetingSessionRemoteAudioTiming;
+
+    /**
+     * Verifies a SdkMeetingSessionRemoteAudioTiming message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkMeetingSessionRemoteAudioTiming message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkMeetingSessionRemoteAudioTiming
+     */
+    public static fromObject(object: { [k: string]: any }): SdkMeetingSessionRemoteAudioTiming;
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionRemoteAudioTiming message. Also converts values to other types if specified.
+     * @param message SdkMeetingSessionRemoteAudioTiming
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkMeetingSessionRemoteAudioTiming, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkMeetingSessionRemoteAudioTiming to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionRemoteAudioTiming
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** Properties of a SdkMeetingSessionLocalAudioTiming. */
+export interface ISdkMeetingSessionLocalAudioTiming {
+
+    /** SdkMeetingSessionLocalAudioTiming addedMs */
+    addedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionLocalAudioTiming firstFrameCapturedMs */
+    firstFrameCapturedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionLocalAudioTiming firstPacketSentMs */
+    firstPacketSentMs?: (number|Long|null);
+
+    /** SdkMeetingSessionLocalAudioTiming timedOut */
+    timedOut?: (boolean|null);
+
+    /** SdkMeetingSessionLocalAudioTiming removed */
+    removed?: (boolean|null);
+}
+
+/** Represents a SdkMeetingSessionLocalAudioTiming. */
+export class SdkMeetingSessionLocalAudioTiming implements ISdkMeetingSessionLocalAudioTiming {
+
+    /**
+     * Constructs a new SdkMeetingSessionLocalAudioTiming.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkMeetingSessionLocalAudioTiming);
+
+    /** SdkMeetingSessionLocalAudioTiming addedMs. */
+    public addedMs: (number|Long);
+
+    /** SdkMeetingSessionLocalAudioTiming firstFrameCapturedMs. */
+    public firstFrameCapturedMs: (number|Long);
+
+    /** SdkMeetingSessionLocalAudioTiming firstPacketSentMs. */
+    public firstPacketSentMs: (number|Long);
+
+    /** SdkMeetingSessionLocalAudioTiming timedOut. */
+    public timedOut: boolean;
+
+    /** SdkMeetingSessionLocalAudioTiming removed. */
+    public removed: boolean;
+
+    /**
+     * Creates a new SdkMeetingSessionLocalAudioTiming instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkMeetingSessionLocalAudioTiming instance
+     */
+    public static create(properties?: ISdkMeetingSessionLocalAudioTiming): SdkMeetingSessionLocalAudioTiming;
+
+    /**
+     * Encodes the specified SdkMeetingSessionLocalAudioTiming message. Does not implicitly {@link SdkMeetingSessionLocalAudioTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionLocalAudioTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkMeetingSessionLocalAudioTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkMeetingSessionLocalAudioTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionLocalAudioTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionLocalAudioTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkMeetingSessionLocalAudioTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkMeetingSessionLocalAudioTiming message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkMeetingSessionLocalAudioTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkMeetingSessionLocalAudioTiming;
+
+    /**
+     * Decodes a SdkMeetingSessionLocalAudioTiming message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkMeetingSessionLocalAudioTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkMeetingSessionLocalAudioTiming;
+
+    /**
+     * Verifies a SdkMeetingSessionLocalAudioTiming message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkMeetingSessionLocalAudioTiming message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkMeetingSessionLocalAudioTiming
+     */
+    public static fromObject(object: { [k: string]: any }): SdkMeetingSessionLocalAudioTiming;
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionLocalAudioTiming message. Also converts values to other types if specified.
+     * @param message SdkMeetingSessionLocalAudioTiming
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkMeetingSessionLocalAudioTiming, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkMeetingSessionLocalAudioTiming to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionLocalAudioTiming
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** Properties of a SdkMeetingSessionLocalVideoTiming. */
+export interface ISdkMeetingSessionLocalVideoTiming {
+
+    /** SdkMeetingSessionLocalVideoTiming addedMs */
+    addedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionLocalVideoTiming firstFrameCapturedMs */
+    firstFrameCapturedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionLocalVideoTiming firstFrameSentMs */
+    firstFrameSentMs?: (number|Long|null);
+
+    /** SdkMeetingSessionLocalVideoTiming timedOut */
+    timedOut?: (boolean|null);
+
+    /** SdkMeetingSessionLocalVideoTiming removed */
+    removed?: (boolean|null);
+}
+
+/** Represents a SdkMeetingSessionLocalVideoTiming. */
+export class SdkMeetingSessionLocalVideoTiming implements ISdkMeetingSessionLocalVideoTiming {
+
+    /**
+     * Constructs a new SdkMeetingSessionLocalVideoTiming.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkMeetingSessionLocalVideoTiming);
+
+    /** SdkMeetingSessionLocalVideoTiming addedMs. */
+    public addedMs: (number|Long);
+
+    /** SdkMeetingSessionLocalVideoTiming firstFrameCapturedMs. */
+    public firstFrameCapturedMs: (number|Long);
+
+    /** SdkMeetingSessionLocalVideoTiming firstFrameSentMs. */
+    public firstFrameSentMs: (number|Long);
+
+    /** SdkMeetingSessionLocalVideoTiming timedOut. */
+    public timedOut: boolean;
+
+    /** SdkMeetingSessionLocalVideoTiming removed. */
+    public removed: boolean;
+
+    /**
+     * Creates a new SdkMeetingSessionLocalVideoTiming instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkMeetingSessionLocalVideoTiming instance
+     */
+    public static create(properties?: ISdkMeetingSessionLocalVideoTiming): SdkMeetingSessionLocalVideoTiming;
+
+    /**
+     * Encodes the specified SdkMeetingSessionLocalVideoTiming message. Does not implicitly {@link SdkMeetingSessionLocalVideoTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionLocalVideoTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkMeetingSessionLocalVideoTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkMeetingSessionLocalVideoTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionLocalVideoTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionLocalVideoTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkMeetingSessionLocalVideoTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkMeetingSessionLocalVideoTiming message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkMeetingSessionLocalVideoTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkMeetingSessionLocalVideoTiming;
+
+    /**
+     * Decodes a SdkMeetingSessionLocalVideoTiming message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkMeetingSessionLocalVideoTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkMeetingSessionLocalVideoTiming;
+
+    /**
+     * Verifies a SdkMeetingSessionLocalVideoTiming message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkMeetingSessionLocalVideoTiming message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkMeetingSessionLocalVideoTiming
+     */
+    public static fromObject(object: { [k: string]: any }): SdkMeetingSessionLocalVideoTiming;
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionLocalVideoTiming message. Also converts values to other types if specified.
+     * @param message SdkMeetingSessionLocalVideoTiming
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkMeetingSessionLocalVideoTiming, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkMeetingSessionLocalVideoTiming to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionLocalVideoTiming
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** Properties of a SdkMeetingSessionRemoteVideoTiming. */
+export interface ISdkMeetingSessionRemoteVideoTiming {
+
+    /** SdkMeetingSessionRemoteVideoTiming groupId */
+    groupId?: (number|null);
+
+    /** SdkMeetingSessionRemoteVideoTiming addedMs */
+    addedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionRemoteVideoTiming firstPacketReceivedMs */
+    firstPacketReceivedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionRemoteVideoTiming firstFrameRenderedMs */
+    firstFrameRenderedMs?: (number|Long|null);
+
+    /** SdkMeetingSessionRemoteVideoTiming timedOut */
+    timedOut?: (boolean|null);
+
+    /** SdkMeetingSessionRemoteVideoTiming removed */
+    removed?: (boolean|null);
+}
+
+/** Represents a SdkMeetingSessionRemoteVideoTiming. */
+export class SdkMeetingSessionRemoteVideoTiming implements ISdkMeetingSessionRemoteVideoTiming {
+
+    /**
+     * Constructs a new SdkMeetingSessionRemoteVideoTiming.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkMeetingSessionRemoteVideoTiming);
+
+    /** SdkMeetingSessionRemoteVideoTiming groupId. */
+    public groupId: number;
+
+    /** SdkMeetingSessionRemoteVideoTiming addedMs. */
+    public addedMs: (number|Long);
+
+    /** SdkMeetingSessionRemoteVideoTiming firstPacketReceivedMs. */
+    public firstPacketReceivedMs: (number|Long);
+
+    /** SdkMeetingSessionRemoteVideoTiming firstFrameRenderedMs. */
+    public firstFrameRenderedMs: (number|Long);
+
+    /** SdkMeetingSessionRemoteVideoTiming timedOut. */
+    public timedOut: boolean;
+
+    /** SdkMeetingSessionRemoteVideoTiming removed. */
+    public removed: boolean;
+
+    /**
+     * Creates a new SdkMeetingSessionRemoteVideoTiming instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkMeetingSessionRemoteVideoTiming instance
+     */
+    public static create(properties?: ISdkMeetingSessionRemoteVideoTiming): SdkMeetingSessionRemoteVideoTiming;
+
+    /**
+     * Encodes the specified SdkMeetingSessionRemoteVideoTiming message. Does not implicitly {@link SdkMeetingSessionRemoteVideoTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionRemoteVideoTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkMeetingSessionRemoteVideoTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkMeetingSessionRemoteVideoTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionRemoteVideoTiming.verify|verify} messages.
+     * @param message SdkMeetingSessionRemoteVideoTiming message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkMeetingSessionRemoteVideoTiming, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkMeetingSessionRemoteVideoTiming message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkMeetingSessionRemoteVideoTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkMeetingSessionRemoteVideoTiming;
+
+    /**
+     * Decodes a SdkMeetingSessionRemoteVideoTiming message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkMeetingSessionRemoteVideoTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkMeetingSessionRemoteVideoTiming;
+
+    /**
+     * Verifies a SdkMeetingSessionRemoteVideoTiming message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkMeetingSessionRemoteVideoTiming message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkMeetingSessionRemoteVideoTiming
+     */
+    public static fromObject(object: { [k: string]: any }): SdkMeetingSessionRemoteVideoTiming;
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionRemoteVideoTiming message. Also converts values to other types if specified.
+     * @param message SdkMeetingSessionRemoteVideoTiming
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkMeetingSessionRemoteVideoTiming, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkMeetingSessionRemoteVideoTiming to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionRemoteVideoTiming
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
