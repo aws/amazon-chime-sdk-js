@@ -1829,29 +1829,33 @@ export default class DefaultAudioVideoController
     direction: 'send' | 'receive',
     ssrc: number
   ): void {
-    if (mediaType === 'audio' && direction === 'receive') {
-      this._meetingSessionTimingManager.onRemoteAudioFirstPacketReceived();
-    } else if (mediaType === 'audio' && direction === 'send') {
-      this._meetingSessionTimingManager.onLocalAudioFirstPacketSent();
-    } else if (mediaType === 'video' && direction === 'receive') {
-      /* istanbul ignore next */
-      const streamId = this.meetingSessionContext.videoStreamIndex?.streamIdForSSRC(ssrc);
-      if (streamId === undefined) {
-        this.logger.warn(`Received first video packet but no stream ID found for ssrc=${ssrc}`);
-        return;
+    if (mediaType === 'audio') {
+      if (direction === 'receive') {
+        this._meetingSessionTimingManager.onRemoteAudioFirstPacketReceived();
+      } else if (direction === 'send') {
+        this._meetingSessionTimingManager.onLocalAudioFirstPacketSent();
       }
-      /* istanbul ignore next */
-      const groupId = this.meetingSessionContext.videoStreamIndex?.groupIdForStreamId(streamId);
-      if (groupId === undefined) {
-        this.logger.warn(
-          `Received first video packet but no group ID found for streamId=${streamId} ssrc=${ssrc}`
-        );
-        return;
+    } else if (mediaType === 'video') {
+      if (direction === 'receive') {
+        /* istanbul ignore next */
+        const streamId = this.meetingSessionContext.videoStreamIndex?.streamIdForSSRC(ssrc);
+        if (streamId === undefined) {
+          this.logger.warn(`Received first video packet but no stream ID found for ssrc=${ssrc}`);
+          return;
+        }
+        /* istanbul ignore next */
+        const groupId = this.meetingSessionContext.videoStreamIndex?.groupIdForStreamId(streamId);
+        if (groupId === undefined) {
+          this.logger.warn(
+            `Received first video packet but no group ID found for streamId=${streamId} ssrc=${ssrc}`
+          );
+          return;
+        }
+        this.logger.debug(`Received first video packet for groupId=${groupId} ssrc=${ssrc}`);
+        this._meetingSessionTimingManager.onRemoteVideoFirstPacketReceived(groupId);
+      } else if (direction === 'send') {
+        this._meetingSessionTimingManager.onLocalVideoFirstFrameSent();
       }
-      this.logger.debug(`Received first video packet for groupId=${groupId} ssrc=${ssrc}`);
-      this._meetingSessionTimingManager.onRemoteVideoFirstPacketReceived(groupId);
-    } else if (mediaType === 'video' && direction === 'send') {
-      this._meetingSessionTimingManager.onLocalVideoFirstFrameSent();
     }
   }
 
