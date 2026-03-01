@@ -904,7 +904,7 @@ more information.
 - Change the serverless demo's `deploy.js` script to rebuild the demo on each run. This should remove a manual step of rebuilding the demo.
 - Disable NScale resolution scaling for Android device due to Android H.264 encoding.
 - Minor clean up of code in `BackgroundBlurProcessorProvided` class.
-- Refactored some video demo components into classes and seperate files.
+- Refactored some video demo components into classes and separate files.
 
 ## [2.21.0] - 2021-11-01
 
