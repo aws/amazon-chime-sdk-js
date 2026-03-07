@@ -45,6 +45,7 @@ export default class MeetingSessionTimingManager {
   private expectingRemoteVideo: boolean = false;
   private remoteVideoTiming: Map<number, MeetingSessionRemoteVideoTiming> = new Map();
   private boundRemoteVideoGroupIds: Set<number> = new Set();
+  private emittedRemoteVideoGroupIds: Set<number> = new Set();
 
   constructor(logger: Logger) {
     this.logger = logger;
@@ -431,6 +432,9 @@ export default class MeetingSessionTimingManager {
    * @param groupId The group ID of the remote video subscription
    */
   onRemoteVideoAdded(groupId: number): void {
+    if (this.emittedRemoteVideoGroupIds.has(groupId)) {
+      return;
+    }
     this.remoteVideoTiming.set(groupId, {
       addedMs: this.getCurrentTimestamp(),
     });
@@ -457,6 +461,7 @@ export default class MeetingSessionTimingManager {
    */
   onRemoteVideoUnbound(groupId: number): void {
     this.boundRemoteVideoGroupIds.delete(groupId);
+    this.emittedRemoteVideoGroupIds.delete(groupId);
     this.maybeEmitBatch();
   }
 
@@ -516,6 +521,7 @@ export default class MeetingSessionTimingManager {
     const state = this.remoteVideoTiming.get(groupId);
     if (state) {
       state.removed = true;
+      this.emittedRemoteVideoGroupIds.delete(groupId);
       this.logger.debug(`Remote video timing marked as removed for group_id=${groupId}`);
       this.maybeEmitBatch();
     }
@@ -537,6 +543,7 @@ export default class MeetingSessionTimingManager {
     this.expectingRemoteVideo = false;
     this.remoteVideoTiming.clear();
     this.boundRemoteVideoGroupIds.clear();
+    this.emittedRemoteVideoGroupIds.clear();
 
     this.logger.info('MeetingSessionTimingManager: reset');
   }
@@ -732,8 +739,25 @@ export default class MeetingSessionTimingManager {
     this.localAudioTiming = {};
     this.localVideoTiming = {};
     this.expectingRemoteVideo = false;
-    this.remoteVideoTiming.clear();
-    this.boundRemoteVideoGroupIds.clear();
+
+    // Preserve remote video entries that were not included in the emission.
+    // An entry is emitted only if it is bound. Unemitted entries carry over
+    // to the next batch so they can complete and be emitted later.
+    const pendingVideos = new Map<number, MeetingSessionRemoteVideoTiming>();
+    const pendingBound = new Set<number>();
+    for (const [groupId, state] of this.remoteVideoTiming) {
+      if (!this.boundRemoteVideoGroupIds.has(groupId)) {
+        pendingVideos.set(groupId, state);
+      } else {
+        this.emittedRemoteVideoGroupIds.add(groupId);
+      }
+    }
+    this.remoteVideoTiming = pendingVideos;
+    this.boundRemoteVideoGroupIds = pendingBound;
+
+    if (pendingVideos.size > 0) {
+      this.startBatchIfNeeded();
+    }
   }
 
   /**
