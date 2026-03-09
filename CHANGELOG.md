@@ -16,8 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Refactored DefaultUserAgentParser to utilize userAgentData when possible, e.g. to get Chrome minor version. Refactored all previous use of UAParser to use DefaultUserAgentParser. This does not change existing dimensions on event reporting. 
-- Updated to Typescript 5.x and node >= 20
+- Refactored DefaultUserAgentParser to utilize userAgentData when possible, e.g. to get Chrome minor version. Refactored all previous use of UAParser to use DefaultUserAgentParser. This does not change existing dimensions on event reporting.
+- Updated to Typescript 5.x and node >= 20. This may cause compilation failures on old typescript versions, as `RTCRtpCodecCapability` was removed and replaced by `RTCRtpCodec`. If issues arise please enable `skipLibCheck` in your `tsconfig.json` file.
 - Refactored Encoded Transform management into it's own component for better support of non-redundant audio transforms.
 - Add scalability mode fallback when SVC is enabled. Limit SVC for content share to AV1 temporal scalability only.
 - Completed migration to mocha tests.

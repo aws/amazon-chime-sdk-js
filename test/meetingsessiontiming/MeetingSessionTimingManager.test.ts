@@ -776,5 +776,161 @@ describe('MeetingSessionTimingManager', () => {
       manager.onRemoteAudioFirstPacketReceived();
       expect(observerSpy.called).to.be.false;
     });
+
+    it('ignores duplicate onRemoteAudioFirstPacketReceived', () => {
+      manager.onRemoteAudioAdded();
+      manager.onRemoteAudioFirstPacketReceived();
+      manager.onRemoteAudioFirstPacketReceived();
+    });
+
+    it('ignores duplicate onLocalAudioFirstPacketSent', () => {
+      manager.onLocalAudioAdded();
+      manager.onLocalAudioFirstPacketSent();
+      manager.onLocalAudioFirstPacketSent();
+    });
+
+    it('ignores duplicate onLocalVideoFirstFrameSent', () => {
+      manager.onLocalVideoAdded();
+      manager.onLocalVideoFirstFrameSent();
+      manager.onLocalVideoFirstFrameSent();
+    });
+
+    it('carries over unemitted remote video entries across batch emissions', () => {
+      // Start signaling batch
+      manager.onStart();
+      // Add remote video (unbound)
+      manager.onRemoteVideoAdded(1);
+      // Complete signaling+audio
+      manager.onJoinSent();
+      manager.onJoinAckReceived();
+      manager.onTransportConnected();
+      manager.onCreateOfferCalled();
+      manager.onSetLocalDescription();
+      manager.onIceGatheringStarted();
+      manager.onIceGatheringComplete();
+      manager.onSubscribeSent();
+      manager.onSubscribeAckReceived();
+      manager.onSetRemoteDescription();
+      manager.onIceConnected();
+      expect(observerSpy.calledOnce).to.be.true;
+      const first: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(first.remoteVideos).to.have.lengthOf(0); // unbound, not emitted
+
+      // Now bind and complete the carried-over entry
+      manager.onRemoteVideoBound(1);
+      manager.onRemoteVideoFirstFrameRendered(1);
+      expect(observerSpy.calledTwice).to.be.true;
+      const second: MeetingSessionTiming = observerSpy.secondCall.args[0];
+      expect(second.remoteVideos).to.have.lengthOf(1);
+      expect(second.remoteVideos[0].groupId).to.equal(1);
+    });
+
+    it('carries over bound-but-incomplete remote video entries', () => {
+      manager.onStart();
+      manager.onRemoteVideoAdded(1);
+      manager.onRemoteVideoBound(1);
+      // Complete signaling+audio — remote video is bound but incomplete (no firstFrameRendered)
+      manager.onJoinSent();
+      manager.onJoinAckReceived();
+      manager.onTransportConnected();
+      manager.onCreateOfferCalled();
+      manager.onSetLocalDescription();
+      manager.onIceGatheringStarted();
+      manager.onIceGatheringComplete();
+      manager.onSubscribeSent();
+      manager.onSubscribeAckReceived();
+      manager.onSetRemoteDescription();
+      manager.onIceConnected();
+      manager.onRemoteAudioAdded();
+      manager.onRemoteAudioFirstPacketReceived();
+      manager.onLocalAudioAdded();
+      manager.onLocalAudioFirstPacketSent();
+      // Batch doesn't emit yet — bound incomplete video blocks it
+      expect(observerSpy.called).to.be.false;
+      // Timeout fires
+      clock.tick(15000);
+      expect(observerSpy.calledOnce).to.be.true;
+      const first: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(first.remoteVideos).to.have.lengthOf(1);
+      expect(first.remoteVideos[0].timedOut).to.be.true;
+    });
+
+    it('does not re-add remote video after it was emitted', () => {
+      manager.onRemoteVideoAdded(1);
+      manager.onRemoteVideoBound(1);
+      manager.onRemoteVideoFirstFrameRendered(1);
+      expect(observerSpy.calledOnce).to.be.true;
+      // After emission, re-adding the same groupId should be ignored
+      manager.onRemoteVideoAdded(1);
+      // No new batch started — the re-add was silently dropped
+      clock.tick(15000);
+      expect(observerSpy.calledOnce).to.be.true;
+    });
+
+    it('allows re-add after remote video is unbound', () => {
+      manager.onRemoteVideoAdded(1);
+      manager.onRemoteVideoBound(1);
+      manager.onRemoteVideoFirstFrameRendered(1);
+      expect(observerSpy.calledOnce).to.be.true;
+      manager.onRemoteVideoUnbound(1);
+      // Verify the emitted set was cleared
+      // @ts-ignore: access private for test
+      expect(manager['emittedRemoteVideoGroupIds'].has(1)).to.be.false;
+      manager.onRemoteVideoAdded(1);
+      // @ts-ignore
+      expect(manager['remoteVideoTiming'].has(1)).to.be.true;
+    });
+
+    it('carries over bound-but-incomplete entry and preserves bound status', () => {
+      // Batch with signaling only; remote video is bound but incomplete
+      manager.onStart();
+      manager.onRemoteVideoAdded(1);
+      manager.onRemoteVideoBound(1);
+      manager.onRemoteVideoFirstPacketReceived(1);
+      // No firstFrameRendered yet — entry is bound but incomplete
+      // Signaling completes but bound incomplete video blocks batch
+      manager.onJoinSent();
+      manager.onJoinAckReceived();
+      manager.onTransportConnected();
+      manager.onCreateOfferCalled();
+      manager.onSetLocalDescription();
+      manager.onIceGatheringStarted();
+      manager.onIceGatheringComplete();
+      manager.onSubscribeSent();
+      manager.onSubscribeAckReceived();
+      manager.onSetRemoteDescription();
+      manager.onIceConnected();
+      expect(observerSpy.called).to.be.false; // blocked by incomplete bound video
+      // Complete it
+      manager.onRemoteVideoFirstFrameRendered(1);
+      expect(observerSpy.calledOnce).to.be.true;
+      const timing: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(timing.remoteVideos).to.have.lengthOf(1);
+      expect(timing.remoteVideos[0].firstPacketReceivedMs).to.not.be.undefined;
+    });
+
+    it('starts new batch for carried-over entries', () => {
+      manager.onStart();
+      manager.onRemoteVideoAdded(1);
+      // Complete signaling only (no audio/video added)
+      manager.onJoinSent();
+      manager.onJoinAckReceived();
+      manager.onTransportConnected();
+      manager.onCreateOfferCalled();
+      manager.onSetLocalDescription();
+      manager.onIceGatheringStarted();
+      manager.onIceGatheringComplete();
+      manager.onSubscribeSent();
+      manager.onSubscribeAckReceived();
+      manager.onSetRemoteDescription();
+      manager.onIceConnected();
+      expect(observerSpy.calledOnce).to.be.true;
+      // Carried-over entry should start a new batch that times out
+      clock.tick(15000);
+      expect(observerSpy.calledTwice).to.be.true;
+      const second: MeetingSessionTiming = observerSpy.secondCall.args[0];
+      // Unbound entry is omitted from emission
+      expect(second.remoteVideos).to.have.lengthOf(0);
+    });
   });
 });
