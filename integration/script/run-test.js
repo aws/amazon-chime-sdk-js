@@ -23,7 +23,7 @@ const browserCompatibilityConfig = require('../configs/BrowserCompatibilityBrows
 const integrationTestBrowserConfig = require('../configs/IntegrationTestBrowserConfig');
 
 const pathToIntegrationFolder = path.resolve(__dirname, '../tests');
-const pathToTestDemoFolder = path.resolve(__dirname, '../../../demos/browser');
+const pathToTestDemoFolder = path.resolve(__dirname, '../../demos/browser');
 const pathToConfigsFolder = path.resolve(__dirname, '../configs');
 
 // Global variables to store test configuration

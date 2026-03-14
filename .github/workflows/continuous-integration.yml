@@ -46,7 +46,7 @@ jobs:
           aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Audio Test
         if: steps.setup.outputs.integ_test_required == 'true'
-        working-directory: ./integration/mocha-tests
+        working-directory: ./integration
         run: npm run test -- --test-name AudioTest --host local --test-type integration-test --headless true
 
   video-test:
@@ -65,7 +65,7 @@ jobs:
           aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Video Test
         if: steps.setup.outputs.integ_test_required == 'true'
-        working-directory: ./integration/mocha-tests
+        working-directory: ./integration
         run: npm run test -- --test-name VideoTest --host local --test-type integration-test --headless true
 
   video-processing-test:
@@ -84,5 +84,5 @@ jobs:
           aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Video Processing Test
         if: steps.setup.outputs.integ_test_required == 'true'
-        working-directory: ./integration/mocha-tests
+        working-directory: ./integration
         run: npm run test -- --test-name VideoProcessingTest --host local --test-type integration-test --headless true
