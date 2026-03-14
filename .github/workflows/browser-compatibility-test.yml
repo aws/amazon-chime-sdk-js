@@ -39,11 +39,11 @@ jobs:
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
           browser-compatibility-test: true
       - name: Run Audio Test
-        working-directory: ./integration/mocha-tests
+        working-directory: ./integration
         run: npm run test -- --test-name AudioTest --host saucelabs --test-type browser-compatibility
       - name: Run Video Test
-        working-directory: ./integration/mocha-tests
+        working-directory: ./integration
         run: npm run test -- --test-name VideoTest --host saucelabs --test-type browser-compatibility
       - name: Run Video Processing Test
-        working-directory: ./integration/mocha-tests
+        working-directory: ./integration
         run: npm run test -- --test-name VideoProcessingTest --host saucelabs --test-type browser-compatibility

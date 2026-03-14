@@ -39,12 +39,12 @@
     "test:glob": "cross-env TS_NODE_PROJECT=test/tsconfig.json TS_NODE_CACHE=false nyc mocha --stack-trace-limit=1000 --async-stack-traces -v -r esm -r ts-node/register -- ",
     "test:glob:nocov": "cross-env TS_NODE_PROJECT=test/tsconfig.json mocha --stack-trace-limit=1000 --async-stack-traces -v -r esm -r ts-node/register -- ",
     "test:retry": "(npm run test || npm run test || npm run test || npm run test || npm run test)",
-    "test:integration": "cd ./integration/mocha-tests && npm run test",
-    "test:integration-audio": "cd ./integration/mocha-tests && npm run test -- --test-name AudioTest",
-    "test:integration-video": "cd ./integration/mocha-tests && npm run test -- --test-name VideoTest",
-    "test:integration-reconnection": "cd ./integration/mocha-tests && npm run test -- --test-name ReconnectionTest",
-    "test:integration-audio-processing": "cd ./integration/mocha-tests && npm run test -- --test-name AudioProcessingTest",
-    "test:integration-video-processing": "cd ./integration/mocha-tests && npm run test -- --test-name VideoProcessingTest"
+    "test:integration": "cd ./integration && npm run test",
+    "test:integration-audio": "cd ./integration && npm run test -- --test-name AudioTest",
+    "test:integration-video": "cd ./integration && npm run test -- --test-name VideoTest",
+    "test:integration-reconnection": "cd ./integration && npm run test -- --test-name ReconnectionTest",
+    "test:integration-audio-processing": "cd ./integration && npm run test -- --test-name AudioProcessingTest",
+    "test:integration-video-processing": "cd ./integration && npm run test -- --test-name VideoProcessingTest"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
