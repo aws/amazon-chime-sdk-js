@@ -77,8 +77,8 @@ jobs:
       - name: Clean Install
         run: npm ci
       - name: Run Audio Test
-        working-directory: ./integration/mocha-tests
+        working-directory: ./integration
         run: npm run test -- --test-name AudioTest --host saucelabs --test-type browser-compatibility
       - name: Run Video Test
-        working-directory: ./integration/mocha-tests
+        working-directory: ./integration
         run: npm run test -- --test-name VideoTest --host saucelabs --test-type browser-compatibility
