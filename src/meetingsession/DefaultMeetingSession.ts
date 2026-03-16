@@ -34,6 +34,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
   private _deviceController: DeviceController;
   private audioVideoFacade: AudioVideoFacade;
   private encodedTransformWorkerManager: EncodedTransformWorkerManager;
+  private contentShareEncodedTransformWorkerManager: EncodedTransformWorkerManager;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -76,6 +77,9 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     );
     this._deviceController = deviceController;
     this.logger.info(`MeetingFeatures: ${JSON.stringify(configuration.meetingFeatures)}`);
+    this.contentShareEncodedTransformWorkerManager = new DefaultEncodedTransformWorkerManager(
+      this._logger
+    );
     const contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(this._logger);
     this.contentShareController = new DefaultContentShareController(
       contentShareMediaStreamBroker,
@@ -95,7 +99,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
           )
         ),
         undefined, // eventController
-        this.encodedTransformWorkerManager
+        this.contentShareEncodedTransformWorkerManager
       ),
       this.audioVideoController
     );
@@ -149,6 +153,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       await this.eventController.destroy();
     }
     await this.encodedTransformWorkerManager?.stop();
+    await this.contentShareEncodedTransformWorkerManager?.stop();
 
     CSPMonitor.removeLogger(this._logger);
 
@@ -160,6 +165,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     this.contentShareController = undefined;
     this._eventController = undefined;
     this.encodedTransformWorkerManager = undefined;
+    this.contentShareEncodedTransformWorkerManager = undefined;
   }
 
   private checkBrowserSupportAndFeatureConfiguration(): void {
