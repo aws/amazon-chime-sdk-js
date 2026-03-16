@@ -1317,37 +1317,6 @@ describe('StatsCollector', () => {
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
     });
 
-    it('does not add transform metrics if already processed', done => {
-      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
-
-      class TestObserver implements AudioVideoObserver {
-        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
-          const rtcStatsReports = _clientMetricReport.customStatsReports;
-          const transformReport = rtcStatsReports.find(
-            // @ts-ignore
-            report =>
-              report.type === 'outbound-rtp-transform' || report.type === 'inbound-rtp-transform'
-          );
-          expect(transformReport).to.be.undefined;
-          statsCollector.stop();
-          done();
-        }
-      }
-      audioVideoController.addObserver(new TestObserver());
-
-      statsCollector = new StatsCollector(audioVideoController, logger, interval);
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSendMetrics: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
-        audioReceiveMetrics: {},
-        videoSendMetrics: {},
-        videoReceiveMetrics: {},
-      });
-      // Set the last timestamp to match the current timestamp to simulate already processed
-      statsCollector['lastEncodedTransformMediaMetricsTimestamp'] =
-        statsCollector['encodedTransformMediaMetricsTimestamp'];
-      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
-    });
-
     it('does not add transform metrics if no metrics received', done => {
       domMockBehavior.rtcPeerConnectionGetStatsReports = [];
 

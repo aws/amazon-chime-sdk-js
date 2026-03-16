@@ -68,7 +68,6 @@ export default class StatsCollector
   private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
-  private lastEncodedTransformMediaMetricsTimestamp: number = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -724,10 +723,7 @@ export default class StatsCollector
    * Adds transform metrics (PPS) to the raw webrtc stats report.
    */
   private maybeAddTransformMetrics(customStatsReports: CustomStatsReport[]): void {
-    if (
-      !this.encodedTransformMediaMetrics ||
-      this.encodedTransformMediaMetricsTimestamp === this.lastEncodedTransformMediaMetricsTimestamp
-    ) {
+    if (!this.encodedTransformMediaMetrics) {
       return;
     }
 
@@ -777,8 +773,6 @@ export default class StatsCollector
         });
       }
     }
-
-    this.lastEncodedTransformMediaMetricsTimestamp = timestamp;
   }
 
   /**
