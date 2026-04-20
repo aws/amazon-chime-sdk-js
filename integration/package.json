@@ -12,7 +12,7 @@
     "@aws-sdk/client-device-farm": "^3.485.0",
     "chalk": "^4.1.2",
     "minimist": "^1.2.8",
-    "mocha": "^10.2.0",
+    "mocha": "^10.8.2",
     "selenium-webdriver": "^4.32.0",
     "uuid": "^8.3.2"
   },
@@ -21,5 +21,11 @@
   },
   "devDependencies": {
     "mocha-steps": "^1.3.0"
+  },
+  "overrides": {
+    "fast-xml-parser": "5.7.1",
+    "serialize-javascript": "7.0.5",
+    "picomatch": "2.3.2",
+    "brace-expansion": "2.0.3"
   }
 }
