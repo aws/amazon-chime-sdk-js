@@ -123,6 +123,7 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
         streams: [this.defaultMediaStream],
         sendEncodings: encodingParams,
       });
+      this.configureLocalCameraHeaderExtensions();
 
       if (this.encodedTransformWorkerManager?.isEnabled()) {
         this.encodedTransformWorkerManager.setupVideoSenderTransform(

@@ -10,6 +10,11 @@ import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import TransceiverController from './TransceiverController';
 
+const videoLayersAllocationUrl =
+  'http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00';
+const dependencyDescriptorUrl =
+  'https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension';
+
 export default class DefaultTransceiverController implements TransceiverController {
   protected _localCameraTransceiver: RTCRtpTransceiver | null = null;
   protected _localAudioTransceiver: RTCRtpTransceiver | null = null;
@@ -187,12 +192,66 @@ export default class DefaultTransceiverController implements TransceiverControll
         direction: 'inactive',
         streams: [this.defaultMediaStream],
       });
+      this.configureLocalCameraHeaderExtensions();
 
       if (this.encodedTransformWorkerManager?.isEnabled()) {
         this.encodedTransformWorkerManager.setupVideoSenderTransform(
           this._localCameraTransceiver.sender
         );
       }
+    }
+  }
+
+  /**
+   * Returns true if the peer connection supports the header extension negotiation
+   * API (`getHeaderExtensionsToNegotiate` / `setHeaderExtensionsToNegotiate`),
+   * which allows configuring RTP header extensions without SDP munging.
+   */
+  static canUseHeaderExtensionApi(peer: RTCPeerConnection): boolean {
+    const transceivers = peer.getTransceivers?.();
+    if (!transceivers?.length) {
+      return false;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const t = transceivers[0] as any;
+    return (
+      typeof t.getHeaderExtensionsToNegotiate === 'function' &&
+      typeof t.setHeaderExtensionsToNegotiate === 'function'
+    );
+  }
+
+  protected configureLocalCameraHeaderExtensions(): void {
+    if (!DefaultTransceiverController.canUseHeaderExtensionApi(this.peer)) {
+      return;
+    }
+
+    const policy = this.meetingSessionContext
+      ? this.meetingSessionContext.videoUplinkBandwidthPolicy
+      : undefined;
+    const wantsDependencyDescriptor =
+      policy?.wantsVideoDependencyDescriptorRtpHeaderExtension !== undefined &&
+      policy.wantsVideoDependencyDescriptorRtpHeaderExtension();
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const t = this._localCameraTransceiver as any;
+      const extensions = t.getHeaderExtensionsToNegotiate();
+      let modified = false;
+      for (const extension of extensions) {
+        if (
+          extension.direction === 'stopped' &&
+          (extension.uri === videoLayersAllocationUrl ||
+            (wantsDependencyDescriptor && extension.uri === dependencyDescriptorUrl))
+        ) {
+          extension.direction = 'sendrecv';
+          modified = true;
+        }
+      }
+      if (modified) {
+        t.setHeaderExtensionsToNegotiate(extensions);
+      }
+    } catch (e) {
+      this.logger.warn(`Failed to configure video header extensions: ${e.message}`);
     }
   }
 
