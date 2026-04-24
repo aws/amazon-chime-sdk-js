@@ -25,6 +25,7 @@ export default class DOMMockBehavior {
   navigatorProduct: string = '';
   undefinedDocument: boolean = false;
   supportsAudioRedCodec: boolean = true;
+  supportsHeaderExtensionApi: boolean = false;
 
   FakeTURNCredentialsBody: Promise<object> = new Promise((resolve, _reject) => {
     const obj = new Object({

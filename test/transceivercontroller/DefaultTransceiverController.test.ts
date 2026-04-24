@@ -1311,4 +1311,152 @@ describe('DefaultTransceiverController', () => {
       errorSpy.restore();
     });
   });
+
+  describe('canUseHeaderExtensionApi', () => {
+    it('returns false when getTransceivers is not available', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const peer = {} as any;
+      expect(DefaultTransceiverController.canUseHeaderExtensionApi(peer)).to.be.false;
+    });
+
+    it('returns false when peer has no transceivers', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const peer = { getTransceivers: (): RTCRtpTransceiver[] => [] } as any;
+      expect(DefaultTransceiverController.canUseHeaderExtensionApi(peer)).to.be.false;
+    });
+
+    it('returns false when transceiver lacks the API', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const peer = { getTransceivers: (): { mid: string }[] => [{ mid: '0' }] } as any;
+      expect(DefaultTransceiverController.canUseHeaderExtensionApi(peer)).to.be.false;
+    });
+
+    it('returns false when transceiver only has getter', () => {
+      const peer = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getTransceivers: (): any[] => [
+          { getHeaderExtensionsToNegotiate: (): { uri: string; direction: string }[] => [] },
+        ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
+      expect(DefaultTransceiverController.canUseHeaderExtensionApi(peer)).to.be.false;
+    });
+
+    it('returns true when transceiver has both getter and setter', () => {
+      const peer = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getTransceivers: (): any[] => [
+          {
+            getHeaderExtensionsToNegotiate: (): { uri: string; direction: string }[] => [],
+            setHeaderExtensionsToNegotiate: (): void => {},
+          },
+        ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
+      expect(DefaultTransceiverController.canUseHeaderExtensionApi(peer)).to.be.true;
+    });
+  });
+
+  describe('configureLocalCameraHeaderExtensions', () => {
+    const layersUrl = 'http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00';
+    const ddUrl =
+      'https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension';
+
+    it('enables video-layers-allocation without meeting context', () => {
+      domMockBehavior.supportsHeaderExtensionApi = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const localTc = new DefaultTransceiverController(logger, new DefaultBrowserBehavior());
+      localTc.setPeer(new RTCPeerConnection());
+      localTc.setupLocalTransceivers();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const extensions = (localTc.localVideoTransceiver() as any).getHeaderExtensionsToNegotiate();
+      const layers = extensions.find(
+        (e: { uri: string; direction: string }) => e.uri === layersUrl
+      );
+      expect(layers.direction).to.equal('sendrecv');
+    });
+
+    it('enables video-layers-allocation without dependency descriptor policy', () => {
+      domMockBehavior.supportsHeaderExtensionApi = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const localContext = new AudioVideoControllerState();
+      localContext.browserBehavior = new DefaultBrowserBehavior();
+      localContext.audioProfile = new AudioProfile();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      localContext.videoUplinkBandwidthPolicy = {} as any;
+      const localTc = new DefaultTransceiverController(
+        logger,
+        localContext.browserBehavior,
+        localContext
+      );
+      localTc.setPeer(new RTCPeerConnection());
+      localTc.setupLocalTransceivers();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const extensions = (localTc.localVideoTransceiver() as any).getHeaderExtensionsToNegotiate();
+      const layers = extensions.find(
+        (e: { uri: string; direction: string }) => e.uri === layersUrl
+      );
+      expect(layers.direction).to.equal('sendrecv');
+      const dd = extensions.find((e: { uri: string; direction: string }) => e.uri === ddUrl);
+      expect(dd.direction).to.equal('stopped');
+    });
+
+    it('enables video-layers-allocation via the API', () => {
+      domMockBehavior.supportsHeaderExtensionApi = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      tc = new DefaultTransceiverController(logger, new DefaultBrowserBehavior(), context);
+      tc.setPeer(new RTCPeerConnection());
+      tc.setupLocalTransceivers();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const extensions = (tc.localVideoTransceiver() as any).getHeaderExtensionsToNegotiate();
+      const layers = extensions.find(
+        (e: { uri: string; direction: string }) => e.uri === layersUrl
+      );
+      expect(layers.direction).to.equal('sendrecv');
+    });
+
+    it('enables dependency descriptor when uplink policy wants it', () => {
+      domMockBehavior.supportsHeaderExtensionApi = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.videoUplinkBandwidthPolicy = {
+        wantsVideoDependencyDescriptorRtpHeaderExtension: (): boolean => true,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
+      tc = new DefaultTransceiverController(logger, new DefaultBrowserBehavior(), context);
+      tc.setPeer(new RTCPeerConnection());
+      tc.setupLocalTransceivers();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const extensions = (tc.localVideoTransceiver() as any).getHeaderExtensionsToNegotiate();
+      const dd = extensions.find((e: { uri: string; direction: string }) => e.uri === ddUrl);
+      expect(dd.direction).to.equal('sendrecv');
+    });
+
+    it('falls back gracefully when API throws', () => {
+      domMockBehavior.supportsHeaderExtensionApi = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      tc = new DefaultTransceiverController(logger, new DefaultBrowserBehavior(), context);
+      tc.setPeer(new RTCPeerConnection());
+
+      const origAddTransceiver = RTCPeerConnection.prototype.addTransceiver;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      RTCPeerConnection.prototype.addTransceiver = function (...args: any[]): RTCRtpTransceiver {
+        const t = origAddTransceiver.apply(this, args);
+        if (t.getHeaderExtensionsToNegotiate) {
+          t.setHeaderExtensionsToNegotiate = (): void => {
+            throw new Error('mock API error');
+          };
+        }
+        return t;
+      };
+
+      tc.setupLocalTransceivers();
+      RTCPeerConnection.prototype.addTransceiver = origAddTransceiver;
+
+      expect(tc.localVideoTransceiver()).to.not.be.null;
+    });
+  });
 });

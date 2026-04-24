@@ -4,6 +4,7 @@
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import SDP from '../sdp/SDP';
+import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
 import BaseTask from './BaseTask';
 
 /*
@@ -33,7 +34,15 @@ export default class SetLocalDescriptionTask extends BaseTask {
     const sdpOfferInit = this.context.sdpOfferInit;
     let sdp = sdpOfferInit.sdp;
 
-    if (this.context.browserBehavior.supportsVideoLayersAllocationRtpHeaderExtension()) {
+    // When the transceiver header extension API is available (Chrome 117+), extensions
+    // are configured via setHeaderExtensionsToNegotiate in the transceiver controller,
+    // so SDP munging is not needed.
+    const skipHeaderExtensionMunging = DefaultTransceiverController.canUseHeaderExtensionApi(peer);
+
+    if (
+      !skipHeaderExtensionMunging &&
+      this.context.browserBehavior.supportsVideoLayersAllocationRtpHeaderExtension()
+    ) {
       // This will be negotiatiated with backend, and we will only use it to skip resubscribes
       // if we confirm support/negotiation via `RTCRtpTranceiver.sender.getParams`
       sdp = new SDP(sdp).withVideoLayersAllocationRtpHeaderExtension(
@@ -44,6 +53,7 @@ export default class SetLocalDescriptionTask extends BaseTask {
     // browsers will not remove it from the send section. We don't do it here, so that we don't lose track of
     // the header extension IDs being used when we store `this.context.previousSdpOffer`.
     if (
+      !skipHeaderExtensionMunging &&
       this.context.browserBehavior.supportsDependencyDescriptorRtpHeaderExtension() &&
       this.context.videoUplinkBandwidthPolicy.wantsVideoDependencyDescriptorRtpHeaderExtension !==
         undefined &&

@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed event ordering race condition when updating high entropy values in DefaultEventController.
+- Use `setHeaderExtensionsToNegotiate` API to configure video RTP header extensions instead of SDP munging when available. Falls back to SDP munging on browsers without the API.
 
 ## [3.30.0] - 2025-09-18
 
