@@ -73,7 +73,7 @@
     "node-fetch": "^2.6.1",
     "nyc": "^17.1.0",
     "prettier": "^3.0.0",
-    "protobufjs-cli": "^1.1.2",
+    "protobufjs-cli": "^1.2.2",
     "rimraf": "^3.0.2",
     "sinon": "^17.0.0",
     "spawn-wrap": "^2.0.0",
@@ -90,7 +90,7 @@
     "@types/ua-parser-js": "^0.7.35",
     "detect-browser": "^5.2.0",
     "pako": "^2.0.4",
-    "protobufjs": "^7.5.5",
+    "protobufjs": "^7.5.8",
     "resize-observer": "^1.0.0",
     "ua-parser-js": "^1.0.40"
   },
