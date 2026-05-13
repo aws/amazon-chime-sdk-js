@@ -45,7 +45,7 @@ const getPlatformName = (platform) => {
     case 'MAC':
       return 'macOS 13';
     case 'WINDOWS':
-      return 'Windows 10';
+      return 'Windows 11';
     case 'LINUX':
       return 'Linux Beta';
     case 'IOS':

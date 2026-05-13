@@ -115,35 +115,39 @@ runs:
           echo "use_sauce=false" >> $GITHUB_OUTPUT
         fi
       shell: bash
-    - name: Create a Job ID for SauceLabs
-      if: |
-        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') 
-        && steps.check-sauce.outputs.use_sauce == 'true'
-      id: create-job-id
-      uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
-    - name: Set JOB_ID Env Variable for SauceLabs
-      if: |
-        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') 
-        && steps.check-sauce.outputs.use_sauce == 'true'
-      run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
-      shell: bash
-    - name: Echo Job ID for SauceLabs
-      if: |
-        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') 
-        && steps.check-sauce.outputs.use_sauce == 'true'
-      run: echo "${{ steps.create-job-id.outputs.uuid }}"
-      shell: bash
-    - name: Setup Sauce Connect
-      if: |
-        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') 
-        && steps.check-sauce.outputs.use_sauce == 'true'
-      uses: saucelabs/sauce-connect-action@v3.0.0
-      with:
-        username: ${{ inputs.sauce-username }}
-        accessKey: ${{ inputs.sauce-access-key }}
-        tunnelName: ${{ steps.create-job-id.outputs.uuid }}
-        region: us
-        proxyLocalhost: direct
+    # TODO: Re-enable JOB_ID and Sauce Connect tunnel once local proxying issue is resolved.
+    # Using TEST_URL (deployed serverless demo) instead for now.
+    # - name: Create a Job ID for SauceLabs
+    #   if: |
+    #     (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true')
+    #     && steps.check-sauce.outputs.use_sauce == 'true'
+    #   id: create-job-id
+    #   uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+    # - name: Set JOB_ID Env Variable for SauceLabs
+    #   if: |
+    #     (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true')
+    #     && steps.check-sauce.outputs.use_sauce == 'true'
+    #   run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+    #   shell: bash
+    # - name: Echo Job ID for SauceLabs
+    #   if: |
+    #     (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true')
+    #     && steps.check-sauce.outputs.use_sauce == 'true'
+    #   run: echo "${{ steps.create-job-id.outputs.uuid }}"
+    #   shell: bash
+    # TODO: Re-enable Sauce Connect tunnel once local proxying issue is resolved.
+    # Using TEST_URL (deployed serverless demo) instead for now.
+    # - name: Setup Sauce Connect
+    #   if: |
+    #     (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true')
+    #     && steps.check-sauce.outputs.use_sauce == 'true'
+    #   uses: saucelabs/sauce-connect-action@v3.0.0
+    #   with:
+    #     username: ${{ inputs.sauce-username }}
+    #     accessKey: ${{ inputs.sauce-access-key }}
+    #     tunnelName: ${{ steps.create-job-id.outputs.uuid }}
+    #     region: us
+    #     proxyLocalhost: direct
     - name: Setup Chrome for local testing
       if: |
         steps.test_needed.outputs.integ_test_required == 'true' && 

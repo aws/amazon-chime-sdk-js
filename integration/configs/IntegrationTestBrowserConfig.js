@@ -2,7 +2,7 @@ const integrationTestBrowserConfig = [
     {
     browserName: "chrome",
     browserVersion: "latest",
-    platform: "macOS 13"
+    platform: "MAC"
     }
 ];
 
