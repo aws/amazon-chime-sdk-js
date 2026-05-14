@@ -1,27 +1,27 @@
 const browserCompatibilityConfig = [
+    // {
+    //     "browserName": "chrome",
+    //     "browserVersion": "latest-2",
+    //     "platform": "MAC"
+    // },
+    // {
+    //     "browserName": "chrome",
+    //     "browserVersion": "latest-1",
+    //     "platform": "MAC"
+    // },
+    // {
+    //     "browserName": "chrome",
+    //     "browserVersion": "latest",
+    //     "platform": "MAC"
+    // },
     {
         "browserName": "chrome",
         "browserVersion": "latest-2",
-        "platform": "MAC"
+        "platform": "WINDOWS"
     },
     {
         "browserName": "chrome",
         "browserVersion": "latest-1",
-        "platform": "MAC"
-    },
-    {
-        "browserName": "chrome",
-        "browserVersion": "latest",
-        "platform": "MAC"
-    },
-    {
-        "browserName": "chrome",
-        "browserVersion": "latest-2",
-        "platform": "WINDOWS"
-    },
-    {
-        "browserName": "chrome",
-        "browserVersion": "latest-1",
         "platform": "WINDOWS"
     },
     {
@@ -29,21 +29,21 @@ const browserCompatibilityConfig = [
         "browserVersion": "latest",
         "platform": "WINDOWS"
     },
-    {
-        "browserName": "firefox",
-        "browserVersion": "latest-2",
-        "platform": "MAC"
-    },
-    {
-        "browserName": "firefox",
-        "browserVersion": "latest-1",
-        "platform": "MAC"
-    },
-    {
-        "browserName": "firefox",
-        "browserVersion": "latest",
-        "platform": "MAC"
-    },
+    // {
+    //     "browserName": "firefox",
+    //     "browserVersion": "latest-2",
+    //     "platform": "MAC"
+    // },
+    // {
+    //     "browserName": "firefox",
+    //     "browserVersion": "latest-1",
+    //     "platform": "MAC"
+    // },
+    // {
+    //     "browserName": "firefox",
+    //     "browserVersion": "latest",
+    //     "platform": "MAC"
+    // },
     {
         "browserName": "firefox",
         "browserVersion": "latest-2",
@@ -60,10 +60,20 @@ const browserCompatibilityConfig = [
         "platform": "WINDOWS"
     },
     {
-        "browserName": "safari",
-        "browserVersion": "latest",
-        "platform": "MAC"
-    }
+        "browserName": "chrome",
+        "browserVersion": "beta",
+        "platform": "WINDOWS"
+    },
+    {
+        "browserName": "firefox",
+        "browserVersion": "beta",
+        "platform": "WINDOWS"
+    },
+    // {
+    //     "browserName": "safari",
+    //     "browserVersion": "latest",
+    //     "platform": "MAC"
+    // }
 ];
 
 module.exports = browserCompatibilityConfig;
