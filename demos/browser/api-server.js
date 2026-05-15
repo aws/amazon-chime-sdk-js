@@ -15,7 +15,7 @@ const { v4: uuidv4 } = require('uuid');
 const meetingTable = {};
 
 // Load the contents of the web application to be used as the index page.
-const app = process.env.npm_config_app || 'meetingV2';
+const app = process.env.APP || 'meetingV2';
 const indexPagePath = `dist/${app}.html`;
 
 console.info('Using index path', indexPagePath);

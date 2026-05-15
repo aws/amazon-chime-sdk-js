@@ -215,7 +215,7 @@ function startTestDemo() {
   // Build the environment for the demo process
   const demoEnv = { ...process.env };
   if (appName) {
-    demoEnv.npm_config_app = appName;
+    demoEnv.APP = appName;
     logger.log(`Starting demo with app: ${appName}`, LogLevel.INFO);
   }
   
