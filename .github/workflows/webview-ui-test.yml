@@ -7,6 +7,9 @@ on:
     types:
       - completed
 
+permissions:
+  contents: read
+
 jobs:
   xcuitest:
     runs-on: macos-11
