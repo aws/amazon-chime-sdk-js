@@ -1,19 +1,19 @@
 const browserCompatibilityConfig = [
-    // {
-    //     "browserName": "chrome",
-    //     "browserVersion": "latest-2",
-    //     "platform": "MAC"
-    // },
-    // {
-    //     "browserName": "chrome",
-    //     "browserVersion": "latest-1",
-    //     "platform": "MAC"
-    // },
-    // {
-    //     "browserName": "chrome",
-    //     "browserVersion": "latest",
-    //     "platform": "MAC"
-    // },
+    {
+        "browserName": "chrome",
+        "browserVersion": "latest-2",
+        "platform": "MAC"
+    },
+    {
+        "browserName": "chrome",
+        "browserVersion": "latest-1",
+        "platform": "MAC"
+    },
+    {
+        "browserName": "chrome",
+        "browserVersion": "latest",
+        "platform": "MAC"
+    },
     {
         "browserName": "chrome",
         "browserVersion": "latest-2",
@@ -29,21 +29,21 @@ const browserCompatibilityConfig = [
         "browserVersion": "latest",
         "platform": "WINDOWS"
     },
-    // {
-    //     "browserName": "firefox",
-    //     "browserVersion": "latest-2",
-    //     "platform": "MAC"
-    // },
-    // {
-    //     "browserName": "firefox",
-    //     "browserVersion": "latest-1",
-    //     "platform": "MAC"
-    // },
-    // {
-    //     "browserName": "firefox",
-    //     "browserVersion": "latest",
-    //     "platform": "MAC"
-    // },
+    {
+        "browserName": "firefox",
+        "browserVersion": "latest-2",
+        "platform": "MAC"
+    },
+    {
+        "browserName": "firefox",
+        "browserVersion": "latest-1",
+        "platform": "MAC"
+    },
+    {
+        "browserName": "firefox",
+        "browserVersion": "latest",
+        "platform": "MAC"
+    },
     {
         "browserName": "firefox",
         "browserVersion": "latest-2",
