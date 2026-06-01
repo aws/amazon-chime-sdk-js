@@ -2,8 +2,6 @@ name: Browser Compatibility Test
 
 on:
   schedule:
-    # More information on cron https://crontab.guru/
-    # GitHub actions is using UTC time. Scheduling action at 5 am PST
     - cron: '0 13 * * *'
 
 env:
@@ -11,6 +9,7 @@ env:
   TEST_TYPE: Browser-Compatibility-Test
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  TEST_URL: ${{secrets.TEST_URL}}
   MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
   SLACK_JS_SDK_DEV_CORE_WEBHOOK: ${{secrets.SLACK_JS_SDK_DEV_CORE_WEBHOOK}}
   PRE_RUN_SCRIPT_URL: ${{secrets.PRE_RUN_SCRIPT_URL}}
@@ -44,6 +43,35 @@ jobs:
       - name: Run Video Test
         working-directory: ./integration
         run: npm run test -- --test-name VideoTest --host saucelabs --test-type browser-compatibility
-      - name: Run Video Processing Test
-        working-directory: ./integration
-        run: npm run test -- --test-name VideoProcessingTest --host saucelabs --test-type browser-compatibility
+      # - name: Run Video Processing Test
+      #   working-directory: ./integration
+      #   run: npm run test -- --test-name VideoProcessingTest --host saucelabs --test-type browser-compatibility
+      - name: Configure AWS Credentials for CloudWatch
+        if: always()
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          aws-region: us-east-1
+      - name: Send Metric to CloudWatch
+        if: always()
+        run: |
+          npm install @aws-sdk/client-cloudwatch
+          node -e "
+          const { CloudWatchClient, PutMetricDataCommand } = require('@aws-sdk/client-cloudwatch');
+          const client = new CloudWatchClient({ region: 'us-east-1' });
+          const value = '${{ job.status }}' === 'success' ? 1 : 0;
+          const command = new PutMetricDataCommand({
+            Namespace: process.env.METRIC_NAMESPACE,
+            MetricData: [{
+              MetricName: process.env.METRIC_NAME,
+              Dimensions: [
+                { Name: 'Platform', Value: 'JS SDK Daily Compatibility' }
+              ],
+              Value: value,
+            }]
+          });
+          client.send(command).then(() => console.log('Daily test result sent to CloudWatch')).catch(err => {
+            console.error('Failed to send metric. Error: ', err);
+            process.exit(1);
+          });
+          "

@@ -7,7 +7,7 @@ import { watch } from 'chokidar';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 import ejsSvgPlugin from './plugins/vite-plugin-ejs-svg';
 
-const app = process.env.npm_config_app || process.env.APP || 'meetingV2';
+const app = process.env.APP || 'meetingV2';
 const watchSdk = process.env.SDK_AUTOREFRESH === 'true';
 
 /**

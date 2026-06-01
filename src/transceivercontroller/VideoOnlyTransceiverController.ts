@@ -31,6 +31,7 @@ export default class VideoOnlyTransceiverController extends DefaultTransceiverCo
         direction: 'inactive',
         streams: [this.defaultMediaStream],
       });
+      this.configureLocalCameraHeaderExtensions();
     }
   }
 }

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.0] - 2026-05-14
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
 ## [3.31.0] - 2026-01-06
 
 ### Added
@@ -27,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed event ordering race condition when updating high entropy values in DefaultEventController.
+- Use `setHeaderExtensionsToNegotiate` API to configure video RTP header extensions instead of SDP munging when available. Falls back to SDP munging on browsers without the API.
 
 ## [3.30.0] - 2025-09-18
 

@@ -1098,6 +1098,35 @@ export default class DOMMockBuilder {
       }
     };
 
+    if (mockBehavior.supportsHeaderExtensionApi) {
+      const defaultHeaderExtensions = [
+        { uri: 'urn:ietf:params:rtp-hdrext:ssrc-audio-level', direction: 'sendrecv' },
+        {
+          uri: 'http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time',
+          direction: 'sendrecv',
+        },
+        {
+          uri: 'http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00',
+          direction: 'stopped',
+        },
+        {
+          uri: 'https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension',
+          direction: 'stopped',
+        },
+      ];
+      const origConstructor = GlobalAny.RTCRtpTransceiver;
+      GlobalAny.RTCRtpTransceiver = class extends origConstructor {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        private headerExtensions: any[] = defaultHeaderExtensions.map(e => ({ ...e }));
+        getHeaderExtensionsToNegotiate(): { uri: string; direction: string }[] {
+          return this.headerExtensions.map((e: { uri: string; direction: string }) => ({ ...e }));
+        }
+        setHeaderExtensionsToNegotiate(extensions: { uri: string; direction: string }[]): void {
+          this.headerExtensions = extensions.map(e => ({ ...e }));
+        }
+      };
+    }
+
     GlobalAny.RTCRtpReceiver = class MockRTCRtpReceiver {
       readonly track: MediaStreamTrack;
       // @ts-ignore

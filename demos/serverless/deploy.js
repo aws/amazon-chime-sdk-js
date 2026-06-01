@@ -209,7 +209,7 @@ function ensureApp(appName) {
     process.exit(1);
   }
   console.log(`Rebuilding demo app`);
-  spawnOrFail('npm', ['run', 'build', `--app=${appName}`], {cwd: path.join(__dirname, '..', 'browser')});
+  spawnOrFail('npm', ['run', 'build'], {cwd: path.join(__dirname, '..', 'browser'), env: {...process.env, APP: appName}});
 }
 
 function ensureTools() {

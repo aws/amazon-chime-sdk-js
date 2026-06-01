@@ -1,6 +1,6 @@
 const { Builder } = require('selenium-webdriver');
 const { Logger, LogLevel, Log } = require('./Logger');
-const config = require('../configs/WebDriverBaseConfig');
+const getConfig = require('../configs/WebDriverBaseConfig');
 const { DeviceFarmClient, CreateTestGridUrlCommand } = require('@aws-sdk/client-device-farm');
 
 class WebDriverFactory {
@@ -24,6 +24,7 @@ class WebDriverFactory {
   }
 
   async configure() {
+    const config = getConfig();
     let builder = new Builder();
     let client;
     let capabilities = {};
