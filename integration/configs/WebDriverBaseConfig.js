@@ -1,64 +1,69 @@
-const config = {
-  firefoxOptions: {
-    browserName: 'firefox',
-    'moz:firefoxOptions': {
-      args: process.env.HEADLESS_MODE === 'true' ? 
-        ['-start-debugger-server', '9222', '-headless'] : 
-        ['-start-debugger-server', '9222'],
-      prefs: {
-        'media.navigator.streams.fake': true,
-        'media.navigator.permission.disabled': true,
-        'media.peerconnection.video.h264_enabled': true,
-        'media.webrtc.hw.h264.enabled': true,
-        'media.webrtc.platformencoder': true,
-        'devtools.chrome.enabled': true,
-        'devtools.debugger.prompt-connection': false,
-        'devtools.debugger.remote-enabled': true,
+const getConfig = () => {
+  const platformName = process.env.PLATFORM_NAME || 'macOS 13';
+  const macVersionMatch = platformName.match(/^macOS\s+(\d+)/);
+  const isMacOS14OrHigher = macVersionMatch && parseInt(macVersionMatch[1], 10) >= 14;
+
+  return {
+    firefoxOptions: {
+      browserName: 'firefox',
+      'moz:firefoxOptions': {
+        args: process.env.HEADLESS_MODE === 'true'
+          ? ['-start-debugger-server', '9222', '-headless']
+          : ['-start-debugger-server', '9222'],
+        prefs: {
+          'media.navigator.streams.fake': true,
+          'media.navigator.permission.disabled': true,
+          'media.peerconnection.video.h264_enabled': true,
+          'media.webrtc.hw.h264.enabled': true,
+          'media.webrtc.platformencoder': true,
+          'devtools.chrome.enabled': true,
+          'devtools.debugger.prompt-connection': false,
+          'devtools.debugger.remote-enabled': true,
+        },
       },
     },
-  },
-  chromeOptions: {
-    browserName: 'chrome',
-    'goog:chromeOptions': {
-      args:
-        process.env.HEADLESS_MODE === 'true'
-          ? [
-              '--use-fake-device-for-media-stream',
-              '--use-fake-ui-for-media-stream',
-              '--headless=new',
-              '--window-size=1920,1080',
-              '--no-sandbox',
-              '--disable-dev-shm-usage',
-              '--enable-webgl',
-              '--enable-webgl2-compute-context',
-              '--use-gl=angle',
-              '--use-angle=swiftshader',
-            ]
-          : [
-              '--use-fake-device-for-media-stream',
-              '--use-fake-ui-for-media-stream',
-              '--window-size=1920,1080',
-            ],
+    chromeOptions: {
+      browserName: 'chrome',
+      'goog:chromeOptions': {
+        args:
+          process.env.HEADLESS_MODE === 'true'
+            ? [
+                '--use-fake-device-for-media-stream',
+                '--use-fake-ui-for-media-stream',
+                '--headless=new',
+                '--window-size=1920,1080',
+                '--no-sandbox',
+                '--disable-dev-shm-usage',
+                '--enable-webgl',
+                '--enable-webgl2-compute-context',
+                '--use-gl=angle',
+                '--use-angle=swiftshader',
+              ]
+            : [
+                '--use-fake-device-for-media-stream',
+                '--use-fake-ui-for-media-stream',
+                '--window-size=1920,1080',
+              ],
+      },
+      ...(process.env.ENABLE_BROWSER_LOGGING === 'true' && { 'goog:loggingPrefs': { browser: 'ALL' } }),
     },
-    ...(process.env.ENABLE_BROWSER_LOGGING === 'true' && { 'goog:loggingPrefs': { browser: 'ALL' } }),
-  },
-  safariOptions: {
-    browserName: 'safari',
-    // Safari doesn't support headless mode
-  },
-  sauceOptions: {
-    browserName: process.env.BROWSER_NAME || 'chrome',
-    platformName: process.env.PLATFORM_NAME || 'macOS 13',
-    browserVersion: process.env.BROWSER_VERSION || 'latest',
-    'sauce:options': {
-      tunnelName: process.env.JOB_ID,
-      username: process.env.SAUCE_USERNAME,
-      accessKey: process.env.SAUCE_ACCESS_KEY,
-      noSSLBumpDomains: 'all',
-      extendedDebugging: true,
-      screenResolution: '1920x1440',
+    safariOptions: {
+      browserName: 'safari',
     },
-  },
+    sauceOptions: {
+      browserName: process.env.BROWSER_NAME || 'chrome',
+      platformName,
+      browserVersion: process.env.BROWSER_VERSION || 'latest',
+      'sauce:options': {
+        tunnelName: process.env.JOB_ID,
+        username: process.env.SAUCE_USERNAME,
+        accessKey: process.env.SAUCE_ACCESS_KEY,
+        noSSLBumpDomains: 'all',
+        extendedDebugging: !isMacOS14OrHigher,
+        screenResolution: '1920x1440',
+      },
+    },
+  };
 };
 
-module.exports = config;
+module.exports = getConfig;

@@ -69,29 +69,29 @@ Browser demo applications are located in the `app` folder. Current demos are:
 To run a specific demo application use:
 
 ```
-npm run start --app=<app>
+APP=<app> npm run start
 ```
 
 For example,
 1. To run the `meetingV2` demo, run:
     ```
-    npm run start --app=meetingV2
+    APP=meetingV2 npm run start
     ```
 2. To run the `meetingReadinessChecker` demo, run:
     ```
-    npm run start --app=meetingReadinessChecker
+    APP=meetingReadinessChecker npm run start
     ```
 3. To run the `messagingSession` demo, run:
     ```
-    npm run start --app=messagingSession
+    APP=messagingSession npm run start
     ```
 
-If you don't specify the `--app` option, it will run the `meetingV2` demo.
+If you don't specify the `APP` variable, it will run the `meetingV2` demo.
 
 After running `start` the first time, you can speed things up on subsequent iterations by using `start:fast`, e.g.
 
 ```
-npm run start:fast (--app=<app>)
+APP=<app> npm run start:fast
 ```
 
 ### Providing a custom application metadata

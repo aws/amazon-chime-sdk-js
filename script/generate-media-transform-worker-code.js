@@ -48,6 +48,13 @@ function runCommandWithLogs(command) {
   }
 }
 
+// If the output directory was cleaned but the tsbuildinfo persists, tsc --build
+// will incorrectly skip compilation. Delete the tsbuildinfo in that case.
+const tsBuildInfoPath = `${configDir}/tsconfig.mediatransformworker.tsbuildinfo`;
+if (!fs.existsSync('./build/mediatransformworker') && fs.existsSync(tsBuildInfoPath)) {
+  fs.unlinkSync(tsBuildInfoPath);
+}
+
 // Transpile media transform worker TypeScript files.
 // Note: prebuild runs via npm lifecycle before build, so node_modules is already available
 let tscPath = path.resolve(`${execSync('npm root').toString().trim()}/.bin/tsc`);

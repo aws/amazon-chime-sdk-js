@@ -37,8 +37,9 @@ class SdkBaseTest {
     for (let i = 0; i < urlParams.length; i++) {
       if (i === 0) {
         this.url = this.url.concat(`?${urlParams[i]}`);
+      } else {
+        this.url = this.url.concat(`&${urlParams[i]}`);
       }
-      this.url = this.url.concat(`&${urlParams[i]}`);
     }
   }
 }

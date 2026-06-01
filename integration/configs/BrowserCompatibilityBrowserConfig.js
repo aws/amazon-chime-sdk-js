@@ -60,10 +60,20 @@ const browserCompatibilityConfig = [
         "platform": "WINDOWS"
     },
     {
-        "browserName": "safari",
-        "browserVersion": "latest",
-        "platform": "MAC"
-    }
+        "browserName": "chrome",
+        "browserVersion": "beta",
+        "platform": "WINDOWS"
+    },
+    {
+        "browserName": "firefox",
+        "browserVersion": "beta",
+        "platform": "WINDOWS"
+    },
+    // {
+    //     "browserName": "safari",
+    //     "browserVersion": "latest",
+    //     "platform": "MAC"
+    // }
 ];
 
 module.exports = browserCompatibilityConfig;

@@ -43,9 +43,9 @@ function determineSessionCount(client, logger) {
 const getPlatformName = (platform) => {
   switch (platform) {
     case 'MAC':
-      return 'macOS 13';
+      return 'macOS 26';
     case 'WINDOWS':
-      return 'Windows 10';
+      return 'Windows 11';
     case 'LINUX':
       return 'Linux Beta';
     case 'IOS':

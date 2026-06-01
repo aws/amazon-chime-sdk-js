@@ -75,9 +75,10 @@ export SAUCE_USERNAME=<Sauce Labs account username>
 export SAUCE_ACCESS_KEY=<Sauce Labs access key>
 ```
 
+#### Option 1: Using a deployed serverless demo (no tunnel required)
 Sauce Labs will open a browser and load a test url. The following command requires the [Chime SDK serverless demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) deployed in your AWS account. If you haven't already, follow the [Chime SDK serverless demo instruction](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) to deploy the demo. You can set the demo url as an environment variable with the following command:
 ```bash
-export TEST_URL=<Chime SDK for JavaScript serverelss demo URL>
+export TEST_URL=<Chime SDK for JavaScript serverless demo URL>
 ```
 
 The following command can be used to run browser compatibility tests with default settings on Sauce Labs:
@@ -85,6 +86,38 @@ The following command can be used to run browser compatibility tests with defaul
 ```bash
 npm run test -- --test-name AudioTest --host saucelabs --test-type browser-compatibility
 ```
+
+#### Option 2: Using a local Sauce Connect tunnel
+If you want to test against the local demo server (served on `127.0.0.1:8080`), you need to set up a Sauce Connect tunnel so that SauceLabs browsers can reach your local machine.
+
+1. Install Sauce Connect:
+```bash
+brew install sauce-connect
+```
+
+2. Start the tunnel in a separate terminal:
+```bash
+export SAUCE_USERNAME=<Sauce Labs account username>
+export SAUCE_ACCESS_KEY=<Sauce Labs access key>
+export JOB_ID=$(uuidgen)
+
+sc run --username $SAUCE_USERNAME --access-key $SAUCE_ACCESS_KEY --tunnel-name $JOB_ID --tls-passthrough-domains "all" --proxy-localhost allow
+```
+
+- `--tls-passthrough-domains "all"` prevents SauceLabs from intercepting SSL traffic, which is important for WebRTC.
+- `--proxy-localhost allow` permits the tunnel to forward requests to `127.0.0.1` on your machine.
+
+3. In another terminal, make sure `TEST_URL` is **not** set (so the test runner starts the local demo), then run the test:
+```bash
+unset TEST_URL
+export SAUCE_USERNAME=<Sauce Labs account username>
+export SAUCE_ACCESS_KEY=<Sauce Labs access key>
+export JOB_ID=<same UUID used when starting the tunnel>
+
+npm run test -- --test-name AudioTest --host saucelabs --test-type browser-compatibility
+```
+
+The `JOB_ID` must match the `--tunnel-name` used when starting `sc` — this is how SauceLabs routes browser traffic through your tunnel.
 
 There are scenarios where a test might not be compatible with one of the browsers or OS. In that case, the user can provide a custom config with an updated clients array. `sample_test.config.json` is a sample test config already provided. 
 The following command can be used to run a browser compatibility test with a custom config:
