@@ -12,15 +12,8 @@ import {
   AudioProfile,
   AudioVideoFacade,
   AudioVideoObserver,
-  BackgroundBlurProcessor,
-  BackgroundBlurVideoFrameProcessor,
-  BackgroundBlurVideoFrameProcessorObserver,
-  BackgroundFilterPaths,
-  BackgroundFilterSpec,
-  BackgroundReplacementOptions,
-  BackgroundReplacementProcessor,
-  BackgroundReplacementVideoFrameProcessor,
-  BackgroundReplacementVideoFrameProcessorObserver,
+  BackgroundSegmentationBlurStrength as BlurStrength,
+  BackgroundSegmentationVideoFrameProcessorConfig,
   ClientMetricReport,
   ConsoleLogger,
   ContentShareObserver,
@@ -45,16 +38,18 @@ import {
   isDestroyable,
   Logger,
   LogLevel,
+  BackgroundSegmentationVideoFrameProcessor,
+  ModelType,
   MeetingEventsClientConfiguration,
   MeetingSession,
   MeetingSessionConfiguration,
   MeetingSessionCredentials,
   MeetingSessionStatus,
   MeetingSessionVideoAvailability,
-  ModelSpecBuilder,
   MultiLogger,
   NoOpVideoFrameProcessor,
   POSTLogger,
+  ProcessorEffect,
   RemovableAnalyserNode,
   SimulcastLayers,
   Transcript,
@@ -67,8 +62,6 @@ import {
   VideoCodecCapability,
   VideoDownlinkObserver,
   VideoFrameProcessor,
-  VideoFxConfig,
-  VideoFxProcessor,
   VideoInputDevice,
   VideoPriorityBasedPolicy,
   VideoQualitySettings,
@@ -85,11 +78,9 @@ import TestSound from './audio/TestSound';
 import MeetingToast from './util/MeetingToast';
 import VideoTileCollection from './video/VideoTileCollection';
 import RemoteVideoManager from './video/RemoteVideoManager';
+import { BackgroundImageEncoding } from './util/BackgroundImage';
 import CircularCut from './video/filters/CircularCut';
 import EmojifyVideoFrameProcessor from './video/filters/EmojifyVideoFrameProcessor';
-import MediaPipeBodySegmentationProcessor, {
-  SegmentationOption,
-} from './video/filters/MediaPipeBodySegmentationProcessor';
 import ResizeProcessor from './video/filters/ResizeProcessor';
 import SyntheticVideoDeviceFactory from './video/SyntheticVideoDeviceFactory';
 import { getPOSTLogger } from './util/MeetingLogger';
@@ -100,7 +91,6 @@ import {
   SynthesizedStereoMediaStreamProvider,
 } from './util/mediastreamprovider/DemoMediaStreamProviders';
 
-import { BackgroundImageEncoding } from './util/BackgroundImage';
 import markdownit from 'markdown-it';
 
 MeetingToast; // Make sure this file is included in the bundle
@@ -168,53 +158,37 @@ function getVoiceFocusSpec(joinInfo: any): VoiceFocusSpec {
 
 const MAX_VOICE_FOCUS_COMPLEXITY: VoiceFocusModelComplexity | undefined = undefined;
 
-const BACKGROUND_BLUR_CDN = search.get('blurCDN') || undefined;
-const BACKGROUND_BLUR_ASSET_GROUP = search.get('blurAssetGroup') || undefined;
-const BACKGROUND_BLUR_REVISION_ID = search.get('blurRevisionID') || undefined;
-
-const BACKGROUND_BLUR_PATHS: BackgroundFilterPaths = BACKGROUND_BLUR_CDN && {
-  worker: `${BACKGROUND_BLUR_CDN}/bgblur/workers/worker.js`,
-  wasm: `${BACKGROUND_BLUR_CDN}/bgblur/wasm/_cwt-wasm.wasm`,
-  simd: `${BACKGROUND_BLUR_CDN}/bgblur/wasm/_cwt-wasm-simd.wasm`,
-};
-const BACKGROUND_BLUR_MODEL = BACKGROUND_BLUR_CDN && ModelSpecBuilder.builder()
-    .withSelfieSegmentationDefaults()
-    .withPath(`${BACKGROUND_BLUR_CDN}/bgblur/models/selfie_segmentation_landscape.tflite`)
-    .build();
-const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BLUR_REVISION_ID) && {
-  assetGroup: BACKGROUND_BLUR_ASSET_GROUP,
-  revisionID: BACKGROUND_BLUR_REVISION_ID,
-}
+const V3_FILTER_BLUE = 'BackgroundSegmentation - (Blue)' as const;
+const V3_FILTER_BLUR_LOW = 'BackgroundSegmentation - (Blur Low)' as const;
+const V3_FILTER_BLUR_MEDIUM = 'BackgroundSegmentation - (Blur Medium)' as const;
+const V3_FILTER_BLUR_HIGH = 'BackgroundSegmentation - (Blur High)' as const;
+const V3_FILTER_REPLACEMENT = 'BackgroundSegmentation - (Replacement)' as const;
+const V3_FILTER_MULTICLASS_BLUE = 'BackgroundSegmentation - (Multiclass-Blue)' as const;
+const V3_FILTER_MULTICLASS_BLUR_LOW = 'BackgroundSegmentation - (Multiclass-Blur Low)' as const;
+const V3_FILTER_MULTICLASS_BLUR_MEDIUM = 'BackgroundSegmentation - (Multiclass-Blur Medium)' as const;
+const V3_FILTER_MULTICLASS_BLUR_HIGH = 'BackgroundSegmentation - (Multiclass-Blur High)' as const;
+const V3_FILTER_MULTICLASS_REPLACEMENT = 'BackgroundSegmentation - (Multiclass-Replacement)' as const;
 
 type VideoFilterName = 'Emojify' | 'NoOp' | 'Resize (9/16)' | 'CircularCut' |
- 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 
- 'Background Blur 40% CPU' | 'Background Replacement' | 'None' | 'Background Blur 2.0 - Low' |
- 'Background Blur 2.0 - Medium' | 'Background Blur 2.0 - High' | 'Background Replacement 2.0 - (Beach)' |
- 'Background Replacement 2.0 - (Blue)' | 'Background Replacement 2.0 - (Default)' |
-  'MediaPipeBodySegmentation - (Beach)' | 'MediaPipeBodySegmentation - (Blue)' |
-  'MediaPipeBodySegmentation - (Blur)';
+ 'None' | typeof V3_FILTER_BLUE | typeof V3_FILTER_BLUR_LOW | typeof V3_FILTER_BLUR_MEDIUM |
+  typeof V3_FILTER_BLUR_HIGH | typeof V3_FILTER_REPLACEMENT |
+  typeof V3_FILTER_MULTICLASS_BLUE | typeof V3_FILTER_MULTICLASS_BLUR_LOW |
+  typeof V3_FILTER_MULTICLASS_BLUR_MEDIUM | typeof V3_FILTER_MULTICLASS_BLUR_HIGH |
+  typeof V3_FILTER_MULTICLASS_REPLACEMENT;
 
-const BACKGROUND_BLUR_V1_LIST: VideoFilterName[] = [
-  'Background Blur 10% CPU',
-  'Background Blur 20% CPU',
-  'Background Blur 30% CPU',
-  'Background Blur 40% CPU',
+
+const BACKGROUND_FILTER_V3_LIST: VideoFilterName[] = [
+  V3_FILTER_BLUE,
+  V3_FILTER_BLUR_LOW,
+  V3_FILTER_BLUR_MEDIUM,
+  V3_FILTER_BLUR_HIGH,
+  V3_FILTER_REPLACEMENT,
+  V3_FILTER_MULTICLASS_BLUE,
+  V3_FILTER_MULTICLASS_BLUR_LOW,
+  V3_FILTER_MULTICLASS_BLUR_MEDIUM,
+  V3_FILTER_MULTICLASS_BLUR_HIGH,
+  V3_FILTER_MULTICLASS_REPLACEMENT,
 ];
-
-const BACKGROUND_REPLACEMENT_V1_LIST: VideoFilterName[] = [
-  'Background Replacement',
-];
-
-
-const BACKGROUND_FILTER_V2_LIST: VideoFilterName[] = [
-  'Background Blur 2.0 - Low',
-  'Background Blur 2.0 - Medium',
-  'Background Blur 2.0 - High',
-  'Background Replacement 2.0 - (Beach)',
-  'Background Replacement 2.0 - (Blue)',
-  'Background Replacement 2.0 - (Default)',
-];
-
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'NoOp', 'Resize (9/16)', 'CircularCut'];
 
@@ -285,8 +259,6 @@ export class DemoMeetingApp
   volumeIndicatorHandler: (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
   canUnmuteLocalAudioHandler: (undefined | ((canUnmute: boolean) => void)) = undefined;
   muteAndUnmuteLocalAudioHandler: (undefined | ((muted: boolean) => void)) = undefined;
-  blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver) = undefined;
-  replacementObserver: (undefined | BackgroundReplacementVideoFrameProcessorObserver) = undefined;
 
   showActiveSpeakerScores = false;
   meeting: string | null = null;
@@ -362,10 +334,6 @@ export class DemoMeetingApp
   joinMuted = false;
   voiceFocusIsActive = false;
 
-  supportsBackgroundBlur = false;
-  supportsBackgroundReplacement = false;
-  supportsVideoFx = false;
-
   enableLiveTranscription = false;
   noWordSeparatorForTranscription = false;
   enableMaxContentShare = false;
@@ -392,9 +360,6 @@ export class DemoMeetingApp
   disablePeriodicKeyframeRequestOnContentSender = false;
   allowAttendeeCapabilities = false;
 
-  blurProcessor: BackgroundBlurProcessor | undefined;
-  replacementProcessor: BackgroundReplacementProcessor | undefined;
-  replacementOptions: BackgroundReplacementOptions | undefined;
 
   // This is an extremely minimal reactive programming approach: these elements
   // will be updated when the Amazon Voice Focus display state changes.
@@ -406,21 +371,10 @@ export class DemoMeetingApp
   chosenVideoTransformDevice: DefaultVideoTransformDevice;
   chosenVideoFilter: VideoFilterName = 'None';
   selectedVideoFilterItem: VideoFilterName = 'None';
+  previousVideoFilterItem: VideoFilterName = 'None';
+  isVideoFilterSwitching: boolean = false;
 
-  DEFAULT_VIDEO_FX_CONFIG: VideoFxConfig = {
-    backgroundBlur: {
-      isEnabled: true,
-      strength: 'high',
-    },
-    backgroundReplacement: {
-      isEnabled: false,
-      backgroundImageURL: null,
-      defaultColor: 'black',
-    }
-  }
-  videoFxProcessor: VideoFxProcessor | undefined;
-  videoFxConfig: VideoFxConfig = this.DEFAULT_VIDEO_FX_CONFIG;
-
+  backgroundSegmentationProcessor: BackgroundSegmentationVideoFrameProcessor | undefined;
   meetingLogger: Logger | undefined = undefined;
 
   // `halt` allows us to stop and measure memory leaks and
@@ -577,70 +531,6 @@ export class DemoMeetingApp
         logger.warn('[DEMO] Does not support Amazon Voice Focus.');
       }
       this.setupAddVoiceFocusUI();
-    }
-  }
-
-  async initBackgroundBlur(): Promise<void> {
-    try {
-      this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
-    }
-    catch (e) {
-      this.log(`[DEMO] Does not support background blur: ${e.message}`);
-      this.supportsBackgroundBlur = false;
-    }
-  }
-  
-  /**
-   * Determine if the videoFxProcessor is supported in current environment
-   */
-  async resolveSupportsVideoFX(): Promise<void> {
-    const logger = new ConsoleLogger('SDK', this.logLevel);
-    try {
-      this.supportsVideoFx = await VideoFxProcessor.isSupported(logger)
-    } catch (e) {
-      this.log(`[DEMO] Does not support background blur/background replacement v2: ${e.message}`);
-      this.supportsVideoFx = false;
-    }
-  }
-
-  async createReplacementImageBlob(startColor: string, endColor: string): Promise<Blob> {
-    const canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 500;
-    const ctx = canvas.getContext('2d');
-    const grd = ctx.createLinearGradient(0, 0, 250, 0);
-    grd.addColorStop(0, startColor);
-    grd.addColorStop(1, endColor);
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, 500, 500);
-    const blob = await new Promise<Blob>(resolve => {
-      canvas.toBlob(resolve);
-    });
-    return blob;
-  }
-
-  /**
-   * The image blob in this demo is created by generating an image
-   * from a canvas, but another common scenario would be to provide
-   * an image blob from fetching a URL.
-   *   const image = await fetch('https://someimage.jpeg');
-   *   const imageBlob = await image.blob();
-   */
-  async getBackgroundReplacementOptions(): Promise<BackgroundReplacementOptions> {
-    if (!this.replacementOptions) {
-      const imageBlob = await this.createReplacementImageBlob('#000428', '#004e92');
-      this.replacementOptions = { imageBlob };
-    }
-    return this.replacementOptions;
-  }
-
-  async initBackgroundReplacement(): Promise<void> {
-    try {
-      this.supportsBackgroundReplacement = await BackgroundReplacementVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec(), await this.getBackgroundReplacementOptions());
-    }
-    catch (e) {
-      this.log(`[DEMO] Does not support background replacement: ${e.message}`);
-      this.supportsBackgroundReplacement = false;
     }
   }
 
@@ -836,11 +726,34 @@ export class DemoMeetingApp
       document.getElementById('video-input-filter-container').style.display = 'none';
     }
 
-    let videoInputFilter = document.getElementById('video-input-filter') as HTMLInputElement;
+    let videoInputFilter = document.getElementById('video-input-filter') as HTMLSelectElement;
+    let lastVideoFilterValue = videoInputFilter.value;
     videoInputFilter.addEventListener('change', async () => {
-      this.selectedVideoFilterItem = <VideoFilterName>videoInputFilter.value;
-      this.log(`Clicking video filter: ${this.selectedVideoFilterItem}`);
-      await this.openVideoInputFromSelection(this.selectedVideoInput, true)
+      if (this.isVideoFilterSwitching) {
+        videoInputFilter.value = lastVideoFilterValue;
+        this.log(`Filter switch already in progress, ignoring`);
+        return;
+      }
+      this.isVideoFilterSwitching = true;
+      try {
+        lastVideoFilterValue = videoInputFilter.value;
+        this.selectedVideoFilterItem = <VideoFilterName>videoInputFilter.value;
+        this.log(`Clicking video filter: ${this.selectedVideoFilterItem}`);
+        this.chosenVideoFilter = 'None';
+        await this.openVideoInputFromSelection(this.selectedVideoInput, true);
+      } finally {
+        this.isVideoFilterSwitching = false;
+      }
+    });
+
+    // Force change event to fire even when re-selecting the same filter.
+    videoInputFilter.addEventListener('focus', () => {
+      videoInputFilter.value = '';
+    });
+    videoInputFilter.addEventListener('blur', () => {
+      if (videoInputFilter.value === '') {
+        videoInputFilter.value = lastVideoFilterValue;
+      }
     });
 
     document.getElementById('copy-sip-uri').addEventListener('click', () => {
@@ -2721,19 +2634,29 @@ export class DemoMeetingApp
   }
 
   private async selectVideoFilterByName(name: VideoFilterName): Promise<void> {
-    this.selectedVideoFilterItem = name;
-    this.log(`clicking video filter ${this.selectedVideoFilterItem}`);
-    this.toggleButton(
-        'button-video-filter',
-        this.selectedVideoFilterItem === 'None' ? 'off' : 'on'
-    );
-    if (this.isButtonOn('button-camera')) {
-      try {
-        await this.openVideoInputFromSelection(this.selectedVideoInput, false);
-      } catch (err) {
-        fatal(err);
-        this.log('Failed to choose VideoTransformDevice', err);
+    if (this.isVideoFilterSwitching) {
+      this.log(`Filter switch already in progress, ignoring request for ${name}`);
+      return;
+    }
+    this.isVideoFilterSwitching = true;
+    try {
+      this.selectedVideoFilterItem = name;
+      this.log(`clicking video filter ${this.selectedVideoFilterItem}`);
+      this.toggleButton(
+          'button-video-filter',
+          this.selectedVideoFilterItem === 'None' ? 'off' : 'on'
+      );
+      if (this.isButtonOn('button-camera')) {
+        try {
+          this.chosenVideoFilter = 'None';
+          await this.openVideoInputFromSelection(this.selectedVideoInput, false);
+        } catch (err) {
+          fatal(err);
+          this.log('Failed to choose VideoTransformDevice', err);
+        }
       }
+    } finally {
+      this.isVideoFilterSwitching = false;
     }
   }
 
@@ -2741,16 +2664,10 @@ export class DemoMeetingApp
     this.log('Clearing filter variables and stopping the video transform device');
     this.chosenVideoFilter = 'None';
     this.selectedVideoFilterItem = 'None';
+    this.previousVideoFilterItem = 'None';
     this.chosenVideoTransformDevice?.stop();
   }
 
-  private getBackgroundBlurSpec(): BackgroundFilterSpec {
-    return {
-      paths: BACKGROUND_BLUR_PATHS,
-      model: BACKGROUND_BLUR_MODEL,
-      ...BACKGROUND_BLUR_ASSET_SPEC
-    };
-  }
 
   private async populateVideoFilterInputList(isPreviewWindow: boolean): Promise<void> {
     const genericName = 'Filter';
@@ -2758,27 +2675,9 @@ export class DemoMeetingApp
 
     if (this.areVideoFiltersSupported()) {
       filters = filters.concat(VIDEO_FILTERS);
-
-      if (this.supportsBackgroundBlur) {
-        filters.push('Background Blur 10% CPU');
-        filters.push('Background Blur 20% CPU');
-        filters.push('Background Blur 30% CPU');
-        filters.push('Background Blur 40% CPU');
-      }
-
-      if (this.supportsBackgroundReplacement) {
-        filters.push('Background Replacement');
-      }
-
-      // Add VideoFx functionality/options if the processor is supported
-      if (this.supportsVideoFx) {
-        BACKGROUND_FILTER_V2_LIST.map(effectName => filters.push(effectName));
-      }
-
-      filters.push('MediaPipeBodySegmentation - (Beach)');
-      filters.push('MediaPipeBodySegmentation - (Blue)');
-      filters.push('MediaPipeBodySegmentation - (Blur)');
     }
+
+    BACKGROUND_FILTER_V3_LIST.map(effectName => filters.push(effectName));
 
     this.populateFilterList(isPreviewWindow, genericName, filters);
   }
@@ -3355,106 +3254,86 @@ export class DemoMeetingApp
       return new NoOpVideoFrameProcessor();
     }
 
-    if (videoFilter === 'MediaPipeBodySegmentation - (Beach)') {
-      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BEACH);
-    }
-
-    if (videoFilter === 'MediaPipeBodySegmentation - (Blue)') {
-      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BLUE);
-    }
-
-    if (videoFilter === 'MediaPipeBodySegmentation - (Blur)') {
-      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BLUR);
-    }
-
     if (videoFilter === 'Resize (9/16)') {
       return new ResizeProcessor(0.5625);  // 16/9 Aspect Ratio
     }
 
-    if (BACKGROUND_BLUR_V1_LIST.includes(videoFilter as VideoFilterName)) {
-      // In the event that frames start being dropped we should take some action to remove the background blur.
-      this.blurObserver = {
-        filterFrameDurationHigh: (event) => {
-          this.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
-        },
-        filterCPUUtilizationHigh: (event) => {
-          this.log(`background filter CPU utilization high: ${event.cpuUtilization}%`);
-        }
-      };
 
-      const cpuUtilization: number = Number(videoFilter.match(/([0-9]{2})%/)[1]);
-      this.blurProcessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec(), { filterCPUUtilization: cpuUtilization });
-      this.blurProcessor.addObserver(this.blurObserver);
-      return this.blurProcessor;
-    }
+    // Create BackgroundSegmentationProcessor
+    if (BACKGROUND_FILTER_V3_LIST.includes(videoFilter as VideoFilterName)) {
+      if (this.backgroundSegmentationProcessor) {
+        await this.backgroundSegmentationProcessor.destroy();
+        this.backgroundSegmentationProcessor = undefined;
+      }
 
-    if (BACKGROUND_REPLACEMENT_V1_LIST.includes(videoFilter as VideoFilterName)) {
-      // In the event that frames start being dropped we should take some action to remove the background replacement.
-      this.replacementObserver = {
-        filterFrameDurationHigh: (event) => {
-          this.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
-        }
-      };
-
-      this.replacementProcessor = await BackgroundReplacementVideoFrameProcessor.create(this.getBackgroundBlurSpec(), await this.getBackgroundReplacementOptions());
-      this.replacementProcessor.addObserver(this.replacementObserver);
-      return this.replacementProcessor;
-    }
-    
-    // Create a VideoFxProcessor
-    if (BACKGROUND_FILTER_V2_LIST.includes(videoFilter as VideoFilterName)) {
-      const defaultBudgetPerFrame: number = 50;
-      this.updateFxConfig(videoFilter);
+      const { config, modelType } = this.getV3FilterConfig(videoFilter);
       try {
-        this.videoFxProcessor = await VideoFxProcessor.create(this.meetingLogger, this.videoFxConfig, defaultBudgetPerFrame);
-        return this.videoFxProcessor;
+        this.backgroundSegmentationProcessor = await BackgroundSegmentationVideoFrameProcessor.create(this.meetingLogger, config, modelType);
+        return this.backgroundSegmentationProcessor;
       } catch (error) {
-        this.meetingLogger.warn(error.toString());
+        this.meetingLogger.warn(`BackgroundSegmentationVideoFrameProcessor creation failed: ${error.toString()}`);
         return new NoOpVideoFrameProcessor();
       }
     }
+
     return null;
   }
 
+  private updateBackgroundSegmentationConfig(videoFilter: string): void {
+    const { config, modelType } = this.getV3FilterConfig(videoFilter);
+    this.backgroundSegmentationProcessor.setModelType(modelType);
+    this.backgroundSegmentationProcessor.setConfig(config);
+  }
+
   /**
-   * Update this.videoFxConfig to match the corresponding configuration specified by the videoFilter.
+   * Maps V3 filter names to their processor configurations
    * @param videoFilter 
    */
-  private updateFxConfig(videoFilter: string): void {
-    this.videoFxConfig.backgroundBlur.isEnabled = (
-      videoFilter === 'Background Blur 2.0 - Low' ||
-      videoFilter === 'Background Blur 2.0 - Medium' ||
-      videoFilter === 'Background Blur 2.0 - High'
-    )
+  private getV3FilterConfig(videoFilter: string): { config: BackgroundSegmentationVideoFrameProcessorConfig; modelType: ModelType } {
+    const isMulticlass = videoFilter.includes('Multiclass');
+    const modelType = isMulticlass ? ModelType.SELFIE_MULTICLASS : ModelType.SELFIE_GENERAL;
 
-    this.videoFxConfig.backgroundReplacement.isEnabled = (
-      videoFilter === 'Background Replacement 2.0 - (Beach)' ||
-      videoFilter === 'Background Replacement 2.0 - (Default)' ||
-      videoFilter === 'Background Replacement 2.0 - (Blue)'
-    )
-    
     switch(videoFilter) {
-      case 'Background Blur 2.0 - Low':
-        this.videoFxConfig.backgroundBlur.strength = 'low';
-        break;
-      case 'Background Blur 2.0 - Medium':
-        this.videoFxConfig.backgroundBlur.strength = 'medium';
-        break;
-      case 'Background Blur 2.0 - High':
-        this.videoFxConfig.backgroundBlur.strength = 'high';
-        break;
-      case 'Background Replacement 2.0 - (Beach)':
-        this.videoFxConfig.backgroundReplacement.backgroundImageURL = BackgroundImageEncoding();
-        this.videoFxConfig.backgroundReplacement.defaultColor = null;
-        break;
-      case 'Background Replacement 2.0 - (Default)':
-        this.videoFxConfig.backgroundReplacement.backgroundImageURL = null;
-        this.videoFxConfig.backgroundReplacement.defaultColor = '#000000';
-        break;
-      case 'Background Replacement 2.0 - (Blue)':
-        this.videoFxConfig.backgroundReplacement.backgroundImageURL = null;
-        this.videoFxConfig.backgroundReplacement.defaultColor = '#26A4FF';
-        break;
+      case V3_FILTER_BLUR_LOW:
+      case V3_FILTER_MULTICLASS_BLUR_LOW:
+        return {
+          config: { type: ProcessorEffect.BLUR, blurStrength: BlurStrength.LOW },
+          modelType
+        };
+
+      case V3_FILTER_BLUR_MEDIUM:
+      case V3_FILTER_MULTICLASS_BLUR_MEDIUM:
+        return {
+          config: { type: ProcessorEffect.BLUR, blurStrength: BlurStrength.MEDIUM },
+          modelType
+        };
+
+      case V3_FILTER_BLUR_HIGH:
+      case V3_FILTER_MULTICLASS_BLUR_HIGH:
+        return {
+          config: { type: ProcessorEffect.BLUR, blurStrength: BlurStrength.HIGH },
+          modelType
+        };
+      
+      case V3_FILTER_REPLACEMENT:
+      case V3_FILTER_MULTICLASS_REPLACEMENT:
+        return {
+          config: { 
+            type: ProcessorEffect.IMAGE_REPLACEMENT, 
+            replacementImageURL: BackgroundImageEncoding()
+          },
+          modelType
+        };
+      
+      case V3_FILTER_BLUE:
+      case V3_FILTER_MULTICLASS_BLUE:
+        return {
+          config: { type: ProcessorEffect.COLOR_REPLACEMENT, replacementColor: '#0000ff' },
+          modelType
+        };
+      
+      default:
+        throw new Error(`Unknown V3 filter: ${videoFilter}`);
     }
   }
 
@@ -3476,12 +3355,28 @@ export class DemoMeetingApp
       return this.chosenVideoTransformDevice;
     }
 
+    // If switching between background segmentation filters, reuse the existing processor
+    if (this.backgroundSegmentationProcessor
+        && BACKGROUND_FILTER_V3_LIST.includes(this.selectedVideoFilterItem)
+        && BACKGROUND_FILTER_V3_LIST.includes(this.previousVideoFilterItem)
+        && this.chosenVideoTransformDevice) {
+      this.updateBackgroundSegmentationConfig(this.selectedVideoFilterItem);
+      this.chosenVideoFilter = this.selectedVideoFilterItem;
+      this.previousVideoFilterItem = this.selectedVideoFilterItem;
+      // Swap inner device if needed
+      if (this.chosenVideoTransformDevice.getInnerDevice() !== innerDevice) {
+        this.chosenVideoTransformDevice = this.chosenVideoTransformDevice.chooseNewInnerDevice(innerDevice);
+      }
+      return this.chosenVideoTransformDevice;
+    }
+
     // A different filter is selected so we must modify our processor
     if (this.chosenVideoTransformDevice) {
       await this.chosenVideoTransformDevice.stop();
     }
     const proc = await this.videoFilterToProcessor(this.selectedVideoFilterItem);
     this.chosenVideoFilter = this.selectedVideoFilterItem;
+    this.previousVideoFilterItem = this.selectedVideoFilterItem;
     this.chosenVideoTransformDevice = new DefaultVideoTransformDevice(
         this.meetingLogger,
         innerDevice,
@@ -3745,12 +3640,6 @@ export class DemoMeetingApp
       this.audioVideo.unbindAudioElement();
       await this.deviceController.destroy();
 
-      // remove blur event observer
-      this.blurProcessor?.removeObserver(this.blurObserver);
-
-      // remove replacement event observer
-      this.replacementProcessor?.removeObserver(this.replacementObserver);
-
       // Stop any video processor.
       await this.chosenVideoTransformDevice?.stop();
 
@@ -3767,21 +3656,15 @@ export class DemoMeetingApp
         this.eventReporter?.destroy();
       }
 
-      await this.blurProcessor?.destroy();
-      await this.replacementProcessor?.destroy();
-
       this.audioVideo = undefined;
       this.voiceFocusDevice = undefined;
       this.meetingSession = undefined;
       this.activeSpeakerHandler = undefined;
       this.currentAudioInputDevice = undefined;
       this.eventReporter = undefined;
-      this.blurProcessor = undefined;
-      this.replacementProcessor = undefined;
 
-      // Cleanup VideoFxProcessor
-      this.videoFxProcessor?.destroy();
-      this.videoFxProcessor = undefined;
+      await this.backgroundSegmentationProcessor?.destroy();
+      this.backgroundSegmentationProcessor = undefined;
     };
 
     // sessionStatus has a trailing period
@@ -4031,10 +3914,7 @@ export class DemoMeetingApp
             await this.skipDeviceSelection(false);
             return;
           }
-          await this.initBackgroundBlur();
-          await this.initBackgroundReplacement();
           await this.initAttendeeCapabilityFeature();
-          await this.resolveSupportsVideoFX();
           await this.populateAllDeviceLists();
           await this.populateVideoFilterInputList(false);
           await this.populateVideoFilterInputList(true);

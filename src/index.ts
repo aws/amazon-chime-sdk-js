@@ -36,6 +36,10 @@ import BackgroundReplacementOptions from './backgroundreplacementprocessor/Backg
 import BackgroundReplacementProcessor from './backgroundreplacementprocessor/BackgroundReplacementProcessor';
 import BackgroundReplacementVideoFrameProcessor from './backgroundreplacementprocessor/BackgroundReplacementVideoFrameProcessor';
 import BackgroundReplacementVideoFrameProcessorObserver from './backgroundreplacementprocessor/BackgroundReplacementVideoFrameProcessorObserver';
+import BackgroundSegmentationAssetLoader from './backgroundsegmentation/BackgroundSegmentationAssetLoader';
+import BackgroundSegmentationCompatibilityChecker from './backgroundsegmentation/BackgroundSegmentationCompatibilityChecker';
+import BackgroundSegmentationMetrics from './backgroundsegmentation/BackgroundSegmentationMetrics';
+import BackgroundSegmentationVideoFrameProcessor from './backgroundsegmentation/BackgroundSegmentationVideoFrameProcessor';
 import Backoff from './backoff/Backoff';
 import BackoffFactory from './backoff/BackoffFactory';
 import BaseConnectionHealthPolicy from './connectionhealthpolicy/BaseConnectionHealthPolicy';
@@ -352,6 +356,10 @@ import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
 import ZLIBTextCompressor from './sdp/ZLIBTextCompressor';
+import { BackgroundSegmentationCompatibilityResult } from './backgroundsegmentation/BackgroundSegmentationCompatibilityChecker';
+import { BackgroundSegmentationMetricReport } from './backgroundsegmentation/BackgroundSegmentationMetrics';
+import { BackgroundSegmentationMetricsObserver } from './backgroundsegmentation/BackgroundSegmentationMetrics';
+import { BackgroundSegmentationVideoFrameProcessorConfig, BlurStrength as BackgroundSegmentationBlurStrength, ModelType, ProcessorEffect } from './backgroundsegmentation/BackgroundSegmentationConstants';
 import { MeetingSessionSignalingTiming, MeetingSessionRemoteAudioTiming, MeetingSessionLocalAudioTiming, MeetingSessionLocalVideoTiming, MeetingSessionRemoteVideoTiming, MeetingSessionTimingObserver } from './meetingsessiontiming/MeetingSessionTiming';
 import { MutableVideoPreferences } from './videodownlinkbandwidthpolicy/VideoPreferences';
 import { Some, None, Maybe, MaybeProvider, Eq, PartialOrd } from './utils/Types';
@@ -398,6 +406,15 @@ export {
   BackgroundReplacementProcessor,
   BackgroundReplacementVideoFrameProcessor,
   BackgroundReplacementVideoFrameProcessorObserver,
+  BackgroundSegmentationAssetLoader,
+  BackgroundSegmentationBlurStrength,
+  BackgroundSegmentationCompatibilityChecker,
+  BackgroundSegmentationCompatibilityResult,
+  BackgroundSegmentationMetricReport,
+  BackgroundSegmentationMetrics,
+  BackgroundSegmentationMetricsObserver,
+  BackgroundSegmentationVideoFrameProcessor,
+  BackgroundSegmentationVideoFrameProcessorConfig,
   Backoff,
   BackoffFactory,
   BaseConnectionHealthPolicy,
@@ -558,6 +575,7 @@ export {
   ModelShape,
   ModelSpec,
   ModelSpecBuilder,
+  ModelType,
   MonitorTask,
   MultiLogger,
   MutableVideoPreferences,
@@ -588,6 +606,7 @@ export {
   PingPongObserver,
   PrefetchOn,
   PrefetchSortBy,
+  ProcessorEffect,
   PromiseQueue,
   PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,

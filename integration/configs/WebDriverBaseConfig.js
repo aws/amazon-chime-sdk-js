@@ -30,6 +30,7 @@ const getConfig = () => {
             ? [
                 '--use-fake-device-for-media-stream',
                 '--use-fake-ui-for-media-stream',
+                '--use-file-for-fake-video-capture=' + require('path').resolve(__dirname, '../fake_stream/output.y4m'),
                 '--headless=new',
                 '--window-size=1920,1080',
                 '--no-sandbox',
@@ -43,6 +44,7 @@ const getConfig = () => {
                 '--use-fake-device-for-media-stream',
                 '--use-fake-ui-for-media-stream',
                 '--disable-local-discovery',
+                '--use-file-for-fake-video-capture=' + require('path').resolve(__dirname, '../fake_stream/output.y4m'),
                 '--window-size=1920,1080',
               ],
       },

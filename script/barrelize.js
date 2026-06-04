@@ -85,6 +85,7 @@ const ignoredTypes = [
   'VideoFxBackgroundReplacementRenderingUnit',
   'VideoFxModelSpec',
   'VideoFxAssetParams',
+  'BackgroundSegmentationConstants',
 
   // Ignore utils
   'Utils',
@@ -152,6 +153,26 @@ walk('src')
     if (typeToImport === 'Destroyable') {
       importStrings.push(`import { isDestroyable } from '${pathToImport}/Destroyable';`);
       exportStrings.push(`isDestroyable`);
+    }
+
+    if (typeToImport === 'BackgroundSegmentationVideoFrameProcessor') {
+      importStrings.push(`import { BackgroundSegmentationVideoFrameProcessorConfig, BlurStrength as BackgroundSegmentationBlurStrength, ModelType, ProcessorEffect } from './backgroundsegmentation/BackgroundSegmentationConstants';`);
+      exportStrings.push(`BackgroundSegmentationVideoFrameProcessorConfig`);
+      exportStrings.push(`BackgroundSegmentationBlurStrength`);
+      exportStrings.push(`ModelType`);
+      exportStrings.push(`ProcessorEffect`);
+    }
+
+    if (typeToImport === 'BackgroundSegmentationCompatibilityChecker') {
+      importStrings.push(`import { BackgroundSegmentationCompatibilityResult } from '${pathToImport}/BackgroundSegmentationCompatibilityChecker';`);
+      exportStrings.push(`BackgroundSegmentationCompatibilityResult`);
+    }
+
+    if (typeToImport === 'BackgroundSegmentationMetrics') {
+      importStrings.push(`import { BackgroundSegmentationMetricsObserver } from '${pathToImport}/BackgroundSegmentationMetrics';`);
+      importStrings.push(`import { BackgroundSegmentationMetricReport } from '${pathToImport}/BackgroundSegmentationMetrics';`);
+      exportStrings.push(`BackgroundSegmentationMetricsObserver`);
+      exportStrings.push(`BackgroundSegmentationMetricReport`);
     }
   });
 

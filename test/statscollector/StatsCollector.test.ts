@@ -1453,4 +1453,35 @@ describe('StatsCollector', () => {
       });
     });
   });
+
+  describe('videoProcessorMetricsDidReceive', () => {
+    it('stores video processor metrics', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      const metrics = {
+        frameRate: 15,
+        processors: [{ averageProcessLatency: 10.5, processorName: 'TestProcessor' }],
+      };
+      statsCollector.videoProcessorMetricsDidReceive(metrics);
+    });
+  });
+
+  describe('backgroundSegmentationMetricsDidReceive', () => {
+    it('stores background segmentation metrics', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.backgroundSegmentationMetricsDidReceive({
+        metricName: 'test',
+        timestamp: Date.now(),
+      });
+    });
+
+    it('drops oldest when max exceeded', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      for (let i = 0; i < 55; i++) {
+        statsCollector.backgroundSegmentationMetricsDidReceive({
+          metricName: `m-${i}`,
+          timestamp: Date.now(),
+        });
+      }
+    });
+  });
 });

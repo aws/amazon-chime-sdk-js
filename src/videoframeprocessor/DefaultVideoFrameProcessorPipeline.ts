@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ModelType } from '../backgroundsegmentation/BackgroundSegmentationConstants';
+import BackgroundSegmentationVideoFrameProcessor from '../backgroundsegmentation/BackgroundSegmentationVideoFrameProcessor';
 import Logger from '../logger/Logger';
+import VideoFxProcessor from '../videofx/VideoFxProcessor';
 import CanvasVideoFrameBuffer from './CanvasVideoFrameBuffer';
 import DefaultVideoFrameProcessorTimer from './DefaultVideoFrameProcessorTimer';
 import VideoFrameBuffer from './VideoFrameBuffer';
@@ -47,12 +50,28 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
   private hasStarted: boolean = false;
   private timer: VideoFrameProcessorTimer;
 
+  // Metrics tracking
+  private processorLatencies: Map<string, number[]> = new Map();
+  private lastMetricsTime: number = 0;
+
+  // Metrics callback
+  private metricsCallback?: (metrics: {
+    frameRate: number;
+    processors: Array<{ averageProcessLatency: number; processorName: string }>;
+  }) => void;
+
   constructor(
     private logger: Logger,
     private stages: VideoFrameProcessor[],
-    timer: VideoFrameProcessorTimer = new DefaultVideoFrameProcessorTimer()
+    timer: VideoFrameProcessorTimer = new DefaultVideoFrameProcessorTimer(),
+    metricsCallback?: (metrics: {
+      frameRate: number;
+      processors: Array<{ averageProcessLatency: number; processorName: string }>;
+    }) => void
   ) {
     this.timer = timer;
+    this.metricsCallback = metricsCallback;
+    this.lastMetricsTime = performance.now();
   }
 
   destroy(): void {
@@ -63,6 +82,53 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
       }
     }
     this.timer.destroy();
+  }
+  private checkMetricsReport(): void {
+    const now = performance.now();
+
+    /* istanbul ignore next */
+    if (now - this.lastMetricsTime >= 1000) {
+      this.reportMetrics(now);
+      this.lastMetricsTime = now;
+    }
+  }
+
+  /* istanbul ignore next */
+  private reportMetrics(now: number): void {
+    if (this.processorLatencies.size === 0) {
+      return;
+    }
+
+    const elapsedSeconds = (now - this.lastMetricsTime) / 1000;
+    const frameCount = Math.max(
+      ...Array.from(this.processorLatencies.values()).map(arr => arr.length)
+    );
+    const frameRate = elapsedSeconds > 0 ? frameCount / elapsedSeconds : 0;
+
+    const processors = this.processors.map(processor => {
+      const processorName = this.getProcessorName(processor);
+      const latencies = this.processorLatencies.get(processorName) || [];
+      const avgLatency =
+        latencies.length > 0 ? latencies.reduce((sum, lat) => sum + lat, 0) / latencies.length : 0;
+
+      return {
+        averageProcessLatency: avgLatency,
+        processorName,
+      };
+    });
+
+    this.logger.info(
+      `Pipeline metrics - FPS: ${frameRate.toFixed(1)}, Processors: ${processors.map(p => `${p.processorName}: ${p.averageProcessLatency.toFixed(2)}ms`).join(', ')}`
+    );
+
+    if (this.metricsCallback) {
+      this.metricsCallback({
+        frameRate,
+        processors,
+      });
+    }
+
+    this.processorLatencies.clear();
   }
 
   get framerate(): number {
@@ -219,8 +285,17 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     buffers.push(this.sourceBuffers[0]);
     try {
       for (const proc of this.processors) {
+        const processorStart = performance.now();
         buffers = await proc.process(buffers);
+        const processorLatency = performance.now() - processorStart;
+
+        const processorName = this.getProcessorName(proc);
+        if (!this.processorLatencies.has(processorName)) {
+          this.processorLatencies.set(processorName, []);
+        }
+        this.processorLatencies.get(processorName)!.push(processorLatency);
       }
+      this.checkMetricsReport();
     } catch (_error) {
       this.forEachObserver(obs => {
         if (obs.processingDidFailToStart) {
@@ -293,6 +368,37 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
 
     await this.timer.start(nextFrameDelay, this.process.bind(this));
   };
+
+  /* istanbul ignore next */
+  setMetricsCallback(
+    callback: (metrics: {
+      frameRate: number;
+      processors: Array<{ averageProcessLatency: number; processorName: string }>;
+    }) => void
+  ): void {
+    this.metricsCallback = callback;
+  }
+
+  /* istanbul ignore next */
+  private getProcessorName(processor?: VideoFrameProcessor): string {
+    if (!processor) {
+      if (this.stages.length === 0) return 'None';
+      processor = this.stages[0];
+    }
+    if (processor instanceof VideoFxProcessor) return 'VideoFxProcessor';
+    if (processor instanceof BackgroundSegmentationVideoFrameProcessor) {
+      const model = processor.getModelType();
+      switch (model) {
+        case ModelType.SELFIE_MULTICLASS:
+          return 'BackgroundSegmentationVideoFrameProcessor_Multiclass';
+        case ModelType.SELFIE_GENERAL:
+          return 'BackgroundSegmentationVideoFrameProcessor_General';
+        default:
+          return 'no-op';
+      }
+    }
+    return 'other';
+  }
 
   private forEachObserver(
     observerFunc: (observer: VideoFrameProcessorPipelineObserver) => void

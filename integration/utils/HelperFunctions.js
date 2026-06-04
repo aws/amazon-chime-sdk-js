@@ -75,8 +75,22 @@ const sleep = milliseconds => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
+async function retryAsync(fn, { maxRetries = 3, delayMs = 2000, logger } = {}) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await fn();
+      return;
+    } catch (e) {
+      if (attempt === maxRetries) throw e;
+      if (logger) logger.pushLogs(`Attempt ${attempt}/${maxRetries} failed, retrying...`);
+      await sleep(delayMs);
+    }
+  }
+}
+
 module.exports = {
   runAsync,
   runSync,
-  sleep
+  sleep,
+  retryAsync
 }

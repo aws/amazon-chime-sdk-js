@@ -7,10 +7,10 @@ import Device from '../devicecontroller/Device';
 import VideoTransformDevice from '../devicecontroller/VideoTransformDevice';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
+import StatsCollector from '../statscollector/StatsCollector';
 import DefaultVideoFrameProcessorPipeline from './DefaultVideoFrameProcessorPipeline';
 import DefaultVideoTransformDeviceObserver from './DefaultVideoTransformDeviceObserver';
 import VideoFrameProcessor from './VideoFrameProcessor';
-import VideoFrameProcessorPipeline from './VideoFrameProcessorPipeline';
 import VideoFrameProcessorPipelineObserver from './VideoFrameProcessorPipelineObserver';
 
 /**
@@ -20,18 +20,34 @@ import VideoFrameProcessorPipelineObserver from './VideoFrameProcessorPipelineOb
 export default class DefaultVideoTransformDevice
   implements VideoTransformDevice, VideoFrameProcessorPipelineObserver
 {
-  private pipe: VideoFrameProcessorPipeline;
+  private pipe: DefaultVideoFrameProcessorPipeline;
   private inputMediaStream: MediaStream;
   private observers: Set<DefaultVideoTransformDeviceObserver> =
     new Set<DefaultVideoTransformDeviceObserver>();
+  private statsCollector?: StatsCollector;
+  private metricsCallback: (metrics: {
+    frameRate: number;
+    processors: Array<{ averageProcessLatency: number; processorName: string }>;
+  }) => void = /* istanbul ignore next */ metrics => {
+    if (this.statsCollector) {
+      this.statsCollector.videoProcessorMetricsDidReceive(metrics);
+    }
+  };
 
   constructor(
     private logger: Logger,
     private device: Device,
     private processors: VideoFrameProcessor[],
-    private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior()
+    private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior(),
+    statsCollector?: StatsCollector
   ) {
-    this.pipe = new DefaultVideoFrameProcessorPipeline(this.logger, this.processors);
+    this.statsCollector = statsCollector;
+    this.pipe = new DefaultVideoFrameProcessorPipeline(
+      this.logger,
+      this.processors,
+      undefined,
+      this.metricsCallback
+    );
     this.pipe.addObserver(this);
   }
 
@@ -68,7 +84,8 @@ export default class DefaultVideoTransformDevice
       this.logger,
       newDevice,
       this.processors,
-      this.browserBehavior
+      this.browserBehavior,
+      this.statsCollector
     );
     newTransformDevice.pipe = this.pipe;
     return newTransformDevice;
@@ -193,6 +210,26 @@ export default class DefaultVideoTransformDevice
       setTimeout(() => {
         observerFunc(observer);
       }, 0);
+    }
+  }
+
+  /* istanbul ignore next */
+  setStatsCollector(statsCollector: StatsCollector): void {
+    this.statsCollector = statsCollector;
+    this.pipe.setMetricsCallback(metrics => {
+      if (this.statsCollector) {
+        this.statsCollector.videoProcessorMetricsDidReceive(metrics);
+      }
+    });
+
+    if (this.pipe.processors) {
+      for (const processor of this.pipe.processors) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (typeof (processor as any).setMetricsCollector === 'function') {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (processor as any).setMetricsCollector(statsCollector);
+        }
+      }
     }
   }
 

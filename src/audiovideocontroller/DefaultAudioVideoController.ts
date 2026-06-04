@@ -23,6 +23,7 @@ import AudioVideoEventAttributes, {
 } from '../eventcontroller/AudioVideoEventAttributes';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
+import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -696,6 +697,10 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.statsCollector = new StatsCollector(this, this.logger);
+    /* istanbul ignore next */
+    (this._mediaStreamBroker as DeviceControllerBasedMediaStreamBroker).setStatsCollector?.(
+      this.meetingSessionContext.statsCollector
+    );
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
       this._realtimeController,

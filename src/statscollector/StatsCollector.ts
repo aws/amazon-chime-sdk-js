@@ -37,6 +37,7 @@ type RawMetricReport = any;
 // eslint-disable-next-line
 type StatsReportItem = any;
 
+import { BackgroundSegmentationMetricReport } from '../backgroundsegmentation/BackgroundSegmentationMetrics';
 import {
   EncodedTransformMediaMetrics,
   EncodedTransformMediaMetricsObserver,
@@ -54,6 +55,7 @@ export default class StatsCollector
 {
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
+  private static readonly MAX_BUFFERED_BG_SEG_METRICS = 50;
 
   // Encodes the Compute Pressure API state into the SdkMetric.CPU_PRESSURE_STATE
   // wire value (see SignalingProtocol.proto).
@@ -74,6 +76,9 @@ export default class StatsCollector
   private videoCodecDegradationHighEncodeCpuCount: number = 0;
   private videoCodecDegradationEncodeFailureCount: number = 0;
   private videoCodecDegradationConcurrentSendersCount: number = 0;
+  private videoPipelineFrameRate: number = 0;
+  private videoProcessors: Array<{ averageProcessLatency: number; processorName: string }> = [];
+  private backgroundSegmentationMetrics: Array<BackgroundSegmentationMetricReport> = [];
   private resolutionMap = new Map<string, { width: number; height: number }>();
   private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
@@ -663,6 +668,7 @@ export default class StatsCollector
       this.getVideoUpstreamSsrcFromRawMetricReports(filteredRawMetricReports);
     if (videoUpstreamSsrc !== null) {
       this.addVideoCodecDegradationMetrics(customStatsReports, videoUpstreamSsrc);
+      this.addVideoProcessorMetrics(customStatsReports, videoUpstreamSsrc);
     }
     this.clientMetricReport.customStatsReports = customStatsReports;
     filteredRawMetricReports.push(...customStatsReports);
@@ -828,6 +834,35 @@ export default class StatsCollector
     this.videoCodecDegradationConcurrentSendersCount += 1;
   }
 
+  /**
+   * Receive video processor metrics
+   */
+  videoProcessorMetricsDidReceive(metrics: {
+    frameRate: number;
+    processors: Array<{ averageProcessLatency: number; processorName: string }>;
+  }): void {
+    this.videoPipelineFrameRate = metrics.frameRate;
+    this.videoProcessors = metrics.processors;
+    this.logger.debug(
+      () =>
+        `videoProcessorMetricsDidReceive: frameRate=${metrics.frameRate}, processors=${JSON.stringify(metrics.processors)}`
+    );
+  }
+
+  /**
+   * Receive background segmentation (V3) processor metrics
+   * These are one-time metrics (asset loading, compatibility, errors) not periodic like pipeline metrics
+   */
+  backgroundSegmentationMetricsDidReceive(metric: BackgroundSegmentationMetricReport): void {
+    this.logger.debug(
+      () => `[StatsCollector] Received background segmentation metric: ${JSON.stringify(metric)}`
+    );
+    if (this.backgroundSegmentationMetrics.length >= StatsCollector.MAX_BUFFERED_BG_SEG_METRICS) {
+      this.backgroundSegmentationMetrics.shift();
+    }
+    this.backgroundSegmentationMetrics.push(metric);
+  }
+
   private addVideoCodecDegradationMetrics(
     customStatsReports: CustomStatsReport[],
     videoUpstreamSsrc: number
@@ -844,6 +879,62 @@ export default class StatsCollector
     this.videoCodecDegradationHighEncodeCpuCount = 0;
     this.videoCodecDegradationEncodeFailureCount = 0;
     this.videoCodecDegradationConcurrentSendersCount = 0;
+  }
+
+  /* istanbul ignore next */
+  private addVideoProcessorMetrics(
+    customStatsReports: CustomStatsReport[],
+    videoUpstreamSsrc: number
+  ): void {
+    if (this.videoProcessors.length > 0) {
+      // Add frame rate metric
+      customStatsReports.push({
+        kind: 'video',
+        type: 'outbound-rtp',
+        ssrc: videoUpstreamSsrc,
+        timestamp: Date.now(),
+        videoPipelineFrameRate: this.videoPipelineFrameRate,
+      });
+
+      // Add individual processor metrics
+      for (const processor of this.videoProcessors) {
+        customStatsReports.push({
+          kind: 'video',
+          type: 'outbound-rtp',
+          ssrc: videoUpstreamSsrc,
+          timestamp: Date.now(),
+          videoProcessorAverageInferenceLatency: processor.averageProcessLatency,
+          videoProcessorName: processor.processorName,
+        });
+      }
+
+      // Reset after reporting to prevent stale data re-emission
+      this.videoPipelineFrameRate = 0;
+      this.videoProcessors = [];
+    }
+
+    if (this.backgroundSegmentationMetrics.length > 0) {
+      this.logger.debug(
+        () =>
+          `[StatsCollector] Adding ${this.backgroundSegmentationMetrics.length} background segmentation metrics to customStatsReports`
+      );
+      for (const metric of this.backgroundSegmentationMetrics) {
+        const { timestamp: metricTimestamp, ...rest } = metric;
+        const customReport = {
+          ...rest,
+          kind: 'video',
+          type: 'background-segmentation-processor-metadata',
+          ssrc: videoUpstreamSsrc,
+          timestamp: metricTimestamp || Date.now(),
+        };
+        this.logger.debug(
+          () =>
+            `[StatsCollector] Background segmentation custom report: ${JSON.stringify(customReport, null, 2)}`
+        );
+        customStatsReports.push(customReport);
+      }
+      this.backgroundSegmentationMetrics = [];
+    }
   }
 
   private getVideoUpstreamSsrcFromRawMetricReports(

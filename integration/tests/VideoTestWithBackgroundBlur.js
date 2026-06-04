@@ -4,14 +4,14 @@ const setupTestEnvironment = require('./TestSetup');
 const { 
   addSetupSteps, 
   addVideoSteps, 
-  addVideoFxBackgroundBlurSteps,
+  addBackgroundSegmentationBlurSteps,
   addCleanupSteps 
 } = require('./steps/VideoTestSteps');
 
 /*
- * VideoTestWithBackgroundBlur - Two-participant video test with VideoFx background blur
+ * VideoTestWithBackgroundBlur - Two-participant video test with background segmentation filter with blur effect
  * 
- * Same as VideoTest but enables VideoFx (2.0) background blur video processing.
+ * Same as VideoTest but enables background segmentation (3.0) filter with blur effect video processing.
  * Verifies video send/receive works correctly with background blur active.
  * Uses pixel-based verification to ensure the filter is properly applied.
  */
@@ -23,6 +23,6 @@ describe('VideoTestWithBackgroundBlur', async function () {
   
   addSetupSteps(ctx);
   addVideoSteps(ctx);
-  addVideoFxBackgroundBlurSteps(ctx);
+  addBackgroundSegmentationBlurSteps(ctx, 'general');
   addCleanupSteps(ctx);
 });
