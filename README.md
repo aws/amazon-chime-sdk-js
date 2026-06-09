@@ -1,5 +1,7 @@
 # Amazon Chime SDK for JavaScript
 
+medemak edit to trigger pr workflows
+
 [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12)
 
 [Amazon Chime SDK React Components](https://github.com/aws/amazon-chime-sdk-component-library-react)
