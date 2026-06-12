@@ -86,6 +86,9 @@ class WebDriverFactory {
       } else if (client.browserName === 'safari') {
         builder.forBrowser('safari');
         Object.assign(capabilities, config.safariOptions);
+      } else if (client.browserName === 'MicrosoftEdge') {
+        builder.forBrowser('MicrosoftEdge');
+        Object.assign(capabilities, config.edgeOptions);
       } else {
         this.logger.log(
           `browserName: ${client.browserName} defined in the test config is not valid`,

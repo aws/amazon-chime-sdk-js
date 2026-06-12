@@ -69,11 +69,26 @@ const browserCompatibilityConfig = [
         "browserVersion": "beta",
         "platform": "WINDOWS"
     },
-    // {
-    //     "browserName": "safari",
-    //     "browserVersion": "latest",
-    //     "platform": "MAC"
-    // }
+    {
+        "browserName": "MicrosoftEdge",
+        "browserVersion": "latest-2",
+        "platform": "WINDOWS"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "browserVersion": "latest-1",
+        "platform": "WINDOWS"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "browserVersion": "latest",
+        "platform": "WINDOWS"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "browserVersion": "beta",
+        "platform": "WINDOWS"
+    }
 ];
 
 module.exports = browserCompatibilityConfig;
