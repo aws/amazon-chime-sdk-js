@@ -42,6 +42,7 @@ const getConfig = () => {
             : [
                 '--use-fake-device-for-media-stream',
                 '--use-fake-ui-for-media-stream',
+                '--disable-local-discovery',
                 '--window-size=1920,1080',
               ],
       },
