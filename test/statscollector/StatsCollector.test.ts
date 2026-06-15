@@ -1374,4 +1374,83 @@ describe('StatsCollector', () => {
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
     });
   });
+
+  describe('CPU pressure metric', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const globalScope = globalThis as any;
+    let savedPressureObserver: unknown;
+    let pressureCallback: ((records: { source: string; state: string }[]) => void) | undefined;
+
+    beforeEach(() => {
+      savedPressureObserver = globalScope.PressureObserver;
+      pressureCallback = undefined;
+      class FakePressureObserver {
+        constructor(cb: (records: { source: string; state: string }[]) => void) {
+          pressureCallback = cb;
+        }
+        observe(_source: string, _opts?: { sampleInterval?: number }): Promise<void> {
+          return Promise.resolve();
+        }
+        unobserve(_source: string): void {}
+        disconnect(): void {}
+      }
+      globalScope.PressureObserver = FakePressureObserver;
+    });
+
+    afterEach(() => {
+      if (savedPressureObserver === undefined) {
+        delete globalScope.PressureObserver;
+      } else {
+        globalScope.PressureObserver = savedPressureObserver;
+      }
+    });
+
+    function findCpuPressureMetric(
+      frame: SdkClientMetricFrame
+    ): { type?: SdkMetric.Type; value?: number } | undefined {
+      return frame.globalMetrics.find(m => m.type === SdkMetric.Type.CPU_PRESSURE_STATE);
+    }
+
+    it('forwards the latest CPU pressure state into the global metric frame', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+      const sendSpy = sinon.spy(signalingClient, 'sendClientMetrics');
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+
+      // Wait for the monitor's observe() promise to resolve before delivering a sample.
+      Promise.resolve().then(() => {
+        expect(pressureCallback).to.exist;
+        pressureCallback([{ source: 'cpu', state: 'serious' }]);
+
+        new TimeoutScheduler(interval + 5).start(() => {
+          statsCollector.stop();
+          const metricFrames = sendSpy
+            .getCalls()
+            .map(c => c.args[0] as SdkClientMetricFrame)
+            .filter(frame => findCpuPressureMetric(frame) !== undefined);
+          expect(metricFrames.length).to.be.greaterThan(0);
+          const metric = findCpuPressureMetric(metricFrames[metricFrames.length - 1]);
+          expect(metric.value).to.equal(2);
+          done();
+        });
+      });
+    });
+
+    it('omits the CPU pressure metric when no sample has been observed', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+      const sendSpy = sinon.spy(signalingClient, 'sendClientMetrics');
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        const sentFrames = sendSpy.getCalls().map(c => c.args[0] as SdkClientMetricFrame);
+        expect(sentFrames.length).to.be.greaterThan(0);
+        for (const frame of sentFrames) {
+          expect(findCpuPressureMetric(frame)).to.equal(undefined);
+        }
+        done();
+      });
+    });
+  });
 });

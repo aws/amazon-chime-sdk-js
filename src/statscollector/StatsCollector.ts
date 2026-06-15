@@ -28,6 +28,7 @@ import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import { VideoTileResolutionObserver } from '../videotilecontroller/VideoTileController';
 import AudioLogEvent from './AudioLogEvent';
+import ComputePressureMonitor, { PressureState } from './ComputePressureMonitor';
 import VideoLogEvent from './VideoLogEvent';
 
 // eslint-disable-next-line
@@ -54,6 +55,15 @@ export default class StatsCollector
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
 
+  // Encodes the Compute Pressure API state into the SdkMetric.CPU_PRESSURE_STATE
+  // wire value (see SignalingProtocol.proto).
+  private static readonly CPU_PRESSURE_STATE_VALUE: { [key in PressureState]: number } = {
+    nominal: 0,
+    fair: 1,
+    serious: 2,
+    critical: 3,
+  };
+
   private intervalScheduler: IntervalScheduler | null = null;
   private signalingClient: SignalingClient;
   private videoStreamIndex: VideoStreamIndex;
@@ -68,6 +78,7 @@ export default class StatsCollector
   private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
+  private computePressureMonitor: ComputePressureMonitor | null = null;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -242,6 +253,8 @@ export default class StatsCollector
     this.intervalScheduler.start(async () => {
       await this.getStatsWrapper();
     });
+    this.computePressureMonitor = new ComputePressureMonitor(this.logger, this.interval);
+    this.computePressureMonitor.start();
     return true;
   }
 
@@ -254,6 +267,10 @@ export default class StatsCollector
       this.intervalScheduler.stop();
     }
     this.intervalScheduler = null;
+    if (this.computePressureMonitor) {
+      this.computePressureMonitor.stop();
+      this.computePressureMonitor = null;
+    }
   }
 
   videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void {
@@ -450,6 +467,18 @@ export default class StatsCollector
     for (const metricName in this.clientMetricReport.globalMetricReport.currentMetrics) {
       this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName]);
     }
+    this.maybeAddCpuPressureMetric(clientMetricFrame);
+  }
+
+  private maybeAddCpuPressureMetric(clientMetricFrame: SdkClientMetricFrame): void {
+    const state = this.computePressureMonitor.currentState();
+    if (state === null) {
+      return;
+    }
+    const metricFrame = SdkMetric.create();
+    metricFrame.type = SdkMetric.Type.CPU_PRESSURE_STATE;
+    metricFrame.value = StatsCollector.CPU_PRESSURE_STATE_VALUE[state];
+    clientMetricFrame.globalMetrics.push(metricFrame);
   }
 
   /**
