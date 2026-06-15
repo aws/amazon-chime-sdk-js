@@ -42,6 +42,7 @@ const getConfig = () => {
             : [
                 '--use-fake-device-for-media-stream',
                 '--use-fake-ui-for-media-stream',
+                '--disable-local-discovery',
                 '--window-size=1920,1080',
               ],
       },
@@ -49,6 +50,27 @@ const getConfig = () => {
     },
     safariOptions: {
       browserName: 'safari',
+    },
+    edgeOptions: {
+      browserName: 'MicrosoftEdge',
+      'ms:edgeOptions': {
+        args:
+          process.env.HEADLESS_MODE === 'true'
+            ? [
+                '--use-fake-device-for-media-stream',
+                '--use-fake-ui-for-media-stream',
+                '--headless=new',
+                '--window-size=1920,1080',
+                '--no-sandbox',
+                '--disable-dev-shm-usage',
+              ]
+            : [
+                '--use-fake-device-for-media-stream',
+                '--use-fake-ui-for-media-stream',
+                '--window-size=1920,1080',
+              ],
+      },
+      ...(process.env.ENABLE_BROWSER_LOGGING === 'true' && { 'goog:loggingPrefs': { browser: 'ALL' } }),
     },
     sauceOptions: {
       browserName: process.env.BROWSER_NAME || 'chrome',
