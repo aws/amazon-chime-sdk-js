@@ -44,6 +44,7 @@ const ignoredTypes = [
 
   // These are classes we don't want to export
   'StatsCollector',
+  'ComputePressureMonitor',
 
   // Generated versioning data.
   'version',

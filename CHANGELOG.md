@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added CPU pressure state reporting via the [Compute Pressure API](https://developer.mozilla.org/en-US/docs/Web/API/Compute_Pressure_API), sent to the backend as the `CPU_PRESSURE_STATE` client metric where supported.
+
 ### Removed
 
 ### Changed
