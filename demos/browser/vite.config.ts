@@ -179,6 +179,7 @@ export default defineConfig({
       '/endLiveConnector': apiProxy,
       '/start_transcription': apiProxy,
       '/stop_transcription': apiProxy,
+      '/start-webrtc-contact': apiProxy,
     },
   },
 });

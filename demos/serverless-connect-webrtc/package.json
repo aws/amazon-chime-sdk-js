@@ -1,0 +1,12 @@
+{
+  "name": "connect-webrtc-serverless-deploy",
+  "version": "1.0.0",
+  "description": "Deployment script for Connect WebRTC Serverless Demo",
+  "scripts": {
+    "deploy": "node deploy.js"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  },
+  "license": "Apache-2.0"
+}

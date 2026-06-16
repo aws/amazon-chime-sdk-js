@@ -3,6 +3,7 @@
 
 const { ChimeSDKMediaPipelines } = require('@aws-sdk/client-chime-sdk-media-pipelines');
 const { ChimeSDKMeetings } = require('@aws-sdk/client-chime-sdk-meetings');
+const { Connect } = require('@aws-sdk/client-connect');
 const { STS } = require('@aws-sdk/client-sts');
 
 const compression = require('compression');
@@ -443,7 +444,45 @@ function serve(host = '127.0.0.1:8080') {
             MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
             AttendeeId: requestUrl.query.id,
           });
-        respond(response, 200, 'application/json', JSON.stringify(getAttendeeResponse));      
+        respond(response, 200, 'application/json', JSON.stringify(getAttendeeResponse));
+      } else if (request.method === 'POST' && requestUrl.pathname === '/start-webrtc-contact') {
+        // Parse JSON body
+        const body = await new Promise((resolve) => {
+          let data = '';
+          request.on('data', chunk => { data += chunk; });
+          request.on('end', () => { resolve(JSON.parse(data)); });
+        });
+
+        // Parse instance ID, region, and flow ID from contact flow ARN
+        // Format: arn:aws:connect:<region>:<account>:instance/<instance-id>/contact-flow/<flow-id>
+        const arnParts = body.contactFlowArn.split(':');
+        const connectRegion = arnParts[3];
+        const resourceParts = arnParts[5].split('/');
+        const instanceId = resourceParts[1];
+        const contactFlowId = resourceParts[3];
+
+        const connectClient = new Connect({
+          region: connectRegion,
+          ...(body.connectEndpoint && { endpoint: body.connectEndpoint }),
+        });
+
+        const webrtcResponse = await connectClient.startWebRTCContact({
+          ContactFlowId: contactFlowId,
+          InstanceId: instanceId,
+          AllowedCapabilities: {
+            Customer: { Video: 'SEND' },
+            Agent: { Video: 'SEND' },
+          },
+          ParticipantDetails: {
+            DisplayName: body.customerName,
+          },
+        });
+
+        // Return the response directly — ConnectionData contains Meeting and Attendee
+        respond(response, 201, 'application/json', JSON.stringify({
+          ContactId: webrtcResponse.ContactId,
+          ConnectionData: webrtcResponse.ConnectionData,
+        }, null, 2));
       } else {
         respond(response, 404, 'text/html', '404 Not Found');
       }

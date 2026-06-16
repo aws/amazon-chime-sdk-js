@@ -1,0 +1,9 @@
+{
+  "name": "connect-webrtc-serverless",
+  "version": "1.0.0",
+  "description": "Amazon Chime SDK Connect WebRTC Serverless Demo",
+  "dependencies": {
+    "@aws-sdk/client-connect": "^3.477.0"
+  },
+  "license": "Apache-2.0"
+}

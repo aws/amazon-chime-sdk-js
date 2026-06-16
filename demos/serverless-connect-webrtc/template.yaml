@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Amazon Chime SDK - Connect WebRTC Contact Demo
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 128
+
+Resources:
+  ConnectAccessPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ConnectWebRTCAccess
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'connect:StartWebRTCContact'
+            Resource: '*'
+      Roles:
+        - Ref: StartWebRTCContactLambdaRole
+
+  StartWebRTCContactLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.start_webrtc_contact
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /start-webrtc-contact
+            Method: POST
+
+  IndexLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.index
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+
+Outputs:
+  ApiURL:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
