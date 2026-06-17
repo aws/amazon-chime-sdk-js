@@ -319,6 +319,9 @@ message SdkMetric {
         AUDIO_RECEIVED_TRANSFORM_PPS = 110;
         VIDEO_SENT_TRANSFORM_PPS = 111;
         VIDEO_RECEIVED_TRANSFORM_PPS = 112;
+        // Reported via the Compute Pressure API (https://developer.mozilla.org/en-US/docs/Web/API/Compute_Pressure_API).
+        // Values: 0 = nominal, 1 = fair, 2 = serious, 3 = critical.
+        CPU_PRESSURE_STATE = 113;
     }
     optional Type type = 1;
     optional double value = 2;

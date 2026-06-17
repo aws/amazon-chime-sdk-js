@@ -7848,6 +7848,7 @@ $root.SdkMetric = (function() {
             case 110:
             case 111:
             case 112:
+            case 113:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -8207,6 +8208,10 @@ $root.SdkMetric = (function() {
         case 112:
             message.type = 112;
             break;
+        case "CPU_PRESSURE_STATE":
+        case 113:
+            message.type = 113;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -8350,6 +8355,7 @@ $root.SdkMetric = (function() {
      * @property {number} AUDIO_RECEIVED_TRANSFORM_PPS=110 AUDIO_RECEIVED_TRANSFORM_PPS value
      * @property {number} VIDEO_SENT_TRANSFORM_PPS=111 VIDEO_SENT_TRANSFORM_PPS value
      * @property {number} VIDEO_RECEIVED_TRANSFORM_PPS=112 VIDEO_RECEIVED_TRANSFORM_PPS value
+     * @property {number} CPU_PRESSURE_STATE=113 CPU_PRESSURE_STATE value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -8436,6 +8442,7 @@ $root.SdkMetric = (function() {
         values[valuesById[110] = "AUDIO_RECEIVED_TRANSFORM_PPS"] = 110;
         values[valuesById[111] = "VIDEO_SENT_TRANSFORM_PPS"] = 111;
         values[valuesById[112] = "VIDEO_RECEIVED_TRANSFORM_PPS"] = 112;
+        values[valuesById[113] = "CPU_PRESSURE_STATE"] = 113;
         return values;
     })();
 

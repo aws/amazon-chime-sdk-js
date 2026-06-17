@@ -70,6 +70,11 @@ const browserCompatibilityConfig = [
         "platform": "WINDOWS"
     },
     {
+        "browserName": "firefox",
+        "browserVersion": "beta",
+        "platform": "MAC"
+    },
+    {
         "browserName": "MicrosoftEdge",
         "browserVersion": "latest-2",
         "platform": "WINDOWS"
