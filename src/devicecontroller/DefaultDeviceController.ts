@@ -11,6 +11,7 @@ import DefaultMediaDeviceFactory from '../mediadevicefactory/DefaultMediaDeviceF
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import StatsCollector from '../statscollector/StatsCollector';
 import PromiseQueue from '../utils/PromiseQueue';
 import { Maybe } from '../utils/Types';
 import DefaultVideoTransformDevice from '../videoframeprocessor/DefaultVideoTransformDevice';
@@ -97,7 +98,8 @@ export default class DefaultDeviceController
     private logger: Logger,
     options?: { enableWebAudio?: boolean; useMediaConstraintsFallback?: boolean },
     private browserBehavior: ExtendedBrowserBehavior = new DefaultBrowserBehavior(),
-    public eventController?: EventController
+    public eventController?: EventController,
+    private statsCollector?: StatsCollector
   ) {
     const { enableWebAudio = false, useMediaConstraintsFallback = true } = options || {};
     this.useWebAudio = enableWebAudio;
@@ -325,6 +327,10 @@ export default class DefaultDeviceController
     if (this.eventController && device instanceof DefaultVideoTransformDevice) {
       device.passEventControllerToProcessors(this.eventController);
     }
+    /* istanbul ignore next */
+    if (this.statsCollector && device instanceof DefaultVideoTransformDevice) {
+      device.setStatsCollector(this.statsCollector);
+    }
     if (device === this.chosenVideoTransformDevice) {
       this.logger.info('Reselecting same VideoTransformDevice');
       return;
@@ -518,6 +524,16 @@ export default class DefaultDeviceController
   stopVideoPreviewForVideoInput(element: HTMLVideoElement): void {
     DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
     this.trace('stopVideoPreviewForVideoInput', element.id);
+  }
+
+  /* istanbul ignore next */
+  setStatsCollector(statsCollector: StatsCollector): void {
+    this.statsCollector = statsCollector;
+
+    // If there's already an active video transform device, update it
+    if (this.chosenVideoTransformDevice instanceof DefaultVideoTransformDevice) {
+      this.chosenVideoTransformDevice.setStatsCollector(statsCollector);
+    }
   }
 
   setDeviceLabelTrigger(trigger: () => Promise<MediaStream>): void {

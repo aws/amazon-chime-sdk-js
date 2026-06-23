@@ -54,14 +54,16 @@ function findAllElements() {
     videoFilterButton: By.id('button-video-filter'),
     videoFilterDropButton: By.id('button-video-filter-drop'),
     noVideoFilterButton: By.id('dropdown-menu-filter-None'),
-    
-    // VideoFx (2.0) Filters
-    videoFxBlurLowButton: By.id('dropdown-menu-filter-Background-Blur-2.0---Low'),
-    videoFxBlurMediumButton: By.id('dropdown-menu-filter-Background-Blur-2.0---Medium'),
-    videoFxBlurHighButton: By.id('dropdown-menu-filter-Background-Blur-2.0---High'),
-    videoFxReplacementBeachButton: By.id('dropdown-menu-filter-Background-Replacement-2.0---(Beach)'),
-    videoFxReplacementBlueButton: By.id('dropdown-menu-filter-Background-Replacement-2.0---(Blue)'),
-    videoFxReplacementDefaultButton: By.id('dropdown-menu-filter-Background-Replacement-2.0---(Default)'),
+    videoFilterBackgroundSegmentationGeneralBlueButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Blue)'),
+    videoFilterBackgroundSegmentationGeneralBlurLowButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Blur-Low)'),
+    videoFilterBackgroundSegmentationGeneralBlurMediumButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Blur-Medium)'),
+    videoFilterBackgroundSegmentationGeneralBlurHighButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Blur-High)'),
+    videoFilterBackgroundSegmentationGeneralReplacementButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Replacement)'),
+    videoFilterBackgroundSegmentationMulticlassBlueButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Blue)'),
+    videoFilterBackgroundSegmentationMulticlassBlurLowButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Blur-Low)'),
+    videoFilterBackgroundSegmentationMulticlassBlurMediumButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Blur-Medium)'),
+    videoFilterBackgroundSegmentationMulticlassBlurHighButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Blur-High)'),
+    videoFilterBackgroundSegmentationMulticlassReplacementButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Replacement)'),
 
     // Voice Focus (Audio Processing)
     allowVoiceFocusCheckbox: By.id('allow-voice-focus'),
@@ -312,6 +314,193 @@ class MeetingPage {
       this.logger.pushLogs('Video is already turned off; no action taken');
     } else {
       this.logger.pushLogs('Unknown video button state encountered!!', LogLevel.ERROR);
+    }
+  }
+
+  async getBrowserType() {
+    const browserInfo = await this.driver.executeScript(`
+      return {
+        isChrome: !!window.chrome,
+        isFirefox: navigator.userAgent.indexOf('Firefox') > -1,
+        isSafari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+      };
+    `);
+    
+    if (browserInfo.isChrome) return 'chrome';
+    if (browserInfo.isFirefox) return 'firefox';
+    if (browserInfo.isSafari) return 'safari';
+    return 'unknown';
+  }
+
+  async enableBackgroundSegmentationColorReplacement(model = 'general') {
+    this.logger.pushLogs(`Enabling background segmentation color replacement (model=${model})`);
+    let videoFilterDropDownButton = await this.driver.findElement(elements.videoFilterDropButton);
+    await videoFilterDropDownButton.click();
+    let button;
+    switch (model) {
+      case 'multiclass':
+        button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassBlueButton);
+        break;
+      case 'general':
+      default:
+        button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralBlueButton);
+        break;
+    }
+    await button.click();
+    await sleep(model === 'multiclass' ? 15000 : 5000);
+    this.logger.pushLogs(`background segmentation color replacement enabled (model=${model})`, LogLevel.SUCCESS);
+  }
+
+  async enableBackgroundSegmentationBlur(strength = 'Low', model = 'general') {
+    this.logger.pushLogs(`Enabling background segmentation blur (model=${model}, strength=${strength})`);
+    let videoFilterDropDownButton = await this.driver.findElement(elements.videoFilterDropButton);
+    await videoFilterDropDownButton.click();
+    let button;
+    if (model === 'multiclass') {
+      switch (strength) {
+        case 'Medium':
+          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassBlurMediumButton);
+          break;
+        case 'High':
+          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassBlurHighButton);
+          break;
+        case 'Low':
+        default:
+          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassBlurLowButton);
+          break;
+      }
+    } else {
+      switch (strength) {
+        case 'Medium':
+          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralBlurMediumButton);
+          break;
+        case 'High':
+          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralBlurHighButton);
+          break;
+        case 'Low':
+        default:
+          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralBlurLowButton);
+          break;
+      }
+    }
+    await button.click();
+    await sleep(model === 'multiclass' ? 15000 : 5000);
+    this.logger.pushLogs(`background segmentation blur enabled (model=${model}, strength=${strength})`, LogLevel.SUCCESS);
+  }
+
+  async enableBackgroundSegmentationImageReplacement(model = 'general') {
+    this.logger.pushLogs(`Enabling background segmentation image replacement (model=${model})`);
+    let videoFilterDropDownButton = await this.driver.findElement(elements.videoFilterDropButton);
+    await videoFilterDropDownButton.click();
+    let button;
+    switch (model) {
+      case 'multiclass':
+        button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassReplacementButton);
+        break;
+      case 'general':
+      default:
+        button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralReplacementButton);
+        break;
+    }
+    await button.click();
+    await sleep(model === 'multiclass' ? 15000 : 5000);
+    this.logger.pushLogs(`background segmentation image replacement enabled (model=${model})`, LogLevel.SUCCESS);
+  }
+
+  async checkBluePixelPercentage(attendeeId) {
+    try {
+      const videoTiles = await this.driver.findElements(elements.videoTile);
+      let videoTile = undefined;
+
+      for (const tile of videoTiles) {
+        const isVisible = await tile.isDisplayed();
+        const nameplate = await tile.findElement(elements.videoTileNameplate);
+        const nameplateText = await nameplate.getText();
+
+        if (nameplateText === attendeeId && isVisible) {
+          videoTile = tile;
+          break;
+        }
+      }
+
+      if (!videoTile) {
+        const errorMsg = `No video tile found for attendee ${attendeeId}`;
+        this.logger.pushLogs(errorMsg, LogLevel.ERROR);
+        throw new Error(errorMsg);
+      }
+
+      const videoElement = await videoTile.findElement(By.tagName('video'));
+      const videoId = await videoElement.getAttribute('id');
+
+      const result = await this.driver.executeScript(`
+        let video = document.getElementById("${videoId}");
+        if (!video || video.videoWidth <= 0 || video.videoHeight <= 0) {
+          return { error: 'Video not ready', width: video ? video.videoWidth : 0, height: video ? video.videoHeight : 0 };
+        }
+
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+        let imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight).data;
+        let totalPixels = video.videoWidth * video.videoHeight;
+        let bluePixels = 0;
+
+        // Target color #0000FF (RGB: 00, 00, 255)
+        const targetR = 0, targetG = 0, targetB = 255;
+        const tolerance = 30;
+
+        for (let i = 0; i < imageData.length; i += 4) {
+          const r = imageData[i];
+          const g = imageData[i + 1];
+          const b = imageData[i + 2];
+
+          if (Math.abs(r - targetR) <= tolerance &&
+              Math.abs(g - targetG) <= tolerance &&
+              Math.abs(b - targetB) <= tolerance) {
+            bluePixels++;
+          }
+        }
+
+        return {
+          percentage: (bluePixels / totalPixels) * 100,
+          bluePixels: bluePixels,
+          totalPixels: totalPixels,
+          width: video.videoWidth,
+          height: video.videoHeight
+        };
+      `);
+
+      if (result.error) {
+        const errorMsg = `Video analysis failed: ${result.error}, width: ${result.width}, height: ${result.height}`;
+        this.logger.pushLogs(errorMsg, LogLevel.ERROR);
+        throw new Error(errorMsg);
+      }
+
+      const bluePercentage = result.percentage;
+      const browserType = await this.getBrowserType();
+      let pixelUpperBound = 100;
+      const pixelLowerBound = 40;
+      if (browserType === 'chrome') {
+        pixelUpperBound = 80;
+      }
+      const isInRange = bluePercentage >= pixelLowerBound && bluePercentage <= pixelUpperBound;
+      const logMsg = `Blue pixels: ${result.bluePixels}/${result.totalPixels} (${bluePercentage.toFixed(2)}%) - ${isInRange ? 'PASS' : 'FAIL'}`;
+
+      if (!isInRange) {
+        this.logger.pushLogs(logMsg, LogLevel.ERROR);
+        this.logger.pushLogs(`Blue pixel percentage ${bluePercentage.toFixed(2)}% is not in expected range of given browser`, LogLevel.ERROR);
+        return false;
+      } else {
+        this.logger.pushLogs(logMsg, LogLevel.SUCCESS);
+        return true;
+      }
+    } catch (error) {
+      const errorMsg = `Error checking blue pixel percentage: ${error.message || error}`;
+      this.logger.pushLogs(errorMsg, LogLevel.ERROR);
+      throw error;
     }
   }
 
@@ -665,72 +854,6 @@ class MeetingPage {
       this.logger.pushLogs(error, LogLevel.ERROR);
       throw new Error(error);
     }
-  }
-
-  async enableVideoFxBackgroundBlur(strength = 'Low') {
-    this.logger.pushLogs(`Enabling VideoFx background blur (${strength})`);
-    
-    // Click video filter dropdown button
-    let videoFilterDropButton = await this.driver.findElement(elements.videoFilterDropButton);
-    await this.driver.wait(until.elementIsVisible(videoFilterDropButton), DEFAULT_TIMEOUT_MS);
-    await videoFilterDropButton.click();
-    this.logger.pushLogs('Clicked video filter dropdown button');
-    
-    // Select the appropriate VideoFx blur option based on strength
-    let blurButton;
-    switch (strength) {
-      case 'Medium':
-        blurButton = await this.driver.findElement(elements.videoFxBlurMediumButton);
-        break;
-      case 'High':
-        blurButton = await this.driver.findElement(elements.videoFxBlurHighButton);
-        break;
-      case 'Low':
-      default:
-        blurButton = await this.driver.findElement(elements.videoFxBlurLowButton);
-        break;
-    }
-    
-    await this.driver.wait(until.elementIsVisible(blurButton), DEFAULT_TIMEOUT_MS);
-    await blurButton.click();
-    this.logger.pushLogs(`Selected VideoFx Background Blur 2.0 - ${strength} from dropdown`);
-    
-    // Wait for the filter to be applied
-    await sleep(2000);
-    this.logger.pushLogs(`VideoFx background blur (${strength}) enabled`, LogLevel.SUCCESS);
-  }
-
-  async enableVideoFxBackgroundReplacement(variant = 'Default') {
-    this.logger.pushLogs(`Enabling VideoFx background replacement (${variant})`);
-    
-    // Click video filter dropdown button
-    let videoFilterDropButton = await this.driver.findElement(elements.videoFilterDropButton);
-    await this.driver.wait(until.elementIsVisible(videoFilterDropButton), DEFAULT_TIMEOUT_MS);
-    await videoFilterDropButton.click();
-    this.logger.pushLogs('Clicked video filter dropdown button');
-    
-    // Select the appropriate VideoFx replacement option based on variant
-    let replacementButton;
-    switch (variant) {
-      case 'Beach':
-        replacementButton = await this.driver.findElement(elements.videoFxReplacementBeachButton);
-        break;
-      case 'Blue':
-        replacementButton = await this.driver.findElement(elements.videoFxReplacementBlueButton);
-        break;
-      case 'Default':
-      default:
-        replacementButton = await this.driver.findElement(elements.videoFxReplacementDefaultButton);
-        break;
-    }
-    
-    await this.driver.wait(until.elementIsVisible(replacementButton), DEFAULT_TIMEOUT_MS);
-    await replacementButton.click();
-    this.logger.pushLogs(`Selected VideoFx Background Replacement 2.0 - (${variant}) from dropdown`);
-    
-    // Wait for the filter to be applied
-    await sleep(2000);
-    this.logger.pushLogs(`VideoFx background replacement (${variant}) enabled`, LogLevel.SUCCESS);
   }
 
   async disableVideoFilter() {

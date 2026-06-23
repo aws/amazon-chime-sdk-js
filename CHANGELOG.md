@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+  
+### Added
+
+- Added `BackgroundSegmentationVideoFrameProcessor` with CDN asset loading, request deduplication, and browser compatibility checking (WebGL2, WASM, Workers)
+- Added configurable blur strength (low/medium/high) and support for `selfie_general` and `selfie_multiclass` model types
+- Added `BackgroundSegmentationMetrics` observer for StatsCollector integration
+- Added dynamic filter switching via `setConfig`/`setModelType` without processor recreation
+- Added video processor metrics collection (frame rate, per-processor latency) via StatsCollector
+- Added event publishing for filter lifecycle (`backgroundFilterStarted`, `backgroundFilterConfigSelected`, `backgroundFilterFailed`)
+- Added V3-specific fields to `VideoFXEventAttributes`
+
+### Removed
+
+- Removed `MediaPipeBodySegmentationProcessor` and `@tensorflow-models/body-segmentation` dependency from demo
+
+### Changed
+
+### Fixed
+
+- Fixed iOS page crash when rapidly switching background filters
+- Fixed video filter not re-applying after offline/online transition
+
 ## [3.32.0] - 2026-05-14
 
 ### Added
