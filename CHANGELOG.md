@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-  
+## [3.32.0] - 2026-05-14
+
 ### Added
 
+- Added CPU pressure state reporting via the [Compute Pressure API](https://developer.mozilla.org/en-US/docs/Web/API/Compute_Pressure_API), sent to the backend as the `CPU_PRESSURE_STATE` client metric where supported.
 - Added `BackgroundSegmentationVideoFrameProcessor` with CDN asset loading, request deduplication, and browser compatibility checking (WebGL2, WASM, Workers)
 - Added configurable blur strength (low/medium/high) and support for `selfie_general` and `selfie_multiclass` model types
 - Added `BackgroundSegmentationMetrics` observer for StatsCollector integration
@@ -27,18 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed iOS page crash when rapidly switching background filters
 - Fixed video filter not re-applying after offline/online transition
-
-## [3.32.0] - 2026-05-14
-
-### Added
-
-- Added CPU pressure state reporting via the [Compute Pressure API](https://developer.mozilla.org/en-US/docs/Web/API/Compute_Pressure_API), sent to the backend as the `CPU_PRESSURE_STATE` client metric where supported.
-
-### Removed
-
-### Changed
-
-### Fixed
 
 ## [3.31.0] - 2026-01-06
 
