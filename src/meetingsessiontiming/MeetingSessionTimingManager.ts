@@ -337,8 +337,9 @@ export default class MeetingSessionTimingManager {
 
   /**
    * Records the timestamp when first audio packet was received.
+   * @param timestampMs Worker-captured time of the first frame; defaults to now.
    */
-  onRemoteAudioFirstPacketReceived(): void {
+  onRemoteAudioFirstPacketReceived(timestampMs?: number): void {
     if (this.remoteAudioTiming.addedMs === undefined) {
       this.logger.warn('Received remote audio first packet before audio was added, ignoring');
       return;
@@ -347,7 +348,7 @@ export default class MeetingSessionTimingManager {
       this.logger.debug('onRemoteAudioFirstPacketReceived called multiple times, ignoring');
       return;
     }
-    this.remoteAudioTiming.firstPacketReceivedMs = this.getCurrentTimestamp();
+    this.remoteAudioTiming.firstPacketReceivedMs = timestampMs ?? this.getCurrentTimestamp();
     this.maybeEmitBatch();
   }
 
@@ -366,8 +367,9 @@ export default class MeetingSessionTimingManager {
 
   /**
    * Records the timestamp when first audio packet was sent.
+   * @param timestampMs Worker-captured time of the first frame; defaults to now.
    */
-  onLocalAudioFirstPacketSent(): void {
+  onLocalAudioFirstPacketSent(timestampMs?: number): void {
     if (this.localAudioTiming.addedMs === undefined) {
       this.logger.warn('Received local audio first packet sent before audio was added, ignoring');
       return;
@@ -376,7 +378,7 @@ export default class MeetingSessionTimingManager {
       this.logger.debug('onLocalAudioFirstPacketSent called multiple times, ignoring');
       return;
     }
-    this.localAudioTiming.firstPacketSentMs = this.getCurrentTimestamp();
+    this.localAudioTiming.firstPacketSentMs = timestampMs ?? this.getCurrentTimestamp();
     this.maybeEmitBatch();
   }
 
@@ -395,8 +397,9 @@ export default class MeetingSessionTimingManager {
 
   /**
    * Records the timestamp when first video frame was sent.
+   * @param timestampMs Worker-captured time of the first frame; defaults to now.
    */
-  onLocalVideoFirstFrameSent(): void {
+  onLocalVideoFirstFrameSent(timestampMs?: number): void {
     if (this.localVideoTiming.addedMs === undefined) {
       this.logger.warn('Received local video first frame sent before video was added, ignoring');
       return;
@@ -405,7 +408,7 @@ export default class MeetingSessionTimingManager {
       this.logger.debug('onLocalVideoFirstFrameSent called multiple times, ignoring');
       return;
     }
-    this.localVideoTiming.firstFrameSentMs = this.getCurrentTimestamp();
+    this.localVideoTiming.firstFrameSentMs = timestampMs ?? this.getCurrentTimestamp();
     this.maybeEmitBatch();
   }
 
@@ -469,8 +472,9 @@ export default class MeetingSessionTimingManager {
    * Records the timestamp when first video packet was received for a group_id.
    * Only the first call for each group_id records the timestamp.
    * @param groupId The group ID of the remote video subscription
+   * @param timestampMs Worker-captured time of the first frame; defaults to now.
    */
-  onRemoteVideoFirstPacketReceived(groupId: number): void {
+  onRemoteVideoFirstPacketReceived(groupId: number, timestampMs?: number): void {
     const state = this.remoteVideoTiming.get(groupId);
     if (!state) {
       this.logger.warn(`onRemoteVideoFirstPacketReceived: No timer found for group_id=${groupId}`);
@@ -482,7 +486,7 @@ export default class MeetingSessionTimingManager {
       );
       return;
     }
-    state.firstPacketReceivedMs = this.getCurrentTimestamp();
+    state.firstPacketReceivedMs = timestampMs ?? this.getCurrentTimestamp();
     this.maybeEmitBatch();
   }
 

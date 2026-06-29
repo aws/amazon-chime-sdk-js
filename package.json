@@ -71,7 +71,7 @@
     "longjohn": "^0.2.12",
     "mocha": "^10.0.0",
     "node-fetch": "^2.6.1",
-    "nyc": "^17.1.0",
+    "nyc": "^18.0.0",
     "prettier": "^3.0.0",
     "protobufjs-cli": "^1.2.2",
     "rimraf": "^3.0.2",
@@ -81,7 +81,8 @@
     "typedoc": "^0.27.9",
     "typedoc-plugin-merge-modules": "^6.1.0",
     "typescript": "~5.8.0",
-    "typescript-eslint": "^8.54.0"
+    "typescript-eslint": "^8.54.0",
+    "uuid": "^11.1.1"
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^2.0.1",

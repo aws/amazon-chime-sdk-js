@@ -436,6 +436,64 @@ describe('MeetingSessionTimingManager', () => {
     });
   });
 
+  describe('worker-captured first-frame timestamp', () => {
+    it('uses the supplied timestamp for local audio first packet sent', () => {
+      manager.onLocalAudioAdded();
+      const ts = Date.now();
+      clock.tick(80);
+      manager.onLocalAudioFirstPacketSent(ts);
+      const timing: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(timing.localAudio[0].firstPacketSentMs).to.equal(ts);
+    });
+
+    it('falls back to Date.now() for local audio when no timestamp supplied', () => {
+      manager.onLocalAudioAdded();
+      clock.tick(80);
+      manager.onLocalAudioFirstPacketSent();
+      const timing: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(timing.localAudio[0].firstPacketSentMs).to.equal(1080);
+    });
+
+    it('uses the supplied timestamp for local video first frame sent', () => {
+      manager.onLocalVideoAdded();
+      const ts = Date.now();
+      clock.tick(120);
+      manager.onLocalVideoFirstFrameSent(ts);
+      const timing: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(timing.localVideo[0].firstFrameSentMs).to.equal(ts);
+    });
+
+    it('uses the supplied timestamp for remote audio first packet received', () => {
+      manager.onRemoteAudioAdded();
+      const ts = Date.now();
+      clock.tick(60);
+      manager.onRemoteAudioFirstPacketReceived(ts);
+      const timing: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(timing.remoteAudio[0].firstPacketReceivedMs).to.equal(ts);
+    });
+
+    it('uses the supplied timestamp for remote video first packet received', () => {
+      manager.onRemoteVideoAdded(1);
+      manager.onRemoteVideoBound(1);
+      const ts = Date.now();
+      clock.tick(90);
+      manager.onRemoteVideoFirstPacketReceived(1, ts);
+      clock.tick(15000);
+      const timing: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(timing.remoteVideos[0].firstPacketReceivedMs).to.equal(ts);
+    });
+
+    it('falls back to Date.now() for remote video when no timestamp supplied', () => {
+      manager.onRemoteVideoAdded(1);
+      manager.onRemoteVideoBound(1);
+      clock.tick(90);
+      manager.onRemoteVideoFirstPacketReceived(1);
+      clock.tick(15000);
+      const timing: MeetingSessionTiming = observerSpy.firstCall.args[0];
+      expect(timing.remoteVideos[0].firstPacketReceivedMs).to.equal(1090);
+    });
+  });
+
   describe('expectingRemoteVideo', () => {
     it('holds batch open when expecting remote video', () => {
       manager.onStart();

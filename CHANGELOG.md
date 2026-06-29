@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed `MeetingSessionTiming` first-packet/first-frame send and receive times being recorded on the main thread after the encoded-transform worker `postMessage` hop, which lagged the true media time and could produce negative cross-clock deltas server-side. The timestamp is now captured in the worker when the first frame for an SSRC is processed.
 - Fixed iOS page crash when rapidly switching background filters
 - Fixed video filter not re-applying after offline/online transition
 

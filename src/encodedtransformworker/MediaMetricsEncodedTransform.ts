@@ -58,10 +58,12 @@ abstract class BaseMetricsTransform extends EncodedTransform {
       this.metricsMap.set(ssrc, metrics);
       this.log(`Created metrics for SSRC ${ssrc}`);
 
+      // Timestamp the first frame here so the main thread records the true
+      // send/receive time, not the post-postMessage time.
       self.postMessage({
         type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
         transformName: this.transformName(),
-        message: { ssrc: String(ssrc) },
+        message: { ssrc: String(ssrc), firstFrameTimestampMs: String(Date.now()) },
       });
     }
 

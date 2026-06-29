@@ -1832,13 +1832,14 @@ export default class DefaultAudioVideoController
   onFirstPacketReceived(
     mediaType: 'audio' | 'video',
     direction: 'send' | 'receive',
-    ssrc: number
+    ssrc: number,
+    firstFrameTimestampMs?: number
   ): void {
     if (mediaType === 'audio') {
       if (direction === 'receive') {
-        this._meetingSessionTimingManager.onRemoteAudioFirstPacketReceived();
+        this._meetingSessionTimingManager.onRemoteAudioFirstPacketReceived(firstFrameTimestampMs);
       } else if (direction === 'send') {
-        this._meetingSessionTimingManager.onLocalAudioFirstPacketSent();
+        this._meetingSessionTimingManager.onLocalAudioFirstPacketSent(firstFrameTimestampMs);
       }
     } else if (mediaType === 'video') {
       if (direction === 'receive') {
@@ -1857,9 +1858,12 @@ export default class DefaultAudioVideoController
           return;
         }
         this.logger.debug(`Received first video packet for groupId=${groupId} ssrc=${ssrc}`);
-        this._meetingSessionTimingManager.onRemoteVideoFirstPacketReceived(groupId);
+        this._meetingSessionTimingManager.onRemoteVideoFirstPacketReceived(
+          groupId,
+          firstFrameTimestampMs
+        );
       } else if (direction === 'send') {
-        this._meetingSessionTimingManager.onLocalVideoFirstFrameSent();
+        this._meetingSessionTimingManager.onLocalVideoFirstFrameSent(firstFrameTimestampMs);
       }
     }
   }
