@@ -51,11 +51,14 @@ export interface EncodedTransformMediaMetricsObserver {
 
   /**
    * Called when the first packet is seen for a new SSRC via encoded transform.
+   * @param firstFrameTimestampMs Unix ms captured in the worker when the first
+   * frame for this SSRC was processed. Callers fall back to Date.now() if absent.
    */
   onFirstPacketReceived?(
     mediaType: 'audio' | 'video',
     direction: 'send' | 'receive',
-    ssrc: number
+    ssrc: number,
+    firstFrameTimestampMs?: number
   ): void;
 }
 
@@ -113,6 +116,15 @@ export default class MediaMetricsTransformManager extends EncodedTransformManage
         this.logger.warn(`Received NEW_SSRC message with invalid ssrc: ${ssrcStr}, ignoring`);
         return;
       }
+      // message.message is guaranteed defined here (the ssrc guard above returns otherwise).
+      const tsStr = message.message.firstFrameTimestampMs;
+      let firstFrameTimestampMs: number | undefined;
+      if (tsStr !== undefined) {
+        const parsed = parseInt(tsStr, 10);
+        if (!isNaN(parsed)) {
+          firstFrameTimestampMs = parsed;
+        }
+      }
       let mediaType: 'audio' | 'video' | undefined;
       let direction: 'send' | 'receive' | undefined;
       switch (message.transformName) {
@@ -136,7 +148,7 @@ export default class MediaMetricsTransformManager extends EncodedTransformManage
       if (mediaType && direction) {
         for (const observer of this.observers) {
           try {
-            observer.onFirstPacketReceived?.(mediaType, direction, ssrc);
+            observer.onFirstPacketReceived?.(mediaType, direction, ssrc, firstFrameTimestampMs);
           } catch (e) {
             this.logger.error(`Error notifying first packet observer: ${e}`);
           }

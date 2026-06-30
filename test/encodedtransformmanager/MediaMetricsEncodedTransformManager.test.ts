@@ -76,7 +76,31 @@ describe('MediaMetricsTransformManager', () => {
         message: { ssrc: '12345' },
       });
       expect(spy.calledOnce).to.be.true;
-      expect(spy.firstCall.args).to.deep.equal(['audio', 'send', 12345]);
+      expect(spy.firstCall.args).to.deep.equal(['audio', 'send', 12345, undefined]);
+    });
+
+    it('forwards the first-frame timestamp from the NEW_SSRC message', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.VIDEO_SENDER,
+        message: { ssrc: '200', firstFrameTimestampMs: '1781573552805' },
+      });
+      expect(spy.firstCall.args).to.deep.equal(['video', 'send', 200, 1781573552805]);
+    });
+
+    it('ignores an invalid first-frame timestamp and falls back', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.VIDEO_SENDER,
+        message: { ssrc: '200', firstFrameTimestampMs: 'not-a-number' },
+      });
+      expect(spy.firstCall.args).to.deep.equal(['video', 'send', 200, undefined]);
     });
 
     it('notifies observer on NEW_SSRC for audio receiver', () => {

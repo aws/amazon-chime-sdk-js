@@ -79,6 +79,26 @@ describe('MediaMetricsEncodedTransform', () => {
       expect(newSsrcCall.args[0].message.ssrc).to.equal('1234567890');
     });
 
+    it('includes the first-frame timestamp in the NEW_SSRC message', () => {
+      const clock = sinon.useFakeTimers({ now: 42000 });
+      const frame = {
+        data: new ArrayBuffer(10),
+        timestamp: 12345,
+        getMetadata: () => ({ synchronizationSource: 1234567890 }),
+      };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
+
+      transform.transform(frame as RTCEncodedAudioFrame, controller);
+
+      const newSsrcCall = postMessageStub
+        .getCalls()
+        .find(call => call.args[0].type === MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC);
+      expect(newSsrcCall.args[0].message.firstFrameTimestampMs).to.equal('42000');
+      clock.restore();
+    });
+
     it('reports metrics after reportInterval time has passed', () => {
       const clock = sinon.useFakeTimers();
       const frame = {
