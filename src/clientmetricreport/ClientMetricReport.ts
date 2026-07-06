@@ -397,6 +397,78 @@ export default class ClientMetricReport {
       transform: this.countPerSecond,
       type: SdkMetric.Type.VIDEO_SENT_TRANSFORM_PPS,
     },
+    videoBgSegSegmentationDurationMs: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_DURATION_MS,
+    },
+    videoBgSegEffectRenderDurationMs: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_EFFECT_RENDER_DURATION_MS,
+    },
+    videoBgSegFramesPerSegmentation: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_FRAMES_PER_SEGMENTATION,
+    },
+    videoBgSegCpuUsagePercent: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_CPU_USAGE_PERCENT,
+    },
+    videoBgSegInitializationDurationMs: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_DURATION_MS,
+    },
+    videoBgSegInitializationFailure: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_FAILURE,
+    },
+    videoBgSegErrorCount: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_ERROR_COUNT,
+    },
+    videoBgSegFramesSubmitted: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SUBMITTED,
+    },
+    videoBgSegFramesSegmented: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SEGMENTED,
+    },
+    videoPipelineFrameRate: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_PIPELINE_FRAME_RATE,
+    },
+    videoProcessorAverageInferenceLatency: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_PROCESSOR_LATENCY_MS,
+    },
+    videoBgSegAssetLoadingFailure: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_FAILURE,
+    },
+    videoBgSegAssetLoadingTimeMs: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS,
+    },
+    videoBgSegCompatibilityFailure: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE,
+    },
+    videoBgSegProcessorCreationFailure: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE,
+    },
+    videoProcessorName: {
+      transform: this.identityValue,
+      type: undefined,
+    },
+    videoBgSegModelType: {
+      transform: this.identityValue,
+      type: undefined,
+    },
+    videoBgSegDelegateType: {
+      transform: this.identityValue,
+      type: undefined,
+    },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -525,6 +597,9 @@ export default class ClientMetricReport {
   } = {
     encoderImplementation: SdkStreamDimension.Type.VIDEO_ENCODER_NAME,
     decoderImplementation: SdkStreamDimension.Type.VIDEO_DECODER_NAME,
+    videoBgSegModelType: SdkStreamDimension.Type.VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE,
+    videoBgSegDelegateType: SdkStreamDimension.Type.VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE,
+    videoProcessorName: SdkStreamDimension.Type.VIDEO_PROCESSOR_NAME,
   };
 
   getStreamDimensionMap(): {

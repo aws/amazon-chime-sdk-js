@@ -12,9 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added CPU pressure state reporting via the [Compute Pressure API](https://developer.mozilla.org/en-US/docs/Web/API/Compute_Pressure_API), sent to the backend as the `CPU_PRESSURE_STATE` client metric where supported.
 - Added `BackgroundSegmentationVideoFrameProcessor` with CDN asset loading, request deduplication, and browser compatibility checking (WebGL2, WASM, Workers)
 - Added configurable blur strength (low/medium/high) and support for `selfie_general` and `selfie_multiclass` model types
-- Added `BackgroundSegmentationMetrics` observer for StatsCollector integration
 - Added dynamic filter switching via `setConfig`/`setModelType` without processor recreation
-- Added video processor metrics collection (frame rate, per-processor latency) via StatsCollector
+- Added video processor pipeline metrics (frame rate, per-processor latency) sent to the media backend via protobuf signaling
+- Added CDN processor performance metrics (segmentation duration, effect render time, CPU usage, error count) via `BackgroundSegmentationMetricsObserver`
+- Added metric dimensions for processor name, model type, and delegate type
+- Added numeric initialization metrics (asset loading time, compatibility status, processor creation status)
 - Added event publishing for filter lifecycle (`backgroundFilterStarted`, `backgroundFilterConfigSelected`, `backgroundFilterFailed`)
 - Added V3-specific fields to `VideoFXEventAttributes`
 

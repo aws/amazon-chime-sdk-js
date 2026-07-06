@@ -7,6 +7,7 @@ import * as sinon from 'sinon';
 import { RedundantAudioRecoveryMetricReport } from '../../src';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
+import { BackgroundSegmentationInitializationStatus } from '../../src/backgroundsegmentation/BackgroundSegmentationMetrics';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
@@ -1462,26 +1463,140 @@ describe('StatsCollector', () => {
         processors: [{ averageProcessLatency: 10.5, processorName: 'TestProcessor' }],
       };
       statsCollector.videoProcessorMetricsDidReceive(metrics);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((statsCollector as any).videoPipelineFrameRate).to.equal(15);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((statsCollector as any).videoProcessors[0].processorName).to.equal('TestProcessor');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((statsCollector as any).videoProcessors[0].averageProcessLatency).to.equal(10.5);
     });
   });
 
-  describe('backgroundSegmentationMetricsDidReceive', () => {
+  describe('backgroundSegmentationInitializationMetricsDidReceive', () => {
     it('stores background segmentation metrics', () => {
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
-      statsCollector.backgroundSegmentationMetricsDidReceive({
-        metricName: 'test',
-        timestamp: Date.now(),
+      statsCollector.backgroundSegmentationInitializationMetricsDidReceive({
+        initializationStatus: BackgroundSegmentationInitializationStatus.SUCCESS,
+        assetLoadingTimeMs: 150,
       });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((statsCollector as any).backgroundSegmentationMetrics.length).to.equal(1);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((statsCollector as any).backgroundSegmentationMetrics[0].assetLoadingTimeMs).to.equal(
+        150
+      );
     });
 
     it('drops oldest when max exceeded', () => {
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       for (let i = 0; i < 55; i++) {
-        statsCollector.backgroundSegmentationMetricsDidReceive({
-          metricName: `m-${i}`,
-          timestamp: Date.now(),
+        statsCollector.backgroundSegmentationInitializationMetricsDidReceive({
+          initializationStatus: BackgroundSegmentationInitializationStatus.SUCCESS,
+          assetLoadingTimeMs: i,
         });
       }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((statsCollector as any).backgroundSegmentationMetrics.length).to.equal(50);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((statsCollector as any).backgroundSegmentationMetrics[0].assetLoadingTimeMs).to.equal(
+        5
+      );
+    });
+  });
+
+  describe('backgroundSegmentationProcessorMetricsDidReceive', () => {
+    it('stores the processor metrics', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      const report = {
+        segmentationDurationMs: 12,
+        effectRenderDurationMs: 5,
+        framesPerSegmentation: 2,
+        framesSubmitted: 30,
+        framesSegmented: 15,
+        estimatedCPUUsagePercentage: 10,
+        modelType: 'selfie_general',
+        delegateType: 'gpu',
+        errorCount: 0,
+      };
+      statsCollector.backgroundSegmentationProcessorMetricsDidReceive(report);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((statsCollector as any).backgroundSegmentationProcessorMetric).to.deep.equal(report);
+    });
+  });
+
+  describe('When it has background segmentation processor metrics', () => {
+    it('adds custom metrics for background segmentation processor metrics', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          const rtcStatsReports = _clientMetricReport.customStatsReports;
+          let foundReport = false;
+          // @ts-ignore
+          rtcStatsReports.forEach(report => {
+            if (
+              report.kind === 'video' &&
+              report.type === 'outbound-rtp' &&
+              report.videoBgSegSegmentationDurationMs !== undefined
+            ) {
+              foundReport = true;
+              expect(report.ssrc).to.equal(1);
+              expect(report.videoBgSegSegmentationDurationMs).to.equal(12);
+              expect(report.videoBgSegEffectRenderDurationMs).to.equal(5);
+              expect(report.videoBgSegFramesPerSegmentation).to.equal(2);
+              expect(report.videoBgSegCpuUsagePercent).to.equal(10);
+              expect(report.videoBgSegErrorCount).to.equal(0);
+              expect(report.videoBgSegFramesSubmitted).to.equal(30);
+              expect(report.videoBgSegFramesSegmented).to.equal(15);
+              expect(report.videoBgSegModelType).to.equal('selfie_general');
+              expect(report.videoBgSegDelegateType).to.equal('gpu');
+              expect(report.videoBgSegInitializationDurationMs).to.equal(250);
+              expect(report.videoBgSegInitializationFailure).to.equal(0);
+            }
+          });
+          expect(foundReport).to.be.true;
+          statsCollector.stop();
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCOutboundRTPVideoStream',
+          type: 'outbound-rtp',
+          kind: 'video',
+          ssrc: 1,
+          packetsSent: 100,
+          bytesSent: 50000,
+        },
+      ];
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      statsCollector.backgroundSegmentationProcessorMetricsDidReceive({
+        segmentationDurationMs: 12,
+        effectRenderDurationMs: 5,
+        framesPerSegmentation: 2,
+        framesSubmitted: 30,
+        framesSegmented: 15,
+        estimatedCPUUsagePercentage: 10,
+        modelType: 'selfie_general',
+        delegateType: 'gpu',
+        errorCount: 0,
+        initializationDurationMs: 250,
+        initializationFailure: 0,
+      });
     });
   });
 });

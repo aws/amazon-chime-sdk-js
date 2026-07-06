@@ -17,6 +17,7 @@ import {
 } from './BackgroundSegmentationConstants';
 import BackgroundSegmentationMetrics, {
   BackgroundSegmentationMetricsObserver,
+  BackgroundSegmentationProcessorMetrics,
 } from './BackgroundSegmentationMetrics';
 
 /**
@@ -31,7 +32,6 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
     private logger: Logger,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private cdnProcessor: any | null,
-    private modelType: ModelType,
     private metrics: BackgroundSegmentationMetrics,
     private eventController?: EventController
   ) {}
@@ -55,35 +55,27 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
     );
 
     const compatibility = BackgroundSegmentationCompatibilityChecker.checkCompatibility(logger);
-    metrics.reportCompatibilityCheck(compatibility.isCompatible, compatibility.missingFeatures);
+    metrics.reportCompatibilityCheck(compatibility.isCompatible);
 
-    /* istanbul ignore else */
     if (!compatibility.isCompatible) {
       logger.warn(
         `[BackgroundSegmentationVideoFrameProcessor] Browser not compatible, missing: [${compatibility.missingFeatures.join(', ')}]`
       );
       metrics.reportAssetLoadingResult(
-        'compatibility-check',
         `Missing features: ${compatibility.missingFeatures.join(', ')}`
       );
       BackgroundSegmentationVideoFrameProcessor.publishFilterFailedEvent(
         eventController,
         'compatibility-check-failed',
         `Missing features: ${compatibility.missingFeatures.join(', ')}`
-      ).catch(
-        /* istanbul ignore next */ e =>
-          logger.error(
-            `[BackgroundSegmentationVideoFrameProcessor] Failed to publish error event: ${e}`
-          )
+      ).catch(e =>
+        logger.error(
+          `[BackgroundSegmentationVideoFrameProcessor] Failed to publish error event: ${e}`
+        )
       );
 
-      return new BackgroundSegmentationVideoFrameProcessor(
-        logger,
-        null,
-        modelType,
-        metrics,
-        eventController
-      );
+      metrics.emitInitializationMetrics();
+      return new BackgroundSegmentationVideoFrameProcessor(logger, null, metrics, eventController);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,14 +93,14 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
       logger.info(
         `[BackgroundSegmentationVideoFrameProcessor] CDN assets loaded in ${loadTimeMs.toFixed(2)}ms`
       );
-      metrics.reportAssetLoadingResult('cdn-processor', undefined, loadTimeMs);
+      metrics.reportAssetLoadingResult(undefined, loadTimeMs);
     } catch (error) {
       /* istanbul ignore next */
       const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error(
         `[BackgroundSegmentationVideoFrameProcessor] ✗ Failed to load CDN assets: ${errorMessage}`
       );
-      metrics.reportAssetLoadingResult('cdn-processor', errorMessage);
+      metrics.reportAssetLoadingResult(errorMessage);
       BackgroundSegmentationVideoFrameProcessor.publishFilterFailedEvent(
         eventController,
         'cdn-loading-failed',
@@ -120,13 +112,8 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
       );
 
       logger.warn('[BackgroundSegmentationVideoFrameProcessor] Falling back to no-op processor');
-      return new BackgroundSegmentationVideoFrameProcessor(
-        logger,
-        null,
-        modelType,
-        metrics,
-        eventController
-      );
+      metrics.emitInitializationMetrics();
+      return new BackgroundSegmentationVideoFrameProcessor(logger, null, metrics, eventController);
     }
 
     try {
@@ -147,15 +134,18 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
       const processor = new BackgroundSegmentationVideoFrameProcessor(
         logger,
         cdnProcessor,
-        modelType,
         metrics,
         eventController
       );
+
+      // Subscribe to periodic processor metrics from CDN processor
+      processor.subscribeToProcessorMetrics();
 
       if (eventController) {
         await processor.publishProcessorConfigEvent('backgroundFilterStarted', config);
       }
 
+      metrics.emitInitializationMetrics();
       return processor;
     } catch (error) {
       /* istanbul ignore next */
@@ -163,26 +153,20 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
       logger.error(
         `[BackgroundSegmentationVideoFrameProcessor] ✗ Failed to create BackgroundSegmentationProcessor: ${errorMessage}`
       );
-      metrics.reportProcessorError('processor-creation-failed', errorMessage, modelType);
+      metrics.reportProcessorError();
       BackgroundSegmentationVideoFrameProcessor.publishFilterFailedEvent(
         eventController,
         'processor-creation-failed',
         errorMessage
-      ).catch(
-        /* istanbul ignore next */ e =>
-          logger.error(
-            `[BackgroundSegmentationVideoFrameProcessor] Failed to publish error event: ${e}`
-          )
+      ).catch(e =>
+        logger.error(
+          `[BackgroundSegmentationVideoFrameProcessor] Failed to publish error event: ${e}`
+        )
       );
 
       logger.warn('[BackgroundSegmentationVideoFrameProcessor] Falling back to no-op processor');
-      return new BackgroundSegmentationVideoFrameProcessor(
-        logger,
-        null,
-        modelType,
-        metrics,
-        eventController
-      );
+      metrics.emitInitializationMetrics();
+      return new BackgroundSegmentationVideoFrameProcessor(logger, null, metrics, eventController);
     }
   }
 
@@ -197,19 +181,6 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
       this.logger.error(
         `[BackgroundSegmentationVideoFrameProcessor] Processing error: ${errorMessage}`
       );
-      this.metrics.reportProcessorError('processing-failed', errorMessage, this.modelType);
-
-      BackgroundSegmentationVideoFrameProcessor.publishFilterFailedEvent(
-        this.eventController,
-        'processing-failed',
-        errorMessage
-      ).catch(
-        /* istanbul ignore next */ e =>
-          this.logger.error(
-            `[BackgroundSegmentationVideoFrameProcessor] Failed to publish error event: ${e}`
-          )
-      );
-
       return buffers;
     }
   }
@@ -235,11 +206,10 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
 
       // Publish config changed event
       if (this.eventController) {
-        this.publishProcessorConfigEvent('backgroundFilterConfigSelected', config).catch(
-          /* istanbul ignore next */ e =>
-            this.logger.error(
-              `[BackgroundSegmentationVideoFrameProcessor] Failed to publish config changed event: ${e}`
-            )
+        this.publishProcessorConfigEvent('backgroundFilterConfigSelected', config).catch(e =>
+          this.logger.error(
+            `[BackgroundSegmentationVideoFrameProcessor] Failed to publish config changed event: ${e}`
+          )
         );
       }
     } catch (error) {
@@ -248,8 +218,6 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
       this.logger.error(
         `[BackgroundSegmentationVideoFrameProcessor] setConfig error: ${errorMessage}`
       );
-
-      this.metrics.reportProcessorError('setConfig-failed', errorMessage, this.modelType);
     }
   }
 
@@ -260,20 +228,17 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
   setModelType(newModelType: ModelType): void {
     if (!this.cdnProcessor) return;
     this.cdnProcessor.setModelType(newModelType);
-    this.modelType = newModelType;
   }
 
   getMaxCPUUsagePercentage(): number | undefined {
     return this.cdnProcessor?.getMaxCPUUsagePercentage();
   }
 
-  /* istanbul ignore next */
   setMaxCPUUsagePercentage(percentage: number): void {
     this.cdnProcessor?.setMaxCPUUsagePercentage(percentage);
   }
 
   /** @internal */
-  /* istanbul ignore next */
   setEventController(eventController: EventController): void {
     this.eventController = eventController;
 
@@ -295,6 +260,38 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
     this.metrics.setMetricsCollector(metricsCollector);
   }
 
+  subscribeToProcessorMetrics(): void {
+    if (!this.cdnProcessor || typeof this.cdnProcessor.addMetricsObserver !== 'function') {
+      return;
+    }
+
+    /* istanbul ignore next */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.cdnProcessor.addMetricsObserver({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      metricsDidReceive: (cdnMetrics: any) => {
+        const processorMetrics: BackgroundSegmentationProcessorMetrics = {
+          segmentationDurationMs: cdnMetrics.segmentationDurationMs ?? 0,
+          effectRenderDurationMs: cdnMetrics.effectRenderDurationMs ?? 0,
+          framesPerSegmentation: cdnMetrics.framesPerSegmentation ?? 0,
+          framesSubmitted: cdnMetrics.framesSubmitted ?? 0,
+          framesSegmented: cdnMetrics.framesSegmented ?? 0,
+          estimatedCPUUsagePercentage: cdnMetrics.estimatedCPUUsagePercentage ?? 0,
+          modelType: String(cdnMetrics.modelType ?? 'unknown'),
+          delegateType: String(cdnMetrics.delegateType ?? 'unknown'),
+          errorCount: cdnMetrics.errorCount ?? 0,
+        };
+        if (cdnMetrics.initializationDurationMs !== undefined) {
+          processorMetrics.initializationDurationMs = cdnMetrics.initializationDurationMs;
+        }
+        if (cdnMetrics.initializationFailure !== undefined) {
+          processorMetrics.initializationFailure = cdnMetrics.initializationFailure;
+        }
+        this.metrics.reportProcessorMetrics(processorMetrics);
+      },
+    });
+  }
+
   private async publishProcessorConfigEvent(
     eventName: EventName,
     config: BackgroundSegmentationVideoFrameProcessorConfig
@@ -311,14 +308,13 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
         config.type === ProcessorEffect.COLOR_REPLACEMENT
       ).toString(),
       backgroundFilterVersion: 3,
-      backgroundFilterModelType: this.modelType,
+      backgroundFilterModelType: this.getModelType(),
       backgroundFilterEffectType: config.type,
     };
 
     await this.eventController.publishEvent(eventName, attributes);
   }
 
-  /* istanbul ignore next */
   private static async publishFilterFailedEvent(
     eventController: EventController | undefined,
     errorType: string,

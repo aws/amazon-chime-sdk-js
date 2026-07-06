@@ -357,8 +357,10 @@ import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
 import ZLIBTextCompressor from './sdp/ZLIBTextCompressor';
 import { BackgroundSegmentationCompatibilityResult } from './backgroundsegmentation/BackgroundSegmentationCompatibilityChecker';
-import { BackgroundSegmentationMetricReport } from './backgroundsegmentation/BackgroundSegmentationMetrics';
+import { BackgroundSegmentationInitializationMetrics } from './backgroundsegmentation/BackgroundSegmentationMetrics';
+import { BackgroundSegmentationInitializationStatus } from './backgroundsegmentation/BackgroundSegmentationMetrics';
 import { BackgroundSegmentationMetricsObserver } from './backgroundsegmentation/BackgroundSegmentationMetrics';
+import { BackgroundSegmentationProcessorMetrics } from './backgroundsegmentation/BackgroundSegmentationMetrics';
 import { BackgroundSegmentationVideoFrameProcessorConfig, BlurStrength as BackgroundSegmentationBlurStrength, ModelType, ProcessorEffect } from './backgroundsegmentation/BackgroundSegmentationConstants';
 import { MeetingSessionSignalingTiming, MeetingSessionRemoteAudioTiming, MeetingSessionLocalAudioTiming, MeetingSessionLocalVideoTiming, MeetingSessionRemoteVideoTiming, MeetingSessionTimingObserver } from './meetingsessiontiming/MeetingSessionTiming';
 import { MutableVideoPreferences } from './videodownlinkbandwidthpolicy/VideoPreferences';
@@ -410,9 +412,11 @@ export {
   BackgroundSegmentationBlurStrength,
   BackgroundSegmentationCompatibilityChecker,
   BackgroundSegmentationCompatibilityResult,
-  BackgroundSegmentationMetricReport,
+  BackgroundSegmentationInitializationMetrics,
+  BackgroundSegmentationInitializationStatus,
   BackgroundSegmentationMetrics,
   BackgroundSegmentationMetricsObserver,
+  BackgroundSegmentationProcessorMetrics,
   BackgroundSegmentationVideoFrameProcessor,
   BackgroundSegmentationVideoFrameProcessorConfig,
   Backoff,

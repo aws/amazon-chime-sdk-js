@@ -37,7 +37,11 @@ type RawMetricReport = any;
 // eslint-disable-next-line
 type StatsReportItem = any;
 
-import { BackgroundSegmentationMetricReport } from '../backgroundsegmentation/BackgroundSegmentationMetrics';
+import {
+  BackgroundSegmentationInitializationMetrics,
+  BackgroundSegmentationInitializationStatus,
+  BackgroundSegmentationProcessorMetrics,
+} from '../backgroundsegmentation/BackgroundSegmentationMetrics';
 import {
   EncodedTransformMediaMetrics,
   EncodedTransformMediaMetricsObserver,
@@ -78,7 +82,9 @@ export default class StatsCollector
   private videoCodecDegradationConcurrentSendersCount: number = 0;
   private videoPipelineFrameRate: number = 0;
   private videoProcessors: Array<{ averageProcessLatency: number; processorName: string }> = [];
-  private backgroundSegmentationMetrics: Array<BackgroundSegmentationMetricReport> = [];
+  private backgroundSegmentationMetrics: Array<BackgroundSegmentationInitializationMetrics> = [];
+  private backgroundSegmentationProcessorMetric: BackgroundSegmentationProcessorMetrics | null =
+    null;
   private resolutionMap = new Map<string, { width: number; height: number }>();
   private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
@@ -552,6 +558,48 @@ export default class StatsCollector
     return clientMetricFrame;
   }
 
+  private addBgSegProcessorMetrics(
+    customStatsReports: CustomStatsReport[],
+    videoUpstreamSsrc: number
+  ): void {
+    if (!this.backgroundSegmentationProcessorMetric) {
+      return;
+    }
+
+    const metric = this.backgroundSegmentationProcessorMetric;
+
+    // @ts-ignore
+    const customReport: CustomStatsReport = {
+      kind: 'video',
+      type: 'outbound-rtp',
+      ssrc: videoUpstreamSsrc,
+      timestamp: Date.now(),
+      videoBgSegSegmentationDurationMs: metric.segmentationDurationMs,
+      videoBgSegEffectRenderDurationMs: metric.effectRenderDurationMs,
+      videoBgSegFramesPerSegmentation: metric.framesPerSegmentation,
+      videoBgSegCpuUsagePercent: metric.estimatedCPUUsagePercentage,
+      videoBgSegErrorCount: metric.errorCount,
+      videoBgSegFramesSubmitted: metric.framesSubmitted,
+      videoBgSegFramesSegmented: metric.framesSegmented,
+    };
+
+    if (metric.initializationDurationMs !== undefined) {
+      customReport.videoBgSegInitializationDurationMs = metric.initializationDurationMs;
+    }
+    if (metric.initializationFailure !== undefined) {
+      customReport.videoBgSegInitializationFailure = metric.initializationFailure;
+    }
+    if (metric.modelType !== undefined) {
+      customReport.videoBgSegModelType = metric.modelType;
+    }
+    if (metric.delegateType !== undefined) {
+      customReport.videoBgSegDelegateType = metric.delegateType;
+    }
+
+    customStatsReports.push(customReport);
+    this.backgroundSegmentationProcessorMetric = null;
+  }
+
   /**
    * Sends the MetricFrame to media backend via ProtoBuf.
    */
@@ -669,6 +717,7 @@ export default class StatsCollector
     if (videoUpstreamSsrc !== null) {
       this.addVideoCodecDegradationMetrics(customStatsReports, videoUpstreamSsrc);
       this.addVideoProcessorMetrics(customStatsReports, videoUpstreamSsrc);
+      this.addBgSegProcessorMetrics(customStatsReports, videoUpstreamSsrc);
     }
     this.clientMetricReport.customStatsReports = customStatsReports;
     filteredRawMetricReports.push(...customStatsReports);
@@ -843,24 +892,25 @@ export default class StatsCollector
   }): void {
     this.videoPipelineFrameRate = metrics.frameRate;
     this.videoProcessors = metrics.processors;
-    this.logger.debug(
-      () =>
-        `videoProcessorMetricsDidReceive: frameRate=${metrics.frameRate}, processors=${JSON.stringify(metrics.processors)}`
-    );
   }
 
   /**
    * Receive background segmentation (V3) processor metrics
    * These are one-time metrics (asset loading, compatibility, errors) not periodic like pipeline metrics
    */
-  backgroundSegmentationMetricsDidReceive(metric: BackgroundSegmentationMetricReport): void {
-    this.logger.debug(
-      () => `[StatsCollector] Received background segmentation metric: ${JSON.stringify(metric)}`
-    );
+  backgroundSegmentationInitializationMetricsDidReceive(
+    metric: BackgroundSegmentationInitializationMetrics
+  ): void {
     if (this.backgroundSegmentationMetrics.length >= StatsCollector.MAX_BUFFERED_BG_SEG_METRICS) {
       this.backgroundSegmentationMetrics.shift();
     }
     this.backgroundSegmentationMetrics.push(metric);
+  }
+
+  backgroundSegmentationProcessorMetricsDidReceive(
+    metric: BackgroundSegmentationProcessorMetrics
+  ): void {
+    this.backgroundSegmentationProcessorMetric = metric;
   }
 
   private addVideoCodecDegradationMetrics(
@@ -919,19 +969,22 @@ export default class StatsCollector
           `[StatsCollector] Adding ${this.backgroundSegmentationMetrics.length} background segmentation metrics to customStatsReports`
       );
       for (const metric of this.backgroundSegmentationMetrics) {
-        const { timestamp: metricTimestamp, ...rest } = metric;
-        const customReport = {
-          ...rest,
+        const status = metric.initializationStatus;
+        customStatsReports.push({
           kind: 'video',
-          type: 'background-segmentation-processor-metadata',
+          type: 'outbound-rtp',
           ssrc: videoUpstreamSsrc,
-          timestamp: metricTimestamp || Date.now(),
-        };
-        this.logger.debug(
-          () =>
-            `[StatsCollector] Background segmentation custom report: ${JSON.stringify(customReport, null, 2)}`
-        );
-        customStatsReports.push(customReport);
+          timestamp: Date.now(),
+          videoBgSegAssetLoadingFailure:
+            status === BackgroundSegmentationInitializationStatus.ASSET_LOADING_FAILURE ? 1 : 0,
+          videoBgSegAssetLoadingTimeMs: metric.assetLoadingTimeMs ?? 0,
+          videoBgSegCompatibilityFailure:
+            status === BackgroundSegmentationInitializationStatus.COMPATIBILITY_FAILURE ? 1 : 0,
+          videoBgSegProcessorCreationFailure:
+            status === BackgroundSegmentationInitializationStatus.PROCESSOR_CREATION_FAILURE
+              ? 1
+              : 0,
+        });
       }
       this.backgroundSegmentationMetrics = [];
     }

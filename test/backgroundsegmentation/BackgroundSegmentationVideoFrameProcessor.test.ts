@@ -6,7 +6,7 @@ import * as sinon from 'sinon';
 
 import {
   BackgroundSegmentationBlurStrength,
-  BackgroundSegmentationMetricReport as MetricReportFromSrc,
+  BackgroundSegmentationInitializationStatus,
   ModelType as ModelTypeFromSrc,
   ProcessorEffect as ProcessorEffectFromSrc,
 } from '../../src';
@@ -58,7 +58,6 @@ describe('BackgroundSegmentationVideoFrameProcessor', () => {
       expect(ModelTypeFromSrc).to.equal(ModelType);
       expect(ProcessorEffectFromSrc).to.equal(ProcessorEffect);
       expect(BackgroundSegmentationBlurStrength).to.equal(BlurStrength);
-      expect(MetricReportFromSrc).to.exist;
     });
   });
 
@@ -77,6 +76,27 @@ describe('BackgroundSegmentationVideoFrameProcessor', () => {
       const buffers = [{} as VideoFrameBuffer];
       const result = await processor.process(buffers);
       expect(result).to.equal(buffers);
+    });
+
+    it('handles publishEvent rejection gracefully on compatibility failure', async () => {
+      sandbox.stub(BackgroundSegmentationCompatibilityChecker, 'checkCompatibility').returns({
+        isCompatible: false,
+        missingFeatures: ['webgl2'],
+      });
+
+      const eventController = {
+        publishEvent: sandbox.stub().rejects(new Error('publish error')),
+      };
+      const processor = await BackgroundSegmentationVideoFrameProcessor.create(
+        logger,
+        { type: ProcessorEffect.BLUR },
+        ModelType.SELFIE_GENERAL,
+        undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        eventController as any
+      );
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(processor).to.not.be.undefined;
     });
 
     it('returns no-op processor when CDN asset loading fails', async () => {
@@ -222,6 +242,36 @@ describe('BackgroundSegmentationVideoFrameProcessor', () => {
       expect(result).to.equal(buffers);
     });
 
+    it('handles publishEvent rejection on processor creation failure', async () => {
+      sandbox.stub(BackgroundSegmentationCompatibilityChecker, 'checkCompatibility').returns({
+        isCompatible: true,
+        missingFeatures: [],
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (document as any).head.appendChild.callsFake((script: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).BackgroundSegmentationProcessor = {
+          create: sandbox.stub().rejects(new Error('create failed')),
+        };
+        script.onload();
+      });
+
+      const eventController = {
+        publishEvent: sandbox.stub().rejects(new Error('publish error')),
+      };
+      const processor = await BackgroundSegmentationVideoFrameProcessor.create(
+        logger,
+        { type: ProcessorEffect.BLUR },
+        ModelType.SELFIE_GENERAL,
+        undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        eventController as any
+      );
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(processor).to.not.be.undefined;
+    });
+
     it('publishes filter failed event on incompatibility', async () => {
       sandbox.stub(BackgroundSegmentationCompatibilityChecker, 'checkCompatibility').returns({
         isCompatible: false,
@@ -244,6 +294,25 @@ describe('BackgroundSegmentationVideoFrameProcessor', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(eventController.publishEvent.calledWith('backgroundFilterFailed', sinon.match.any)).to
         .be.true;
+    });
+
+    it('handles script loaded but ProcessorClass not found on window', async () => {
+      sandbox.stub(BackgroundSegmentationCompatibilityChecker, 'checkCompatibility').returns({
+        isCompatible: true,
+        missingFeatures: [],
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (document as any).head.appendChild.callsFake((script: any) => {
+        // Do NOT set window.BackgroundSegmentationProcessor
+        script.onload();
+      });
+
+      const processor = await BackgroundSegmentationVideoFrameProcessor.create(logger, {
+        type: ProcessorEffect.BLUR,
+      });
+      // Processor is created but cdnProcessor is null due to the error
+      expect(processor).to.not.be.undefined;
     });
   });
 
@@ -469,6 +538,17 @@ describe('BackgroundSegmentationVideoFrameProcessor', () => {
       processor.setConfig({ type: ProcessorEffect.BLUR });
     });
 
+    it('setConfig handles publishEvent rejection gracefully', async () => {
+      const eventController = {
+        publishEvent: sandbox.stub().rejects(new Error('publish failed')),
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      processor.setEventController(eventController as any);
+      processor.setConfig({ type: ProcessorEffect.BLUR, blurStrength: BlurStrength.LOW });
+      await new Promise(resolve => setTimeout(resolve, 10));
+      // Should not throw
+    });
+
     it('getModelType delegates to cdnProcessor', () => {
       expect(processor.getModelType()).to.equal(ModelType.SELFIE_GENERAL);
     });
@@ -583,6 +663,45 @@ describe('BackgroundSegmentationVideoFrameProcessor', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
       expect(eventController.publishEvent.called).to.be.false;
     });
+
+    it('handles publishEvent rejection gracefully in setEventController', async () => {
+      sandbox.stub(BackgroundSegmentationCompatibilityChecker, 'checkCompatibility').returns({
+        isCompatible: true,
+        missingFeatures: [],
+      });
+
+      const mockCdnProcessor = {
+        process: sandbox.stub().resolves([]),
+        destroy: sandbox.stub().resolves(),
+        getConfig: sandbox
+          .stub()
+          .returns({ type: ProcessorEffect.BLUR, blurStrength: BlurStrength.MEDIUM }),
+        setConfig: sandbox.stub(),
+        getModelType: sandbox.stub().returns(ModelType.SELFIE_GENERAL),
+        setModelType: sandbox.stub(),
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (document as any).head.appendChild.callsFake((script: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).BackgroundSegmentationProcessor = {
+          create: sandbox.stub().resolves(mockCdnProcessor),
+        };
+        script.onload();
+      });
+
+      const processor = await BackgroundSegmentationVideoFrameProcessor.create(logger, {
+        type: ProcessorEffect.BLUR,
+      });
+
+      const eventController = {
+        publishEvent: sandbox.stub().rejects(new Error('publish failed')),
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      processor.setEventController(eventController as any);
+      await new Promise(resolve => setTimeout(resolve, 10));
+      // Should not throw — error is caught and logged
+    });
   });
 
   describe('setMetricsCollector', () => {
@@ -596,8 +715,18 @@ describe('BackgroundSegmentationVideoFrameProcessor', () => {
         type: ProcessorEffect.BLUR,
       });
 
-      const collector = { backgroundSegmentationMetricsDidReceive: sandbox.stub() };
+      const collector = {
+        backgroundSegmentationInitializationMetricsDidReceive: sandbox.stub(),
+        backgroundSegmentationProcessorMetricsDidReceive: sandbox.stub(),
+      };
       processor.setMetricsCollector(collector);
+
+      expect(collector.backgroundSegmentationInitializationMetricsDidReceive.called).to.be.true;
+      const report =
+        collector.backgroundSegmentationInitializationMetricsDidReceive.firstCall.args[0];
+      expect(report.initializationStatus).to.equal(
+        BackgroundSegmentationInitializationStatus.COMPATIBILITY_FAILURE
+      );
     });
   });
 

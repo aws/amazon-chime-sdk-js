@@ -53,7 +53,7 @@ $root.SdkSignalFrame = (function() {
     function SdkSignalFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -278,57 +278,61 @@ $root.SdkSignalFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkSignalFrame.encode = function encode(message, writer) {
+    SdkSignalFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.timestampMs);
         writer.uint32(/* id 2, wireType 0 =*/16).int32(message.type);
         if (message.error != null && Object.hasOwnProperty.call(message, "error"))
-            $root.SdkErrorFrame.encode(message.error, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            $root.SdkErrorFrame.encode(message.error, writer.uint32(/* id 3, wireType 2 =*/26).fork(), q + 1).ldelim();
         if (message.join != null && Object.hasOwnProperty.call(message, "join"))
-            $root.SdkJoinFrame.encode(message.join, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            $root.SdkJoinFrame.encode(message.join, writer.uint32(/* id 4, wireType 2 =*/34).fork(), q + 1).ldelim();
         if (message.joinack != null && Object.hasOwnProperty.call(message, "joinack"))
-            $root.SdkJoinAckFrame.encode(message.joinack, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            $root.SdkJoinAckFrame.encode(message.joinack, writer.uint32(/* id 5, wireType 2 =*/42).fork(), q + 1).ldelim();
         if (message.sub != null && Object.hasOwnProperty.call(message, "sub"))
-            $root.SdkSubscribeFrame.encode(message.sub, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            $root.SdkSubscribeFrame.encode(message.sub, writer.uint32(/* id 6, wireType 2 =*/50).fork(), q + 1).ldelim();
         if (message.suback != null && Object.hasOwnProperty.call(message, "suback"))
-            $root.SdkSubscribeAckFrame.encode(message.suback, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            $root.SdkSubscribeAckFrame.encode(message.suback, writer.uint32(/* id 7, wireType 2 =*/58).fork(), q + 1).ldelim();
         if (message.index != null && Object.hasOwnProperty.call(message, "index"))
-            $root.SdkIndexFrame.encode(message.index, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+            $root.SdkIndexFrame.encode(message.index, writer.uint32(/* id 8, wireType 2 =*/66).fork(), q + 1).ldelim();
         if (message.pause != null && Object.hasOwnProperty.call(message, "pause"))
-            $root.SdkPauseResumeFrame.encode(message.pause, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+            $root.SdkPauseResumeFrame.encode(message.pause, writer.uint32(/* id 10, wireType 2 =*/82).fork(), q + 1).ldelim();
         if (message.leave != null && Object.hasOwnProperty.call(message, "leave"))
-            $root.SdkLeaveFrame.encode(message.leave, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+            $root.SdkLeaveFrame.encode(message.leave, writer.uint32(/* id 11, wireType 2 =*/90).fork(), q + 1).ldelim();
         if (message.leaveAck != null && Object.hasOwnProperty.call(message, "leaveAck"))
-            $root.SdkLeaveAckFrame.encode(message.leaveAck, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+            $root.SdkLeaveAckFrame.encode(message.leaveAck, writer.uint32(/* id 12, wireType 2 =*/98).fork(), q + 1).ldelim();
         if (message.bitrates != null && Object.hasOwnProperty.call(message, "bitrates"))
-            $root.SdkBitrateFrame.encode(message.bitrates, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
+            $root.SdkBitrateFrame.encode(message.bitrates, writer.uint32(/* id 14, wireType 2 =*/114).fork(), q + 1).ldelim();
         if (message.audioControl != null && Object.hasOwnProperty.call(message, "audioControl"))
-            $root.SdkAudioControlFrame.encode(message.audioControl, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
+            $root.SdkAudioControlFrame.encode(message.audioControl, writer.uint32(/* id 17, wireType 2 =*/138).fork(), q + 1).ldelim();
         if (message.audioMetadata != null && Object.hasOwnProperty.call(message, "audioMetadata"))
-            $root.SdkAudioMetadataFrame.encode(message.audioMetadata, writer.uint32(/* id 18, wireType 2 =*/146).fork()).ldelim();
+            $root.SdkAudioMetadataFrame.encode(message.audioMetadata, writer.uint32(/* id 18, wireType 2 =*/146).fork(), q + 1).ldelim();
         if (message.audioStreamIdInfo != null && Object.hasOwnProperty.call(message, "audioStreamIdInfo"))
-            $root.SdkAudioStreamIdInfoFrame.encode(message.audioStreamIdInfo, writer.uint32(/* id 19, wireType 2 =*/154).fork()).ldelim();
+            $root.SdkAudioStreamIdInfoFrame.encode(message.audioStreamIdInfo, writer.uint32(/* id 19, wireType 2 =*/154).fork(), q + 1).ldelim();
         if (message.pingPong != null && Object.hasOwnProperty.call(message, "pingPong"))
-            $root.SdkPingPongFrame.encode(message.pingPong, writer.uint32(/* id 20, wireType 2 =*/162).fork()).ldelim();
+            $root.SdkPingPongFrame.encode(message.pingPong, writer.uint32(/* id 20, wireType 2 =*/162).fork(), q + 1).ldelim();
         if (message.audioStatus != null && Object.hasOwnProperty.call(message, "audioStatus"))
-            $root.SdkAudioStatusFrame.encode(message.audioStatus, writer.uint32(/* id 21, wireType 2 =*/170).fork()).ldelim();
+            $root.SdkAudioStatusFrame.encode(message.audioStatus, writer.uint32(/* id 21, wireType 2 =*/170).fork(), q + 1).ldelim();
         if (message.clientMetric != null && Object.hasOwnProperty.call(message, "clientMetric"))
-            $root.SdkClientMetricFrame.encode(message.clientMetric, writer.uint32(/* id 22, wireType 2 =*/178).fork()).ldelim();
+            $root.SdkClientMetricFrame.encode(message.clientMetric, writer.uint32(/* id 22, wireType 2 =*/178).fork(), q + 1).ldelim();
         if (message.dataMessage != null && Object.hasOwnProperty.call(message, "dataMessage"))
-            $root.SdkDataMessageFrame.encode(message.dataMessage, writer.uint32(/* id 23, wireType 2 =*/186).fork()).ldelim();
+            $root.SdkDataMessageFrame.encode(message.dataMessage, writer.uint32(/* id 23, wireType 2 =*/186).fork(), q + 1).ldelim();
         if (message.remoteVideoUpdate != null && Object.hasOwnProperty.call(message, "remoteVideoUpdate"))
-            $root.SdkRemoteVideoUpdateFrame.encode(message.remoteVideoUpdate, writer.uint32(/* id 25, wireType 2 =*/202).fork()).ldelim();
+            $root.SdkRemoteVideoUpdateFrame.encode(message.remoteVideoUpdate, writer.uint32(/* id 25, wireType 2 =*/202).fork(), q + 1).ldelim();
         if (message.primaryMeetingJoin != null && Object.hasOwnProperty.call(message, "primaryMeetingJoin"))
-            $root.SdkPrimaryMeetingJoinFrame.encode(message.primaryMeetingJoin, writer.uint32(/* id 26, wireType 2 =*/210).fork()).ldelim();
+            $root.SdkPrimaryMeetingJoinFrame.encode(message.primaryMeetingJoin, writer.uint32(/* id 26, wireType 2 =*/210).fork(), q + 1).ldelim();
         if (message.primaryMeetingJoinAck != null && Object.hasOwnProperty.call(message, "primaryMeetingJoinAck"))
-            $root.SdkPrimaryMeetingJoinAckFrame.encode(message.primaryMeetingJoinAck, writer.uint32(/* id 27, wireType 2 =*/218).fork()).ldelim();
+            $root.SdkPrimaryMeetingJoinAckFrame.encode(message.primaryMeetingJoinAck, writer.uint32(/* id 27, wireType 2 =*/218).fork(), q + 1).ldelim();
         if (message.primaryMeetingLeave != null && Object.hasOwnProperty.call(message, "primaryMeetingLeave"))
-            $root.SdkPrimaryMeetingLeaveFrame.encode(message.primaryMeetingLeave, writer.uint32(/* id 28, wireType 2 =*/226).fork()).ldelim();
+            $root.SdkPrimaryMeetingLeaveFrame.encode(message.primaryMeetingLeave, writer.uint32(/* id 28, wireType 2 =*/226).fork(), q + 1).ldelim();
         if (message.notification != null && Object.hasOwnProperty.call(message, "notification"))
-            $root.SdkNotificationFrame.encode(message.notification, writer.uint32(/* id 35, wireType 2 =*/282).fork()).ldelim();
+            $root.SdkNotificationFrame.encode(message.notification, writer.uint32(/* id 35, wireType 2 =*/282).fork(), q + 1).ldelim();
         if (message.meetingSessionTiming != null && Object.hasOwnProperty.call(message, "meetingSessionTiming"))
-            $root.SdkMeetingSessionTimingFrame.encode(message.meetingSessionTiming, writer.uint32(/* id 44, wireType 2 =*/354).fork()).ldelim();
+            $root.SdkMeetingSessionTimingFrame.encode(message.meetingSessionTiming, writer.uint32(/* id 44, wireType 2 =*/354).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -342,7 +346,7 @@ $root.SdkSignalFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkSignalFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -356,12 +360,18 @@ $root.SdkSignalFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkSignalFrame.decode = function decode(reader, length) {
+    SdkSignalFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkSignalFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.timestampMs = reader.uint64();
@@ -372,105 +382,105 @@ $root.SdkSignalFrame = (function() {
                     break;
                 }
             case 3: {
-                    message.error = $root.SdkErrorFrame.decode(reader, reader.uint32());
+                    message.error = $root.SdkErrorFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 4: {
-                    message.join = $root.SdkJoinFrame.decode(reader, reader.uint32());
+                    message.join = $root.SdkJoinFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 5: {
-                    message.joinack = $root.SdkJoinAckFrame.decode(reader, reader.uint32());
+                    message.joinack = $root.SdkJoinAckFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 6: {
-                    message.sub = $root.SdkSubscribeFrame.decode(reader, reader.uint32());
+                    message.sub = $root.SdkSubscribeFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 7: {
-                    message.suback = $root.SdkSubscribeAckFrame.decode(reader, reader.uint32());
+                    message.suback = $root.SdkSubscribeAckFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 8: {
-                    message.index = $root.SdkIndexFrame.decode(reader, reader.uint32());
+                    message.index = $root.SdkIndexFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 10: {
-                    message.pause = $root.SdkPauseResumeFrame.decode(reader, reader.uint32());
+                    message.pause = $root.SdkPauseResumeFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 11: {
-                    message.leave = $root.SdkLeaveFrame.decode(reader, reader.uint32());
+                    message.leave = $root.SdkLeaveFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 12: {
-                    message.leaveAck = $root.SdkLeaveAckFrame.decode(reader, reader.uint32());
+                    message.leaveAck = $root.SdkLeaveAckFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 14: {
-                    message.bitrates = $root.SdkBitrateFrame.decode(reader, reader.uint32());
+                    message.bitrates = $root.SdkBitrateFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 17: {
-                    message.audioControl = $root.SdkAudioControlFrame.decode(reader, reader.uint32());
+                    message.audioControl = $root.SdkAudioControlFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 18: {
-                    message.audioMetadata = $root.SdkAudioMetadataFrame.decode(reader, reader.uint32());
+                    message.audioMetadata = $root.SdkAudioMetadataFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 19: {
-                    message.audioStreamIdInfo = $root.SdkAudioStreamIdInfoFrame.decode(reader, reader.uint32());
+                    message.audioStreamIdInfo = $root.SdkAudioStreamIdInfoFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 20: {
-                    message.pingPong = $root.SdkPingPongFrame.decode(reader, reader.uint32());
+                    message.pingPong = $root.SdkPingPongFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 21: {
-                    message.audioStatus = $root.SdkAudioStatusFrame.decode(reader, reader.uint32());
+                    message.audioStatus = $root.SdkAudioStatusFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 22: {
-                    message.clientMetric = $root.SdkClientMetricFrame.decode(reader, reader.uint32());
+                    message.clientMetric = $root.SdkClientMetricFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 23: {
-                    message.dataMessage = $root.SdkDataMessageFrame.decode(reader, reader.uint32());
+                    message.dataMessage = $root.SdkDataMessageFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 25: {
-                    message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.decode(reader, reader.uint32());
+                    message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 26: {
-                    message.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.decode(reader, reader.uint32());
+                    message.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 27: {
-                    message.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.decode(reader, reader.uint32());
+                    message.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 28: {
-                    message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.decode(reader, reader.uint32());
+                    message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 35: {
-                    message.notification = $root.SdkNotificationFrame.decode(reader, reader.uint32());
+                    message.notification = $root.SdkNotificationFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 44: {
-                    message.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.decode(reader, reader.uint32());
+                    message.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
-        if (!message.hasOwnProperty("timestampMs"))
+        if (!Object.hasOwnProperty.call(message, "timestampMs"))
             throw $util.ProtocolError("missing required 'timestampMs'", { instance: message });
-        if (!message.hasOwnProperty("type"))
+        if (!Object.hasOwnProperty.call(message, "type"))
             throw $util.ProtocolError("missing required 'type'", { instance: message });
         return message;
     };
@@ -499,9 +509,13 @@ $root.SdkSignalFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkSignalFrame.verify = function verify(message) {
+    SdkSignalFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
         if (!$util.isInteger(message.timestampMs) && !(message.timestampMs && $util.isInteger(message.timestampMs.low) && $util.isInteger(message.timestampMs.high)))
             return "timestampMs: integer|Long expected";
         switch (message.type) {
@@ -532,118 +546,118 @@ $root.SdkSignalFrame = (function() {
         case 43:
             break;
         }
-        if (message.error != null && message.hasOwnProperty("error")) {
-            var error = $root.SdkErrorFrame.verify(message.error);
+        if (message.error != null && Object.hasOwnProperty.call(message, "error")) {
+            var error = $root.SdkErrorFrame.verify(message.error, long + 1);
             if (error)
                 return "error." + error;
         }
-        if (message.join != null && message.hasOwnProperty("join")) {
-            var error = $root.SdkJoinFrame.verify(message.join);
+        if (message.join != null && Object.hasOwnProperty.call(message, "join")) {
+            var error = $root.SdkJoinFrame.verify(message.join, long + 1);
             if (error)
                 return "join." + error;
         }
-        if (message.joinack != null && message.hasOwnProperty("joinack")) {
-            var error = $root.SdkJoinAckFrame.verify(message.joinack);
+        if (message.joinack != null && Object.hasOwnProperty.call(message, "joinack")) {
+            var error = $root.SdkJoinAckFrame.verify(message.joinack, long + 1);
             if (error)
                 return "joinack." + error;
         }
-        if (message.sub != null && message.hasOwnProperty("sub")) {
-            var error = $root.SdkSubscribeFrame.verify(message.sub);
+        if (message.sub != null && Object.hasOwnProperty.call(message, "sub")) {
+            var error = $root.SdkSubscribeFrame.verify(message.sub, long + 1);
             if (error)
                 return "sub." + error;
         }
-        if (message.suback != null && message.hasOwnProperty("suback")) {
-            var error = $root.SdkSubscribeAckFrame.verify(message.suback);
+        if (message.suback != null && Object.hasOwnProperty.call(message, "suback")) {
+            var error = $root.SdkSubscribeAckFrame.verify(message.suback, long + 1);
             if (error)
                 return "suback." + error;
         }
-        if (message.index != null && message.hasOwnProperty("index")) {
-            var error = $root.SdkIndexFrame.verify(message.index);
+        if (message.index != null && Object.hasOwnProperty.call(message, "index")) {
+            var error = $root.SdkIndexFrame.verify(message.index, long + 1);
             if (error)
                 return "index." + error;
         }
-        if (message.pause != null && message.hasOwnProperty("pause")) {
-            var error = $root.SdkPauseResumeFrame.verify(message.pause);
+        if (message.pause != null && Object.hasOwnProperty.call(message, "pause")) {
+            var error = $root.SdkPauseResumeFrame.verify(message.pause, long + 1);
             if (error)
                 return "pause." + error;
         }
-        if (message.leave != null && message.hasOwnProperty("leave")) {
-            var error = $root.SdkLeaveFrame.verify(message.leave);
+        if (message.leave != null && Object.hasOwnProperty.call(message, "leave")) {
+            var error = $root.SdkLeaveFrame.verify(message.leave, long + 1);
             if (error)
                 return "leave." + error;
         }
-        if (message.leaveAck != null && message.hasOwnProperty("leaveAck")) {
-            var error = $root.SdkLeaveAckFrame.verify(message.leaveAck);
+        if (message.leaveAck != null && Object.hasOwnProperty.call(message, "leaveAck")) {
+            var error = $root.SdkLeaveAckFrame.verify(message.leaveAck, long + 1);
             if (error)
                 return "leaveAck." + error;
         }
-        if (message.bitrates != null && message.hasOwnProperty("bitrates")) {
-            var error = $root.SdkBitrateFrame.verify(message.bitrates);
+        if (message.bitrates != null && Object.hasOwnProperty.call(message, "bitrates")) {
+            var error = $root.SdkBitrateFrame.verify(message.bitrates, long + 1);
             if (error)
                 return "bitrates." + error;
         }
-        if (message.audioControl != null && message.hasOwnProperty("audioControl")) {
-            var error = $root.SdkAudioControlFrame.verify(message.audioControl);
+        if (message.audioControl != null && Object.hasOwnProperty.call(message, "audioControl")) {
+            var error = $root.SdkAudioControlFrame.verify(message.audioControl, long + 1);
             if (error)
                 return "audioControl." + error;
         }
-        if (message.audioMetadata != null && message.hasOwnProperty("audioMetadata")) {
-            var error = $root.SdkAudioMetadataFrame.verify(message.audioMetadata);
+        if (message.audioMetadata != null && Object.hasOwnProperty.call(message, "audioMetadata")) {
+            var error = $root.SdkAudioMetadataFrame.verify(message.audioMetadata, long + 1);
             if (error)
                 return "audioMetadata." + error;
         }
-        if (message.audioStreamIdInfo != null && message.hasOwnProperty("audioStreamIdInfo")) {
-            var error = $root.SdkAudioStreamIdInfoFrame.verify(message.audioStreamIdInfo);
+        if (message.audioStreamIdInfo != null && Object.hasOwnProperty.call(message, "audioStreamIdInfo")) {
+            var error = $root.SdkAudioStreamIdInfoFrame.verify(message.audioStreamIdInfo, long + 1);
             if (error)
                 return "audioStreamIdInfo." + error;
         }
-        if (message.pingPong != null && message.hasOwnProperty("pingPong")) {
-            var error = $root.SdkPingPongFrame.verify(message.pingPong);
+        if (message.pingPong != null && Object.hasOwnProperty.call(message, "pingPong")) {
+            var error = $root.SdkPingPongFrame.verify(message.pingPong, long + 1);
             if (error)
                 return "pingPong." + error;
         }
-        if (message.audioStatus != null && message.hasOwnProperty("audioStatus")) {
-            var error = $root.SdkAudioStatusFrame.verify(message.audioStatus);
+        if (message.audioStatus != null && Object.hasOwnProperty.call(message, "audioStatus")) {
+            var error = $root.SdkAudioStatusFrame.verify(message.audioStatus, long + 1);
             if (error)
                 return "audioStatus." + error;
         }
-        if (message.clientMetric != null && message.hasOwnProperty("clientMetric")) {
-            var error = $root.SdkClientMetricFrame.verify(message.clientMetric);
+        if (message.clientMetric != null && Object.hasOwnProperty.call(message, "clientMetric")) {
+            var error = $root.SdkClientMetricFrame.verify(message.clientMetric, long + 1);
             if (error)
                 return "clientMetric." + error;
         }
-        if (message.dataMessage != null && message.hasOwnProperty("dataMessage")) {
-            var error = $root.SdkDataMessageFrame.verify(message.dataMessage);
+        if (message.dataMessage != null && Object.hasOwnProperty.call(message, "dataMessage")) {
+            var error = $root.SdkDataMessageFrame.verify(message.dataMessage, long + 1);
             if (error)
                 return "dataMessage." + error;
         }
-        if (message.remoteVideoUpdate != null && message.hasOwnProperty("remoteVideoUpdate")) {
-            var error = $root.SdkRemoteVideoUpdateFrame.verify(message.remoteVideoUpdate);
+        if (message.remoteVideoUpdate != null && Object.hasOwnProperty.call(message, "remoteVideoUpdate")) {
+            var error = $root.SdkRemoteVideoUpdateFrame.verify(message.remoteVideoUpdate, long + 1);
             if (error)
                 return "remoteVideoUpdate." + error;
         }
-        if (message.primaryMeetingJoin != null && message.hasOwnProperty("primaryMeetingJoin")) {
-            var error = $root.SdkPrimaryMeetingJoinFrame.verify(message.primaryMeetingJoin);
+        if (message.primaryMeetingJoin != null && Object.hasOwnProperty.call(message, "primaryMeetingJoin")) {
+            var error = $root.SdkPrimaryMeetingJoinFrame.verify(message.primaryMeetingJoin, long + 1);
             if (error)
                 return "primaryMeetingJoin." + error;
         }
-        if (message.primaryMeetingJoinAck != null && message.hasOwnProperty("primaryMeetingJoinAck")) {
-            var error = $root.SdkPrimaryMeetingJoinAckFrame.verify(message.primaryMeetingJoinAck);
+        if (message.primaryMeetingJoinAck != null && Object.hasOwnProperty.call(message, "primaryMeetingJoinAck")) {
+            var error = $root.SdkPrimaryMeetingJoinAckFrame.verify(message.primaryMeetingJoinAck, long + 1);
             if (error)
                 return "primaryMeetingJoinAck." + error;
         }
-        if (message.primaryMeetingLeave != null && message.hasOwnProperty("primaryMeetingLeave")) {
-            var error = $root.SdkPrimaryMeetingLeaveFrame.verify(message.primaryMeetingLeave);
+        if (message.primaryMeetingLeave != null && Object.hasOwnProperty.call(message, "primaryMeetingLeave")) {
+            var error = $root.SdkPrimaryMeetingLeaveFrame.verify(message.primaryMeetingLeave, long + 1);
             if (error)
                 return "primaryMeetingLeave." + error;
         }
-        if (message.notification != null && message.hasOwnProperty("notification")) {
-            var error = $root.SdkNotificationFrame.verify(message.notification);
+        if (message.notification != null && Object.hasOwnProperty.call(message, "notification")) {
+            var error = $root.SdkNotificationFrame.verify(message.notification, long + 1);
             if (error)
                 return "notification." + error;
         }
-        if (message.meetingSessionTiming != null && message.hasOwnProperty("meetingSessionTiming")) {
-            var error = $root.SdkMeetingSessionTimingFrame.verify(message.meetingSessionTiming);
+        if (message.meetingSessionTiming != null && Object.hasOwnProperty.call(message, "meetingSessionTiming")) {
+            var error = $root.SdkMeetingSessionTimingFrame.verify(message.meetingSessionTiming, long + 1);
             if (error)
                 return "meetingSessionTiming." + error;
         }
@@ -658,13 +672,19 @@ $root.SdkSignalFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkSignalFrame} SdkSignalFrame
      */
-    SdkSignalFrame.fromObject = function fromObject(object) {
+    SdkSignalFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkSignalFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkSignalFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkSignalFrame();
         if (object.timestampMs != null)
             if ($util.Long)
-                (message.timestampMs = $util.Long.fromValue(object.timestampMs)).unsigned = true;
+                message.timestampMs = $util.Long.fromValue(object.timestampMs, true);
             else if (typeof object.timestampMs === "string")
                 message.timestampMs = parseInt(object.timestampMs, 10);
             else if (typeof object.timestampMs === "number")
@@ -772,119 +792,119 @@ $root.SdkSignalFrame = (function() {
             break;
         }
         if (object.error != null) {
-            if (typeof object.error !== "object")
+            if (!$util.isObject(object.error))
                 throw TypeError(".SdkSignalFrame.error: object expected");
-            message.error = $root.SdkErrorFrame.fromObject(object.error);
+            message.error = $root.SdkErrorFrame.fromObject(object.error, long + 1);
         }
         if (object.join != null) {
-            if (typeof object.join !== "object")
+            if (!$util.isObject(object.join))
                 throw TypeError(".SdkSignalFrame.join: object expected");
-            message.join = $root.SdkJoinFrame.fromObject(object.join);
+            message.join = $root.SdkJoinFrame.fromObject(object.join, long + 1);
         }
         if (object.joinack != null) {
-            if (typeof object.joinack !== "object")
+            if (!$util.isObject(object.joinack))
                 throw TypeError(".SdkSignalFrame.joinack: object expected");
-            message.joinack = $root.SdkJoinAckFrame.fromObject(object.joinack);
+            message.joinack = $root.SdkJoinAckFrame.fromObject(object.joinack, long + 1);
         }
         if (object.sub != null) {
-            if (typeof object.sub !== "object")
+            if (!$util.isObject(object.sub))
                 throw TypeError(".SdkSignalFrame.sub: object expected");
-            message.sub = $root.SdkSubscribeFrame.fromObject(object.sub);
+            message.sub = $root.SdkSubscribeFrame.fromObject(object.sub, long + 1);
         }
         if (object.suback != null) {
-            if (typeof object.suback !== "object")
+            if (!$util.isObject(object.suback))
                 throw TypeError(".SdkSignalFrame.suback: object expected");
-            message.suback = $root.SdkSubscribeAckFrame.fromObject(object.suback);
+            message.suback = $root.SdkSubscribeAckFrame.fromObject(object.suback, long + 1);
         }
         if (object.index != null) {
-            if (typeof object.index !== "object")
+            if (!$util.isObject(object.index))
                 throw TypeError(".SdkSignalFrame.index: object expected");
-            message.index = $root.SdkIndexFrame.fromObject(object.index);
+            message.index = $root.SdkIndexFrame.fromObject(object.index, long + 1);
         }
         if (object.pause != null) {
-            if (typeof object.pause !== "object")
+            if (!$util.isObject(object.pause))
                 throw TypeError(".SdkSignalFrame.pause: object expected");
-            message.pause = $root.SdkPauseResumeFrame.fromObject(object.pause);
+            message.pause = $root.SdkPauseResumeFrame.fromObject(object.pause, long + 1);
         }
         if (object.leave != null) {
-            if (typeof object.leave !== "object")
+            if (!$util.isObject(object.leave))
                 throw TypeError(".SdkSignalFrame.leave: object expected");
-            message.leave = $root.SdkLeaveFrame.fromObject(object.leave);
+            message.leave = $root.SdkLeaveFrame.fromObject(object.leave, long + 1);
         }
         if (object.leaveAck != null) {
-            if (typeof object.leaveAck !== "object")
+            if (!$util.isObject(object.leaveAck))
                 throw TypeError(".SdkSignalFrame.leaveAck: object expected");
-            message.leaveAck = $root.SdkLeaveAckFrame.fromObject(object.leaveAck);
+            message.leaveAck = $root.SdkLeaveAckFrame.fromObject(object.leaveAck, long + 1);
         }
         if (object.bitrates != null) {
-            if (typeof object.bitrates !== "object")
+            if (!$util.isObject(object.bitrates))
                 throw TypeError(".SdkSignalFrame.bitrates: object expected");
-            message.bitrates = $root.SdkBitrateFrame.fromObject(object.bitrates);
+            message.bitrates = $root.SdkBitrateFrame.fromObject(object.bitrates, long + 1);
         }
         if (object.audioControl != null) {
-            if (typeof object.audioControl !== "object")
+            if (!$util.isObject(object.audioControl))
                 throw TypeError(".SdkSignalFrame.audioControl: object expected");
-            message.audioControl = $root.SdkAudioControlFrame.fromObject(object.audioControl);
+            message.audioControl = $root.SdkAudioControlFrame.fromObject(object.audioControl, long + 1);
         }
         if (object.audioMetadata != null) {
-            if (typeof object.audioMetadata !== "object")
+            if (!$util.isObject(object.audioMetadata))
                 throw TypeError(".SdkSignalFrame.audioMetadata: object expected");
-            message.audioMetadata = $root.SdkAudioMetadataFrame.fromObject(object.audioMetadata);
+            message.audioMetadata = $root.SdkAudioMetadataFrame.fromObject(object.audioMetadata, long + 1);
         }
         if (object.audioStreamIdInfo != null) {
-            if (typeof object.audioStreamIdInfo !== "object")
+            if (!$util.isObject(object.audioStreamIdInfo))
                 throw TypeError(".SdkSignalFrame.audioStreamIdInfo: object expected");
-            message.audioStreamIdInfo = $root.SdkAudioStreamIdInfoFrame.fromObject(object.audioStreamIdInfo);
+            message.audioStreamIdInfo = $root.SdkAudioStreamIdInfoFrame.fromObject(object.audioStreamIdInfo, long + 1);
         }
         if (object.pingPong != null) {
-            if (typeof object.pingPong !== "object")
+            if (!$util.isObject(object.pingPong))
                 throw TypeError(".SdkSignalFrame.pingPong: object expected");
-            message.pingPong = $root.SdkPingPongFrame.fromObject(object.pingPong);
+            message.pingPong = $root.SdkPingPongFrame.fromObject(object.pingPong, long + 1);
         }
         if (object.audioStatus != null) {
-            if (typeof object.audioStatus !== "object")
+            if (!$util.isObject(object.audioStatus))
                 throw TypeError(".SdkSignalFrame.audioStatus: object expected");
-            message.audioStatus = $root.SdkAudioStatusFrame.fromObject(object.audioStatus);
+            message.audioStatus = $root.SdkAudioStatusFrame.fromObject(object.audioStatus, long + 1);
         }
         if (object.clientMetric != null) {
-            if (typeof object.clientMetric !== "object")
+            if (!$util.isObject(object.clientMetric))
                 throw TypeError(".SdkSignalFrame.clientMetric: object expected");
-            message.clientMetric = $root.SdkClientMetricFrame.fromObject(object.clientMetric);
+            message.clientMetric = $root.SdkClientMetricFrame.fromObject(object.clientMetric, long + 1);
         }
         if (object.dataMessage != null) {
-            if (typeof object.dataMessage !== "object")
+            if (!$util.isObject(object.dataMessage))
                 throw TypeError(".SdkSignalFrame.dataMessage: object expected");
-            message.dataMessage = $root.SdkDataMessageFrame.fromObject(object.dataMessage);
+            message.dataMessage = $root.SdkDataMessageFrame.fromObject(object.dataMessage, long + 1);
         }
         if (object.remoteVideoUpdate != null) {
-            if (typeof object.remoteVideoUpdate !== "object")
+            if (!$util.isObject(object.remoteVideoUpdate))
                 throw TypeError(".SdkSignalFrame.remoteVideoUpdate: object expected");
-            message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.fromObject(object.remoteVideoUpdate);
+            message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.fromObject(object.remoteVideoUpdate, long + 1);
         }
         if (object.primaryMeetingJoin != null) {
-            if (typeof object.primaryMeetingJoin !== "object")
+            if (!$util.isObject(object.primaryMeetingJoin))
                 throw TypeError(".SdkSignalFrame.primaryMeetingJoin: object expected");
-            message.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.fromObject(object.primaryMeetingJoin);
+            message.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.fromObject(object.primaryMeetingJoin, long + 1);
         }
         if (object.primaryMeetingJoinAck != null) {
-            if (typeof object.primaryMeetingJoinAck !== "object")
+            if (!$util.isObject(object.primaryMeetingJoinAck))
                 throw TypeError(".SdkSignalFrame.primaryMeetingJoinAck: object expected");
-            message.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.fromObject(object.primaryMeetingJoinAck);
+            message.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.fromObject(object.primaryMeetingJoinAck, long + 1);
         }
         if (object.primaryMeetingLeave != null) {
-            if (typeof object.primaryMeetingLeave !== "object")
+            if (!$util.isObject(object.primaryMeetingLeave))
                 throw TypeError(".SdkSignalFrame.primaryMeetingLeave: object expected");
-            message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.fromObject(object.primaryMeetingLeave);
+            message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.fromObject(object.primaryMeetingLeave, long + 1);
         }
         if (object.notification != null) {
-            if (typeof object.notification !== "object")
+            if (!$util.isObject(object.notification))
                 throw TypeError(".SdkSignalFrame.notification: object expected");
-            message.notification = $root.SdkNotificationFrame.fromObject(object.notification);
+            message.notification = $root.SdkNotificationFrame.fromObject(object.notification, long + 1);
         }
         if (object.meetingSessionTiming != null) {
-            if (typeof object.meetingSessionTiming !== "object")
+            if (!$util.isObject(object.meetingSessionTiming))
                 throw TypeError(".SdkSignalFrame.meetingSessionTiming: object expected");
-            message.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.fromObject(object.meetingSessionTiming);
+            message.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.fromObject(object.meetingSessionTiming, long + 1);
         }
         return message;
     };
@@ -898,16 +918,20 @@ $root.SdkSignalFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkSignalFrame.toObject = function toObject(message, options) {
+    SdkSignalFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             if ($util.Long) {
                 var long = new $util.Long(0, 0, true);
-                object.timestampMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.timestampMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.timestampMs = options.longs === String ? "0" : 0;
+                object.timestampMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.type = options.enums === String ? "JOIN" : 1;
             object.error = null;
             object.join = null;
@@ -933,59 +957,61 @@ $root.SdkSignalFrame = (function() {
             object.notification = null;
             object.meetingSessionTiming = null;
         }
-        if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
-            if (typeof message.timestampMs === "number")
+        if (message.timestampMs != null && Object.hasOwnProperty.call(message, "timestampMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.timestampMs = typeof message.timestampMs === "number" ? BigInt(message.timestampMs) : $util.Long.fromBits(message.timestampMs.low >>> 0, message.timestampMs.high >>> 0, true).toBigInt();
+            else if (typeof message.timestampMs === "number")
                 object.timestampMs = options.longs === String ? String(message.timestampMs) : message.timestampMs;
             else
                 object.timestampMs = options.longs === String ? $util.Long.prototype.toString.call(message.timestampMs) : options.longs === Number ? new $util.LongBits(message.timestampMs.low >>> 0, message.timestampMs.high >>> 0).toNumber(true) : message.timestampMs;
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             object.type = options.enums === String ? $root.SdkSignalFrame.Type[message.type] === undefined ? message.type : $root.SdkSignalFrame.Type[message.type] : message.type;
-        if (message.error != null && message.hasOwnProperty("error"))
-            object.error = $root.SdkErrorFrame.toObject(message.error, options);
-        if (message.join != null && message.hasOwnProperty("join"))
-            object.join = $root.SdkJoinFrame.toObject(message.join, options);
-        if (message.joinack != null && message.hasOwnProperty("joinack"))
-            object.joinack = $root.SdkJoinAckFrame.toObject(message.joinack, options);
-        if (message.sub != null && message.hasOwnProperty("sub"))
-            object.sub = $root.SdkSubscribeFrame.toObject(message.sub, options);
-        if (message.suback != null && message.hasOwnProperty("suback"))
-            object.suback = $root.SdkSubscribeAckFrame.toObject(message.suback, options);
-        if (message.index != null && message.hasOwnProperty("index"))
-            object.index = $root.SdkIndexFrame.toObject(message.index, options);
-        if (message.pause != null && message.hasOwnProperty("pause"))
-            object.pause = $root.SdkPauseResumeFrame.toObject(message.pause, options);
-        if (message.leave != null && message.hasOwnProperty("leave"))
-            object.leave = $root.SdkLeaveFrame.toObject(message.leave, options);
-        if (message.leaveAck != null && message.hasOwnProperty("leaveAck"))
-            object.leaveAck = $root.SdkLeaveAckFrame.toObject(message.leaveAck, options);
-        if (message.bitrates != null && message.hasOwnProperty("bitrates"))
-            object.bitrates = $root.SdkBitrateFrame.toObject(message.bitrates, options);
-        if (message.audioControl != null && message.hasOwnProperty("audioControl"))
-            object.audioControl = $root.SdkAudioControlFrame.toObject(message.audioControl, options);
-        if (message.audioMetadata != null && message.hasOwnProperty("audioMetadata"))
-            object.audioMetadata = $root.SdkAudioMetadataFrame.toObject(message.audioMetadata, options);
-        if (message.audioStreamIdInfo != null && message.hasOwnProperty("audioStreamIdInfo"))
-            object.audioStreamIdInfo = $root.SdkAudioStreamIdInfoFrame.toObject(message.audioStreamIdInfo, options);
-        if (message.pingPong != null && message.hasOwnProperty("pingPong"))
-            object.pingPong = $root.SdkPingPongFrame.toObject(message.pingPong, options);
-        if (message.audioStatus != null && message.hasOwnProperty("audioStatus"))
-            object.audioStatus = $root.SdkAudioStatusFrame.toObject(message.audioStatus, options);
-        if (message.clientMetric != null && message.hasOwnProperty("clientMetric"))
-            object.clientMetric = $root.SdkClientMetricFrame.toObject(message.clientMetric, options);
-        if (message.dataMessage != null && message.hasOwnProperty("dataMessage"))
-            object.dataMessage = $root.SdkDataMessageFrame.toObject(message.dataMessage, options);
-        if (message.remoteVideoUpdate != null && message.hasOwnProperty("remoteVideoUpdate"))
-            object.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.toObject(message.remoteVideoUpdate, options);
-        if (message.primaryMeetingJoin != null && message.hasOwnProperty("primaryMeetingJoin"))
-            object.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.toObject(message.primaryMeetingJoin, options);
-        if (message.primaryMeetingJoinAck != null && message.hasOwnProperty("primaryMeetingJoinAck"))
-            object.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.toObject(message.primaryMeetingJoinAck, options);
-        if (message.primaryMeetingLeave != null && message.hasOwnProperty("primaryMeetingLeave"))
-            object.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.toObject(message.primaryMeetingLeave, options);
-        if (message.notification != null && message.hasOwnProperty("notification"))
-            object.notification = $root.SdkNotificationFrame.toObject(message.notification, options);
-        if (message.meetingSessionTiming != null && message.hasOwnProperty("meetingSessionTiming"))
-            object.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.toObject(message.meetingSessionTiming, options);
+        if (message.error != null && Object.hasOwnProperty.call(message, "error"))
+            object.error = $root.SdkErrorFrame.toObject(message.error, options, q + 1);
+        if (message.join != null && Object.hasOwnProperty.call(message, "join"))
+            object.join = $root.SdkJoinFrame.toObject(message.join, options, q + 1);
+        if (message.joinack != null && Object.hasOwnProperty.call(message, "joinack"))
+            object.joinack = $root.SdkJoinAckFrame.toObject(message.joinack, options, q + 1);
+        if (message.sub != null && Object.hasOwnProperty.call(message, "sub"))
+            object.sub = $root.SdkSubscribeFrame.toObject(message.sub, options, q + 1);
+        if (message.suback != null && Object.hasOwnProperty.call(message, "suback"))
+            object.suback = $root.SdkSubscribeAckFrame.toObject(message.suback, options, q + 1);
+        if (message.index != null && Object.hasOwnProperty.call(message, "index"))
+            object.index = $root.SdkIndexFrame.toObject(message.index, options, q + 1);
+        if (message.pause != null && Object.hasOwnProperty.call(message, "pause"))
+            object.pause = $root.SdkPauseResumeFrame.toObject(message.pause, options, q + 1);
+        if (message.leave != null && Object.hasOwnProperty.call(message, "leave"))
+            object.leave = $root.SdkLeaveFrame.toObject(message.leave, options, q + 1);
+        if (message.leaveAck != null && Object.hasOwnProperty.call(message, "leaveAck"))
+            object.leaveAck = $root.SdkLeaveAckFrame.toObject(message.leaveAck, options, q + 1);
+        if (message.bitrates != null && Object.hasOwnProperty.call(message, "bitrates"))
+            object.bitrates = $root.SdkBitrateFrame.toObject(message.bitrates, options, q + 1);
+        if (message.audioControl != null && Object.hasOwnProperty.call(message, "audioControl"))
+            object.audioControl = $root.SdkAudioControlFrame.toObject(message.audioControl, options, q + 1);
+        if (message.audioMetadata != null && Object.hasOwnProperty.call(message, "audioMetadata"))
+            object.audioMetadata = $root.SdkAudioMetadataFrame.toObject(message.audioMetadata, options, q + 1);
+        if (message.audioStreamIdInfo != null && Object.hasOwnProperty.call(message, "audioStreamIdInfo"))
+            object.audioStreamIdInfo = $root.SdkAudioStreamIdInfoFrame.toObject(message.audioStreamIdInfo, options, q + 1);
+        if (message.pingPong != null && Object.hasOwnProperty.call(message, "pingPong"))
+            object.pingPong = $root.SdkPingPongFrame.toObject(message.pingPong, options, q + 1);
+        if (message.audioStatus != null && Object.hasOwnProperty.call(message, "audioStatus"))
+            object.audioStatus = $root.SdkAudioStatusFrame.toObject(message.audioStatus, options, q + 1);
+        if (message.clientMetric != null && Object.hasOwnProperty.call(message, "clientMetric"))
+            object.clientMetric = $root.SdkClientMetricFrame.toObject(message.clientMetric, options, q + 1);
+        if (message.dataMessage != null && Object.hasOwnProperty.call(message, "dataMessage"))
+            object.dataMessage = $root.SdkDataMessageFrame.toObject(message.dataMessage, options, q + 1);
+        if (message.remoteVideoUpdate != null && Object.hasOwnProperty.call(message, "remoteVideoUpdate"))
+            object.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.toObject(message.remoteVideoUpdate, options, q + 1);
+        if (message.primaryMeetingJoin != null && Object.hasOwnProperty.call(message, "primaryMeetingJoin"))
+            object.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.toObject(message.primaryMeetingJoin, options, q + 1);
+        if (message.primaryMeetingJoinAck != null && Object.hasOwnProperty.call(message, "primaryMeetingJoinAck"))
+            object.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.toObject(message.primaryMeetingJoinAck, options, q + 1);
+        if (message.primaryMeetingLeave != null && Object.hasOwnProperty.call(message, "primaryMeetingLeave"))
+            object.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.toObject(message.primaryMeetingLeave, options, q + 1);
+        if (message.notification != null && Object.hasOwnProperty.call(message, "notification"))
+            object.notification = $root.SdkNotificationFrame.toObject(message.notification, options, q + 1);
+        if (message.meetingSessionTiming != null && Object.hasOwnProperty.call(message, "meetingSessionTiming"))
+            object.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.toObject(message.meetingSessionTiming, options, q + 1);
         return object;
     };
 
@@ -1095,7 +1121,7 @@ $root.SdkErrorFrame = (function() {
     function SdkErrorFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -1136,9 +1162,13 @@ $root.SdkErrorFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkErrorFrame.encode = function encode(message, writer) {
+    SdkErrorFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.status != null && Object.hasOwnProperty.call(message, "status"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.status);
         if (message.description != null && Object.hasOwnProperty.call(message, "description"))
@@ -1156,7 +1186,7 @@ $root.SdkErrorFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkErrorFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -1170,12 +1200,18 @@ $root.SdkErrorFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkErrorFrame.decode = function decode(reader, length) {
+    SdkErrorFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkErrorFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.status = reader.uint32();
@@ -1186,7 +1222,7 @@ $root.SdkErrorFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -1217,13 +1253,17 @@ $root.SdkErrorFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkErrorFrame.verify = function verify(message) {
+    SdkErrorFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.status != null && message.hasOwnProperty("status"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.status != null && Object.hasOwnProperty.call(message, "status"))
             if (!$util.isInteger(message.status))
                 return "status: integer expected";
-        if (message.description != null && message.hasOwnProperty("description"))
+        if (message.description != null && Object.hasOwnProperty.call(message, "description"))
             if (!$util.isString(message.description))
                 return "description: string expected";
         return null;
@@ -1237,9 +1277,15 @@ $root.SdkErrorFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkErrorFrame} SdkErrorFrame
      */
-    SdkErrorFrame.fromObject = function fromObject(object) {
+    SdkErrorFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkErrorFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkErrorFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkErrorFrame();
         if (object.status != null)
             message.status = object.status >>> 0;
@@ -1257,17 +1303,21 @@ $root.SdkErrorFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkErrorFrame.toObject = function toObject(message, options) {
+    SdkErrorFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.status = 0;
             object.description = "";
         }
-        if (message.status != null && message.hasOwnProperty("status"))
+        if (message.status != null && Object.hasOwnProperty.call(message, "status"))
             object.status = message.status;
-        if (message.description != null && message.hasOwnProperty("description"))
+        if (message.description != null && Object.hasOwnProperty.call(message, "description"))
             object.description = message.description;
         return object;
     };
@@ -1347,7 +1397,7 @@ $root.SdkClientDetails = (function() {
     function SdkClientDetails(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -1460,9 +1510,13 @@ $root.SdkClientDetails = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkClientDetails.encode = function encode(message, writer) {
+    SdkClientDetails.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.appName != null && Object.hasOwnProperty.call(message, "appName"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.appName);
         if (message.appVersion != null && Object.hasOwnProperty.call(message, "appVersion"))
@@ -1498,7 +1552,7 @@ $root.SdkClientDetails = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkClientDetails.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -1512,12 +1566,18 @@ $root.SdkClientDetails = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkClientDetails.decode = function decode(reader, length) {
+    SdkClientDetails.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkClientDetails();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.appName = reader.string();
@@ -1564,7 +1624,7 @@ $root.SdkClientDetails = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -1595,40 +1655,44 @@ $root.SdkClientDetails = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkClientDetails.verify = function verify(message) {
+    SdkClientDetails.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.appName != null && message.hasOwnProperty("appName"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.appName != null && Object.hasOwnProperty.call(message, "appName"))
             if (!$util.isString(message.appName))
                 return "appName: string expected";
-        if (message.appVersion != null && message.hasOwnProperty("appVersion"))
+        if (message.appVersion != null && Object.hasOwnProperty.call(message, "appVersion"))
             if (!$util.isString(message.appVersion))
                 return "appVersion: string expected";
-        if (message.deviceModel != null && message.hasOwnProperty("deviceModel"))
+        if (message.deviceModel != null && Object.hasOwnProperty.call(message, "deviceModel"))
             if (!$util.isString(message.deviceModel))
                 return "deviceModel: string expected";
-        if (message.deviceMake != null && message.hasOwnProperty("deviceMake"))
+        if (message.deviceMake != null && Object.hasOwnProperty.call(message, "deviceMake"))
             if (!$util.isString(message.deviceMake))
                 return "deviceMake: string expected";
-        if (message.platformName != null && message.hasOwnProperty("platformName"))
+        if (message.platformName != null && Object.hasOwnProperty.call(message, "platformName"))
             if (!$util.isString(message.platformName))
                 return "platformName: string expected";
-        if (message.platformVersion != null && message.hasOwnProperty("platformVersion"))
+        if (message.platformVersion != null && Object.hasOwnProperty.call(message, "platformVersion"))
             if (!$util.isString(message.platformVersion))
                 return "platformVersion: string expected";
-        if (message.clientSource != null && message.hasOwnProperty("clientSource"))
+        if (message.clientSource != null && Object.hasOwnProperty.call(message, "clientSource"))
             if (!$util.isString(message.clientSource))
                 return "clientSource: string expected";
-        if (message.chimeSdkVersion != null && message.hasOwnProperty("chimeSdkVersion"))
+        if (message.chimeSdkVersion != null && Object.hasOwnProperty.call(message, "chimeSdkVersion"))
             if (!$util.isString(message.chimeSdkVersion))
                 return "chimeSdkVersion: string expected";
-        if (message.clientUtcOffset != null && message.hasOwnProperty("clientUtcOffset"))
+        if (message.clientUtcOffset != null && Object.hasOwnProperty.call(message, "clientUtcOffset"))
             if (!$util.isString(message.clientUtcOffset))
                 return "clientUtcOffset: string expected";
-        if (message.osName != null && message.hasOwnProperty("osName"))
+        if (message.osName != null && Object.hasOwnProperty.call(message, "osName"))
             if (!$util.isString(message.osName))
                 return "osName: string expected";
-        if (message.osVersion != null && message.hasOwnProperty("osVersion"))
+        if (message.osVersion != null && Object.hasOwnProperty.call(message, "osVersion"))
             if (!$util.isString(message.osVersion))
                 return "osVersion: string expected";
         return null;
@@ -1642,9 +1706,15 @@ $root.SdkClientDetails = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkClientDetails} SdkClientDetails
      */
-    SdkClientDetails.fromObject = function fromObject(object) {
+    SdkClientDetails.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkClientDetails)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkClientDetails: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkClientDetails();
         if (object.appName != null)
             message.appName = String(object.appName);
@@ -1680,9 +1750,13 @@ $root.SdkClientDetails = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkClientDetails.toObject = function toObject(message, options) {
+    SdkClientDetails.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.appName = "";
@@ -1697,27 +1771,27 @@ $root.SdkClientDetails = (function() {
             object.osName = "";
             object.osVersion = "";
         }
-        if (message.appName != null && message.hasOwnProperty("appName"))
+        if (message.appName != null && Object.hasOwnProperty.call(message, "appName"))
             object.appName = message.appName;
-        if (message.appVersion != null && message.hasOwnProperty("appVersion"))
+        if (message.appVersion != null && Object.hasOwnProperty.call(message, "appVersion"))
             object.appVersion = message.appVersion;
-        if (message.deviceModel != null && message.hasOwnProperty("deviceModel"))
+        if (message.deviceModel != null && Object.hasOwnProperty.call(message, "deviceModel"))
             object.deviceModel = message.deviceModel;
-        if (message.deviceMake != null && message.hasOwnProperty("deviceMake"))
+        if (message.deviceMake != null && Object.hasOwnProperty.call(message, "deviceMake"))
             object.deviceMake = message.deviceMake;
-        if (message.platformName != null && message.hasOwnProperty("platformName"))
+        if (message.platformName != null && Object.hasOwnProperty.call(message, "platformName"))
             object.platformName = message.platformName;
-        if (message.platformVersion != null && message.hasOwnProperty("platformVersion"))
+        if (message.platformVersion != null && Object.hasOwnProperty.call(message, "platformVersion"))
             object.platformVersion = message.platformVersion;
-        if (message.clientSource != null && message.hasOwnProperty("clientSource"))
+        if (message.clientSource != null && Object.hasOwnProperty.call(message, "clientSource"))
             object.clientSource = message.clientSource;
-        if (message.chimeSdkVersion != null && message.hasOwnProperty("chimeSdkVersion"))
+        if (message.chimeSdkVersion != null && Object.hasOwnProperty.call(message, "chimeSdkVersion"))
             object.chimeSdkVersion = message.chimeSdkVersion;
-        if (message.clientUtcOffset != null && message.hasOwnProperty("clientUtcOffset"))
+        if (message.clientUtcOffset != null && Object.hasOwnProperty.call(message, "clientUtcOffset"))
             object.clientUtcOffset = message.clientUtcOffset;
-        if (message.osName != null && message.hasOwnProperty("osName"))
+        if (message.osName != null && Object.hasOwnProperty.call(message, "osName"))
             object.osName = message.osName;
-        if (message.osVersion != null && message.hasOwnProperty("osVersion"))
+        if (message.osVersion != null && Object.hasOwnProperty.call(message, "osVersion"))
             object.osVersion = message.osVersion;
         return object;
     };
@@ -1799,7 +1873,7 @@ $root.SdkJoinFrame = (function() {
         this.supportedServerSideNetworkAdaptions = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -1904,9 +1978,13 @@ $root.SdkJoinFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkJoinFrame.encode = function encode(message, writer) {
+    SdkJoinFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.protocolVersion != null && Object.hasOwnProperty.call(message, "protocolVersion"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.protocolVersion);
         if (message.maxNumOfVideos != null && Object.hasOwnProperty.call(message, "maxNumOfVideos"))
@@ -1914,7 +1992,7 @@ $root.SdkJoinFrame = (function() {
         if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.flags);
         if (message.clientDetails != null && Object.hasOwnProperty.call(message, "clientDetails"))
-            $root.SdkClientDetails.encode(message.clientDetails, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            $root.SdkClientDetails.encode(message.clientDetails, writer.uint32(/* id 4, wireType 2 =*/34).fork(), q + 1).ldelim();
         if (message.audioSessionId != null && Object.hasOwnProperty.call(message, "audioSessionId"))
             writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.audioSessionId);
         if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
@@ -1941,7 +2019,7 @@ $root.SdkJoinFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkJoinFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -1955,12 +2033,18 @@ $root.SdkJoinFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkJoinFrame.decode = function decode(reader, length) {
+    SdkJoinFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkJoinFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.protocolVersion = reader.uint32();
@@ -1975,7 +2059,7 @@ $root.SdkJoinFrame = (function() {
                     break;
                 }
             case 4: {
-                    message.clientDetails = $root.SdkClientDetails.decode(reader, reader.uint32());
+                    message.clientDetails = $root.SdkClientDetails.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 6: {
@@ -2010,7 +2094,7 @@ $root.SdkJoinFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -2041,30 +2125,34 @@ $root.SdkJoinFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkJoinFrame.verify = function verify(message) {
+    SdkJoinFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.protocolVersion != null && Object.hasOwnProperty.call(message, "protocolVersion"))
             if (!$util.isInteger(message.protocolVersion))
                 return "protocolVersion: integer expected";
-        if (message.maxNumOfVideos != null && message.hasOwnProperty("maxNumOfVideos"))
+        if (message.maxNumOfVideos != null && Object.hasOwnProperty.call(message, "maxNumOfVideos"))
             if (!$util.isInteger(message.maxNumOfVideos))
                 return "maxNumOfVideos: integer expected";
-        if (message.flags != null && message.hasOwnProperty("flags"))
+        if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
             if (!$util.isInteger(message.flags))
                 return "flags: integer expected";
-        if (message.clientDetails != null && message.hasOwnProperty("clientDetails")) {
-            var error = $root.SdkClientDetails.verify(message.clientDetails);
+        if (message.clientDetails != null && Object.hasOwnProperty.call(message, "clientDetails")) {
+            var error = $root.SdkClientDetails.verify(message.clientDetails, long + 1);
             if (error)
                 return "clientDetails." + error;
         }
-        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
+        if (message.audioSessionId != null && Object.hasOwnProperty.call(message, "audioSessionId"))
             if (!$util.isInteger(message.audioSessionId) && !(message.audioSessionId && $util.isInteger(message.audioSessionId.low) && $util.isInteger(message.audioSessionId.high)))
                 return "audioSessionId: integer|Long expected";
-        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+        if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             if (typeof message.wantsCompressedSdp !== "boolean")
                 return "wantsCompressedSdp: boolean expected";
-        if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
+        if (message.serverSideNetworkAdaption != null && Object.hasOwnProperty.call(message, "serverSideNetworkAdaption"))
             switch (message.serverSideNetworkAdaption) {
             default:
                 return "serverSideNetworkAdaption: enum value expected";
@@ -2074,7 +2162,7 @@ $root.SdkJoinFrame = (function() {
             case 4:
                 break;
             }
-        if (message.supportedServerSideNetworkAdaptions != null && message.hasOwnProperty("supportedServerSideNetworkAdaptions")) {
+        if (message.supportedServerSideNetworkAdaptions != null && Object.hasOwnProperty.call(message, "supportedServerSideNetworkAdaptions")) {
             if (!Array.isArray(message.supportedServerSideNetworkAdaptions))
                 return "supportedServerSideNetworkAdaptions: array expected";
             for (var i = 0; i < message.supportedServerSideNetworkAdaptions.length; ++i)
@@ -2088,10 +2176,10 @@ $root.SdkJoinFrame = (function() {
                     break;
                 }
         }
-        if (message.wantsAllTemporalLayersInIndex != null && message.hasOwnProperty("wantsAllTemporalLayersInIndex"))
+        if (message.wantsAllTemporalLayersInIndex != null && Object.hasOwnProperty.call(message, "wantsAllTemporalLayersInIndex"))
             if (typeof message.wantsAllTemporalLayersInIndex !== "boolean")
                 return "wantsAllTemporalLayersInIndex: boolean expected";
-        if (message.disablePeriodicKeyframeRequestOnContentSender != null && message.hasOwnProperty("disablePeriodicKeyframeRequestOnContentSender"))
+        if (message.disablePeriodicKeyframeRequestOnContentSender != null && Object.hasOwnProperty.call(message, "disablePeriodicKeyframeRequestOnContentSender"))
             if (typeof message.disablePeriodicKeyframeRequestOnContentSender !== "boolean")
                 return "disablePeriodicKeyframeRequestOnContentSender: boolean expected";
         return null;
@@ -2105,9 +2193,15 @@ $root.SdkJoinFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkJoinFrame} SdkJoinFrame
      */
-    SdkJoinFrame.fromObject = function fromObject(object) {
+    SdkJoinFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkJoinFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkJoinFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkJoinFrame();
         if (object.protocolVersion != null)
             message.protocolVersion = object.protocolVersion >>> 0;
@@ -2116,13 +2210,13 @@ $root.SdkJoinFrame = (function() {
         if (object.flags != null)
             message.flags = object.flags >>> 0;
         if (object.clientDetails != null) {
-            if (typeof object.clientDetails !== "object")
+            if (!$util.isObject(object.clientDetails))
                 throw TypeError(".SdkJoinFrame.clientDetails: object expected");
-            message.clientDetails = $root.SdkClientDetails.fromObject(object.clientDetails);
+            message.clientDetails = $root.SdkClientDetails.fromObject(object.clientDetails, long + 1);
         }
         if (object.audioSessionId != null)
             if ($util.Long)
-                (message.audioSessionId = $util.Long.fromValue(object.audioSessionId)).unsigned = true;
+                message.audioSessionId = $util.Long.fromValue(object.audioSessionId, true);
             else if (typeof object.audioSessionId === "string")
                 message.audioSessionId = parseInt(object.audioSessionId, 10);
             else if (typeof object.audioSessionId === "number")
@@ -2200,9 +2294,13 @@ $root.SdkJoinFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkJoinFrame.toObject = function toObject(message, options) {
+    SdkJoinFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults)
             object.supportedServerSideNetworkAdaptions = [];
@@ -2213,39 +2311,41 @@ $root.SdkJoinFrame = (function() {
             object.clientDetails = null;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, true);
-                object.audioSessionId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.audioSessionId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.audioSessionId = options.longs === String ? "0" : 0;
+                object.audioSessionId = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.wantsCompressedSdp = false;
             object.serverSideNetworkAdaption = options.enums === String ? "DEFAULT" : 1;
             object.wantsAllTemporalLayersInIndex = false;
             object.disablePeriodicKeyframeRequestOnContentSender = false;
         }
-        if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
+        if (message.protocolVersion != null && Object.hasOwnProperty.call(message, "protocolVersion"))
             object.protocolVersion = message.protocolVersion;
-        if (message.maxNumOfVideos != null && message.hasOwnProperty("maxNumOfVideos"))
+        if (message.maxNumOfVideos != null && Object.hasOwnProperty.call(message, "maxNumOfVideos"))
             object.maxNumOfVideos = message.maxNumOfVideos;
-        if (message.flags != null && message.hasOwnProperty("flags"))
+        if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
             object.flags = message.flags;
-        if (message.clientDetails != null && message.hasOwnProperty("clientDetails"))
-            object.clientDetails = $root.SdkClientDetails.toObject(message.clientDetails, options);
-        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
-            if (typeof message.audioSessionId === "number")
+        if (message.clientDetails != null && Object.hasOwnProperty.call(message, "clientDetails"))
+            object.clientDetails = $root.SdkClientDetails.toObject(message.clientDetails, options, q + 1);
+        if (message.audioSessionId != null && Object.hasOwnProperty.call(message, "audioSessionId"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.audioSessionId = typeof message.audioSessionId === "number" ? BigInt(message.audioSessionId) : $util.Long.fromBits(message.audioSessionId.low >>> 0, message.audioSessionId.high >>> 0, true).toBigInt();
+            else if (typeof message.audioSessionId === "number")
                 object.audioSessionId = options.longs === String ? String(message.audioSessionId) : message.audioSessionId;
             else
                 object.audioSessionId = options.longs === String ? $util.Long.prototype.toString.call(message.audioSessionId) : options.longs === Number ? new $util.LongBits(message.audioSessionId.low >>> 0, message.audioSessionId.high >>> 0).toNumber(true) : message.audioSessionId;
-        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+        if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             object.wantsCompressedSdp = message.wantsCompressedSdp;
-        if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
+        if (message.serverSideNetworkAdaption != null && Object.hasOwnProperty.call(message, "serverSideNetworkAdaption"))
             object.serverSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.serverSideNetworkAdaption] === undefined ? message.serverSideNetworkAdaption : $root.SdkServerSideNetworkAdaption[message.serverSideNetworkAdaption] : message.serverSideNetworkAdaption;
         if (message.supportedServerSideNetworkAdaptions && message.supportedServerSideNetworkAdaptions.length) {
             object.supportedServerSideNetworkAdaptions = [];
             for (var j = 0; j < message.supportedServerSideNetworkAdaptions.length; ++j)
                 object.supportedServerSideNetworkAdaptions[j] = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.supportedServerSideNetworkAdaptions[j]] === undefined ? message.supportedServerSideNetworkAdaptions[j] : $root.SdkServerSideNetworkAdaption[message.supportedServerSideNetworkAdaptions[j]] : message.supportedServerSideNetworkAdaptions[j];
         }
-        if (message.wantsAllTemporalLayersInIndex != null && message.hasOwnProperty("wantsAllTemporalLayersInIndex"))
+        if (message.wantsAllTemporalLayersInIndex != null && Object.hasOwnProperty.call(message, "wantsAllTemporalLayersInIndex"))
             object.wantsAllTemporalLayersInIndex = message.wantsAllTemporalLayersInIndex;
-        if (message.disablePeriodicKeyframeRequestOnContentSender != null && message.hasOwnProperty("disablePeriodicKeyframeRequestOnContentSender"))
+        if (message.disablePeriodicKeyframeRequestOnContentSender != null && Object.hasOwnProperty.call(message, "disablePeriodicKeyframeRequestOnContentSender"))
             object.disablePeriodicKeyframeRequestOnContentSender = message.disablePeriodicKeyframeRequestOnContentSender;
         return object;
     };
@@ -2302,7 +2402,7 @@ $root.SdkJoinAckFrame = (function() {
     function SdkJoinAckFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -2359,11 +2459,15 @@ $root.SdkJoinAckFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkJoinAckFrame.encode = function encode(message, writer) {
+    SdkJoinAckFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.turnCredentials != null && Object.hasOwnProperty.call(message, "turnCredentials"))
-            $root.SdkTurnCredentials.encode(message.turnCredentials, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            $root.SdkTurnCredentials.encode(message.turnCredentials, writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         if (message.videoSubscriptionLimit != null && Object.hasOwnProperty.call(message, "videoSubscriptionLimit"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.videoSubscriptionLimit);
         if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
@@ -2383,7 +2487,7 @@ $root.SdkJoinAckFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkJoinAckFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -2397,15 +2501,21 @@ $root.SdkJoinAckFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkJoinAckFrame.decode = function decode(reader, length) {
+    SdkJoinAckFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkJoinAckFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
-                    message.turnCredentials = $root.SdkTurnCredentials.decode(reader, reader.uint32());
+                    message.turnCredentials = $root.SdkTurnCredentials.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 2: {
@@ -2421,7 +2531,7 @@ $root.SdkJoinAckFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -2452,21 +2562,25 @@ $root.SdkJoinAckFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkJoinAckFrame.verify = function verify(message) {
+    SdkJoinAckFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials")) {
-            var error = $root.SdkTurnCredentials.verify(message.turnCredentials);
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.turnCredentials != null && Object.hasOwnProperty.call(message, "turnCredentials")) {
+            var error = $root.SdkTurnCredentials.verify(message.turnCredentials, long + 1);
             if (error)
                 return "turnCredentials." + error;
         }
-        if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
+        if (message.videoSubscriptionLimit != null && Object.hasOwnProperty.call(message, "videoSubscriptionLimit"))
             if (!$util.isInteger(message.videoSubscriptionLimit))
                 return "videoSubscriptionLimit: integer expected";
-        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+        if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             if (typeof message.wantsCompressedSdp !== "boolean")
                 return "wantsCompressedSdp: boolean expected";
-        if (message.defaultServerSideNetworkAdaption != null && message.hasOwnProperty("defaultServerSideNetworkAdaption"))
+        if (message.defaultServerSideNetworkAdaption != null && Object.hasOwnProperty.call(message, "defaultServerSideNetworkAdaption"))
             switch (message.defaultServerSideNetworkAdaption) {
             default:
                 return "defaultServerSideNetworkAdaption: enum value expected";
@@ -2487,14 +2601,20 @@ $root.SdkJoinAckFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkJoinAckFrame} SdkJoinAckFrame
      */
-    SdkJoinAckFrame.fromObject = function fromObject(object) {
+    SdkJoinAckFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkJoinAckFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkJoinAckFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkJoinAckFrame();
         if (object.turnCredentials != null) {
-            if (typeof object.turnCredentials !== "object")
+            if (!$util.isObject(object.turnCredentials))
                 throw TypeError(".SdkJoinAckFrame.turnCredentials: object expected");
-            message.turnCredentials = $root.SdkTurnCredentials.fromObject(object.turnCredentials);
+            message.turnCredentials = $root.SdkTurnCredentials.fromObject(object.turnCredentials, long + 1);
         }
         if (object.videoSubscriptionLimit != null)
             message.videoSubscriptionLimit = object.videoSubscriptionLimit >>> 0;
@@ -2536,9 +2656,13 @@ $root.SdkJoinAckFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkJoinAckFrame.toObject = function toObject(message, options) {
+    SdkJoinAckFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.turnCredentials = null;
@@ -2546,13 +2670,13 @@ $root.SdkJoinAckFrame = (function() {
             object.wantsCompressedSdp = false;
             object.defaultServerSideNetworkAdaption = options.enums === String ? "DEFAULT" : 1;
         }
-        if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
-            object.turnCredentials = $root.SdkTurnCredentials.toObject(message.turnCredentials, options);
-        if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
+        if (message.turnCredentials != null && Object.hasOwnProperty.call(message, "turnCredentials"))
+            object.turnCredentials = $root.SdkTurnCredentials.toObject(message.turnCredentials, options, q + 1);
+        if (message.videoSubscriptionLimit != null && Object.hasOwnProperty.call(message, "videoSubscriptionLimit"))
             object.videoSubscriptionLimit = message.videoSubscriptionLimit;
-        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+        if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             object.wantsCompressedSdp = message.wantsCompressedSdp;
-        if (message.defaultServerSideNetworkAdaption != null && message.hasOwnProperty("defaultServerSideNetworkAdaption"))
+        if (message.defaultServerSideNetworkAdaption != null && Object.hasOwnProperty.call(message, "defaultServerSideNetworkAdaption"))
             object.defaultServerSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.defaultServerSideNetworkAdaption] === undefined ? message.defaultServerSideNetworkAdaption : $root.SdkServerSideNetworkAdaption[message.defaultServerSideNetworkAdaption] : message.defaultServerSideNetworkAdaption;
         return object;
     };
@@ -2605,7 +2729,7 @@ $root.SdkLeaveFrame = (function() {
     function SdkLeaveFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -2630,9 +2754,13 @@ $root.SdkLeaveFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkLeaveFrame.encode = function encode(message, writer) {
+    SdkLeaveFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         return writer;
     };
 
@@ -2646,7 +2774,7 @@ $root.SdkLeaveFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkLeaveFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -2660,15 +2788,21 @@ $root.SdkLeaveFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkLeaveFrame.decode = function decode(reader, length) {
+    SdkLeaveFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkLeaveFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -2699,9 +2833,13 @@ $root.SdkLeaveFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkLeaveFrame.verify = function verify(message) {
+    SdkLeaveFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
         return null;
     };
 
@@ -2713,7 +2851,7 @@ $root.SdkLeaveFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkLeaveFrame} SdkLeaveFrame
      */
-    SdkLeaveFrame.fromObject = function fromObject(object) {
+    SdkLeaveFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkLeaveFrame)
             return object;
         return new $root.SdkLeaveFrame();
@@ -2780,7 +2918,7 @@ $root.SdkLeaveAckFrame = (function() {
     function SdkLeaveAckFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -2805,9 +2943,13 @@ $root.SdkLeaveAckFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkLeaveAckFrame.encode = function encode(message, writer) {
+    SdkLeaveAckFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         return writer;
     };
 
@@ -2821,7 +2963,7 @@ $root.SdkLeaveAckFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkLeaveAckFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -2835,15 +2977,21 @@ $root.SdkLeaveAckFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkLeaveAckFrame.decode = function decode(reader, length) {
+    SdkLeaveAckFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkLeaveAckFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -2874,9 +3022,13 @@ $root.SdkLeaveAckFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkLeaveAckFrame.verify = function verify(message) {
+    SdkLeaveAckFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
         return null;
     };
 
@@ -2888,7 +3040,7 @@ $root.SdkLeaveAckFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkLeaveAckFrame} SdkLeaveAckFrame
      */
-    SdkLeaveAckFrame.fromObject = function fromObject(object) {
+    SdkLeaveAckFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkLeaveAckFrame)
             return object;
         return new $root.SdkLeaveAckFrame();
@@ -2997,7 +3149,7 @@ $root.SdkSubscribeFrame = (function() {
         this.videoSubscriptionConfiguration = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -3094,14 +3246,18 @@ $root.SdkSubscribeFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkSubscribeFrame.encode = function encode(message, writer) {
+    SdkSubscribeFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.duplex != null && Object.hasOwnProperty.call(message, "duplex"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.duplex);
         if (message.sendStreams != null && message.sendStreams.length)
             for (var i = 0; i < message.sendStreams.length; ++i)
-                $root.SdkStreamDescriptor.encode(message.sendStreams[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.SdkStreamDescriptor.encode(message.sendStreams[i], writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
         if (message.receiveStreamIds != null && message.receiveStreamIds.length)
             for (var i = 0; i < message.receiveStreamIds.length; ++i)
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.receiveStreamIds[i]);
@@ -3117,7 +3273,7 @@ $root.SdkSubscribeFrame = (function() {
             writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.compressedSdpOffer);
         if (message.videoSubscriptionConfiguration != null && message.videoSubscriptionConfiguration.length)
             for (var i = 0; i < message.videoSubscriptionConfiguration.length; ++i)
-                $root.SdkVideoSubscriptionConfiguration.encode(message.videoSubscriptionConfiguration[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                $root.SdkVideoSubscriptionConfiguration.encode(message.videoSubscriptionConfiguration[i], writer.uint32(/* id 9, wireType 2 =*/74).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -3131,7 +3287,7 @@ $root.SdkSubscribeFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkSubscribeFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -3145,12 +3301,18 @@ $root.SdkSubscribeFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkSubscribeFrame.decode = function decode(reader, length) {
+    SdkSubscribeFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkSubscribeFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.duplex = reader.int32();
@@ -3159,7 +3321,7 @@ $root.SdkSubscribeFrame = (function() {
             case 2: {
                     if (!(message.sendStreams && message.sendStreams.length))
                         message.sendStreams = [];
-                    message.sendStreams.push($root.SdkStreamDescriptor.decode(reader, reader.uint32()));
+                    message.sendStreams.push($root.SdkStreamDescriptor.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 3: {
@@ -3196,11 +3358,11 @@ $root.SdkSubscribeFrame = (function() {
             case 9: {
                     if (!(message.videoSubscriptionConfiguration && message.videoSubscriptionConfiguration.length))
                         message.videoSubscriptionConfiguration = [];
-                    message.videoSubscriptionConfiguration.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
+                    message.videoSubscriptionConfiguration.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -3231,10 +3393,14 @@ $root.SdkSubscribeFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkSubscribeFrame.verify = function verify(message) {
+    SdkSubscribeFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.duplex != null && message.hasOwnProperty("duplex"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.duplex != null && Object.hasOwnProperty.call(message, "duplex"))
             switch (message.duplex) {
             default:
                 return "duplex: enum value expected";
@@ -3243,42 +3409,42 @@ $root.SdkSubscribeFrame = (function() {
             case 3:
                 break;
             }
-        if (message.sendStreams != null && message.hasOwnProperty("sendStreams")) {
+        if (message.sendStreams != null && Object.hasOwnProperty.call(message, "sendStreams")) {
             if (!Array.isArray(message.sendStreams))
                 return "sendStreams: array expected";
             for (var i = 0; i < message.sendStreams.length; ++i) {
-                var error = $root.SdkStreamDescriptor.verify(message.sendStreams[i]);
+                var error = $root.SdkStreamDescriptor.verify(message.sendStreams[i], long + 1);
                 if (error)
                     return "sendStreams." + error;
             }
         }
-        if (message.receiveStreamIds != null && message.hasOwnProperty("receiveStreamIds")) {
+        if (message.receiveStreamIds != null && Object.hasOwnProperty.call(message, "receiveStreamIds")) {
             if (!Array.isArray(message.receiveStreamIds))
                 return "receiveStreamIds: array expected";
             for (var i = 0; i < message.receiveStreamIds.length; ++i)
                 if (!$util.isInteger(message.receiveStreamIds[i]))
                     return "receiveStreamIds: integer[] expected";
         }
-        if (message.sdpOffer != null && message.hasOwnProperty("sdpOffer"))
+        if (message.sdpOffer != null && Object.hasOwnProperty.call(message, "sdpOffer"))
             if (!$util.isString(message.sdpOffer))
                 return "sdpOffer: string expected";
-        if (message.audioHost != null && message.hasOwnProperty("audioHost"))
+        if (message.audioHost != null && Object.hasOwnProperty.call(message, "audioHost"))
             if (!$util.isString(message.audioHost))
                 return "audioHost: string expected";
-        if (message.audioCheckin != null && message.hasOwnProperty("audioCheckin"))
+        if (message.audioCheckin != null && Object.hasOwnProperty.call(message, "audioCheckin"))
             if (typeof message.audioCheckin !== "boolean")
                 return "audioCheckin: boolean expected";
-        if (message.audioMuted != null && message.hasOwnProperty("audioMuted"))
+        if (message.audioMuted != null && Object.hasOwnProperty.call(message, "audioMuted"))
             if (typeof message.audioMuted !== "boolean")
                 return "audioMuted: boolean expected";
-        if (message.compressedSdpOffer != null && message.hasOwnProperty("compressedSdpOffer"))
+        if (message.compressedSdpOffer != null && Object.hasOwnProperty.call(message, "compressedSdpOffer"))
             if (!(message.compressedSdpOffer && typeof message.compressedSdpOffer.length === "number" || $util.isString(message.compressedSdpOffer)))
                 return "compressedSdpOffer: buffer expected";
-        if (message.videoSubscriptionConfiguration != null && message.hasOwnProperty("videoSubscriptionConfiguration")) {
+        if (message.videoSubscriptionConfiguration != null && Object.hasOwnProperty.call(message, "videoSubscriptionConfiguration")) {
             if (!Array.isArray(message.videoSubscriptionConfiguration))
                 return "videoSubscriptionConfiguration: array expected";
             for (var i = 0; i < message.videoSubscriptionConfiguration.length; ++i) {
-                var error = $root.SdkVideoSubscriptionConfiguration.verify(message.videoSubscriptionConfiguration[i]);
+                var error = $root.SdkVideoSubscriptionConfiguration.verify(message.videoSubscriptionConfiguration[i], long + 1);
                 if (error)
                     return "videoSubscriptionConfiguration." + error;
             }
@@ -3294,9 +3460,15 @@ $root.SdkSubscribeFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkSubscribeFrame} SdkSubscribeFrame
      */
-    SdkSubscribeFrame.fromObject = function fromObject(object) {
+    SdkSubscribeFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkSubscribeFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkSubscribeFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkSubscribeFrame();
         switch (object.duplex) {
         default:
@@ -3323,9 +3495,9 @@ $root.SdkSubscribeFrame = (function() {
                 throw TypeError(".SdkSubscribeFrame.sendStreams: array expected");
             message.sendStreams = [];
             for (var i = 0; i < object.sendStreams.length; ++i) {
-                if (typeof object.sendStreams[i] !== "object")
+                if (!$util.isObject(object.sendStreams[i]))
                     throw TypeError(".SdkSubscribeFrame.sendStreams: object expected");
-                message.sendStreams[i] = $root.SdkStreamDescriptor.fromObject(object.sendStreams[i]);
+                message.sendStreams[i] = $root.SdkStreamDescriptor.fromObject(object.sendStreams[i], long + 1);
             }
         }
         if (object.receiveStreamIds) {
@@ -3353,9 +3525,9 @@ $root.SdkSubscribeFrame = (function() {
                 throw TypeError(".SdkSubscribeFrame.videoSubscriptionConfiguration: array expected");
             message.videoSubscriptionConfiguration = [];
             for (var i = 0; i < object.videoSubscriptionConfiguration.length; ++i) {
-                if (typeof object.videoSubscriptionConfiguration[i] !== "object")
+                if (!$util.isObject(object.videoSubscriptionConfiguration[i]))
                     throw TypeError(".SdkSubscribeFrame.videoSubscriptionConfiguration: object expected");
-                message.videoSubscriptionConfiguration[i] = $root.SdkVideoSubscriptionConfiguration.fromObject(object.videoSubscriptionConfiguration[i]);
+                message.videoSubscriptionConfiguration[i] = $root.SdkVideoSubscriptionConfiguration.fromObject(object.videoSubscriptionConfiguration[i], long + 1);
             }
         }
         return message;
@@ -3370,9 +3542,13 @@ $root.SdkSubscribeFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkSubscribeFrame.toObject = function toObject(message, options) {
+    SdkSubscribeFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.sendStreams = [];
@@ -3393,32 +3569,32 @@ $root.SdkSubscribeFrame = (function() {
                     object.compressedSdpOffer = $util.newBuffer(object.compressedSdpOffer);
             }
         }
-        if (message.duplex != null && message.hasOwnProperty("duplex"))
+        if (message.duplex != null && Object.hasOwnProperty.call(message, "duplex"))
             object.duplex = options.enums === String ? $root.SdkStreamServiceType[message.duplex] === undefined ? message.duplex : $root.SdkStreamServiceType[message.duplex] : message.duplex;
         if (message.sendStreams && message.sendStreams.length) {
             object.sendStreams = [];
             for (var j = 0; j < message.sendStreams.length; ++j)
-                object.sendStreams[j] = $root.SdkStreamDescriptor.toObject(message.sendStreams[j], options);
+                object.sendStreams[j] = $root.SdkStreamDescriptor.toObject(message.sendStreams[j], options, q + 1);
         }
         if (message.receiveStreamIds && message.receiveStreamIds.length) {
             object.receiveStreamIds = [];
             for (var j = 0; j < message.receiveStreamIds.length; ++j)
                 object.receiveStreamIds[j] = message.receiveStreamIds[j];
         }
-        if (message.sdpOffer != null && message.hasOwnProperty("sdpOffer"))
+        if (message.sdpOffer != null && Object.hasOwnProperty.call(message, "sdpOffer"))
             object.sdpOffer = message.sdpOffer;
-        if (message.audioHost != null && message.hasOwnProperty("audioHost"))
+        if (message.audioHost != null && Object.hasOwnProperty.call(message, "audioHost"))
             object.audioHost = message.audioHost;
-        if (message.audioCheckin != null && message.hasOwnProperty("audioCheckin"))
+        if (message.audioCheckin != null && Object.hasOwnProperty.call(message, "audioCheckin"))
             object.audioCheckin = message.audioCheckin;
-        if (message.audioMuted != null && message.hasOwnProperty("audioMuted"))
+        if (message.audioMuted != null && Object.hasOwnProperty.call(message, "audioMuted"))
             object.audioMuted = message.audioMuted;
-        if (message.compressedSdpOffer != null && message.hasOwnProperty("compressedSdpOffer"))
+        if (message.compressedSdpOffer != null && Object.hasOwnProperty.call(message, "compressedSdpOffer"))
             object.compressedSdpOffer = options.bytes === String ? $util.base64.encode(message.compressedSdpOffer, 0, message.compressedSdpOffer.length) : options.bytes === Array ? Array.prototype.slice.call(message.compressedSdpOffer) : message.compressedSdpOffer;
         if (message.videoSubscriptionConfiguration && message.videoSubscriptionConfiguration.length) {
             object.videoSubscriptionConfiguration = [];
             for (var j = 0; j < message.videoSubscriptionConfiguration.length; ++j)
-                object.videoSubscriptionConfiguration[j] = $root.SdkVideoSubscriptionConfiguration.toObject(message.videoSubscriptionConfiguration[j], options);
+                object.videoSubscriptionConfiguration[j] = $root.SdkVideoSubscriptionConfiguration.toObject(message.videoSubscriptionConfiguration[j], options, q + 1);
         }
         return object;
     };
@@ -3478,7 +3654,7 @@ $root.SdkSubscribeAckFrame = (function() {
         this.tracks = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -3543,19 +3719,23 @@ $root.SdkSubscribeAckFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkSubscribeAckFrame.encode = function encode(message, writer) {
+    SdkSubscribeAckFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.duplex != null && Object.hasOwnProperty.call(message, "duplex"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.duplex);
         if (message.allocations != null && message.allocations.length)
             for (var i = 0; i < message.allocations.length; ++i)
-                $root.SdkStreamAllocation.encode(message.allocations[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.SdkStreamAllocation.encode(message.allocations[i], writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
         if (message.sdpAnswer != null && Object.hasOwnProperty.call(message, "sdpAnswer"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.sdpAnswer);
         if (message.tracks != null && message.tracks.length)
             for (var i = 0; i < message.tracks.length; ++i)
-                $root.SdkTrackMapping.encode(message.tracks[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.SdkTrackMapping.encode(message.tracks[i], writer.uint32(/* id 4, wireType 2 =*/34).fork(), q + 1).ldelim();
         if (message.compressedSdpAnswer != null && Object.hasOwnProperty.call(message, "compressedSdpAnswer"))
             writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.compressedSdpAnswer);
         return writer;
@@ -3571,7 +3751,7 @@ $root.SdkSubscribeAckFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkSubscribeAckFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -3585,12 +3765,18 @@ $root.SdkSubscribeAckFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkSubscribeAckFrame.decode = function decode(reader, length) {
+    SdkSubscribeAckFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkSubscribeAckFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.duplex = reader.int32();
@@ -3599,7 +3785,7 @@ $root.SdkSubscribeAckFrame = (function() {
             case 2: {
                     if (!(message.allocations && message.allocations.length))
                         message.allocations = [];
-                    message.allocations.push($root.SdkStreamAllocation.decode(reader, reader.uint32()));
+                    message.allocations.push($root.SdkStreamAllocation.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 3: {
@@ -3609,7 +3795,7 @@ $root.SdkSubscribeAckFrame = (function() {
             case 4: {
                     if (!(message.tracks && message.tracks.length))
                         message.tracks = [];
-                    message.tracks.push($root.SdkTrackMapping.decode(reader, reader.uint32()));
+                    message.tracks.push($root.SdkTrackMapping.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 5: {
@@ -3617,7 +3803,7 @@ $root.SdkSubscribeAckFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -3648,10 +3834,14 @@ $root.SdkSubscribeAckFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkSubscribeAckFrame.verify = function verify(message) {
+    SdkSubscribeAckFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.duplex != null && message.hasOwnProperty("duplex"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.duplex != null && Object.hasOwnProperty.call(message, "duplex"))
             switch (message.duplex) {
             default:
                 return "duplex: enum value expected";
@@ -3660,28 +3850,28 @@ $root.SdkSubscribeAckFrame = (function() {
             case 3:
                 break;
             }
-        if (message.allocations != null && message.hasOwnProperty("allocations")) {
+        if (message.allocations != null && Object.hasOwnProperty.call(message, "allocations")) {
             if (!Array.isArray(message.allocations))
                 return "allocations: array expected";
             for (var i = 0; i < message.allocations.length; ++i) {
-                var error = $root.SdkStreamAllocation.verify(message.allocations[i]);
+                var error = $root.SdkStreamAllocation.verify(message.allocations[i], long + 1);
                 if (error)
                     return "allocations." + error;
             }
         }
-        if (message.sdpAnswer != null && message.hasOwnProperty("sdpAnswer"))
+        if (message.sdpAnswer != null && Object.hasOwnProperty.call(message, "sdpAnswer"))
             if (!$util.isString(message.sdpAnswer))
                 return "sdpAnswer: string expected";
-        if (message.tracks != null && message.hasOwnProperty("tracks")) {
+        if (message.tracks != null && Object.hasOwnProperty.call(message, "tracks")) {
             if (!Array.isArray(message.tracks))
                 return "tracks: array expected";
             for (var i = 0; i < message.tracks.length; ++i) {
-                var error = $root.SdkTrackMapping.verify(message.tracks[i]);
+                var error = $root.SdkTrackMapping.verify(message.tracks[i], long + 1);
                 if (error)
                     return "tracks." + error;
             }
         }
-        if (message.compressedSdpAnswer != null && message.hasOwnProperty("compressedSdpAnswer"))
+        if (message.compressedSdpAnswer != null && Object.hasOwnProperty.call(message, "compressedSdpAnswer"))
             if (!(message.compressedSdpAnswer && typeof message.compressedSdpAnswer.length === "number" || $util.isString(message.compressedSdpAnswer)))
                 return "compressedSdpAnswer: buffer expected";
         return null;
@@ -3695,9 +3885,15 @@ $root.SdkSubscribeAckFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkSubscribeAckFrame} SdkSubscribeAckFrame
      */
-    SdkSubscribeAckFrame.fromObject = function fromObject(object) {
+    SdkSubscribeAckFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkSubscribeAckFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkSubscribeAckFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkSubscribeAckFrame();
         switch (object.duplex) {
         default:
@@ -3724,9 +3920,9 @@ $root.SdkSubscribeAckFrame = (function() {
                 throw TypeError(".SdkSubscribeAckFrame.allocations: array expected");
             message.allocations = [];
             for (var i = 0; i < object.allocations.length; ++i) {
-                if (typeof object.allocations[i] !== "object")
+                if (!$util.isObject(object.allocations[i]))
                     throw TypeError(".SdkSubscribeAckFrame.allocations: object expected");
-                message.allocations[i] = $root.SdkStreamAllocation.fromObject(object.allocations[i]);
+                message.allocations[i] = $root.SdkStreamAllocation.fromObject(object.allocations[i], long + 1);
             }
         }
         if (object.sdpAnswer != null)
@@ -3736,9 +3932,9 @@ $root.SdkSubscribeAckFrame = (function() {
                 throw TypeError(".SdkSubscribeAckFrame.tracks: array expected");
             message.tracks = [];
             for (var i = 0; i < object.tracks.length; ++i) {
-                if (typeof object.tracks[i] !== "object")
+                if (!$util.isObject(object.tracks[i]))
                     throw TypeError(".SdkSubscribeAckFrame.tracks: object expected");
-                message.tracks[i] = $root.SdkTrackMapping.fromObject(object.tracks[i]);
+                message.tracks[i] = $root.SdkTrackMapping.fromObject(object.tracks[i], long + 1);
             }
         }
         if (object.compressedSdpAnswer != null)
@@ -3758,9 +3954,13 @@ $root.SdkSubscribeAckFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkSubscribeAckFrame.toObject = function toObject(message, options) {
+    SdkSubscribeAckFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.allocations = [];
@@ -3777,21 +3977,21 @@ $root.SdkSubscribeAckFrame = (function() {
                     object.compressedSdpAnswer = $util.newBuffer(object.compressedSdpAnswer);
             }
         }
-        if (message.duplex != null && message.hasOwnProperty("duplex"))
+        if (message.duplex != null && Object.hasOwnProperty.call(message, "duplex"))
             object.duplex = options.enums === String ? $root.SdkStreamServiceType[message.duplex] === undefined ? message.duplex : $root.SdkStreamServiceType[message.duplex] : message.duplex;
         if (message.allocations && message.allocations.length) {
             object.allocations = [];
             for (var j = 0; j < message.allocations.length; ++j)
-                object.allocations[j] = $root.SdkStreamAllocation.toObject(message.allocations[j], options);
+                object.allocations[j] = $root.SdkStreamAllocation.toObject(message.allocations[j], options, q + 1);
         }
-        if (message.sdpAnswer != null && message.hasOwnProperty("sdpAnswer"))
+        if (message.sdpAnswer != null && Object.hasOwnProperty.call(message, "sdpAnswer"))
             object.sdpAnswer = message.sdpAnswer;
         if (message.tracks && message.tracks.length) {
             object.tracks = [];
             for (var j = 0; j < message.tracks.length; ++j)
-                object.tracks[j] = $root.SdkTrackMapping.toObject(message.tracks[j], options);
+                object.tracks[j] = $root.SdkTrackMapping.toObject(message.tracks[j], options, q + 1);
         }
-        if (message.compressedSdpAnswer != null && message.hasOwnProperty("compressedSdpAnswer"))
+        if (message.compressedSdpAnswer != null && Object.hasOwnProperty.call(message, "compressedSdpAnswer"))
             object.compressedSdpAnswer = options.bytes === String ? $util.base64.encode(message.compressedSdpAnswer, 0, message.compressedSdpAnswer.length) : options.bytes === Array ? Array.prototype.slice.call(message.compressedSdpAnswer) : message.compressedSdpAnswer;
         return object;
     };
@@ -3852,7 +4052,7 @@ $root.SdkIndexFrame = (function() {
         this.supportedReceiveCodecIntersection = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -3917,14 +4117,18 @@ $root.SdkIndexFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkIndexFrame.encode = function encode(message, writer) {
+    SdkIndexFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.atCapacity != null && Object.hasOwnProperty.call(message, "atCapacity"))
             writer.uint32(/* id 1, wireType 0 =*/8).bool(message.atCapacity);
         if (message.sources != null && message.sources.length)
             for (var i = 0; i < message.sources.length; ++i)
-                $root.SdkStreamDescriptor.encode(message.sources[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.SdkStreamDescriptor.encode(message.sources[i], writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
         if (message.pausedAtSourceIds != null && message.pausedAtSourceIds.length)
             for (var i = 0; i < message.pausedAtSourceIds.length; ++i)
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.pausedAtSourceIds[i]);
@@ -3946,7 +4150,7 @@ $root.SdkIndexFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkIndexFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -3960,12 +4164,18 @@ $root.SdkIndexFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkIndexFrame.decode = function decode(reader, length) {
+    SdkIndexFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkIndexFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.atCapacity = reader.bool();
@@ -3974,7 +4184,7 @@ $root.SdkIndexFrame = (function() {
             case 2: {
                     if (!(message.sources && message.sources.length))
                         message.sources = [];
-                    message.sources.push($root.SdkStreamDescriptor.decode(reader, reader.uint32()));
+                    message.sources.push($root.SdkStreamDescriptor.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 3: {
@@ -4004,7 +4214,7 @@ $root.SdkIndexFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -4035,32 +4245,36 @@ $root.SdkIndexFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkIndexFrame.verify = function verify(message) {
+    SdkIndexFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.atCapacity != null && message.hasOwnProperty("atCapacity"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.atCapacity != null && Object.hasOwnProperty.call(message, "atCapacity"))
             if (typeof message.atCapacity !== "boolean")
                 return "atCapacity: boolean expected";
-        if (message.sources != null && message.hasOwnProperty("sources")) {
+        if (message.sources != null && Object.hasOwnProperty.call(message, "sources")) {
             if (!Array.isArray(message.sources))
                 return "sources: array expected";
             for (var i = 0; i < message.sources.length; ++i) {
-                var error = $root.SdkStreamDescriptor.verify(message.sources[i]);
+                var error = $root.SdkStreamDescriptor.verify(message.sources[i], long + 1);
                 if (error)
                     return "sources." + error;
             }
         }
-        if (message.pausedAtSourceIds != null && message.hasOwnProperty("pausedAtSourceIds")) {
+        if (message.pausedAtSourceIds != null && Object.hasOwnProperty.call(message, "pausedAtSourceIds")) {
             if (!Array.isArray(message.pausedAtSourceIds))
                 return "pausedAtSourceIds: array expected";
             for (var i = 0; i < message.pausedAtSourceIds.length; ++i)
                 if (!$util.isInteger(message.pausedAtSourceIds[i]))
                     return "pausedAtSourceIds: integer[] expected";
         }
-        if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
+        if (message.numParticipants != null && Object.hasOwnProperty.call(message, "numParticipants"))
             if (!$util.isInteger(message.numParticipants))
                 return "numParticipants: integer expected";
-        if (message.supportedReceiveCodecIntersection != null && message.hasOwnProperty("supportedReceiveCodecIntersection")) {
+        if (message.supportedReceiveCodecIntersection != null && Object.hasOwnProperty.call(message, "supportedReceiveCodecIntersection")) {
             if (!Array.isArray(message.supportedReceiveCodecIntersection))
                 return "supportedReceiveCodecIntersection: array expected";
             for (var i = 0; i < message.supportedReceiveCodecIntersection.length; ++i)
@@ -4089,9 +4303,15 @@ $root.SdkIndexFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkIndexFrame} SdkIndexFrame
      */
-    SdkIndexFrame.fromObject = function fromObject(object) {
+    SdkIndexFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkIndexFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkIndexFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkIndexFrame();
         if (object.atCapacity != null)
             message.atCapacity = Boolean(object.atCapacity);
@@ -4100,9 +4320,9 @@ $root.SdkIndexFrame = (function() {
                 throw TypeError(".SdkIndexFrame.sources: array expected");
             message.sources = [];
             for (var i = 0; i < object.sources.length; ++i) {
-                if (typeof object.sources[i] !== "object")
+                if (!$util.isObject(object.sources[i]))
                     throw TypeError(".SdkIndexFrame.sources: object expected");
-                message.sources[i] = $root.SdkStreamDescriptor.fromObject(object.sources[i]);
+                message.sources[i] = $root.SdkStreamDescriptor.fromObject(object.sources[i], long + 1);
             }
         }
         if (object.pausedAtSourceIds) {
@@ -4171,9 +4391,13 @@ $root.SdkIndexFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkIndexFrame.toObject = function toObject(message, options) {
+    SdkIndexFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.sources = [];
@@ -4184,19 +4408,19 @@ $root.SdkIndexFrame = (function() {
             object.atCapacity = false;
             object.numParticipants = 0;
         }
-        if (message.atCapacity != null && message.hasOwnProperty("atCapacity"))
+        if (message.atCapacity != null && Object.hasOwnProperty.call(message, "atCapacity"))
             object.atCapacity = message.atCapacity;
         if (message.sources && message.sources.length) {
             object.sources = [];
             for (var j = 0; j < message.sources.length; ++j)
-                object.sources[j] = $root.SdkStreamDescriptor.toObject(message.sources[j], options);
+                object.sources[j] = $root.SdkStreamDescriptor.toObject(message.sources[j], options, q + 1);
         }
         if (message.pausedAtSourceIds && message.pausedAtSourceIds.length) {
             object.pausedAtSourceIds = [];
             for (var j = 0; j < message.pausedAtSourceIds.length; ++j)
                 object.pausedAtSourceIds[j] = message.pausedAtSourceIds[j];
         }
-        if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
+        if (message.numParticipants != null && Object.hasOwnProperty.call(message, "numParticipants"))
             object.numParticipants = message.numParticipants;
         if (message.supportedReceiveCodecIntersection && message.supportedReceiveCodecIntersection.length) {
             object.supportedReceiveCodecIntersection = [];
@@ -4258,7 +4482,7 @@ $root.SdkPauseResumeFrame = (function() {
         this.groupIds = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -4299,9 +4523,13 @@ $root.SdkPauseResumeFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkPauseResumeFrame.encode = function encode(message, writer) {
+    SdkPauseResumeFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.streamIds != null && message.streamIds.length)
             for (var i = 0; i < message.streamIds.length; ++i)
                 writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.streamIds[i]);
@@ -4321,7 +4549,7 @@ $root.SdkPauseResumeFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkPauseResumeFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -4335,12 +4563,18 @@ $root.SdkPauseResumeFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkPauseResumeFrame.decode = function decode(reader, length) {
+    SdkPauseResumeFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkPauseResumeFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.streamIds && message.streamIds.length))
@@ -4365,7 +4599,7 @@ $root.SdkPauseResumeFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -4396,17 +4630,21 @@ $root.SdkPauseResumeFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkPauseResumeFrame.verify = function verify(message) {
+    SdkPauseResumeFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.streamIds != null && message.hasOwnProperty("streamIds")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.streamIds != null && Object.hasOwnProperty.call(message, "streamIds")) {
             if (!Array.isArray(message.streamIds))
                 return "streamIds: array expected";
             for (var i = 0; i < message.streamIds.length; ++i)
                 if (!$util.isInteger(message.streamIds[i]))
                     return "streamIds: integer[] expected";
         }
-        if (message.groupIds != null && message.hasOwnProperty("groupIds")) {
+        if (message.groupIds != null && Object.hasOwnProperty.call(message, "groupIds")) {
             if (!Array.isArray(message.groupIds))
                 return "groupIds: array expected";
             for (var i = 0; i < message.groupIds.length; ++i)
@@ -4424,9 +4662,15 @@ $root.SdkPauseResumeFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkPauseResumeFrame} SdkPauseResumeFrame
      */
-    SdkPauseResumeFrame.fromObject = function fromObject(object) {
+    SdkPauseResumeFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkPauseResumeFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkPauseResumeFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkPauseResumeFrame();
         if (object.streamIds) {
             if (!Array.isArray(object.streamIds))
@@ -4454,9 +4698,13 @@ $root.SdkPauseResumeFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkPauseResumeFrame.toObject = function toObject(message, options) {
+    SdkPauseResumeFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.streamIds = [];
@@ -4526,7 +4774,7 @@ $root.SdkBitrateFrame = (function() {
         this.bitrates = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -4567,12 +4815,16 @@ $root.SdkBitrateFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkBitrateFrame.encode = function encode(message, writer) {
+    SdkBitrateFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.bitrates != null && message.bitrates.length)
             for (var i = 0; i < message.bitrates.length; ++i)
-                $root.SdkBitrate.encode(message.bitrates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkBitrate.encode(message.bitrates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         if (message.serverAvailableOutgoingBitrate != null && Object.hasOwnProperty.call(message, "serverAvailableOutgoingBitrate"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.serverAvailableOutgoingBitrate);
         return writer;
@@ -4588,7 +4840,7 @@ $root.SdkBitrateFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkBitrateFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -4602,17 +4854,23 @@ $root.SdkBitrateFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkBitrateFrame.decode = function decode(reader, length) {
+    SdkBitrateFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkBitrateFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.bitrates && message.bitrates.length))
                         message.bitrates = [];
-                    message.bitrates.push($root.SdkBitrate.decode(reader, reader.uint32()));
+                    message.bitrates.push($root.SdkBitrate.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 2: {
@@ -4620,7 +4878,7 @@ $root.SdkBitrateFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -4651,19 +4909,23 @@ $root.SdkBitrateFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkBitrateFrame.verify = function verify(message) {
+    SdkBitrateFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.bitrates != null && message.hasOwnProperty("bitrates")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.bitrates != null && Object.hasOwnProperty.call(message, "bitrates")) {
             if (!Array.isArray(message.bitrates))
                 return "bitrates: array expected";
             for (var i = 0; i < message.bitrates.length; ++i) {
-                var error = $root.SdkBitrate.verify(message.bitrates[i]);
+                var error = $root.SdkBitrate.verify(message.bitrates[i], long + 1);
                 if (error)
                     return "bitrates." + error;
             }
         }
-        if (message.serverAvailableOutgoingBitrate != null && message.hasOwnProperty("serverAvailableOutgoingBitrate"))
+        if (message.serverAvailableOutgoingBitrate != null && Object.hasOwnProperty.call(message, "serverAvailableOutgoingBitrate"))
             if (!$util.isInteger(message.serverAvailableOutgoingBitrate))
                 return "serverAvailableOutgoingBitrate: integer expected";
         return null;
@@ -4677,18 +4939,24 @@ $root.SdkBitrateFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkBitrateFrame} SdkBitrateFrame
      */
-    SdkBitrateFrame.fromObject = function fromObject(object) {
+    SdkBitrateFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkBitrateFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkBitrateFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkBitrateFrame();
         if (object.bitrates) {
             if (!Array.isArray(object.bitrates))
                 throw TypeError(".SdkBitrateFrame.bitrates: array expected");
             message.bitrates = [];
             for (var i = 0; i < object.bitrates.length; ++i) {
-                if (typeof object.bitrates[i] !== "object")
+                if (!$util.isObject(object.bitrates[i]))
                     throw TypeError(".SdkBitrateFrame.bitrates: object expected");
-                message.bitrates[i] = $root.SdkBitrate.fromObject(object.bitrates[i]);
+                message.bitrates[i] = $root.SdkBitrate.fromObject(object.bitrates[i], long + 1);
             }
         }
         if (object.serverAvailableOutgoingBitrate != null)
@@ -4705,9 +4973,13 @@ $root.SdkBitrateFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkBitrateFrame.toObject = function toObject(message, options) {
+    SdkBitrateFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults)
             object.bitrates = [];
@@ -4716,9 +4988,9 @@ $root.SdkBitrateFrame = (function() {
         if (message.bitrates && message.bitrates.length) {
             object.bitrates = [];
             for (var j = 0; j < message.bitrates.length; ++j)
-                object.bitrates[j] = $root.SdkBitrate.toObject(message.bitrates[j], options);
+                object.bitrates[j] = $root.SdkBitrate.toObject(message.bitrates[j], options, q + 1);
         }
-        if (message.serverAvailableOutgoingBitrate != null && message.hasOwnProperty("serverAvailableOutgoingBitrate"))
+        if (message.serverAvailableOutgoingBitrate != null && Object.hasOwnProperty.call(message, "serverAvailableOutgoingBitrate"))
             object.serverAvailableOutgoingBitrate = message.serverAvailableOutgoingBitrate;
         return object;
     };
@@ -4782,7 +5054,7 @@ $root.SdkStreamDescriptor = (function() {
     function SdkStreamDescriptor(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -4895,9 +5167,13 @@ $root.SdkStreamDescriptor = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkStreamDescriptor.encode = function encode(message, writer) {
+    SdkStreamDescriptor.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.streamId);
         if (message.framerate != null && Object.hasOwnProperty.call(message, "framerate"))
@@ -4933,7 +5209,7 @@ $root.SdkStreamDescriptor = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkStreamDescriptor.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -4947,12 +5223,18 @@ $root.SdkStreamDescriptor = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkStreamDescriptor.decode = function decode(reader, length) {
+    SdkStreamDescriptor.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkStreamDescriptor();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.streamId = reader.uint32();
@@ -4999,7 +5281,7 @@ $root.SdkStreamDescriptor = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -5030,31 +5312,35 @@ $root.SdkStreamDescriptor = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkStreamDescriptor.verify = function verify(message) {
+    SdkStreamDescriptor.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             if (!$util.isInteger(message.streamId))
                 return "streamId: integer expected";
-        if (message.framerate != null && message.hasOwnProperty("framerate"))
+        if (message.framerate != null && Object.hasOwnProperty.call(message, "framerate"))
             if (!$util.isInteger(message.framerate))
                 return "framerate: integer expected";
-        if (message.maxBitrateKbps != null && message.hasOwnProperty("maxBitrateKbps"))
+        if (message.maxBitrateKbps != null && Object.hasOwnProperty.call(message, "maxBitrateKbps"))
             if (!$util.isInteger(message.maxBitrateKbps))
                 return "maxBitrateKbps: integer expected";
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             if (!$util.isString(message.trackLabel))
                 return "trackLabel: string expected";
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             if (!$util.isInteger(message.groupId))
                 return "groupId: integer expected";
-        if (message.avgBitrateBps != null && message.hasOwnProperty("avgBitrateBps"))
+        if (message.avgBitrateBps != null && Object.hasOwnProperty.call(message, "avgBitrateBps"))
             if (!$util.isInteger(message.avgBitrateBps))
                 return "avgBitrateBps: integer expected";
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             if (!$util.isString(message.attendeeId))
                 return "attendeeId: string expected";
-        if (message.mediaType != null && message.hasOwnProperty("mediaType"))
+        if (message.mediaType != null && Object.hasOwnProperty.call(message, "mediaType"))
             switch (message.mediaType) {
             default:
                 return "mediaType: enum value expected";
@@ -5062,13 +5348,13 @@ $root.SdkStreamDescriptor = (function() {
             case 2:
                 break;
             }
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             if (!$util.isString(message.externalUserId))
                 return "externalUserId: string expected";
-        if (message.width != null && message.hasOwnProperty("width"))
+        if (message.width != null && Object.hasOwnProperty.call(message, "width"))
             if (!$util.isInteger(message.width))
                 return "width: integer expected";
-        if (message.height != null && message.hasOwnProperty("height"))
+        if (message.height != null && Object.hasOwnProperty.call(message, "height"))
             if (!$util.isInteger(message.height))
                 return "height: integer expected";
         return null;
@@ -5082,9 +5368,15 @@ $root.SdkStreamDescriptor = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkStreamDescriptor} SdkStreamDescriptor
      */
-    SdkStreamDescriptor.fromObject = function fromObject(object) {
+    SdkStreamDescriptor.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkStreamDescriptor)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkStreamDescriptor: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkStreamDescriptor();
         if (object.streamId != null)
             message.streamId = object.streamId >>> 0;
@@ -5134,9 +5426,13 @@ $root.SdkStreamDescriptor = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkStreamDescriptor.toObject = function toObject(message, options) {
+    SdkStreamDescriptor.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.streamId = 0;
@@ -5151,27 +5447,27 @@ $root.SdkStreamDescriptor = (function() {
             object.width = 0;
             object.height = 0;
         }
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             object.streamId = message.streamId;
-        if (message.framerate != null && message.hasOwnProperty("framerate"))
+        if (message.framerate != null && Object.hasOwnProperty.call(message, "framerate"))
             object.framerate = message.framerate;
-        if (message.maxBitrateKbps != null && message.hasOwnProperty("maxBitrateKbps"))
+        if (message.maxBitrateKbps != null && Object.hasOwnProperty.call(message, "maxBitrateKbps"))
             object.maxBitrateKbps = message.maxBitrateKbps;
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             object.trackLabel = message.trackLabel;
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             object.groupId = message.groupId;
-        if (message.avgBitrateBps != null && message.hasOwnProperty("avgBitrateBps"))
+        if (message.avgBitrateBps != null && Object.hasOwnProperty.call(message, "avgBitrateBps"))
             object.avgBitrateBps = message.avgBitrateBps;
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             object.attendeeId = message.attendeeId;
-        if (message.mediaType != null && message.hasOwnProperty("mediaType"))
+        if (message.mediaType != null && Object.hasOwnProperty.call(message, "mediaType"))
             object.mediaType = options.enums === String ? $root.SdkStreamMediaType[message.mediaType] === undefined ? message.mediaType : $root.SdkStreamMediaType[message.mediaType] : message.mediaType;
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             object.externalUserId = message.externalUserId;
-        if (message.width != null && message.hasOwnProperty("width"))
+        if (message.width != null && Object.hasOwnProperty.call(message, "width"))
             object.width = message.width;
-        if (message.height != null && message.hasOwnProperty("height"))
+        if (message.height != null && Object.hasOwnProperty.call(message, "height"))
             object.height = message.height;
         return object;
     };
@@ -5227,7 +5523,7 @@ $root.SdkStreamAllocation = (function() {
     function SdkStreamAllocation(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -5276,9 +5572,13 @@ $root.SdkStreamAllocation = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkStreamAllocation.encode = function encode(message, writer) {
+    SdkStreamAllocation.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.trackLabel);
         if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
@@ -5298,7 +5598,7 @@ $root.SdkStreamAllocation = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkStreamAllocation.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -5312,12 +5612,18 @@ $root.SdkStreamAllocation = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkStreamAllocation.decode = function decode(reader, length) {
+    SdkStreamAllocation.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkStreamAllocation();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.trackLabel = reader.string();
@@ -5332,7 +5638,7 @@ $root.SdkStreamAllocation = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -5363,16 +5669,20 @@ $root.SdkStreamAllocation = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkStreamAllocation.verify = function verify(message) {
+    SdkStreamAllocation.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             if (!$util.isString(message.trackLabel))
                 return "trackLabel: string expected";
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             if (!$util.isInteger(message.streamId))
                 return "streamId: integer expected";
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             if (!$util.isInteger(message.groupId))
                 return "groupId: integer expected";
         return null;
@@ -5386,9 +5696,15 @@ $root.SdkStreamAllocation = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkStreamAllocation} SdkStreamAllocation
      */
-    SdkStreamAllocation.fromObject = function fromObject(object) {
+    SdkStreamAllocation.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkStreamAllocation)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkStreamAllocation: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkStreamAllocation();
         if (object.trackLabel != null)
             message.trackLabel = String(object.trackLabel);
@@ -5408,20 +5724,24 @@ $root.SdkStreamAllocation = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkStreamAllocation.toObject = function toObject(message, options) {
+    SdkStreamAllocation.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.trackLabel = "";
             object.streamId = 0;
             object.groupId = 0;
         }
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             object.trackLabel = message.trackLabel;
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             object.streamId = message.streamId;
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             object.groupId = message.groupId;
         return object;
     };
@@ -5477,7 +5797,7 @@ $root.SdkTrackMapping = (function() {
     function SdkTrackMapping(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -5526,9 +5846,13 @@ $root.SdkTrackMapping = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTrackMapping.encode = function encode(message, writer) {
+    SdkTrackMapping.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.streamId);
         if (message.ssrc != null && Object.hasOwnProperty.call(message, "ssrc"))
@@ -5548,7 +5872,7 @@ $root.SdkTrackMapping = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTrackMapping.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -5562,12 +5886,18 @@ $root.SdkTrackMapping = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTrackMapping.decode = function decode(reader, length) {
+    SdkTrackMapping.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTrackMapping();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.streamId = reader.uint32();
@@ -5582,7 +5912,7 @@ $root.SdkTrackMapping = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -5613,16 +5943,20 @@ $root.SdkTrackMapping = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTrackMapping.verify = function verify(message) {
+    SdkTrackMapping.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             if (!$util.isInteger(message.streamId))
                 return "streamId: integer expected";
-        if (message.ssrc != null && message.hasOwnProperty("ssrc"))
+        if (message.ssrc != null && Object.hasOwnProperty.call(message, "ssrc"))
             if (!$util.isInteger(message.ssrc))
                 return "ssrc: integer expected";
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             if (!$util.isString(message.trackLabel))
                 return "trackLabel: string expected";
         return null;
@@ -5636,9 +5970,15 @@ $root.SdkTrackMapping = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTrackMapping} SdkTrackMapping
      */
-    SdkTrackMapping.fromObject = function fromObject(object) {
+    SdkTrackMapping.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTrackMapping)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTrackMapping: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTrackMapping();
         if (object.streamId != null)
             message.streamId = object.streamId >>> 0;
@@ -5658,20 +5998,24 @@ $root.SdkTrackMapping = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTrackMapping.toObject = function toObject(message, options) {
+    SdkTrackMapping.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.streamId = 0;
             object.ssrc = 0;
             object.trackLabel = "";
         }
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             object.streamId = message.streamId;
-        if (message.ssrc != null && message.hasOwnProperty("ssrc"))
+        if (message.ssrc != null && Object.hasOwnProperty.call(message, "ssrc"))
             object.ssrc = message.ssrc;
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             object.trackLabel = message.trackLabel;
         return object;
     };
@@ -5726,7 +6070,7 @@ $root.SdkBitrate = (function() {
     function SdkBitrate(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -5767,9 +6111,13 @@ $root.SdkBitrate = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkBitrate.encode = function encode(message, writer) {
+    SdkBitrate.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.sourceStreamId != null && Object.hasOwnProperty.call(message, "sourceStreamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.sourceStreamId);
         if (message.avgBitrateBps != null && Object.hasOwnProperty.call(message, "avgBitrateBps"))
@@ -5787,7 +6135,7 @@ $root.SdkBitrate = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkBitrate.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -5801,12 +6149,18 @@ $root.SdkBitrate = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkBitrate.decode = function decode(reader, length) {
+    SdkBitrate.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkBitrate();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.sourceStreamId = reader.uint32();
@@ -5817,7 +6171,7 @@ $root.SdkBitrate = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -5848,13 +6202,17 @@ $root.SdkBitrate = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkBitrate.verify = function verify(message) {
+    SdkBitrate.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.sourceStreamId != null && message.hasOwnProperty("sourceStreamId"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.sourceStreamId != null && Object.hasOwnProperty.call(message, "sourceStreamId"))
             if (!$util.isInteger(message.sourceStreamId))
                 return "sourceStreamId: integer expected";
-        if (message.avgBitrateBps != null && message.hasOwnProperty("avgBitrateBps"))
+        if (message.avgBitrateBps != null && Object.hasOwnProperty.call(message, "avgBitrateBps"))
             if (!$util.isInteger(message.avgBitrateBps))
                 return "avgBitrateBps: integer expected";
         return null;
@@ -5868,9 +6226,15 @@ $root.SdkBitrate = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkBitrate} SdkBitrate
      */
-    SdkBitrate.fromObject = function fromObject(object) {
+    SdkBitrate.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkBitrate)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkBitrate: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkBitrate();
         if (object.sourceStreamId != null)
             message.sourceStreamId = object.sourceStreamId >>> 0;
@@ -5888,17 +6252,21 @@ $root.SdkBitrate = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkBitrate.toObject = function toObject(message, options) {
+    SdkBitrate.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.sourceStreamId = 0;
             object.avgBitrateBps = 0;
         }
-        if (message.sourceStreamId != null && message.hasOwnProperty("sourceStreamId"))
+        if (message.sourceStreamId != null && Object.hasOwnProperty.call(message, "sourceStreamId"))
             object.sourceStreamId = message.sourceStreamId;
-        if (message.avgBitrateBps != null && message.hasOwnProperty("avgBitrateBps"))
+        if (message.avgBitrateBps != null && Object.hasOwnProperty.call(message, "avgBitrateBps"))
             object.avgBitrateBps = message.avgBitrateBps;
         return object;
     };
@@ -5952,7 +6320,7 @@ $root.SdkAudioControlFrame = (function() {
     function SdkAudioControlFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -5985,9 +6353,13 @@ $root.SdkAudioControlFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkAudioControlFrame.encode = function encode(message, writer) {
+    SdkAudioControlFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             writer.uint32(/* id 1, wireType 0 =*/8).bool(message.muted);
         return writer;
@@ -6003,7 +6375,7 @@ $root.SdkAudioControlFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkAudioControlFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -6017,19 +6389,25 @@ $root.SdkAudioControlFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkAudioControlFrame.decode = function decode(reader, length) {
+    SdkAudioControlFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioControlFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.muted = reader.bool();
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -6060,10 +6438,14 @@ $root.SdkAudioControlFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkAudioControlFrame.verify = function verify(message) {
+    SdkAudioControlFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             if (typeof message.muted !== "boolean")
                 return "muted: boolean expected";
         return null;
@@ -6077,9 +6459,15 @@ $root.SdkAudioControlFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkAudioControlFrame} SdkAudioControlFrame
      */
-    SdkAudioControlFrame.fromObject = function fromObject(object) {
+    SdkAudioControlFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkAudioControlFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkAudioControlFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkAudioControlFrame();
         if (object.muted != null)
             message.muted = Boolean(object.muted);
@@ -6095,13 +6483,17 @@ $root.SdkAudioControlFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkAudioControlFrame.toObject = function toObject(message, options) {
+    SdkAudioControlFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults)
             object.muted = false;
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             object.muted = message.muted;
         return object;
     };
@@ -6156,7 +6548,7 @@ $root.SdkAudioMetadataFrame = (function() {
         this.attendeeStates = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -6189,12 +6581,16 @@ $root.SdkAudioMetadataFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkAudioMetadataFrame.encode = function encode(message, writer) {
+    SdkAudioMetadataFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.attendeeStates != null && message.attendeeStates.length)
             for (var i = 0; i < message.attendeeStates.length; ++i)
-                $root.SdkAudioAttendeeState.encode(message.attendeeStates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkAudioAttendeeState.encode(message.attendeeStates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -6208,7 +6604,7 @@ $root.SdkAudioMetadataFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkAudioMetadataFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -6222,21 +6618,27 @@ $root.SdkAudioMetadataFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkAudioMetadataFrame.decode = function decode(reader, length) {
+    SdkAudioMetadataFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioMetadataFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.attendeeStates && message.attendeeStates.length))
                         message.attendeeStates = [];
-                    message.attendeeStates.push($root.SdkAudioAttendeeState.decode(reader, reader.uint32()));
+                    message.attendeeStates.push($root.SdkAudioAttendeeState.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -6267,14 +6669,18 @@ $root.SdkAudioMetadataFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkAudioMetadataFrame.verify = function verify(message) {
+    SdkAudioMetadataFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.attendeeStates != null && message.hasOwnProperty("attendeeStates")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.attendeeStates != null && Object.hasOwnProperty.call(message, "attendeeStates")) {
             if (!Array.isArray(message.attendeeStates))
                 return "attendeeStates: array expected";
             for (var i = 0; i < message.attendeeStates.length; ++i) {
-                var error = $root.SdkAudioAttendeeState.verify(message.attendeeStates[i]);
+                var error = $root.SdkAudioAttendeeState.verify(message.attendeeStates[i], long + 1);
                 if (error)
                     return "attendeeStates." + error;
             }
@@ -6290,18 +6696,24 @@ $root.SdkAudioMetadataFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkAudioMetadataFrame} SdkAudioMetadataFrame
      */
-    SdkAudioMetadataFrame.fromObject = function fromObject(object) {
+    SdkAudioMetadataFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkAudioMetadataFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkAudioMetadataFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkAudioMetadataFrame();
         if (object.attendeeStates) {
             if (!Array.isArray(object.attendeeStates))
                 throw TypeError(".SdkAudioMetadataFrame.attendeeStates: array expected");
             message.attendeeStates = [];
             for (var i = 0; i < object.attendeeStates.length; ++i) {
-                if (typeof object.attendeeStates[i] !== "object")
+                if (!$util.isObject(object.attendeeStates[i]))
                     throw TypeError(".SdkAudioMetadataFrame.attendeeStates: object expected");
-                message.attendeeStates[i] = $root.SdkAudioAttendeeState.fromObject(object.attendeeStates[i]);
+                message.attendeeStates[i] = $root.SdkAudioAttendeeState.fromObject(object.attendeeStates[i], long + 1);
             }
         }
         return message;
@@ -6316,16 +6728,20 @@ $root.SdkAudioMetadataFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkAudioMetadataFrame.toObject = function toObject(message, options) {
+    SdkAudioMetadataFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults)
             object.attendeeStates = [];
         if (message.attendeeStates && message.attendeeStates.length) {
             object.attendeeStates = [];
             for (var j = 0; j < message.attendeeStates.length; ++j)
-                object.attendeeStates[j] = $root.SdkAudioAttendeeState.toObject(message.attendeeStates[j], options);
+                object.attendeeStates[j] = $root.SdkAudioAttendeeState.toObject(message.attendeeStates[j], options, q + 1);
         }
         return object;
     };
@@ -6382,7 +6798,7 @@ $root.SdkAudioAttendeeState = (function() {
     function SdkAudioAttendeeState(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -6439,9 +6855,13 @@ $root.SdkAudioAttendeeState = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkAudioAttendeeState.encode = function encode(message, writer) {
+    SdkAudioAttendeeState.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.audioStreamId != null && Object.hasOwnProperty.call(message, "audioStreamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.audioStreamId);
         if (message.volume != null && Object.hasOwnProperty.call(message, "volume"))
@@ -6463,7 +6883,7 @@ $root.SdkAudioAttendeeState = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkAudioAttendeeState.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -6477,12 +6897,18 @@ $root.SdkAudioAttendeeState = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkAudioAttendeeState.decode = function decode(reader, length) {
+    SdkAudioAttendeeState.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioAttendeeState();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.audioStreamId = reader.uint32();
@@ -6501,7 +6927,7 @@ $root.SdkAudioAttendeeState = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -6532,19 +6958,23 @@ $root.SdkAudioAttendeeState = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkAudioAttendeeState.verify = function verify(message) {
+    SdkAudioAttendeeState.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.audioStreamId != null && Object.hasOwnProperty.call(message, "audioStreamId"))
             if (!$util.isInteger(message.audioStreamId))
                 return "audioStreamId: integer expected";
-        if (message.volume != null && message.hasOwnProperty("volume"))
+        if (message.volume != null && Object.hasOwnProperty.call(message, "volume"))
             if (!$util.isInteger(message.volume))
                 return "volume: integer expected";
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             if (typeof message.muted !== "boolean")
                 return "muted: boolean expected";
-        if (message.signalStrength != null && message.hasOwnProperty("signalStrength"))
+        if (message.signalStrength != null && Object.hasOwnProperty.call(message, "signalStrength"))
             if (!$util.isInteger(message.signalStrength))
                 return "signalStrength: integer expected";
         return null;
@@ -6558,9 +6988,15 @@ $root.SdkAudioAttendeeState = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkAudioAttendeeState} SdkAudioAttendeeState
      */
-    SdkAudioAttendeeState.fromObject = function fromObject(object) {
+    SdkAudioAttendeeState.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkAudioAttendeeState)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkAudioAttendeeState: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkAudioAttendeeState();
         if (object.audioStreamId != null)
             message.audioStreamId = object.audioStreamId >>> 0;
@@ -6582,9 +7018,13 @@ $root.SdkAudioAttendeeState = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkAudioAttendeeState.toObject = function toObject(message, options) {
+    SdkAudioAttendeeState.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.audioStreamId = 0;
@@ -6592,13 +7032,13 @@ $root.SdkAudioAttendeeState = (function() {
             object.muted = false;
             object.signalStrength = 0;
         }
-        if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
+        if (message.audioStreamId != null && Object.hasOwnProperty.call(message, "audioStreamId"))
             object.audioStreamId = message.audioStreamId;
-        if (message.volume != null && message.hasOwnProperty("volume"))
+        if (message.volume != null && Object.hasOwnProperty.call(message, "volume"))
             object.volume = message.volume;
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             object.muted = message.muted;
-        if (message.signalStrength != null && message.hasOwnProperty("signalStrength"))
+        if (message.signalStrength != null && Object.hasOwnProperty.call(message, "signalStrength"))
             object.signalStrength = message.signalStrength;
         return object;
     };
@@ -6653,7 +7093,7 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
         this.streams = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -6686,12 +7126,16 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkAudioStreamIdInfoFrame.encode = function encode(message, writer) {
+    SdkAudioStreamIdInfoFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.streams != null && message.streams.length)
             for (var i = 0; i < message.streams.length; ++i)
-                $root.SdkAudioStreamIdInfo.encode(message.streams[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkAudioStreamIdInfo.encode(message.streams[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -6705,7 +7149,7 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkAudioStreamIdInfoFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -6719,21 +7163,27 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkAudioStreamIdInfoFrame.decode = function decode(reader, length) {
+    SdkAudioStreamIdInfoFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioStreamIdInfoFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.streams && message.streams.length))
                         message.streams = [];
-                    message.streams.push($root.SdkAudioStreamIdInfo.decode(reader, reader.uint32()));
+                    message.streams.push($root.SdkAudioStreamIdInfo.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -6764,14 +7214,18 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkAudioStreamIdInfoFrame.verify = function verify(message) {
+    SdkAudioStreamIdInfoFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.streams != null && message.hasOwnProperty("streams")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.streams != null && Object.hasOwnProperty.call(message, "streams")) {
             if (!Array.isArray(message.streams))
                 return "streams: array expected";
             for (var i = 0; i < message.streams.length; ++i) {
-                var error = $root.SdkAudioStreamIdInfo.verify(message.streams[i]);
+                var error = $root.SdkAudioStreamIdInfo.verify(message.streams[i], long + 1);
                 if (error)
                     return "streams." + error;
             }
@@ -6787,18 +7241,24 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkAudioStreamIdInfoFrame} SdkAudioStreamIdInfoFrame
      */
-    SdkAudioStreamIdInfoFrame.fromObject = function fromObject(object) {
+    SdkAudioStreamIdInfoFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkAudioStreamIdInfoFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkAudioStreamIdInfoFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkAudioStreamIdInfoFrame();
         if (object.streams) {
             if (!Array.isArray(object.streams))
                 throw TypeError(".SdkAudioStreamIdInfoFrame.streams: array expected");
             message.streams = [];
             for (var i = 0; i < object.streams.length; ++i) {
-                if (typeof object.streams[i] !== "object")
+                if (!$util.isObject(object.streams[i]))
                     throw TypeError(".SdkAudioStreamIdInfoFrame.streams: object expected");
-                message.streams[i] = $root.SdkAudioStreamIdInfo.fromObject(object.streams[i]);
+                message.streams[i] = $root.SdkAudioStreamIdInfo.fromObject(object.streams[i], long + 1);
             }
         }
         return message;
@@ -6813,16 +7273,20 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkAudioStreamIdInfoFrame.toObject = function toObject(message, options) {
+    SdkAudioStreamIdInfoFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults)
             object.streams = [];
         if (message.streams && message.streams.length) {
             object.streams = [];
             for (var j = 0; j < message.streams.length; ++j)
-                object.streams[j] = $root.SdkAudioStreamIdInfo.toObject(message.streams[j], options);
+                object.streams[j] = $root.SdkAudioStreamIdInfo.toObject(message.streams[j], options, q + 1);
         }
         return object;
     };
@@ -6880,7 +7344,7 @@ $root.SdkAudioStreamIdInfo = (function() {
     function SdkAudioStreamIdInfo(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -6945,9 +7409,13 @@ $root.SdkAudioStreamIdInfo = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkAudioStreamIdInfo.encode = function encode(message, writer) {
+    SdkAudioStreamIdInfo.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.audioStreamId != null && Object.hasOwnProperty.call(message, "audioStreamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.audioStreamId);
         if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
@@ -6971,7 +7439,7 @@ $root.SdkAudioStreamIdInfo = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkAudioStreamIdInfo.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -6985,12 +7453,18 @@ $root.SdkAudioStreamIdInfo = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkAudioStreamIdInfo.decode = function decode(reader, length) {
+    SdkAudioStreamIdInfo.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioStreamIdInfo();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.audioStreamId = reader.uint32();
@@ -7013,7 +7487,7 @@ $root.SdkAudioStreamIdInfo = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -7044,22 +7518,26 @@ $root.SdkAudioStreamIdInfo = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkAudioStreamIdInfo.verify = function verify(message) {
+    SdkAudioStreamIdInfo.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.audioStreamId != null && Object.hasOwnProperty.call(message, "audioStreamId"))
             if (!$util.isInteger(message.audioStreamId))
                 return "audioStreamId: integer expected";
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             if (!$util.isString(message.attendeeId))
                 return "attendeeId: string expected";
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             if (typeof message.muted !== "boolean")
                 return "muted: boolean expected";
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             if (!$util.isString(message.externalUserId))
                 return "externalUserId: string expected";
-        if (message.dropped != null && message.hasOwnProperty("dropped"))
+        if (message.dropped != null && Object.hasOwnProperty.call(message, "dropped"))
             if (typeof message.dropped !== "boolean")
                 return "dropped: boolean expected";
         return null;
@@ -7073,9 +7551,15 @@ $root.SdkAudioStreamIdInfo = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkAudioStreamIdInfo} SdkAudioStreamIdInfo
      */
-    SdkAudioStreamIdInfo.fromObject = function fromObject(object) {
+    SdkAudioStreamIdInfo.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkAudioStreamIdInfo)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkAudioStreamIdInfo: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkAudioStreamIdInfo();
         if (object.audioStreamId != null)
             message.audioStreamId = object.audioStreamId >>> 0;
@@ -7099,9 +7583,13 @@ $root.SdkAudioStreamIdInfo = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkAudioStreamIdInfo.toObject = function toObject(message, options) {
+    SdkAudioStreamIdInfo.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.audioStreamId = 0;
@@ -7110,15 +7598,15 @@ $root.SdkAudioStreamIdInfo = (function() {
             object.externalUserId = "";
             object.dropped = false;
         }
-        if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
+        if (message.audioStreamId != null && Object.hasOwnProperty.call(message, "audioStreamId"))
             object.audioStreamId = message.audioStreamId;
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             object.attendeeId = message.attendeeId;
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             object.muted = message.muted;
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             object.externalUserId = message.externalUserId;
-        if (message.dropped != null && message.hasOwnProperty("dropped"))
+        if (message.dropped != null && Object.hasOwnProperty.call(message, "dropped"))
             object.dropped = message.dropped;
         return object;
     };
@@ -7187,7 +7675,7 @@ $root.SdkPingPongFrame = (function() {
     function SdkPingPongFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -7228,9 +7716,13 @@ $root.SdkPingPongFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkPingPongFrame.encode = function encode(message, writer) {
+    SdkPingPongFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
         writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.pingId);
         return writer;
@@ -7246,7 +7738,7 @@ $root.SdkPingPongFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkPingPongFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -7260,12 +7752,18 @@ $root.SdkPingPongFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkPingPongFrame.decode = function decode(reader, length) {
+    SdkPingPongFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkPingPongFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.type = reader.int32();
@@ -7276,13 +7774,13 @@ $root.SdkPingPongFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
-        if (!message.hasOwnProperty("type"))
+        if (!Object.hasOwnProperty.call(message, "type"))
             throw $util.ProtocolError("missing required 'type'", { instance: message });
-        if (!message.hasOwnProperty("pingId"))
+        if (!Object.hasOwnProperty.call(message, "pingId"))
             throw $util.ProtocolError("missing required 'pingId'", { instance: message });
         return message;
     };
@@ -7311,9 +7809,13 @@ $root.SdkPingPongFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkPingPongFrame.verify = function verify(message) {
+    SdkPingPongFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
         switch (message.type) {
         default:
             return "type: enum value expected";
@@ -7334,9 +7836,15 @@ $root.SdkPingPongFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkPingPongFrame} SdkPingPongFrame
      */
-    SdkPingPongFrame.fromObject = function fromObject(object) {
+    SdkPingPongFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkPingPongFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkPingPongFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkPingPongFrame();
         switch (object.type) {
         default:
@@ -7368,17 +7876,21 @@ $root.SdkPingPongFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkPingPongFrame.toObject = function toObject(message, options) {
+    SdkPingPongFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.type = options.enums === String ? "PING" : 1;
             object.pingId = 0;
         }
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             object.type = options.enums === String ? $root.SdkPingPongType[message.type] === undefined ? message.type : $root.SdkPingPongType[message.type] : message.type;
-        if (message.pingId != null && message.hasOwnProperty("pingId"))
+        if (message.pingId != null && Object.hasOwnProperty.call(message, "pingId"))
             object.pingId = message.pingId;
         return object;
     };
@@ -7432,7 +7944,7 @@ $root.SdkAudioStatusFrame = (function() {
     function SdkAudioStatusFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -7465,9 +7977,13 @@ $root.SdkAudioStatusFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkAudioStatusFrame.encode = function encode(message, writer) {
+    SdkAudioStatusFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.audioStatus != null && Object.hasOwnProperty.call(message, "audioStatus"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.audioStatus);
         return writer;
@@ -7483,7 +7999,7 @@ $root.SdkAudioStatusFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkAudioStatusFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -7497,19 +8013,25 @@ $root.SdkAudioStatusFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkAudioStatusFrame.decode = function decode(reader, length) {
+    SdkAudioStatusFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioStatusFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.audioStatus = reader.uint32();
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -7540,10 +8062,14 @@ $root.SdkAudioStatusFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkAudioStatusFrame.verify = function verify(message) {
+    SdkAudioStatusFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.audioStatus != null && message.hasOwnProperty("audioStatus"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.audioStatus != null && Object.hasOwnProperty.call(message, "audioStatus"))
             if (!$util.isInteger(message.audioStatus))
                 return "audioStatus: integer expected";
         return null;
@@ -7557,9 +8083,15 @@ $root.SdkAudioStatusFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkAudioStatusFrame} SdkAudioStatusFrame
      */
-    SdkAudioStatusFrame.fromObject = function fromObject(object) {
+    SdkAudioStatusFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkAudioStatusFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkAudioStatusFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkAudioStatusFrame();
         if (object.audioStatus != null)
             message.audioStatus = object.audioStatus >>> 0;
@@ -7575,13 +8107,17 @@ $root.SdkAudioStatusFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkAudioStatusFrame.toObject = function toObject(message, options) {
+    SdkAudioStatusFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults)
             object.audioStatus = 0;
-        if (message.audioStatus != null && message.hasOwnProperty("audioStatus"))
+        if (message.audioStatus != null && Object.hasOwnProperty.call(message, "audioStatus"))
             object.audioStatus = message.audioStatus;
         return object;
     };
@@ -7636,7 +8172,7 @@ $root.SdkMetric = (function() {
     function SdkMetric(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -7677,9 +8213,13 @@ $root.SdkMetric = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkMetric.encode = function encode(message, writer) {
+    SdkMetric.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
         if (message.value != null && Object.hasOwnProperty.call(message, "value"))
@@ -7697,7 +8237,7 @@ $root.SdkMetric = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkMetric.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -7711,12 +8251,18 @@ $root.SdkMetric = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkMetric.decode = function decode(reader, length) {
+    SdkMetric.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMetric();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.type = reader.int32();
@@ -7727,7 +8273,7 @@ $root.SdkMetric = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -7758,10 +8304,14 @@ $root.SdkMetric = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkMetric.verify = function verify(message) {
+    SdkMetric.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             switch (message.type) {
             default:
                 return "type: enum value expected";
@@ -7849,9 +8399,18 @@ $root.SdkMetric = (function() {
             case 111:
             case 112:
             case 113:
+            case 114:
+            case 115:
+            case 116:
+            case 117:
+            case 118:
+            case 119:
+            case 120:
+            case 121:
+            case 122:
                 break;
             }
-        if (message.value != null && message.hasOwnProperty("value"))
+        if (message.value != null && Object.hasOwnProperty.call(message, "value"))
             if (typeof message.value !== "number")
                 return "value: number expected";
         return null;
@@ -7865,9 +8424,15 @@ $root.SdkMetric = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkMetric} SdkMetric
      */
-    SdkMetric.fromObject = function fromObject(object) {
+    SdkMetric.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkMetric)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkMetric: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkMetric();
         switch (object.type) {
         default:
@@ -8212,6 +8777,66 @@ $root.SdkMetric = (function() {
         case 113:
             message.type = 113;
             break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_DURATION_MS":
+        case 114:
+            message.type = 114;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_EFFECT_RENDER_DURATION_MS":
+        case 115:
+            message.type = 115;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_FRAMES_PER_SEGMENTATION":
+        case 116:
+            message.type = 116;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_CPU_USAGE_PERCENT":
+        case 117:
+            message.type = 117;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_DURATION_MS":
+        case 118:
+            message.type = 118;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_FAILURE":
+        case 119:
+            message.type = 119;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_ERROR_COUNT":
+        case 120:
+            message.type = 120;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SUBMITTED":
+        case 121:
+            message.type = 121;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SEGMENTED":
+        case 122:
+            message.type = 122;
+            break;
+        case "VIDEO_PIPELINE_FRAME_RATE":
+        case 123:
+            message.type = 123;
+            break;
+        case "VIDEO_PROCESSOR_LATENCY_MS":
+        case 124:
+            message.type = 124;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_FAILURE":
+        case 125:
+            message.type = 125;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS":
+        case 126:
+            message.type = 126;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE":
+        case 127:
+            message.type = 127;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE":
+        case 128:
+            message.type = 128;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -8227,17 +8852,21 @@ $root.SdkMetric = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkMetric.toObject = function toObject(message, options) {
+    SdkMetric.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.type = options.enums === String ? "VIDEO_ACTUAL_ENCODER_BITRATE" : 1;
             object.value = 0;
         }
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             object.type = options.enums === String ? $root.SdkMetric.Type[message.type] === undefined ? message.type : $root.SdkMetric.Type[message.type] : message.type;
-        if (message.value != null && message.hasOwnProperty("value"))
+        if (message.value != null && Object.hasOwnProperty.call(message, "value"))
             object.value = options.json && !isFinite(message.value) ? String(message.value) : message.value;
         return object;
     };
@@ -8356,6 +8985,21 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_SENT_TRANSFORM_PPS=111 VIDEO_SENT_TRANSFORM_PPS value
      * @property {number} VIDEO_RECEIVED_TRANSFORM_PPS=112 VIDEO_RECEIVED_TRANSFORM_PPS value
      * @property {number} CPU_PRESSURE_STATE=113 CPU_PRESSURE_STATE value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_DURATION_MS=114 VIDEO_BACKGROUND_SEGMENTATION_DURATION_MS value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_EFFECT_RENDER_DURATION_MS=115 VIDEO_BACKGROUND_SEGMENTATION_EFFECT_RENDER_DURATION_MS value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_FRAMES_PER_SEGMENTATION=116 VIDEO_BACKGROUND_SEGMENTATION_FRAMES_PER_SEGMENTATION value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_CPU_USAGE_PERCENT=117 VIDEO_BACKGROUND_SEGMENTATION_CPU_USAGE_PERCENT value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_DURATION_MS=118 VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_DURATION_MS value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_FAILURE=119 VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_FAILURE value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_ERROR_COUNT=120 VIDEO_BACKGROUND_SEGMENTATION_ERROR_COUNT value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SUBMITTED=121 VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SUBMITTED value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SEGMENTED=122 VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SEGMENTED value
+     * @property {number} VIDEO_PIPELINE_FRAME_RATE=123 VIDEO_PIPELINE_FRAME_RATE value
+     * @property {number} VIDEO_PROCESSOR_LATENCY_MS=124 VIDEO_PROCESSOR_LATENCY_MS value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_FAILURE=125 VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_FAILURE value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS=126 VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE=127 VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE=128 VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -8443,6 +9087,21 @@ $root.SdkMetric = (function() {
         values[valuesById[111] = "VIDEO_SENT_TRANSFORM_PPS"] = 111;
         values[valuesById[112] = "VIDEO_RECEIVED_TRANSFORM_PPS"] = 112;
         values[valuesById[113] = "CPU_PRESSURE_STATE"] = 113;
+        values[valuesById[114] = "VIDEO_BACKGROUND_SEGMENTATION_DURATION_MS"] = 114;
+        values[valuesById[115] = "VIDEO_BACKGROUND_SEGMENTATION_EFFECT_RENDER_DURATION_MS"] = 115;
+        values[valuesById[116] = "VIDEO_BACKGROUND_SEGMENTATION_FRAMES_PER_SEGMENTATION"] = 116;
+        values[valuesById[117] = "VIDEO_BACKGROUND_SEGMENTATION_CPU_USAGE_PERCENT"] = 117;
+        values[valuesById[118] = "VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_DURATION_MS"] = 118;
+        values[valuesById[119] = "VIDEO_BACKGROUND_SEGMENTATION_INITIALIZATION_FAILURE"] = 119;
+        values[valuesById[120] = "VIDEO_BACKGROUND_SEGMENTATION_ERROR_COUNT"] = 120;
+        values[valuesById[121] = "VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SUBMITTED"] = 121;
+        values[valuesById[122] = "VIDEO_BACKGROUND_SEGMENTATION_FRAMES_SEGMENTED"] = 122;
+        values[valuesById[123] = "VIDEO_PIPELINE_FRAME_RATE"] = 123;
+        values[valuesById[124] = "VIDEO_PROCESSOR_LATENCY_MS"] = 124;
+        values[valuesById[125] = "VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_FAILURE"] = 125;
+        values[valuesById[126] = "VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS"] = 126;
+        values[valuesById[127] = "VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE"] = 127;
+        values[valuesById[128] = "VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE"] = 128;
         return values;
     })();
 
@@ -8475,7 +9134,7 @@ $root.SdkStreamMetricFrame = (function() {
         this.dimensions = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -8540,19 +9199,23 @@ $root.SdkStreamMetricFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkStreamMetricFrame.encode = function encode(message, writer) {
+    SdkStreamMetricFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.streamId);
         if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.groupId);
         if (message.metrics != null && message.metrics.length)
             for (var i = 0; i < message.metrics.length; ++i)
-                $root.SdkMetric.encode(message.metrics[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                $root.SdkMetric.encode(message.metrics[i], writer.uint32(/* id 5, wireType 2 =*/42).fork(), q + 1).ldelim();
         if (message.dimensions != null && message.dimensions.length)
             for (var i = 0; i < message.dimensions.length; ++i)
-                $root.SdkStreamDimension.encode(message.dimensions[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                $root.SdkStreamDimension.encode(message.dimensions[i], writer.uint32(/* id 6, wireType 2 =*/50).fork(), q + 1).ldelim();
         if (message.mediaType != null && Object.hasOwnProperty.call(message, "mediaType"))
             writer.uint32(/* id 7, wireType 0 =*/56).int32(message.mediaType);
         return writer;
@@ -8568,7 +9231,7 @@ $root.SdkStreamMetricFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkStreamMetricFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -8582,12 +9245,18 @@ $root.SdkStreamMetricFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkStreamMetricFrame.decode = function decode(reader, length) {
+    SdkStreamMetricFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkStreamMetricFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 3: {
                     message.streamId = reader.uint32();
@@ -8600,13 +9269,13 @@ $root.SdkStreamMetricFrame = (function() {
             case 5: {
                     if (!(message.metrics && message.metrics.length))
                         message.metrics = [];
-                    message.metrics.push($root.SdkMetric.decode(reader, reader.uint32()));
+                    message.metrics.push($root.SdkMetric.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 6: {
                     if (!(message.dimensions && message.dimensions.length))
                         message.dimensions = [];
-                    message.dimensions.push($root.SdkStreamDimension.decode(reader, reader.uint32()));
+                    message.dimensions.push($root.SdkStreamDimension.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 7: {
@@ -8614,7 +9283,7 @@ $root.SdkStreamMetricFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -8645,34 +9314,38 @@ $root.SdkStreamMetricFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkStreamMetricFrame.verify = function verify(message) {
+    SdkStreamMetricFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             if (!$util.isInteger(message.streamId))
                 return "streamId: integer expected";
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             if (!$util.isInteger(message.groupId))
                 return "groupId: integer expected";
-        if (message.metrics != null && message.hasOwnProperty("metrics")) {
+        if (message.metrics != null && Object.hasOwnProperty.call(message, "metrics")) {
             if (!Array.isArray(message.metrics))
                 return "metrics: array expected";
             for (var i = 0; i < message.metrics.length; ++i) {
-                var error = $root.SdkMetric.verify(message.metrics[i]);
+                var error = $root.SdkMetric.verify(message.metrics[i], long + 1);
                 if (error)
                     return "metrics." + error;
             }
         }
-        if (message.dimensions != null && message.hasOwnProperty("dimensions")) {
+        if (message.dimensions != null && Object.hasOwnProperty.call(message, "dimensions")) {
             if (!Array.isArray(message.dimensions))
                 return "dimensions: array expected";
             for (var i = 0; i < message.dimensions.length; ++i) {
-                var error = $root.SdkStreamDimension.verify(message.dimensions[i]);
+                var error = $root.SdkStreamDimension.verify(message.dimensions[i], long + 1);
                 if (error)
                     return "dimensions." + error;
             }
         }
-        if (message.mediaType != null && message.hasOwnProperty("mediaType"))
+        if (message.mediaType != null && Object.hasOwnProperty.call(message, "mediaType"))
             switch (message.mediaType) {
             default:
                 return "mediaType: enum value expected";
@@ -8691,9 +9364,15 @@ $root.SdkStreamMetricFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkStreamMetricFrame} SdkStreamMetricFrame
      */
-    SdkStreamMetricFrame.fromObject = function fromObject(object) {
+    SdkStreamMetricFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkStreamMetricFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkStreamMetricFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkStreamMetricFrame();
         if (object.streamId != null)
             message.streamId = object.streamId >>> 0;
@@ -8704,9 +9383,9 @@ $root.SdkStreamMetricFrame = (function() {
                 throw TypeError(".SdkStreamMetricFrame.metrics: array expected");
             message.metrics = [];
             for (var i = 0; i < object.metrics.length; ++i) {
-                if (typeof object.metrics[i] !== "object")
+                if (!$util.isObject(object.metrics[i]))
                     throw TypeError(".SdkStreamMetricFrame.metrics: object expected");
-                message.metrics[i] = $root.SdkMetric.fromObject(object.metrics[i]);
+                message.metrics[i] = $root.SdkMetric.fromObject(object.metrics[i], long + 1);
             }
         }
         if (object.dimensions) {
@@ -8714,9 +9393,9 @@ $root.SdkStreamMetricFrame = (function() {
                 throw TypeError(".SdkStreamMetricFrame.dimensions: array expected");
             message.dimensions = [];
             for (var i = 0; i < object.dimensions.length; ++i) {
-                if (typeof object.dimensions[i] !== "object")
+                if (!$util.isObject(object.dimensions[i]))
                     throw TypeError(".SdkStreamMetricFrame.dimensions: object expected");
-                message.dimensions[i] = $root.SdkStreamDimension.fromObject(object.dimensions[i]);
+                message.dimensions[i] = $root.SdkStreamDimension.fromObject(object.dimensions[i], long + 1);
             }
         }
         switch (object.mediaType) {
@@ -8747,9 +9426,13 @@ $root.SdkStreamMetricFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkStreamMetricFrame.toObject = function toObject(message, options) {
+    SdkStreamMetricFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.metrics = [];
@@ -8760,21 +9443,21 @@ $root.SdkStreamMetricFrame = (function() {
             object.groupId = 0;
             object.mediaType = options.enums === String ? "AUDIO" : 1;
         }
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             object.streamId = message.streamId;
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             object.groupId = message.groupId;
         if (message.metrics && message.metrics.length) {
             object.metrics = [];
             for (var j = 0; j < message.metrics.length; ++j)
-                object.metrics[j] = $root.SdkMetric.toObject(message.metrics[j], options);
+                object.metrics[j] = $root.SdkMetric.toObject(message.metrics[j], options, q + 1);
         }
         if (message.dimensions && message.dimensions.length) {
             object.dimensions = [];
             for (var j = 0; j < message.dimensions.length; ++j)
-                object.dimensions[j] = $root.SdkStreamDimension.toObject(message.dimensions[j], options);
+                object.dimensions[j] = $root.SdkStreamDimension.toObject(message.dimensions[j], options, q + 1);
         }
-        if (message.mediaType != null && message.hasOwnProperty("mediaType"))
+        if (message.mediaType != null && Object.hasOwnProperty.call(message, "mediaType"))
             object.mediaType = options.enums === String ? $root.SdkStreamMediaType[message.mediaType] === undefined ? message.mediaType : $root.SdkStreamMediaType[message.mediaType] : message.mediaType;
         return object;
     };
@@ -8831,7 +9514,7 @@ $root.SdkClientMetricFrame = (function() {
         this.streamMetricFrames = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -8872,15 +9555,19 @@ $root.SdkClientMetricFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkClientMetricFrame.encode = function encode(message, writer) {
+    SdkClientMetricFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.globalMetrics != null && message.globalMetrics.length)
             for (var i = 0; i < message.globalMetrics.length; ++i)
-                $root.SdkMetric.encode(message.globalMetrics[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkMetric.encode(message.globalMetrics[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         if (message.streamMetricFrames != null && message.streamMetricFrames.length)
             for (var i = 0; i < message.streamMetricFrames.length; ++i)
-                $root.SdkStreamMetricFrame.encode(message.streamMetricFrames[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.SdkStreamMetricFrame.encode(message.streamMetricFrames[i], writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -8894,7 +9581,7 @@ $root.SdkClientMetricFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkClientMetricFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -8908,27 +9595,33 @@ $root.SdkClientMetricFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkClientMetricFrame.decode = function decode(reader, length) {
+    SdkClientMetricFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkClientMetricFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.globalMetrics && message.globalMetrics.length))
                         message.globalMetrics = [];
-                    message.globalMetrics.push($root.SdkMetric.decode(reader, reader.uint32()));
+                    message.globalMetrics.push($root.SdkMetric.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 2: {
                     if (!(message.streamMetricFrames && message.streamMetricFrames.length))
                         message.streamMetricFrames = [];
-                    message.streamMetricFrames.push($root.SdkStreamMetricFrame.decode(reader, reader.uint32()));
+                    message.streamMetricFrames.push($root.SdkStreamMetricFrame.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -8959,23 +9652,27 @@ $root.SdkClientMetricFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkClientMetricFrame.verify = function verify(message) {
+    SdkClientMetricFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.globalMetrics != null && message.hasOwnProperty("globalMetrics")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.globalMetrics != null && Object.hasOwnProperty.call(message, "globalMetrics")) {
             if (!Array.isArray(message.globalMetrics))
                 return "globalMetrics: array expected";
             for (var i = 0; i < message.globalMetrics.length; ++i) {
-                var error = $root.SdkMetric.verify(message.globalMetrics[i]);
+                var error = $root.SdkMetric.verify(message.globalMetrics[i], long + 1);
                 if (error)
                     return "globalMetrics." + error;
             }
         }
-        if (message.streamMetricFrames != null && message.hasOwnProperty("streamMetricFrames")) {
+        if (message.streamMetricFrames != null && Object.hasOwnProperty.call(message, "streamMetricFrames")) {
             if (!Array.isArray(message.streamMetricFrames))
                 return "streamMetricFrames: array expected";
             for (var i = 0; i < message.streamMetricFrames.length; ++i) {
-                var error = $root.SdkStreamMetricFrame.verify(message.streamMetricFrames[i]);
+                var error = $root.SdkStreamMetricFrame.verify(message.streamMetricFrames[i], long + 1);
                 if (error)
                     return "streamMetricFrames." + error;
             }
@@ -8991,18 +9688,24 @@ $root.SdkClientMetricFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkClientMetricFrame} SdkClientMetricFrame
      */
-    SdkClientMetricFrame.fromObject = function fromObject(object) {
+    SdkClientMetricFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkClientMetricFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkClientMetricFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkClientMetricFrame();
         if (object.globalMetrics) {
             if (!Array.isArray(object.globalMetrics))
                 throw TypeError(".SdkClientMetricFrame.globalMetrics: array expected");
             message.globalMetrics = [];
             for (var i = 0; i < object.globalMetrics.length; ++i) {
-                if (typeof object.globalMetrics[i] !== "object")
+                if (!$util.isObject(object.globalMetrics[i]))
                     throw TypeError(".SdkClientMetricFrame.globalMetrics: object expected");
-                message.globalMetrics[i] = $root.SdkMetric.fromObject(object.globalMetrics[i]);
+                message.globalMetrics[i] = $root.SdkMetric.fromObject(object.globalMetrics[i], long + 1);
             }
         }
         if (object.streamMetricFrames) {
@@ -9010,9 +9713,9 @@ $root.SdkClientMetricFrame = (function() {
                 throw TypeError(".SdkClientMetricFrame.streamMetricFrames: array expected");
             message.streamMetricFrames = [];
             for (var i = 0; i < object.streamMetricFrames.length; ++i) {
-                if (typeof object.streamMetricFrames[i] !== "object")
+                if (!$util.isObject(object.streamMetricFrames[i]))
                     throw TypeError(".SdkClientMetricFrame.streamMetricFrames: object expected");
-                message.streamMetricFrames[i] = $root.SdkStreamMetricFrame.fromObject(object.streamMetricFrames[i]);
+                message.streamMetricFrames[i] = $root.SdkStreamMetricFrame.fromObject(object.streamMetricFrames[i], long + 1);
             }
         }
         return message;
@@ -9027,9 +9730,13 @@ $root.SdkClientMetricFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkClientMetricFrame.toObject = function toObject(message, options) {
+    SdkClientMetricFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.globalMetrics = [];
@@ -9038,12 +9745,12 @@ $root.SdkClientMetricFrame = (function() {
         if (message.globalMetrics && message.globalMetrics.length) {
             object.globalMetrics = [];
             for (var j = 0; j < message.globalMetrics.length; ++j)
-                object.globalMetrics[j] = $root.SdkMetric.toObject(message.globalMetrics[j], options);
+                object.globalMetrics[j] = $root.SdkMetric.toObject(message.globalMetrics[j], options, q + 1);
         }
         if (message.streamMetricFrames && message.streamMetricFrames.length) {
             object.streamMetricFrames = [];
             for (var j = 0; j < message.streamMetricFrames.length; ++j)
-                object.streamMetricFrames[j] = $root.SdkStreamMetricFrame.toObject(message.streamMetricFrames[j], options);
+                object.streamMetricFrames[j] = $root.SdkStreamMetricFrame.toObject(message.streamMetricFrames[j], options, q + 1);
         }
         return object;
     };
@@ -9098,7 +9805,7 @@ $root.SdkStreamDimension = (function() {
     function SdkStreamDimension(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -9139,13 +9846,17 @@ $root.SdkStreamDimension = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkStreamDimension.encode = function encode(message, writer) {
+    SdkStreamDimension.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
         if (message.value != null && Object.hasOwnProperty.call(message, "value"))
-            $root.SdkDimensionValue.encode(message.value, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            $root.SdkDimensionValue.encode(message.value, writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -9159,7 +9870,7 @@ $root.SdkStreamDimension = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkStreamDimension.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -9173,23 +9884,29 @@ $root.SdkStreamDimension = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkStreamDimension.decode = function decode(reader, length) {
+    SdkStreamDimension.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkStreamDimension();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.type = reader.int32();
                     break;
                 }
             case 2: {
-                    message.value = $root.SdkDimensionValue.decode(reader, reader.uint32());
+                    message.value = $root.SdkDimensionValue.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -9220,19 +9937,25 @@ $root.SdkStreamDimension = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkStreamDimension.verify = function verify(message) {
+    SdkStreamDimension.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             switch (message.type) {
             default:
                 return "type: enum value expected";
             case 1:
             case 2:
+            case 3:
+            case 4:
                 break;
             }
-        if (message.value != null && message.hasOwnProperty("value")) {
-            var error = $root.SdkDimensionValue.verify(message.value);
+        if (message.value != null && Object.hasOwnProperty.call(message, "value")) {
+            var error = $root.SdkDimensionValue.verify(message.value, long + 1);
             if (error)
                 return "value." + error;
         }
@@ -9247,9 +9970,15 @@ $root.SdkStreamDimension = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkStreamDimension} SdkStreamDimension
      */
-    SdkStreamDimension.fromObject = function fromObject(object) {
+    SdkStreamDimension.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkStreamDimension)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkStreamDimension: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkStreamDimension();
         switch (object.type) {
         default:
@@ -9266,11 +9995,23 @@ $root.SdkStreamDimension = (function() {
         case 2:
             message.type = 2;
             break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE":
+        case 3:
+            message.type = 3;
+            break;
+        case "VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE":
+        case 4:
+            message.type = 4;
+            break;
+        case "VIDEO_PROCESSOR_NAME":
+        case 5:
+            message.type = 5;
+            break;
         }
         if (object.value != null) {
-            if (typeof object.value !== "object")
+            if (!$util.isObject(object.value))
                 throw TypeError(".SdkStreamDimension.value: object expected");
-            message.value = $root.SdkDimensionValue.fromObject(object.value);
+            message.value = $root.SdkDimensionValue.fromObject(object.value, long + 1);
         }
         return message;
     };
@@ -9284,18 +10025,22 @@ $root.SdkStreamDimension = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkStreamDimension.toObject = function toObject(message, options) {
+    SdkStreamDimension.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.type = options.enums === String ? "VIDEO_ENCODER_NAME" : 1;
             object.value = null;
         }
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             object.type = options.enums === String ? $root.SdkStreamDimension.Type[message.type] === undefined ? message.type : $root.SdkStreamDimension.Type[message.type] : message.type;
-        if (message.value != null && message.hasOwnProperty("value"))
-            object.value = $root.SdkDimensionValue.toObject(message.value, options);
+        if (message.value != null && Object.hasOwnProperty.call(message, "value"))
+            object.value = $root.SdkDimensionValue.toObject(message.value, options, q + 1);
         return object;
     };
 
@@ -9331,11 +10076,16 @@ $root.SdkStreamDimension = (function() {
      * @enum {number}
      * @property {number} VIDEO_ENCODER_NAME=1 VIDEO_ENCODER_NAME value
      * @property {number} VIDEO_DECODER_NAME=2 VIDEO_DECODER_NAME value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE=3 VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE value
+     * @property {number} VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE=4 VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE value
      */
     SdkStreamDimension.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
         values[valuesById[1] = "VIDEO_ENCODER_NAME"] = 1;
         values[valuesById[2] = "VIDEO_DECODER_NAME"] = 2;
+        values[valuesById[3] = "VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE"] = 3;
+        values[valuesById[4] = "VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE"] = 4;
+        values[valuesById[5] = "VIDEO_PROCESSOR_NAME"] = 5;
         return values;
     })();
 
@@ -9364,7 +10114,7 @@ $root.SdkDimensionValue = (function() {
     function SdkDimensionValue(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -9413,9 +10163,13 @@ $root.SdkDimensionValue = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkDimensionValue.encode = function encode(message, writer) {
+    SdkDimensionValue.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.stringValue != null && Object.hasOwnProperty.call(message, "stringValue"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.stringValue);
         if (message.boolValue != null && Object.hasOwnProperty.call(message, "boolValue"))
@@ -9435,7 +10189,7 @@ $root.SdkDimensionValue = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkDimensionValue.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -9449,12 +10203,18 @@ $root.SdkDimensionValue = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkDimensionValue.decode = function decode(reader, length) {
+    SdkDimensionValue.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkDimensionValue();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.stringValue = reader.string();
@@ -9469,7 +10229,7 @@ $root.SdkDimensionValue = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -9500,16 +10260,20 @@ $root.SdkDimensionValue = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkDimensionValue.verify = function verify(message) {
+    SdkDimensionValue.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.stringValue != null && message.hasOwnProperty("stringValue"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.stringValue != null && Object.hasOwnProperty.call(message, "stringValue"))
             if (!$util.isString(message.stringValue))
                 return "stringValue: string expected";
-        if (message.boolValue != null && message.hasOwnProperty("boolValue"))
+        if (message.boolValue != null && Object.hasOwnProperty.call(message, "boolValue"))
             if (typeof message.boolValue !== "boolean")
                 return "boolValue: boolean expected";
-        if (message.uintValue != null && message.hasOwnProperty("uintValue"))
+        if (message.uintValue != null && Object.hasOwnProperty.call(message, "uintValue"))
             if (!$util.isInteger(message.uintValue) && !(message.uintValue && $util.isInteger(message.uintValue.low) && $util.isInteger(message.uintValue.high)))
                 return "uintValue: integer|Long expected";
         return null;
@@ -9523,9 +10287,15 @@ $root.SdkDimensionValue = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkDimensionValue} SdkDimensionValue
      */
-    SdkDimensionValue.fromObject = function fromObject(object) {
+    SdkDimensionValue.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkDimensionValue)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkDimensionValue: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkDimensionValue();
         if (object.stringValue != null)
             message.stringValue = String(object.stringValue);
@@ -9533,7 +10303,7 @@ $root.SdkDimensionValue = (function() {
             message.boolValue = Boolean(object.boolValue);
         if (object.uintValue != null)
             if ($util.Long)
-                (message.uintValue = $util.Long.fromValue(object.uintValue)).unsigned = true;
+                message.uintValue = $util.Long.fromValue(object.uintValue, true);
             else if (typeof object.uintValue === "string")
                 message.uintValue = parseInt(object.uintValue, 10);
             else if (typeof object.uintValue === "number")
@@ -9552,25 +10322,31 @@ $root.SdkDimensionValue = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkDimensionValue.toObject = function toObject(message, options) {
+    SdkDimensionValue.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.stringValue = "";
             object.boolValue = false;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, true);
-                object.uintValue = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.uintValue = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.uintValue = options.longs === String ? "0" : 0;
+                object.uintValue = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
         }
-        if (message.stringValue != null && message.hasOwnProperty("stringValue"))
+        if (message.stringValue != null && Object.hasOwnProperty.call(message, "stringValue"))
             object.stringValue = message.stringValue;
-        if (message.boolValue != null && message.hasOwnProperty("boolValue"))
+        if (message.boolValue != null && Object.hasOwnProperty.call(message, "boolValue"))
             object.boolValue = message.boolValue;
-        if (message.uintValue != null && message.hasOwnProperty("uintValue"))
-            if (typeof message.uintValue === "number")
+        if (message.uintValue != null && Object.hasOwnProperty.call(message, "uintValue"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.uintValue = typeof message.uintValue === "number" ? BigInt(message.uintValue) : $util.Long.fromBits(message.uintValue.low >>> 0, message.uintValue.high >>> 0, true).toBigInt();
+            else if (typeof message.uintValue === "number")
                 object.uintValue = options.longs === String ? String(message.uintValue) : message.uintValue;
             else
                 object.uintValue = options.longs === String ? $util.Long.prototype.toString.call(message.uintValue) : options.longs === Number ? new $util.LongBits(message.uintValue.low >>> 0, message.uintValue.high >>> 0).toNumber(true) : message.uintValue;
@@ -9627,7 +10403,7 @@ $root.SdkDataMessageFrame = (function() {
         this.messages = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -9660,12 +10436,16 @@ $root.SdkDataMessageFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkDataMessageFrame.encode = function encode(message, writer) {
+    SdkDataMessageFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.messages != null && message.messages.length)
             for (var i = 0; i < message.messages.length; ++i)
-                $root.SdkDataMessagePayload.encode(message.messages[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkDataMessagePayload.encode(message.messages[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -9679,7 +10459,7 @@ $root.SdkDataMessageFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkDataMessageFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -9693,21 +10473,27 @@ $root.SdkDataMessageFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkDataMessageFrame.decode = function decode(reader, length) {
+    SdkDataMessageFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkDataMessageFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.messages && message.messages.length))
                         message.messages = [];
-                    message.messages.push($root.SdkDataMessagePayload.decode(reader, reader.uint32()));
+                    message.messages.push($root.SdkDataMessagePayload.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -9738,14 +10524,18 @@ $root.SdkDataMessageFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkDataMessageFrame.verify = function verify(message) {
+    SdkDataMessageFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.messages != null && message.hasOwnProperty("messages")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.messages != null && Object.hasOwnProperty.call(message, "messages")) {
             if (!Array.isArray(message.messages))
                 return "messages: array expected";
             for (var i = 0; i < message.messages.length; ++i) {
-                var error = $root.SdkDataMessagePayload.verify(message.messages[i]);
+                var error = $root.SdkDataMessagePayload.verify(message.messages[i], long + 1);
                 if (error)
                     return "messages." + error;
             }
@@ -9761,18 +10551,24 @@ $root.SdkDataMessageFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkDataMessageFrame} SdkDataMessageFrame
      */
-    SdkDataMessageFrame.fromObject = function fromObject(object) {
+    SdkDataMessageFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkDataMessageFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkDataMessageFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkDataMessageFrame();
         if (object.messages) {
             if (!Array.isArray(object.messages))
                 throw TypeError(".SdkDataMessageFrame.messages: array expected");
             message.messages = [];
             for (var i = 0; i < object.messages.length; ++i) {
-                if (typeof object.messages[i] !== "object")
+                if (!$util.isObject(object.messages[i]))
                     throw TypeError(".SdkDataMessageFrame.messages: object expected");
-                message.messages[i] = $root.SdkDataMessagePayload.fromObject(object.messages[i]);
+                message.messages[i] = $root.SdkDataMessagePayload.fromObject(object.messages[i], long + 1);
             }
         }
         return message;
@@ -9787,16 +10583,20 @@ $root.SdkDataMessageFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkDataMessageFrame.toObject = function toObject(message, options) {
+    SdkDataMessageFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults)
             object.messages = [];
         if (message.messages && message.messages.length) {
             object.messages = [];
             for (var j = 0; j < message.messages.length; ++j)
-                object.messages[j] = $root.SdkDataMessagePayload.toObject(message.messages[j], options);
+                object.messages[j] = $root.SdkDataMessagePayload.toObject(message.messages[j], options, q + 1);
         }
         return object;
     };
@@ -9855,7 +10655,7 @@ $root.SdkDataMessagePayload = (function() {
     function SdkDataMessagePayload(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -9928,9 +10728,13 @@ $root.SdkDataMessagePayload = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkDataMessagePayload.encode = function encode(message, writer) {
+    SdkDataMessagePayload.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.topic != null && Object.hasOwnProperty.call(message, "topic"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.topic);
         if (message.data != null && Object.hasOwnProperty.call(message, "data"))
@@ -9956,7 +10760,7 @@ $root.SdkDataMessagePayload = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkDataMessagePayload.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -9970,12 +10774,18 @@ $root.SdkDataMessagePayload = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkDataMessagePayload.decode = function decode(reader, length) {
+    SdkDataMessagePayload.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkDataMessagePayload();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.topic = reader.string();
@@ -10002,7 +10812,7 @@ $root.SdkDataMessagePayload = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -10033,25 +10843,29 @@ $root.SdkDataMessagePayload = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkDataMessagePayload.verify = function verify(message) {
+    SdkDataMessagePayload.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.topic != null && message.hasOwnProperty("topic"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.topic != null && Object.hasOwnProperty.call(message, "topic"))
             if (!$util.isString(message.topic))
                 return "topic: string expected";
-        if (message.data != null && message.hasOwnProperty("data"))
+        if (message.data != null && Object.hasOwnProperty.call(message, "data"))
             if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
                 return "data: buffer expected";
-        if (message.lifetimeMs != null && message.hasOwnProperty("lifetimeMs"))
+        if (message.lifetimeMs != null && Object.hasOwnProperty.call(message, "lifetimeMs"))
             if (!$util.isInteger(message.lifetimeMs))
                 return "lifetimeMs: integer expected";
-        if (message.senderAttendeeId != null && message.hasOwnProperty("senderAttendeeId"))
+        if (message.senderAttendeeId != null && Object.hasOwnProperty.call(message, "senderAttendeeId"))
             if (!$util.isString(message.senderAttendeeId))
                 return "senderAttendeeId: string expected";
-        if (message.ingestTimeNs != null && message.hasOwnProperty("ingestTimeNs"))
+        if (message.ingestTimeNs != null && Object.hasOwnProperty.call(message, "ingestTimeNs"))
             if (!$util.isInteger(message.ingestTimeNs) && !(message.ingestTimeNs && $util.isInteger(message.ingestTimeNs.low) && $util.isInteger(message.ingestTimeNs.high)))
                 return "ingestTimeNs: integer|Long expected";
-        if (message.senderExternalUserId != null && message.hasOwnProperty("senderExternalUserId"))
+        if (message.senderExternalUserId != null && Object.hasOwnProperty.call(message, "senderExternalUserId"))
             if (!$util.isString(message.senderExternalUserId))
                 return "senderExternalUserId: string expected";
         return null;
@@ -10065,9 +10879,15 @@ $root.SdkDataMessagePayload = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkDataMessagePayload} SdkDataMessagePayload
      */
-    SdkDataMessagePayload.fromObject = function fromObject(object) {
+    SdkDataMessagePayload.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkDataMessagePayload)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkDataMessagePayload: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkDataMessagePayload();
         if (object.topic != null)
             message.topic = String(object.topic);
@@ -10082,7 +10902,7 @@ $root.SdkDataMessagePayload = (function() {
             message.senderAttendeeId = String(object.senderAttendeeId);
         if (object.ingestTimeNs != null)
             if ($util.Long)
-                (message.ingestTimeNs = $util.Long.fromValue(object.ingestTimeNs)).unsigned = false;
+                message.ingestTimeNs = $util.Long.fromValue(object.ingestTimeNs, false);
             else if (typeof object.ingestTimeNs === "string")
                 message.ingestTimeNs = parseInt(object.ingestTimeNs, 10);
             else if (typeof object.ingestTimeNs === "number")
@@ -10103,9 +10923,13 @@ $root.SdkDataMessagePayload = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkDataMessagePayload.toObject = function toObject(message, options) {
+    SdkDataMessagePayload.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.topic = "";
@@ -10120,25 +10944,27 @@ $root.SdkDataMessagePayload = (function() {
             object.senderAttendeeId = "";
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.ingestTimeNs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.ingestTimeNs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.ingestTimeNs = options.longs === String ? "0" : 0;
+                object.ingestTimeNs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.senderExternalUserId = "";
         }
-        if (message.topic != null && message.hasOwnProperty("topic"))
+        if (message.topic != null && Object.hasOwnProperty.call(message, "topic"))
             object.topic = message.topic;
-        if (message.data != null && message.hasOwnProperty("data"))
+        if (message.data != null && Object.hasOwnProperty.call(message, "data"))
             object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-        if (message.lifetimeMs != null && message.hasOwnProperty("lifetimeMs"))
+        if (message.lifetimeMs != null && Object.hasOwnProperty.call(message, "lifetimeMs"))
             object.lifetimeMs = message.lifetimeMs;
-        if (message.senderAttendeeId != null && message.hasOwnProperty("senderAttendeeId"))
+        if (message.senderAttendeeId != null && Object.hasOwnProperty.call(message, "senderAttendeeId"))
             object.senderAttendeeId = message.senderAttendeeId;
-        if (message.ingestTimeNs != null && message.hasOwnProperty("ingestTimeNs"))
-            if (typeof message.ingestTimeNs === "number")
+        if (message.ingestTimeNs != null && Object.hasOwnProperty.call(message, "ingestTimeNs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.ingestTimeNs = typeof message.ingestTimeNs === "number" ? BigInt(message.ingestTimeNs) : $util.Long.fromBits(message.ingestTimeNs.low >>> 0, message.ingestTimeNs.high >>> 0, false).toBigInt();
+            else if (typeof message.ingestTimeNs === "number")
                 object.ingestTimeNs = options.longs === String ? String(message.ingestTimeNs) : message.ingestTimeNs;
             else
                 object.ingestTimeNs = options.longs === String ? $util.Long.prototype.toString.call(message.ingestTimeNs) : options.longs === Number ? new $util.LongBits(message.ingestTimeNs.low >>> 0, message.ingestTimeNs.high >>> 0).toNumber() : message.ingestTimeNs;
-        if (message.senderExternalUserId != null && message.hasOwnProperty("senderExternalUserId"))
+        if (message.senderExternalUserId != null && Object.hasOwnProperty.call(message, "senderExternalUserId"))
             object.senderExternalUserId = message.senderExternalUserId;
         return object;
     };
@@ -10196,7 +11022,7 @@ $root.SdkTurnCredentials = (function() {
         this.uris = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -10253,9 +11079,13 @@ $root.SdkTurnCredentials = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTurnCredentials.encode = function encode(message, writer) {
+    SdkTurnCredentials.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.username != null && Object.hasOwnProperty.call(message, "username"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.username);
         if (message.password != null && Object.hasOwnProperty.call(message, "password"))
@@ -10278,7 +11108,7 @@ $root.SdkTurnCredentials = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTurnCredentials.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -10292,12 +11122,18 @@ $root.SdkTurnCredentials = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTurnCredentials.decode = function decode(reader, length) {
+    SdkTurnCredentials.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTurnCredentials();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.username = reader.string();
@@ -10318,7 +11154,7 @@ $root.SdkTurnCredentials = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -10349,19 +11185,23 @@ $root.SdkTurnCredentials = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTurnCredentials.verify = function verify(message) {
+    SdkTurnCredentials.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.username != null && message.hasOwnProperty("username"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.username != null && Object.hasOwnProperty.call(message, "username"))
             if (!$util.isString(message.username))
                 return "username: string expected";
-        if (message.password != null && message.hasOwnProperty("password"))
+        if (message.password != null && Object.hasOwnProperty.call(message, "password"))
             if (!$util.isString(message.password))
                 return "password: string expected";
-        if (message.ttl != null && message.hasOwnProperty("ttl"))
+        if (message.ttl != null && Object.hasOwnProperty.call(message, "ttl"))
             if (!$util.isInteger(message.ttl))
                 return "ttl: integer expected";
-        if (message.uris != null && message.hasOwnProperty("uris")) {
+        if (message.uris != null && Object.hasOwnProperty.call(message, "uris")) {
             if (!Array.isArray(message.uris))
                 return "uris: array expected";
             for (var i = 0; i < message.uris.length; ++i)
@@ -10379,9 +11219,15 @@ $root.SdkTurnCredentials = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTurnCredentials} SdkTurnCredentials
      */
-    SdkTurnCredentials.fromObject = function fromObject(object) {
+    SdkTurnCredentials.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTurnCredentials)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTurnCredentials: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTurnCredentials();
         if (object.username != null)
             message.username = String(object.username);
@@ -10408,9 +11254,13 @@ $root.SdkTurnCredentials = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTurnCredentials.toObject = function toObject(message, options) {
+    SdkTurnCredentials.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults)
             object.uris = [];
@@ -10419,11 +11269,11 @@ $root.SdkTurnCredentials = (function() {
             object.password = "";
             object.ttl = 0;
         }
-        if (message.username != null && message.hasOwnProperty("username"))
+        if (message.username != null && Object.hasOwnProperty.call(message, "username"))
             object.username = message.username;
-        if (message.password != null && message.hasOwnProperty("password"))
+        if (message.password != null && Object.hasOwnProperty.call(message, "password"))
             object.password = message.password;
-        if (message.ttl != null && message.hasOwnProperty("ttl"))
+        if (message.ttl != null && Object.hasOwnProperty.call(message, "ttl"))
             object.ttl = message.ttl;
         if (message.uris && message.uris.length) {
             object.uris = [];
@@ -10490,7 +11340,7 @@ $root.SdkTranscriptItem = (function() {
     function SdkTranscriptItem(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -10587,9 +11437,13 @@ $root.SdkTranscriptItem = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscriptItem.encode = function encode(message, writer) {
+    SdkTranscriptItem.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.content != null && Object.hasOwnProperty.call(message, "content"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.content);
         if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
@@ -10621,7 +11475,7 @@ $root.SdkTranscriptItem = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscriptItem.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -10635,12 +11489,18 @@ $root.SdkTranscriptItem = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscriptItem.decode = function decode(reader, length) {
+    SdkTranscriptItem.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptItem();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.content = reader.string();
@@ -10679,7 +11539,7 @@ $root.SdkTranscriptItem = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -10710,25 +11570,29 @@ $root.SdkTranscriptItem = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscriptItem.verify = function verify(message) {
+    SdkTranscriptItem.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.content != null && message.hasOwnProperty("content"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.content != null && Object.hasOwnProperty.call(message, "content"))
             if (!$util.isString(message.content))
                 return "content: string expected";
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
             if (!$util.isInteger(message.endTime) && !(message.endTime && $util.isInteger(message.endTime.low) && $util.isInteger(message.endTime.high)))
                 return "endTime: integer|Long expected";
-        if (message.speakerAttendeeId != null && message.hasOwnProperty("speakerAttendeeId"))
+        if (message.speakerAttendeeId != null && Object.hasOwnProperty.call(message, "speakerAttendeeId"))
             if (!$util.isString(message.speakerAttendeeId))
                 return "speakerAttendeeId: string expected";
-        if (message.speakerExternalUserId != null && message.hasOwnProperty("speakerExternalUserId"))
+        if (message.speakerExternalUserId != null && Object.hasOwnProperty.call(message, "speakerExternalUserId"))
             if (!$util.isString(message.speakerExternalUserId))
                 return "speakerExternalUserId: string expected";
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
             if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
                 return "startTime: integer|Long expected";
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             switch (message.type) {
             default:
                 return "type: enum value expected";
@@ -10736,13 +11600,13 @@ $root.SdkTranscriptItem = (function() {
             case 2:
                 break;
             }
-        if (message.vocabularyFilterMatch != null && message.hasOwnProperty("vocabularyFilterMatch"))
+        if (message.vocabularyFilterMatch != null && Object.hasOwnProperty.call(message, "vocabularyFilterMatch"))
             if (typeof message.vocabularyFilterMatch !== "boolean")
                 return "vocabularyFilterMatch: boolean expected";
-        if (message.confidence != null && message.hasOwnProperty("confidence"))
+        if (message.confidence != null && Object.hasOwnProperty.call(message, "confidence"))
             if (typeof message.confidence !== "number")
                 return "confidence: number expected";
-        if (message.stable != null && message.hasOwnProperty("stable"))
+        if (message.stable != null && Object.hasOwnProperty.call(message, "stable"))
             if (typeof message.stable !== "boolean")
                 return "stable: boolean expected";
         return null;
@@ -10756,15 +11620,21 @@ $root.SdkTranscriptItem = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscriptItem} SdkTranscriptItem
      */
-    SdkTranscriptItem.fromObject = function fromObject(object) {
+    SdkTranscriptItem.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscriptItem)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscriptItem: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscriptItem();
         if (object.content != null)
             message.content = String(object.content);
         if (object.endTime != null)
             if ($util.Long)
-                (message.endTime = $util.Long.fromValue(object.endTime)).unsigned = false;
+                message.endTime = $util.Long.fromValue(object.endTime, false);
             else if (typeof object.endTime === "string")
                 message.endTime = parseInt(object.endTime, 10);
             else if (typeof object.endTime === "number")
@@ -10777,7 +11647,7 @@ $root.SdkTranscriptItem = (function() {
             message.speakerExternalUserId = String(object.speakerExternalUserId);
         if (object.startTime != null)
             if ($util.Long)
-                (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
+                message.startTime = $util.Long.fromValue(object.startTime, false);
             else if (typeof object.startTime === "string")
                 message.startTime = parseInt(object.startTime, 10);
             else if (typeof object.startTime === "number")
@@ -10818,52 +11688,60 @@ $root.SdkTranscriptItem = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscriptItem.toObject = function toObject(message, options) {
+    SdkTranscriptItem.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.content = "";
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.endTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.endTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.endTime = options.longs === String ? "0" : 0;
+                object.endTime = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.speakerAttendeeId = "";
             object.speakerExternalUserId = "";
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.startTime = options.longs === String ? "0" : 0;
+                object.startTime = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.type = options.enums === String ? "PRONUNCIATION" : 1;
             object.vocabularyFilterMatch = false;
             object.confidence = 0;
             object.stable = false;
         }
-        if (message.content != null && message.hasOwnProperty("content"))
+        if (message.content != null && Object.hasOwnProperty.call(message, "content"))
             object.content = message.content;
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
-            if (typeof message.endTime === "number")
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.endTime = typeof message.endTime === "number" ? BigInt(message.endTime) : $util.Long.fromBits(message.endTime.low >>> 0, message.endTime.high >>> 0, false).toBigInt();
+            else if (typeof message.endTime === "number")
                 object.endTime = options.longs === String ? String(message.endTime) : message.endTime;
             else
                 object.endTime = options.longs === String ? $util.Long.prototype.toString.call(message.endTime) : options.longs === Number ? new $util.LongBits(message.endTime.low >>> 0, message.endTime.high >>> 0).toNumber() : message.endTime;
-        if (message.speakerAttendeeId != null && message.hasOwnProperty("speakerAttendeeId"))
+        if (message.speakerAttendeeId != null && Object.hasOwnProperty.call(message, "speakerAttendeeId"))
             object.speakerAttendeeId = message.speakerAttendeeId;
-        if (message.speakerExternalUserId != null && message.hasOwnProperty("speakerExternalUserId"))
+        if (message.speakerExternalUserId != null && Object.hasOwnProperty.call(message, "speakerExternalUserId"))
             object.speakerExternalUserId = message.speakerExternalUserId;
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
-            if (typeof message.startTime === "number")
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.startTime = typeof message.startTime === "number" ? BigInt(message.startTime) : $util.Long.fromBits(message.startTime.low >>> 0, message.startTime.high >>> 0, false).toBigInt();
+            else if (typeof message.startTime === "number")
                 object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
             else
                 object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             object.type = options.enums === String ? $root.SdkTranscriptItem.Type[message.type] === undefined ? message.type : $root.SdkTranscriptItem.Type[message.type] : message.type;
-        if (message.vocabularyFilterMatch != null && message.hasOwnProperty("vocabularyFilterMatch"))
+        if (message.vocabularyFilterMatch != null && Object.hasOwnProperty.call(message, "vocabularyFilterMatch"))
             object.vocabularyFilterMatch = message.vocabularyFilterMatch;
-        if (message.confidence != null && message.hasOwnProperty("confidence"))
+        if (message.confidence != null && Object.hasOwnProperty.call(message, "confidence"))
             object.confidence = options.json && !isFinite(message.confidence) ? String(message.confidence) : message.confidence;
-        if (message.stable != null && message.hasOwnProperty("stable"))
+        if (message.stable != null && Object.hasOwnProperty.call(message, "stable"))
             object.stable = message.stable;
         return object;
     };
@@ -10936,7 +11814,7 @@ $root.SdkTranscriptEntity = (function() {
     function SdkTranscriptEntity(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -11009,9 +11887,13 @@ $root.SdkTranscriptEntity = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscriptEntity.encode = function encode(message, writer) {
+    SdkTranscriptEntity.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.category != null && Object.hasOwnProperty.call(message, "category"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.category);
         if (message.confidence != null && Object.hasOwnProperty.call(message, "confidence"))
@@ -11037,7 +11919,7 @@ $root.SdkTranscriptEntity = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscriptEntity.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -11051,12 +11933,18 @@ $root.SdkTranscriptEntity = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscriptEntity.decode = function decode(reader, length) {
+    SdkTranscriptEntity.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptEntity();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.category = reader.string();
@@ -11083,7 +11971,7 @@ $root.SdkTranscriptEntity = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -11114,25 +12002,29 @@ $root.SdkTranscriptEntity = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscriptEntity.verify = function verify(message) {
+    SdkTranscriptEntity.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.category != null && message.hasOwnProperty("category"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.category != null && Object.hasOwnProperty.call(message, "category"))
             if (!$util.isString(message.category))
                 return "category: string expected";
-        if (message.confidence != null && message.hasOwnProperty("confidence"))
+        if (message.confidence != null && Object.hasOwnProperty.call(message, "confidence"))
             if (typeof message.confidence !== "number")
                 return "confidence: number expected";
-        if (message.content != null && message.hasOwnProperty("content"))
+        if (message.content != null && Object.hasOwnProperty.call(message, "content"))
             if (!$util.isString(message.content))
                 return "content: string expected";
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
             if (!$util.isInteger(message.endTime) && !(message.endTime && $util.isInteger(message.endTime.low) && $util.isInteger(message.endTime.high)))
                 return "endTime: integer|Long expected";
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
             if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
                 return "startTime: integer|Long expected";
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             if (!$util.isString(message.type))
                 return "type: string expected";
         return null;
@@ -11146,9 +12038,15 @@ $root.SdkTranscriptEntity = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscriptEntity} SdkTranscriptEntity
      */
-    SdkTranscriptEntity.fromObject = function fromObject(object) {
+    SdkTranscriptEntity.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscriptEntity)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscriptEntity: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscriptEntity();
         if (object.category != null)
             message.category = String(object.category);
@@ -11158,7 +12056,7 @@ $root.SdkTranscriptEntity = (function() {
             message.content = String(object.content);
         if (object.endTime != null)
             if ($util.Long)
-                (message.endTime = $util.Long.fromValue(object.endTime)).unsigned = false;
+                message.endTime = $util.Long.fromValue(object.endTime, false);
             else if (typeof object.endTime === "string")
                 message.endTime = parseInt(object.endTime, 10);
             else if (typeof object.endTime === "number")
@@ -11167,7 +12065,7 @@ $root.SdkTranscriptEntity = (function() {
                 message.endTime = new $util.LongBits(object.endTime.low >>> 0, object.endTime.high >>> 0).toNumber();
         if (object.startTime != null)
             if ($util.Long)
-                (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
+                message.startTime = $util.Long.fromValue(object.startTime, false);
             else if (typeof object.startTime === "string")
                 message.startTime = parseInt(object.startTime, 10);
             else if (typeof object.startTime === "number")
@@ -11188,9 +12086,13 @@ $root.SdkTranscriptEntity = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscriptEntity.toObject = function toObject(message, options) {
+    SdkTranscriptEntity.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.category = "";
@@ -11198,33 +12100,37 @@ $root.SdkTranscriptEntity = (function() {
             object.content = "";
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.endTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.endTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.endTime = options.longs === String ? "0" : 0;
+                object.endTime = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.startTime = options.longs === String ? "0" : 0;
+                object.startTime = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.type = "";
         }
-        if (message.category != null && message.hasOwnProperty("category"))
+        if (message.category != null && Object.hasOwnProperty.call(message, "category"))
             object.category = message.category;
-        if (message.confidence != null && message.hasOwnProperty("confidence"))
+        if (message.confidence != null && Object.hasOwnProperty.call(message, "confidence"))
             object.confidence = options.json && !isFinite(message.confidence) ? String(message.confidence) : message.confidence;
-        if (message.content != null && message.hasOwnProperty("content"))
+        if (message.content != null && Object.hasOwnProperty.call(message, "content"))
             object.content = message.content;
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
-            if (typeof message.endTime === "number")
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.endTime = typeof message.endTime === "number" ? BigInt(message.endTime) : $util.Long.fromBits(message.endTime.low >>> 0, message.endTime.high >>> 0, false).toBigInt();
+            else if (typeof message.endTime === "number")
                 object.endTime = options.longs === String ? String(message.endTime) : message.endTime;
             else
                 object.endTime = options.longs === String ? $util.Long.prototype.toString.call(message.endTime) : options.longs === Number ? new $util.LongBits(message.endTime.low >>> 0, message.endTime.high >>> 0).toNumber() : message.endTime;
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
-            if (typeof message.startTime === "number")
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.startTime = typeof message.startTime === "number" ? BigInt(message.startTime) : $util.Long.fromBits(message.startTime.low >>> 0, message.startTime.high >>> 0, false).toBigInt();
+            else if (typeof message.startTime === "number")
                 object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
             else
                 object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             object.type = message.type;
         return object;
     };
@@ -11282,7 +12188,7 @@ $root.SdkTranscriptAlternative = (function() {
         this.entities = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -11331,17 +12237,21 @@ $root.SdkTranscriptAlternative = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscriptAlternative.encode = function encode(message, writer) {
+    SdkTranscriptAlternative.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.items != null && message.items.length)
             for (var i = 0; i < message.items.length; ++i)
-                $root.SdkTranscriptItem.encode(message.items[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkTranscriptItem.encode(message.items[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         if (message.transcript != null && Object.hasOwnProperty.call(message, "transcript"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.transcript);
         if (message.entities != null && message.entities.length)
             for (var i = 0; i < message.entities.length; ++i)
-                $root.SdkTranscriptEntity.encode(message.entities[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.SdkTranscriptEntity.encode(message.entities[i], writer.uint32(/* id 3, wireType 2 =*/26).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -11355,7 +12265,7 @@ $root.SdkTranscriptAlternative = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscriptAlternative.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -11369,17 +12279,23 @@ $root.SdkTranscriptAlternative = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscriptAlternative.decode = function decode(reader, length) {
+    SdkTranscriptAlternative.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptAlternative();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.items && message.items.length))
                         message.items = [];
-                    message.items.push($root.SdkTranscriptItem.decode(reader, reader.uint32()));
+                    message.items.push($root.SdkTranscriptItem.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 2: {
@@ -11389,11 +12305,11 @@ $root.SdkTranscriptAlternative = (function() {
             case 3: {
                     if (!(message.entities && message.entities.length))
                         message.entities = [];
-                    message.entities.push($root.SdkTranscriptEntity.decode(reader, reader.uint32()));
+                    message.entities.push($root.SdkTranscriptEntity.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -11424,26 +12340,30 @@ $root.SdkTranscriptAlternative = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscriptAlternative.verify = function verify(message) {
+    SdkTranscriptAlternative.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.items != null && message.hasOwnProperty("items")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.items != null && Object.hasOwnProperty.call(message, "items")) {
             if (!Array.isArray(message.items))
                 return "items: array expected";
             for (var i = 0; i < message.items.length; ++i) {
-                var error = $root.SdkTranscriptItem.verify(message.items[i]);
+                var error = $root.SdkTranscriptItem.verify(message.items[i], long + 1);
                 if (error)
                     return "items." + error;
             }
         }
-        if (message.transcript != null && message.hasOwnProperty("transcript"))
+        if (message.transcript != null && Object.hasOwnProperty.call(message, "transcript"))
             if (!$util.isString(message.transcript))
                 return "transcript: string expected";
-        if (message.entities != null && message.hasOwnProperty("entities")) {
+        if (message.entities != null && Object.hasOwnProperty.call(message, "entities")) {
             if (!Array.isArray(message.entities))
                 return "entities: array expected";
             for (var i = 0; i < message.entities.length; ++i) {
-                var error = $root.SdkTranscriptEntity.verify(message.entities[i]);
+                var error = $root.SdkTranscriptEntity.verify(message.entities[i], long + 1);
                 if (error)
                     return "entities." + error;
             }
@@ -11459,18 +12379,24 @@ $root.SdkTranscriptAlternative = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscriptAlternative} SdkTranscriptAlternative
      */
-    SdkTranscriptAlternative.fromObject = function fromObject(object) {
+    SdkTranscriptAlternative.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscriptAlternative)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscriptAlternative: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscriptAlternative();
         if (object.items) {
             if (!Array.isArray(object.items))
                 throw TypeError(".SdkTranscriptAlternative.items: array expected");
             message.items = [];
             for (var i = 0; i < object.items.length; ++i) {
-                if (typeof object.items[i] !== "object")
+                if (!$util.isObject(object.items[i]))
                     throw TypeError(".SdkTranscriptAlternative.items: object expected");
-                message.items[i] = $root.SdkTranscriptItem.fromObject(object.items[i]);
+                message.items[i] = $root.SdkTranscriptItem.fromObject(object.items[i], long + 1);
             }
         }
         if (object.transcript != null)
@@ -11480,9 +12406,9 @@ $root.SdkTranscriptAlternative = (function() {
                 throw TypeError(".SdkTranscriptAlternative.entities: array expected");
             message.entities = [];
             for (var i = 0; i < object.entities.length; ++i) {
-                if (typeof object.entities[i] !== "object")
+                if (!$util.isObject(object.entities[i]))
                     throw TypeError(".SdkTranscriptAlternative.entities: object expected");
-                message.entities[i] = $root.SdkTranscriptEntity.fromObject(object.entities[i]);
+                message.entities[i] = $root.SdkTranscriptEntity.fromObject(object.entities[i], long + 1);
             }
         }
         return message;
@@ -11497,9 +12423,13 @@ $root.SdkTranscriptAlternative = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscriptAlternative.toObject = function toObject(message, options) {
+    SdkTranscriptAlternative.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.items = [];
@@ -11510,14 +12440,14 @@ $root.SdkTranscriptAlternative = (function() {
         if (message.items && message.items.length) {
             object.items = [];
             for (var j = 0; j < message.items.length; ++j)
-                object.items[j] = $root.SdkTranscriptItem.toObject(message.items[j], options);
+                object.items[j] = $root.SdkTranscriptItem.toObject(message.items[j], options, q + 1);
         }
-        if (message.transcript != null && message.hasOwnProperty("transcript"))
+        if (message.transcript != null && Object.hasOwnProperty.call(message, "transcript"))
             object.transcript = message.transcript;
         if (message.entities && message.entities.length) {
             object.entities = [];
             for (var j = 0; j < message.entities.length; ++j)
-                object.entities[j] = $root.SdkTranscriptEntity.toObject(message.entities[j], options);
+                object.entities[j] = $root.SdkTranscriptEntity.toObject(message.entities[j], options, q + 1);
         }
         return object;
     };
@@ -11572,7 +12502,7 @@ $root.SdkTranscriptLanguageWithScore = (function() {
     function SdkTranscriptLanguageWithScore(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -11613,9 +12543,13 @@ $root.SdkTranscriptLanguageWithScore = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscriptLanguageWithScore.encode = function encode(message, writer) {
+    SdkTranscriptLanguageWithScore.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.languageCode != null && Object.hasOwnProperty.call(message, "languageCode"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.languageCode);
         if (message.score != null && Object.hasOwnProperty.call(message, "score"))
@@ -11633,7 +12567,7 @@ $root.SdkTranscriptLanguageWithScore = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscriptLanguageWithScore.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -11647,12 +12581,18 @@ $root.SdkTranscriptLanguageWithScore = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscriptLanguageWithScore.decode = function decode(reader, length) {
+    SdkTranscriptLanguageWithScore.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptLanguageWithScore();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.languageCode = reader.string();
@@ -11663,7 +12603,7 @@ $root.SdkTranscriptLanguageWithScore = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -11694,13 +12634,17 @@ $root.SdkTranscriptLanguageWithScore = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscriptLanguageWithScore.verify = function verify(message) {
+    SdkTranscriptLanguageWithScore.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.languageCode != null && Object.hasOwnProperty.call(message, "languageCode"))
             if (!$util.isString(message.languageCode))
                 return "languageCode: string expected";
-        if (message.score != null && message.hasOwnProperty("score"))
+        if (message.score != null && Object.hasOwnProperty.call(message, "score"))
             if (typeof message.score !== "number")
                 return "score: number expected";
         return null;
@@ -11714,9 +12658,15 @@ $root.SdkTranscriptLanguageWithScore = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscriptLanguageWithScore} SdkTranscriptLanguageWithScore
      */
-    SdkTranscriptLanguageWithScore.fromObject = function fromObject(object) {
+    SdkTranscriptLanguageWithScore.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscriptLanguageWithScore)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscriptLanguageWithScore: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscriptLanguageWithScore();
         if (object.languageCode != null)
             message.languageCode = String(object.languageCode);
@@ -11734,17 +12684,21 @@ $root.SdkTranscriptLanguageWithScore = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscriptLanguageWithScore.toObject = function toObject(message, options) {
+    SdkTranscriptLanguageWithScore.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.languageCode = "";
             object.score = 0;
         }
-        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+        if (message.languageCode != null && Object.hasOwnProperty.call(message, "languageCode"))
             object.languageCode = message.languageCode;
-        if (message.score != null && message.hasOwnProperty("score"))
+        if (message.score != null && Object.hasOwnProperty.call(message, "score"))
             object.score = options.json && !isFinite(message.score) ? String(message.score) : message.score;
         return object;
     };
@@ -11807,7 +12761,7 @@ $root.SdkTranscriptResult = (function() {
         this.languageIdentification = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -11896,12 +12850,16 @@ $root.SdkTranscriptResult = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscriptResult.encode = function encode(message, writer) {
+    SdkTranscriptResult.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.alternatives != null && message.alternatives.length)
             for (var i = 0; i < message.alternatives.length; ++i)
-                $root.SdkTranscriptAlternative.encode(message.alternatives[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkTranscriptAlternative.encode(message.alternatives[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         if (message.channelId != null && Object.hasOwnProperty.call(message, "channelId"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.channelId);
         if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
@@ -11916,7 +12874,7 @@ $root.SdkTranscriptResult = (function() {
             writer.uint32(/* id 7, wireType 2 =*/58).string(message.languageCode);
         if (message.languageIdentification != null && message.languageIdentification.length)
             for (var i = 0; i < message.languageIdentification.length; ++i)
-                $root.SdkTranscriptLanguageWithScore.encode(message.languageIdentification[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                $root.SdkTranscriptLanguageWithScore.encode(message.languageIdentification[i], writer.uint32(/* id 8, wireType 2 =*/66).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -11930,7 +12888,7 @@ $root.SdkTranscriptResult = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscriptResult.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -11944,17 +12902,23 @@ $root.SdkTranscriptResult = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscriptResult.decode = function decode(reader, length) {
+    SdkTranscriptResult.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptResult();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.alternatives && message.alternatives.length))
                         message.alternatives = [];
-                    message.alternatives.push($root.SdkTranscriptAlternative.decode(reader, reader.uint32()));
+                    message.alternatives.push($root.SdkTranscriptAlternative.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 2: {
@@ -11984,11 +12948,11 @@ $root.SdkTranscriptResult = (function() {
             case 8: {
                     if (!(message.languageIdentification && message.languageIdentification.length))
                         message.languageIdentification = [];
-                    message.languageIdentification.push($root.SdkTranscriptLanguageWithScore.decode(reader, reader.uint32()));
+                    message.languageIdentification.push($root.SdkTranscriptLanguageWithScore.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -12019,41 +12983,45 @@ $root.SdkTranscriptResult = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscriptResult.verify = function verify(message) {
+    SdkTranscriptResult.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.alternatives != null && message.hasOwnProperty("alternatives")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.alternatives != null && Object.hasOwnProperty.call(message, "alternatives")) {
             if (!Array.isArray(message.alternatives))
                 return "alternatives: array expected";
             for (var i = 0; i < message.alternatives.length; ++i) {
-                var error = $root.SdkTranscriptAlternative.verify(message.alternatives[i]);
+                var error = $root.SdkTranscriptAlternative.verify(message.alternatives[i], long + 1);
                 if (error)
                     return "alternatives." + error;
             }
         }
-        if (message.channelId != null && message.hasOwnProperty("channelId"))
+        if (message.channelId != null && Object.hasOwnProperty.call(message, "channelId"))
             if (!$util.isString(message.channelId))
                 return "channelId: string expected";
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
             if (!$util.isInteger(message.endTime) && !(message.endTime && $util.isInteger(message.endTime.low) && $util.isInteger(message.endTime.high)))
                 return "endTime: integer|Long expected";
-        if (message.isPartial != null && message.hasOwnProperty("isPartial"))
+        if (message.isPartial != null && Object.hasOwnProperty.call(message, "isPartial"))
             if (typeof message.isPartial !== "boolean")
                 return "isPartial: boolean expected";
-        if (message.resultId != null && message.hasOwnProperty("resultId"))
+        if (message.resultId != null && Object.hasOwnProperty.call(message, "resultId"))
             if (!$util.isString(message.resultId))
                 return "resultId: string expected";
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
             if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
                 return "startTime: integer|Long expected";
-        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+        if (message.languageCode != null && Object.hasOwnProperty.call(message, "languageCode"))
             if (!$util.isString(message.languageCode))
                 return "languageCode: string expected";
-        if (message.languageIdentification != null && message.hasOwnProperty("languageIdentification")) {
+        if (message.languageIdentification != null && Object.hasOwnProperty.call(message, "languageIdentification")) {
             if (!Array.isArray(message.languageIdentification))
                 return "languageIdentification: array expected";
             for (var i = 0; i < message.languageIdentification.length; ++i) {
-                var error = $root.SdkTranscriptLanguageWithScore.verify(message.languageIdentification[i]);
+                var error = $root.SdkTranscriptLanguageWithScore.verify(message.languageIdentification[i], long + 1);
                 if (error)
                     return "languageIdentification." + error;
             }
@@ -12069,25 +13037,31 @@ $root.SdkTranscriptResult = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscriptResult} SdkTranscriptResult
      */
-    SdkTranscriptResult.fromObject = function fromObject(object) {
+    SdkTranscriptResult.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscriptResult)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscriptResult: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscriptResult();
         if (object.alternatives) {
             if (!Array.isArray(object.alternatives))
                 throw TypeError(".SdkTranscriptResult.alternatives: array expected");
             message.alternatives = [];
             for (var i = 0; i < object.alternatives.length; ++i) {
-                if (typeof object.alternatives[i] !== "object")
+                if (!$util.isObject(object.alternatives[i]))
                     throw TypeError(".SdkTranscriptResult.alternatives: object expected");
-                message.alternatives[i] = $root.SdkTranscriptAlternative.fromObject(object.alternatives[i]);
+                message.alternatives[i] = $root.SdkTranscriptAlternative.fromObject(object.alternatives[i], long + 1);
             }
         }
         if (object.channelId != null)
             message.channelId = String(object.channelId);
         if (object.endTime != null)
             if ($util.Long)
-                (message.endTime = $util.Long.fromValue(object.endTime)).unsigned = false;
+                message.endTime = $util.Long.fromValue(object.endTime, false);
             else if (typeof object.endTime === "string")
                 message.endTime = parseInt(object.endTime, 10);
             else if (typeof object.endTime === "number")
@@ -12100,7 +13074,7 @@ $root.SdkTranscriptResult = (function() {
             message.resultId = String(object.resultId);
         if (object.startTime != null)
             if ($util.Long)
-                (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
+                message.startTime = $util.Long.fromValue(object.startTime, false);
             else if (typeof object.startTime === "string")
                 message.startTime = parseInt(object.startTime, 10);
             else if (typeof object.startTime === "number")
@@ -12114,9 +13088,9 @@ $root.SdkTranscriptResult = (function() {
                 throw TypeError(".SdkTranscriptResult.languageIdentification: array expected");
             message.languageIdentification = [];
             for (var i = 0; i < object.languageIdentification.length; ++i) {
-                if (typeof object.languageIdentification[i] !== "object")
+                if (!$util.isObject(object.languageIdentification[i]))
                     throw TypeError(".SdkTranscriptResult.languageIdentification: object expected");
-                message.languageIdentification[i] = $root.SdkTranscriptLanguageWithScore.fromObject(object.languageIdentification[i]);
+                message.languageIdentification[i] = $root.SdkTranscriptLanguageWithScore.fromObject(object.languageIdentification[i], long + 1);
             }
         }
         return message;
@@ -12131,9 +13105,13 @@ $root.SdkTranscriptResult = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscriptResult.toObject = function toObject(message, options) {
+    SdkTranscriptResult.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.alternatives = [];
@@ -12143,45 +13121,49 @@ $root.SdkTranscriptResult = (function() {
             object.channelId = "";
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.endTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.endTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.endTime = options.longs === String ? "0" : 0;
+                object.endTime = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.isPartial = false;
             object.resultId = "";
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.startTime = options.longs === String ? "0" : 0;
+                object.startTime = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.languageCode = "";
         }
         if (message.alternatives && message.alternatives.length) {
             object.alternatives = [];
             for (var j = 0; j < message.alternatives.length; ++j)
-                object.alternatives[j] = $root.SdkTranscriptAlternative.toObject(message.alternatives[j], options);
+                object.alternatives[j] = $root.SdkTranscriptAlternative.toObject(message.alternatives[j], options, q + 1);
         }
-        if (message.channelId != null && message.hasOwnProperty("channelId"))
+        if (message.channelId != null && Object.hasOwnProperty.call(message, "channelId"))
             object.channelId = message.channelId;
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
-            if (typeof message.endTime === "number")
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.endTime = typeof message.endTime === "number" ? BigInt(message.endTime) : $util.Long.fromBits(message.endTime.low >>> 0, message.endTime.high >>> 0, false).toBigInt();
+            else if (typeof message.endTime === "number")
                 object.endTime = options.longs === String ? String(message.endTime) : message.endTime;
             else
                 object.endTime = options.longs === String ? $util.Long.prototype.toString.call(message.endTime) : options.longs === Number ? new $util.LongBits(message.endTime.low >>> 0, message.endTime.high >>> 0).toNumber() : message.endTime;
-        if (message.isPartial != null && message.hasOwnProperty("isPartial"))
+        if (message.isPartial != null && Object.hasOwnProperty.call(message, "isPartial"))
             object.isPartial = message.isPartial;
-        if (message.resultId != null && message.hasOwnProperty("resultId"))
+        if (message.resultId != null && Object.hasOwnProperty.call(message, "resultId"))
             object.resultId = message.resultId;
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
-            if (typeof message.startTime === "number")
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.startTime = typeof message.startTime === "number" ? BigInt(message.startTime) : $util.Long.fromBits(message.startTime.low >>> 0, message.startTime.high >>> 0, false).toBigInt();
+            else if (typeof message.startTime === "number")
                 object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
             else
                 object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
-        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+        if (message.languageCode != null && Object.hasOwnProperty.call(message, "languageCode"))
             object.languageCode = message.languageCode;
         if (message.languageIdentification && message.languageIdentification.length) {
             object.languageIdentification = [];
             for (var j = 0; j < message.languageIdentification.length; ++j)
-                object.languageIdentification[j] = $root.SdkTranscriptLanguageWithScore.toObject(message.languageIdentification[j], options);
+                object.languageIdentification[j] = $root.SdkTranscriptLanguageWithScore.toObject(message.languageIdentification[j], options, q + 1);
         }
         return object;
     };
@@ -12236,7 +13218,7 @@ $root.SdkTranscript = (function() {
         this.results = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -12269,12 +13251,16 @@ $root.SdkTranscript = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscript.encode = function encode(message, writer) {
+    SdkTranscript.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.results != null && message.results.length)
             for (var i = 0; i < message.results.length; ++i)
-                $root.SdkTranscriptResult.encode(message.results[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkTranscriptResult.encode(message.results[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -12288,7 +13274,7 @@ $root.SdkTranscript = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscript.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -12302,21 +13288,27 @@ $root.SdkTranscript = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscript.decode = function decode(reader, length) {
+    SdkTranscript.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscript();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.results && message.results.length))
                         message.results = [];
-                    message.results.push($root.SdkTranscriptResult.decode(reader, reader.uint32()));
+                    message.results.push($root.SdkTranscriptResult.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -12347,14 +13339,18 @@ $root.SdkTranscript = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscript.verify = function verify(message) {
+    SdkTranscript.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.results != null && message.hasOwnProperty("results")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.results != null && Object.hasOwnProperty.call(message, "results")) {
             if (!Array.isArray(message.results))
                 return "results: array expected";
             for (var i = 0; i < message.results.length; ++i) {
-                var error = $root.SdkTranscriptResult.verify(message.results[i]);
+                var error = $root.SdkTranscriptResult.verify(message.results[i], long + 1);
                 if (error)
                     return "results." + error;
             }
@@ -12370,18 +13366,24 @@ $root.SdkTranscript = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscript} SdkTranscript
      */
-    SdkTranscript.fromObject = function fromObject(object) {
+    SdkTranscript.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscript)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscript: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscript();
         if (object.results) {
             if (!Array.isArray(object.results))
                 throw TypeError(".SdkTranscript.results: array expected");
             message.results = [];
             for (var i = 0; i < object.results.length; ++i) {
-                if (typeof object.results[i] !== "object")
+                if (!$util.isObject(object.results[i]))
                     throw TypeError(".SdkTranscript.results: object expected");
-                message.results[i] = $root.SdkTranscriptResult.fromObject(object.results[i]);
+                message.results[i] = $root.SdkTranscriptResult.fromObject(object.results[i], long + 1);
             }
         }
         return message;
@@ -12396,16 +13398,20 @@ $root.SdkTranscript = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscript.toObject = function toObject(message, options) {
+    SdkTranscript.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults)
             object.results = [];
         if (message.results && message.results.length) {
             object.results = [];
             for (var j = 0; j < message.results.length; ++j)
-                object.results[j] = $root.SdkTranscriptResult.toObject(message.results[j], options);
+                object.results[j] = $root.SdkTranscriptResult.toObject(message.results[j], options, q + 1);
         }
         return object;
     };
@@ -12463,7 +13469,7 @@ $root.SdkTranscriptionStatus = (function() {
     function SdkTranscriptionStatus(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -12528,9 +13534,13 @@ $root.SdkTranscriptionStatus = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscriptionStatus.encode = function encode(message, writer) {
+    SdkTranscriptionStatus.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
         if (message.eventTime != null && Object.hasOwnProperty.call(message, "eventTime"))
@@ -12554,7 +13564,7 @@ $root.SdkTranscriptionStatus = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscriptionStatus.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -12568,12 +13578,18 @@ $root.SdkTranscriptionStatus = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscriptionStatus.decode = function decode(reader, length) {
+    SdkTranscriptionStatus.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptionStatus();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.type = reader.int32();
@@ -12596,7 +13612,7 @@ $root.SdkTranscriptionStatus = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -12627,10 +13643,14 @@ $root.SdkTranscriptionStatus = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscriptionStatus.verify = function verify(message) {
+    SdkTranscriptionStatus.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             switch (message.type) {
             default:
                 return "type: enum value expected";
@@ -12641,16 +13661,16 @@ $root.SdkTranscriptionStatus = (function() {
             case 5:
                 break;
             }
-        if (message.eventTime != null && message.hasOwnProperty("eventTime"))
+        if (message.eventTime != null && Object.hasOwnProperty.call(message, "eventTime"))
             if (!$util.isInteger(message.eventTime) && !(message.eventTime && $util.isInteger(message.eventTime.low) && $util.isInteger(message.eventTime.high)))
                 return "eventTime: integer|Long expected";
-        if (message.transcriptionRegion != null && message.hasOwnProperty("transcriptionRegion"))
+        if (message.transcriptionRegion != null && Object.hasOwnProperty.call(message, "transcriptionRegion"))
             if (!$util.isString(message.transcriptionRegion))
                 return "transcriptionRegion: string expected";
-        if (message.transcriptionConfiguration != null && message.hasOwnProperty("transcriptionConfiguration"))
+        if (message.transcriptionConfiguration != null && Object.hasOwnProperty.call(message, "transcriptionConfiguration"))
             if (!$util.isString(message.transcriptionConfiguration))
                 return "transcriptionConfiguration: string expected";
-        if (message.message != null && message.hasOwnProperty("message"))
+        if (message.message != null && Object.hasOwnProperty.call(message, "message"))
             if (!$util.isString(message.message))
                 return "message: string expected";
         return null;
@@ -12664,9 +13684,15 @@ $root.SdkTranscriptionStatus = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscriptionStatus} SdkTranscriptionStatus
      */
-    SdkTranscriptionStatus.fromObject = function fromObject(object) {
+    SdkTranscriptionStatus.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscriptionStatus)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscriptionStatus: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscriptionStatus();
         switch (object.type) {
         default:
@@ -12698,7 +13724,7 @@ $root.SdkTranscriptionStatus = (function() {
         }
         if (object.eventTime != null)
             if ($util.Long)
-                (message.eventTime = $util.Long.fromValue(object.eventTime)).unsigned = false;
+                message.eventTime = $util.Long.fromValue(object.eventTime, false);
             else if (typeof object.eventTime === "string")
                 message.eventTime = parseInt(object.eventTime, 10);
             else if (typeof object.eventTime === "number")
@@ -12723,33 +13749,39 @@ $root.SdkTranscriptionStatus = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscriptionStatus.toObject = function toObject(message, options) {
+    SdkTranscriptionStatus.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.type = options.enums === String ? "STARTED" : 1;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.eventTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.eventTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.eventTime = options.longs === String ? "0" : 0;
+                object.eventTime = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.transcriptionRegion = "";
             object.transcriptionConfiguration = "";
             object.message = "";
         }
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             object.type = options.enums === String ? $root.SdkTranscriptionStatus.Type[message.type] === undefined ? message.type : $root.SdkTranscriptionStatus.Type[message.type] : message.type;
-        if (message.eventTime != null && message.hasOwnProperty("eventTime"))
-            if (typeof message.eventTime === "number")
+        if (message.eventTime != null && Object.hasOwnProperty.call(message, "eventTime"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.eventTime = typeof message.eventTime === "number" ? BigInt(message.eventTime) : $util.Long.fromBits(message.eventTime.low >>> 0, message.eventTime.high >>> 0, false).toBigInt();
+            else if (typeof message.eventTime === "number")
                 object.eventTime = options.longs === String ? String(message.eventTime) : message.eventTime;
             else
                 object.eventTime = options.longs === String ? $util.Long.prototype.toString.call(message.eventTime) : options.longs === Number ? new $util.LongBits(message.eventTime.low >>> 0, message.eventTime.high >>> 0).toNumber() : message.eventTime;
-        if (message.transcriptionRegion != null && message.hasOwnProperty("transcriptionRegion"))
+        if (message.transcriptionRegion != null && Object.hasOwnProperty.call(message, "transcriptionRegion"))
             object.transcriptionRegion = message.transcriptionRegion;
-        if (message.transcriptionConfiguration != null && message.hasOwnProperty("transcriptionConfiguration"))
+        if (message.transcriptionConfiguration != null && Object.hasOwnProperty.call(message, "transcriptionConfiguration"))
             object.transcriptionConfiguration = message.transcriptionConfiguration;
-        if (message.message != null && message.hasOwnProperty("message"))
+        if (message.message != null && Object.hasOwnProperty.call(message, "message"))
             object.message = message.message;
         return object;
     };
@@ -12824,7 +13856,7 @@ $root.SdkTranscriptEvent = (function() {
     function SdkTranscriptEvent(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -12879,13 +13911,17 @@ $root.SdkTranscriptEvent = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscriptEvent.encode = function encode(message, writer) {
+    SdkTranscriptEvent.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.status != null && Object.hasOwnProperty.call(message, "status"))
-            $root.SdkTranscriptionStatus.encode(message.status, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            $root.SdkTranscriptionStatus.encode(message.status, writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         if (message.transcript != null && Object.hasOwnProperty.call(message, "transcript"))
-            $root.SdkTranscript.encode(message.transcript, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            $root.SdkTranscript.encode(message.transcript, writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -12899,7 +13935,7 @@ $root.SdkTranscriptEvent = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscriptEvent.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -12913,23 +13949,29 @@ $root.SdkTranscriptEvent = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscriptEvent.decode = function decode(reader, length) {
+    SdkTranscriptEvent.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptEvent();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
-                    message.status = $root.SdkTranscriptionStatus.decode(reader, reader.uint32());
+                    message.status = $root.SdkTranscriptionStatus.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             case 2: {
-                    message.transcript = $root.SdkTranscript.decode(reader, reader.uint32());
+                    message.transcript = $root.SdkTranscript.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -12960,24 +14002,28 @@ $root.SdkTranscriptEvent = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscriptEvent.verify = function verify(message) {
+    SdkTranscriptEvent.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
         var properties = {};
-        if (message.status != null && message.hasOwnProperty("status")) {
+        if (message.status != null && Object.hasOwnProperty.call(message, "status")) {
             properties.Event = 1;
             {
-                var error = $root.SdkTranscriptionStatus.verify(message.status);
+                var error = $root.SdkTranscriptionStatus.verify(message.status, long + 1);
                 if (error)
                     return "status." + error;
             }
         }
-        if (message.transcript != null && message.hasOwnProperty("transcript")) {
+        if (message.transcript != null && Object.hasOwnProperty.call(message, "transcript")) {
             if (properties.Event === 1)
                 return "Event: multiple values";
             properties.Event = 1;
             {
-                var error = $root.SdkTranscript.verify(message.transcript);
+                var error = $root.SdkTranscript.verify(message.transcript, long + 1);
                 if (error)
                     return "transcript." + error;
             }
@@ -12993,19 +14039,25 @@ $root.SdkTranscriptEvent = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscriptEvent} SdkTranscriptEvent
      */
-    SdkTranscriptEvent.fromObject = function fromObject(object) {
+    SdkTranscriptEvent.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscriptEvent)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscriptEvent: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscriptEvent();
         if (object.status != null) {
-            if (typeof object.status !== "object")
+            if (!$util.isObject(object.status))
                 throw TypeError(".SdkTranscriptEvent.status: object expected");
-            message.status = $root.SdkTranscriptionStatus.fromObject(object.status);
+            message.status = $root.SdkTranscriptionStatus.fromObject(object.status, long + 1);
         }
         if (object.transcript != null) {
-            if (typeof object.transcript !== "object")
+            if (!$util.isObject(object.transcript))
                 throw TypeError(".SdkTranscriptEvent.transcript: object expected");
-            message.transcript = $root.SdkTranscript.fromObject(object.transcript);
+            message.transcript = $root.SdkTranscript.fromObject(object.transcript, long + 1);
         }
         return message;
     };
@@ -13019,17 +14071,21 @@ $root.SdkTranscriptEvent = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscriptEvent.toObject = function toObject(message, options) {
+    SdkTranscriptEvent.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
-        if (message.status != null && message.hasOwnProperty("status")) {
-            object.status = $root.SdkTranscriptionStatus.toObject(message.status, options);
+        if (message.status != null && Object.hasOwnProperty.call(message, "status")) {
+            object.status = $root.SdkTranscriptionStatus.toObject(message.status, options, q + 1);
             if (options.oneofs)
                 object.Event = "status";
         }
-        if (message.transcript != null && message.hasOwnProperty("transcript")) {
-            object.transcript = $root.SdkTranscript.toObject(message.transcript, options);
+        if (message.transcript != null && Object.hasOwnProperty.call(message, "transcript")) {
+            object.transcript = $root.SdkTranscript.toObject(message.transcript, options, q + 1);
             if (options.oneofs)
                 object.Event = "transcript";
         }
@@ -13086,7 +14142,7 @@ $root.SdkTranscriptFrame = (function() {
         this.events = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -13119,12 +14175,16 @@ $root.SdkTranscriptFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkTranscriptFrame.encode = function encode(message, writer) {
+    SdkTranscriptFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.events != null && message.events.length)
             for (var i = 0; i < message.events.length; ++i)
-                $root.SdkTranscriptEvent.encode(message.events[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkTranscriptEvent.encode(message.events[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -13138,7 +14198,7 @@ $root.SdkTranscriptFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkTranscriptFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -13152,21 +14212,27 @@ $root.SdkTranscriptFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkTranscriptFrame.decode = function decode(reader, length) {
+    SdkTranscriptFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.events && message.events.length))
                         message.events = [];
-                    message.events.push($root.SdkTranscriptEvent.decode(reader, reader.uint32()));
+                    message.events.push($root.SdkTranscriptEvent.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -13197,14 +14263,18 @@ $root.SdkTranscriptFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkTranscriptFrame.verify = function verify(message) {
+    SdkTranscriptFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.events != null && message.hasOwnProperty("events")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.events != null && Object.hasOwnProperty.call(message, "events")) {
             if (!Array.isArray(message.events))
                 return "events: array expected";
             for (var i = 0; i < message.events.length; ++i) {
-                var error = $root.SdkTranscriptEvent.verify(message.events[i]);
+                var error = $root.SdkTranscriptEvent.verify(message.events[i], long + 1);
                 if (error)
                     return "events." + error;
             }
@@ -13220,18 +14290,24 @@ $root.SdkTranscriptFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkTranscriptFrame} SdkTranscriptFrame
      */
-    SdkTranscriptFrame.fromObject = function fromObject(object) {
+    SdkTranscriptFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkTranscriptFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkTranscriptFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkTranscriptFrame();
         if (object.events) {
             if (!Array.isArray(object.events))
                 throw TypeError(".SdkTranscriptFrame.events: array expected");
             message.events = [];
             for (var i = 0; i < object.events.length; ++i) {
-                if (typeof object.events[i] !== "object")
+                if (!$util.isObject(object.events[i]))
                     throw TypeError(".SdkTranscriptFrame.events: object expected");
-                message.events[i] = $root.SdkTranscriptEvent.fromObject(object.events[i]);
+                message.events[i] = $root.SdkTranscriptEvent.fromObject(object.events[i], long + 1);
             }
         }
         return message;
@@ -13246,16 +14322,20 @@ $root.SdkTranscriptFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkTranscriptFrame.toObject = function toObject(message, options) {
+    SdkTranscriptFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults)
             object.events = [];
         if (message.events && message.events.length) {
             object.events = [];
             for (var j = 0; j < message.events.length; ++j)
-                object.events[j] = $root.SdkTranscriptEvent.toObject(message.events[j], options);
+                object.events[j] = $root.SdkTranscriptEvent.toObject(message.events[j], options, q + 1);
         }
         return object;
     };
@@ -13312,7 +14392,7 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
         this.removedVideoSubscriptionMids = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -13353,12 +14433,16 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkRemoteVideoUpdateFrame.encode = function encode(message, writer) {
+    SdkRemoteVideoUpdateFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.addedOrUpdatedVideoSubscriptions != null && message.addedOrUpdatedVideoSubscriptions.length)
             for (var i = 0; i < message.addedOrUpdatedVideoSubscriptions.length; ++i)
-                $root.SdkVideoSubscriptionConfiguration.encode(message.addedOrUpdatedVideoSubscriptions[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkVideoSubscriptionConfiguration.encode(message.addedOrUpdatedVideoSubscriptions[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         if (message.removedVideoSubscriptionMids != null && message.removedVideoSubscriptionMids.length)
             for (var i = 0; i < message.removedVideoSubscriptionMids.length; ++i)
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.removedVideoSubscriptionMids[i]);
@@ -13375,7 +14459,7 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkRemoteVideoUpdateFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -13389,17 +14473,23 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkRemoteVideoUpdateFrame.decode = function decode(reader, length) {
+    SdkRemoteVideoUpdateFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkRemoteVideoUpdateFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.addedOrUpdatedVideoSubscriptions && message.addedOrUpdatedVideoSubscriptions.length))
                         message.addedOrUpdatedVideoSubscriptions = [];
-                    message.addedOrUpdatedVideoSubscriptions.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
+                    message.addedOrUpdatedVideoSubscriptions.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 2: {
@@ -13409,7 +14499,7 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -13440,19 +14530,23 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkRemoteVideoUpdateFrame.verify = function verify(message) {
+    SdkRemoteVideoUpdateFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.addedOrUpdatedVideoSubscriptions != null && message.hasOwnProperty("addedOrUpdatedVideoSubscriptions")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.addedOrUpdatedVideoSubscriptions != null && Object.hasOwnProperty.call(message, "addedOrUpdatedVideoSubscriptions")) {
             if (!Array.isArray(message.addedOrUpdatedVideoSubscriptions))
                 return "addedOrUpdatedVideoSubscriptions: array expected";
             for (var i = 0; i < message.addedOrUpdatedVideoSubscriptions.length; ++i) {
-                var error = $root.SdkVideoSubscriptionConfiguration.verify(message.addedOrUpdatedVideoSubscriptions[i]);
+                var error = $root.SdkVideoSubscriptionConfiguration.verify(message.addedOrUpdatedVideoSubscriptions[i], long + 1);
                 if (error)
                     return "addedOrUpdatedVideoSubscriptions." + error;
             }
         }
-        if (message.removedVideoSubscriptionMids != null && message.hasOwnProperty("removedVideoSubscriptionMids")) {
+        if (message.removedVideoSubscriptionMids != null && Object.hasOwnProperty.call(message, "removedVideoSubscriptionMids")) {
             if (!Array.isArray(message.removedVideoSubscriptionMids))
                 return "removedVideoSubscriptionMids: array expected";
             for (var i = 0; i < message.removedVideoSubscriptionMids.length; ++i)
@@ -13470,18 +14564,24 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkRemoteVideoUpdateFrame} SdkRemoteVideoUpdateFrame
      */
-    SdkRemoteVideoUpdateFrame.fromObject = function fromObject(object) {
+    SdkRemoteVideoUpdateFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkRemoteVideoUpdateFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkRemoteVideoUpdateFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkRemoteVideoUpdateFrame();
         if (object.addedOrUpdatedVideoSubscriptions) {
             if (!Array.isArray(object.addedOrUpdatedVideoSubscriptions))
                 throw TypeError(".SdkRemoteVideoUpdateFrame.addedOrUpdatedVideoSubscriptions: array expected");
             message.addedOrUpdatedVideoSubscriptions = [];
             for (var i = 0; i < object.addedOrUpdatedVideoSubscriptions.length; ++i) {
-                if (typeof object.addedOrUpdatedVideoSubscriptions[i] !== "object")
+                if (!$util.isObject(object.addedOrUpdatedVideoSubscriptions[i]))
                     throw TypeError(".SdkRemoteVideoUpdateFrame.addedOrUpdatedVideoSubscriptions: object expected");
-                message.addedOrUpdatedVideoSubscriptions[i] = $root.SdkVideoSubscriptionConfiguration.fromObject(object.addedOrUpdatedVideoSubscriptions[i]);
+                message.addedOrUpdatedVideoSubscriptions[i] = $root.SdkVideoSubscriptionConfiguration.fromObject(object.addedOrUpdatedVideoSubscriptions[i], long + 1);
             }
         }
         if (object.removedVideoSubscriptionMids) {
@@ -13503,9 +14603,13 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkRemoteVideoUpdateFrame.toObject = function toObject(message, options) {
+    SdkRemoteVideoUpdateFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.addedOrUpdatedVideoSubscriptions = [];
@@ -13514,7 +14618,7 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
         if (message.addedOrUpdatedVideoSubscriptions && message.addedOrUpdatedVideoSubscriptions.length) {
             object.addedOrUpdatedVideoSubscriptions = [];
             for (var j = 0; j < message.addedOrUpdatedVideoSubscriptions.length; ++j)
-                object.addedOrUpdatedVideoSubscriptions[j] = $root.SdkVideoSubscriptionConfiguration.toObject(message.addedOrUpdatedVideoSubscriptions[j], options);
+                object.addedOrUpdatedVideoSubscriptions[j] = $root.SdkVideoSubscriptionConfiguration.toObject(message.addedOrUpdatedVideoSubscriptions[j], options, q + 1);
         }
         if (message.removedVideoSubscriptionMids && message.removedVideoSubscriptionMids.length) {
             object.removedVideoSubscriptionMids = [];
@@ -13595,7 +14699,7 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
     function SdkVideoSubscriptionConfiguration(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -13676,9 +14780,13 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkVideoSubscriptionConfiguration.encode = function encode(message, writer) {
+    SdkVideoSubscriptionConfiguration.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         writer.uint32(/* id 1, wireType 2 =*/10).string(message.mid);
         if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.attendeeId);
@@ -13705,7 +14813,7 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkVideoSubscriptionConfiguration.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -13719,12 +14827,18 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkVideoSubscriptionConfiguration.decode = function decode(reader, length) {
+    SdkVideoSubscriptionConfiguration.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkVideoSubscriptionConfiguration();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.mid = reader.string();
@@ -13755,11 +14869,11 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
-        if (!message.hasOwnProperty("mid"))
+        if (!Object.hasOwnProperty.call(message, "mid"))
             throw $util.ProtocolError("missing required 'mid'", { instance: message });
         return message;
     };
@@ -13788,27 +14902,31 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkVideoSubscriptionConfiguration.verify = function verify(message) {
+    SdkVideoSubscriptionConfiguration.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
         if (!$util.isString(message.mid))
             return "mid: string expected";
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             if (!$util.isString(message.attendeeId))
                 return "attendeeId: string expected";
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             if (!$util.isInteger(message.streamId))
                 return "streamId: integer expected";
-        if (message.priority != null && message.hasOwnProperty("priority"))
+        if (message.priority != null && Object.hasOwnProperty.call(message, "priority"))
             if (!$util.isInteger(message.priority))
                 return "priority: integer expected";
-        if (message.targetBitrateKbps != null && message.hasOwnProperty("targetBitrateKbps"))
+        if (message.targetBitrateKbps != null && Object.hasOwnProperty.call(message, "targetBitrateKbps"))
             if (!$util.isInteger(message.targetBitrateKbps))
                 return "targetBitrateKbps: integer expected";
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             if (!$util.isInteger(message.groupId))
                 return "groupId: integer expected";
-        if (message.qualityAdaptationPreference != null && message.hasOwnProperty("qualityAdaptationPreference"))
+        if (message.qualityAdaptationPreference != null && Object.hasOwnProperty.call(message, "qualityAdaptationPreference"))
             switch (message.qualityAdaptationPreference) {
             default:
                 return "qualityAdaptationPreference: enum value expected";
@@ -13828,9 +14946,15 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkVideoSubscriptionConfiguration} SdkVideoSubscriptionConfiguration
      */
-    SdkVideoSubscriptionConfiguration.fromObject = function fromObject(object) {
+    SdkVideoSubscriptionConfiguration.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkVideoSubscriptionConfiguration)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkVideoSubscriptionConfiguration: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkVideoSubscriptionConfiguration();
         if (object.mid != null)
             message.mid = String(object.mid);
@@ -13876,9 +15000,13 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkVideoSubscriptionConfiguration.toObject = function toObject(message, options) {
+    SdkVideoSubscriptionConfiguration.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.mid = "";
@@ -13889,19 +15017,19 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             object.groupId = 0;
             object.qualityAdaptationPreference = options.enums === String ? "BALANCED" : 1;
         }
-        if (message.mid != null && message.hasOwnProperty("mid"))
+        if (message.mid != null && Object.hasOwnProperty.call(message, "mid"))
             object.mid = message.mid;
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             object.attendeeId = message.attendeeId;
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             object.streamId = message.streamId;
-        if (message.priority != null && message.hasOwnProperty("priority"))
+        if (message.priority != null && Object.hasOwnProperty.call(message, "priority"))
             object.priority = message.priority;
-        if (message.targetBitrateKbps != null && message.hasOwnProperty("targetBitrateKbps"))
+        if (message.targetBitrateKbps != null && Object.hasOwnProperty.call(message, "targetBitrateKbps"))
             object.targetBitrateKbps = message.targetBitrateKbps;
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             object.groupId = message.groupId;
-        if (message.qualityAdaptationPreference != null && message.hasOwnProperty("qualityAdaptationPreference"))
+        if (message.qualityAdaptationPreference != null && Object.hasOwnProperty.call(message, "qualityAdaptationPreference"))
             object.qualityAdaptationPreference = options.enums === String ? $root.SdkVideoQualityAdaptationPreference[message.qualityAdaptationPreference] === undefined ? message.qualityAdaptationPreference : $root.SdkVideoQualityAdaptationPreference[message.qualityAdaptationPreference] : message.qualityAdaptationPreference;
         return object;
     };
@@ -13956,7 +15084,7 @@ $root.SdkNotificationFrame = (function() {
     function SdkNotificationFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -13997,9 +15125,13 @@ $root.SdkNotificationFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkNotificationFrame.encode = function encode(message, writer) {
+    SdkNotificationFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.level != null && Object.hasOwnProperty.call(message, "level"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.level);
         if (message.message != null && Object.hasOwnProperty.call(message, "message"))
@@ -14017,7 +15149,7 @@ $root.SdkNotificationFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkNotificationFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -14031,12 +15163,18 @@ $root.SdkNotificationFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkNotificationFrame.decode = function decode(reader, length) {
+    SdkNotificationFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkNotificationFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.level = reader.int32();
@@ -14047,7 +15185,7 @@ $root.SdkNotificationFrame = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -14078,10 +15216,14 @@ $root.SdkNotificationFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkNotificationFrame.verify = function verify(message) {
+    SdkNotificationFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.level != null && message.hasOwnProperty("level"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.level != null && Object.hasOwnProperty.call(message, "level"))
             switch (message.level) {
             default:
                 return "level: enum value expected";
@@ -14090,7 +15232,7 @@ $root.SdkNotificationFrame = (function() {
             case 3:
                 break;
             }
-        if (message.message != null && message.hasOwnProperty("message"))
+        if (message.message != null && Object.hasOwnProperty.call(message, "message"))
             if (!$util.isString(message.message))
                 return "message: string expected";
         return null;
@@ -14104,9 +15246,15 @@ $root.SdkNotificationFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkNotificationFrame} SdkNotificationFrame
      */
-    SdkNotificationFrame.fromObject = function fromObject(object) {
+    SdkNotificationFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkNotificationFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkNotificationFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkNotificationFrame();
         switch (object.level) {
         case "INFO":
@@ -14142,17 +15290,21 @@ $root.SdkNotificationFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkNotificationFrame.toObject = function toObject(message, options) {
+    SdkNotificationFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.level = options.enums === String ? "ERROR" : 3;
             object.message = "";
         }
-        if (message.level != null && message.hasOwnProperty("level"))
+        if (message.level != null && Object.hasOwnProperty.call(message, "level"))
             object.level = options.enums === String ? $root.SdkNotificationFrame.NotificationLevel[message.level] === undefined ? message.level : $root.SdkNotificationFrame.NotificationLevel[message.level] : message.level;
-        if (message.message != null && message.hasOwnProperty("message"))
+        if (message.message != null && Object.hasOwnProperty.call(message, "message"))
             object.message = message.message;
         return object;
     };
@@ -14222,7 +15374,7 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
     function SdkPrimaryMeetingJoinFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -14255,11 +15407,15 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkPrimaryMeetingJoinFrame.encode = function encode(message, writer) {
+    SdkPrimaryMeetingJoinFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.credentials != null && Object.hasOwnProperty.call(message, "credentials"))
-            $root.SdkMeetingSessionCredentials.encode(message.credentials, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            $root.SdkMeetingSessionCredentials.encode(message.credentials, writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -14273,7 +15429,7 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkPrimaryMeetingJoinFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -14287,19 +15443,25 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkPrimaryMeetingJoinFrame.decode = function decode(reader, length) {
+    SdkPrimaryMeetingJoinFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkPrimaryMeetingJoinFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
-                    message.credentials = $root.SdkMeetingSessionCredentials.decode(reader, reader.uint32());
+                    message.credentials = $root.SdkMeetingSessionCredentials.decode(reader, reader.uint32(), undefined, long + 1);
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -14330,11 +15492,15 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkPrimaryMeetingJoinFrame.verify = function verify(message) {
+    SdkPrimaryMeetingJoinFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.credentials != null && message.hasOwnProperty("credentials")) {
-            var error = $root.SdkMeetingSessionCredentials.verify(message.credentials);
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.credentials != null && Object.hasOwnProperty.call(message, "credentials")) {
+            var error = $root.SdkMeetingSessionCredentials.verify(message.credentials, long + 1);
             if (error)
                 return "credentials." + error;
         }
@@ -14349,14 +15515,20 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkPrimaryMeetingJoinFrame} SdkPrimaryMeetingJoinFrame
      */
-    SdkPrimaryMeetingJoinFrame.fromObject = function fromObject(object) {
+    SdkPrimaryMeetingJoinFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkPrimaryMeetingJoinFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkPrimaryMeetingJoinFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkPrimaryMeetingJoinFrame();
         if (object.credentials != null) {
-            if (typeof object.credentials !== "object")
+            if (!$util.isObject(object.credentials))
                 throw TypeError(".SdkPrimaryMeetingJoinFrame.credentials: object expected");
-            message.credentials = $root.SdkMeetingSessionCredentials.fromObject(object.credentials);
+            message.credentials = $root.SdkMeetingSessionCredentials.fromObject(object.credentials, long + 1);
         }
         return message;
     };
@@ -14370,14 +15542,18 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkPrimaryMeetingJoinFrame.toObject = function toObject(message, options) {
+    SdkPrimaryMeetingJoinFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults)
             object.credentials = null;
-        if (message.credentials != null && message.hasOwnProperty("credentials"))
-            object.credentials = $root.SdkMeetingSessionCredentials.toObject(message.credentials, options);
+        if (message.credentials != null && Object.hasOwnProperty.call(message, "credentials"))
+            object.credentials = $root.SdkMeetingSessionCredentials.toObject(message.credentials, options, q + 1);
         return object;
     };
 
@@ -14429,7 +15605,7 @@ $root.SdkPrimaryMeetingJoinAckFrame = (function() {
     function SdkPrimaryMeetingJoinAckFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -14454,9 +15630,13 @@ $root.SdkPrimaryMeetingJoinAckFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkPrimaryMeetingJoinAckFrame.encode = function encode(message, writer) {
+    SdkPrimaryMeetingJoinAckFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         return writer;
     };
 
@@ -14470,7 +15650,7 @@ $root.SdkPrimaryMeetingJoinAckFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkPrimaryMeetingJoinAckFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -14484,15 +15664,21 @@ $root.SdkPrimaryMeetingJoinAckFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkPrimaryMeetingJoinAckFrame.decode = function decode(reader, length) {
+    SdkPrimaryMeetingJoinAckFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkPrimaryMeetingJoinAckFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -14523,9 +15709,13 @@ $root.SdkPrimaryMeetingJoinAckFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkPrimaryMeetingJoinAckFrame.verify = function verify(message) {
+    SdkPrimaryMeetingJoinAckFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
         return null;
     };
 
@@ -14537,7 +15727,7 @@ $root.SdkPrimaryMeetingJoinAckFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkPrimaryMeetingJoinAckFrame} SdkPrimaryMeetingJoinAckFrame
      */
-    SdkPrimaryMeetingJoinAckFrame.fromObject = function fromObject(object) {
+    SdkPrimaryMeetingJoinAckFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkPrimaryMeetingJoinAckFrame)
             return object;
         return new $root.SdkPrimaryMeetingJoinAckFrame();
@@ -14604,7 +15794,7 @@ $root.SdkPrimaryMeetingLeaveFrame = (function() {
     function SdkPrimaryMeetingLeaveFrame(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -14629,9 +15819,13 @@ $root.SdkPrimaryMeetingLeaveFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkPrimaryMeetingLeaveFrame.encode = function encode(message, writer) {
+    SdkPrimaryMeetingLeaveFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         return writer;
     };
 
@@ -14645,7 +15839,7 @@ $root.SdkPrimaryMeetingLeaveFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkPrimaryMeetingLeaveFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -14659,15 +15853,21 @@ $root.SdkPrimaryMeetingLeaveFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkPrimaryMeetingLeaveFrame.decode = function decode(reader, length) {
+    SdkPrimaryMeetingLeaveFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkPrimaryMeetingLeaveFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -14698,9 +15898,13 @@ $root.SdkPrimaryMeetingLeaveFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkPrimaryMeetingLeaveFrame.verify = function verify(message) {
+    SdkPrimaryMeetingLeaveFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
         return null;
     };
 
@@ -14712,7 +15916,7 @@ $root.SdkPrimaryMeetingLeaveFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkPrimaryMeetingLeaveFrame} SdkPrimaryMeetingLeaveFrame
      */
-    SdkPrimaryMeetingLeaveFrame.fromObject = function fromObject(object) {
+    SdkPrimaryMeetingLeaveFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkPrimaryMeetingLeaveFrame)
             return object;
         return new $root.SdkPrimaryMeetingLeaveFrame();
@@ -14782,7 +15986,7 @@ $root.SdkMeetingSessionCredentials = (function() {
     function SdkMeetingSessionCredentials(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -14831,9 +16035,13 @@ $root.SdkMeetingSessionCredentials = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkMeetingSessionCredentials.encode = function encode(message, writer) {
+    SdkMeetingSessionCredentials.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.attendeeId);
         if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
@@ -14853,7 +16061,7 @@ $root.SdkMeetingSessionCredentials = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkMeetingSessionCredentials.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -14867,12 +16075,18 @@ $root.SdkMeetingSessionCredentials = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkMeetingSessionCredentials.decode = function decode(reader, length) {
+    SdkMeetingSessionCredentials.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionCredentials();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.attendeeId = reader.string();
@@ -14887,7 +16101,7 @@ $root.SdkMeetingSessionCredentials = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -14918,16 +16132,20 @@ $root.SdkMeetingSessionCredentials = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkMeetingSessionCredentials.verify = function verify(message) {
+    SdkMeetingSessionCredentials.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             if (!$util.isString(message.attendeeId))
                 return "attendeeId: string expected";
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             if (!$util.isString(message.externalUserId))
                 return "externalUserId: string expected";
-        if (message.joinToken != null && message.hasOwnProperty("joinToken"))
+        if (message.joinToken != null && Object.hasOwnProperty.call(message, "joinToken"))
             if (!$util.isString(message.joinToken))
                 return "joinToken: string expected";
         return null;
@@ -14941,9 +16159,15 @@ $root.SdkMeetingSessionCredentials = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkMeetingSessionCredentials} SdkMeetingSessionCredentials
      */
-    SdkMeetingSessionCredentials.fromObject = function fromObject(object) {
+    SdkMeetingSessionCredentials.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkMeetingSessionCredentials)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkMeetingSessionCredentials: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkMeetingSessionCredentials();
         if (object.attendeeId != null)
             message.attendeeId = String(object.attendeeId);
@@ -14963,20 +16187,24 @@ $root.SdkMeetingSessionCredentials = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkMeetingSessionCredentials.toObject = function toObject(message, options) {
+    SdkMeetingSessionCredentials.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.attendeeId = "";
             object.externalUserId = "";
             object.joinToken = "";
         }
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             object.attendeeId = message.attendeeId;
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             object.externalUserId = message.externalUserId;
-        if (message.joinToken != null && message.hasOwnProperty("joinToken"))
+        if (message.joinToken != null && Object.hasOwnProperty.call(message, "joinToken"))
             object.joinToken = message.joinToken;
         return object;
     };
@@ -15065,7 +16293,7 @@ $root.SdkMeetingSessionTimingFrame = (function() {
         this.remoteVideos = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -15130,24 +16358,28 @@ $root.SdkMeetingSessionTimingFrame = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkMeetingSessionTimingFrame.encode = function encode(message, writer) {
+    SdkMeetingSessionTimingFrame.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.signaling != null && message.signaling.length)
             for (var i = 0; i < message.signaling.length; ++i)
-                $root.SdkMeetingSessionSignalingTiming.encode(message.signaling[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.SdkMeetingSessionSignalingTiming.encode(message.signaling[i], writer.uint32(/* id 1, wireType 2 =*/10).fork(), q + 1).ldelim();
         if (message.remoteAudio != null && message.remoteAudio.length)
             for (var i = 0; i < message.remoteAudio.length; ++i)
-                $root.SdkMeetingSessionRemoteAudioTiming.encode(message.remoteAudio[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.SdkMeetingSessionRemoteAudioTiming.encode(message.remoteAudio[i], writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
         if (message.localAudio != null && message.localAudio.length)
             for (var i = 0; i < message.localAudio.length; ++i)
-                $root.SdkMeetingSessionLocalAudioTiming.encode(message.localAudio[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.SdkMeetingSessionLocalAudioTiming.encode(message.localAudio[i], writer.uint32(/* id 3, wireType 2 =*/26).fork(), q + 1).ldelim();
         if (message.localVideo != null && message.localVideo.length)
             for (var i = 0; i < message.localVideo.length; ++i)
-                $root.SdkMeetingSessionLocalVideoTiming.encode(message.localVideo[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.SdkMeetingSessionLocalVideoTiming.encode(message.localVideo[i], writer.uint32(/* id 4, wireType 2 =*/34).fork(), q + 1).ldelim();
         if (message.remoteVideos != null && message.remoteVideos.length)
             for (var i = 0; i < message.remoteVideos.length; ++i)
-                $root.SdkMeetingSessionRemoteVideoTiming.encode(message.remoteVideos[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                $root.SdkMeetingSessionRemoteVideoTiming.encode(message.remoteVideos[i], writer.uint32(/* id 5, wireType 2 =*/42).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -15161,7 +16393,7 @@ $root.SdkMeetingSessionTimingFrame = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkMeetingSessionTimingFrame.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -15175,45 +16407,51 @@ $root.SdkMeetingSessionTimingFrame = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkMeetingSessionTimingFrame.decode = function decode(reader, length) {
+    SdkMeetingSessionTimingFrame.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionTimingFrame();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     if (!(message.signaling && message.signaling.length))
                         message.signaling = [];
-                    message.signaling.push($root.SdkMeetingSessionSignalingTiming.decode(reader, reader.uint32()));
+                    message.signaling.push($root.SdkMeetingSessionSignalingTiming.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 2: {
                     if (!(message.remoteAudio && message.remoteAudio.length))
                         message.remoteAudio = [];
-                    message.remoteAudio.push($root.SdkMeetingSessionRemoteAudioTiming.decode(reader, reader.uint32()));
+                    message.remoteAudio.push($root.SdkMeetingSessionRemoteAudioTiming.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 3: {
                     if (!(message.localAudio && message.localAudio.length))
                         message.localAudio = [];
-                    message.localAudio.push($root.SdkMeetingSessionLocalAudioTiming.decode(reader, reader.uint32()));
+                    message.localAudio.push($root.SdkMeetingSessionLocalAudioTiming.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 4: {
                     if (!(message.localVideo && message.localVideo.length))
                         message.localVideo = [];
-                    message.localVideo.push($root.SdkMeetingSessionLocalVideoTiming.decode(reader, reader.uint32()));
+                    message.localVideo.push($root.SdkMeetingSessionLocalVideoTiming.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             case 5: {
                     if (!(message.remoteVideos && message.remoteVideos.length))
                         message.remoteVideos = [];
-                    message.remoteVideos.push($root.SdkMeetingSessionRemoteVideoTiming.decode(reader, reader.uint32()));
+                    message.remoteVideos.push($root.SdkMeetingSessionRemoteVideoTiming.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -15244,50 +16482,54 @@ $root.SdkMeetingSessionTimingFrame = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkMeetingSessionTimingFrame.verify = function verify(message) {
+    SdkMeetingSessionTimingFrame.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.signaling != null && message.hasOwnProperty("signaling")) {
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.signaling != null && Object.hasOwnProperty.call(message, "signaling")) {
             if (!Array.isArray(message.signaling))
                 return "signaling: array expected";
             for (var i = 0; i < message.signaling.length; ++i) {
-                var error = $root.SdkMeetingSessionSignalingTiming.verify(message.signaling[i]);
+                var error = $root.SdkMeetingSessionSignalingTiming.verify(message.signaling[i], long + 1);
                 if (error)
                     return "signaling." + error;
             }
         }
-        if (message.remoteAudio != null && message.hasOwnProperty("remoteAudio")) {
+        if (message.remoteAudio != null && Object.hasOwnProperty.call(message, "remoteAudio")) {
             if (!Array.isArray(message.remoteAudio))
                 return "remoteAudio: array expected";
             for (var i = 0; i < message.remoteAudio.length; ++i) {
-                var error = $root.SdkMeetingSessionRemoteAudioTiming.verify(message.remoteAudio[i]);
+                var error = $root.SdkMeetingSessionRemoteAudioTiming.verify(message.remoteAudio[i], long + 1);
                 if (error)
                     return "remoteAudio." + error;
             }
         }
-        if (message.localAudio != null && message.hasOwnProperty("localAudio")) {
+        if (message.localAudio != null && Object.hasOwnProperty.call(message, "localAudio")) {
             if (!Array.isArray(message.localAudio))
                 return "localAudio: array expected";
             for (var i = 0; i < message.localAudio.length; ++i) {
-                var error = $root.SdkMeetingSessionLocalAudioTiming.verify(message.localAudio[i]);
+                var error = $root.SdkMeetingSessionLocalAudioTiming.verify(message.localAudio[i], long + 1);
                 if (error)
                     return "localAudio." + error;
             }
         }
-        if (message.localVideo != null && message.hasOwnProperty("localVideo")) {
+        if (message.localVideo != null && Object.hasOwnProperty.call(message, "localVideo")) {
             if (!Array.isArray(message.localVideo))
                 return "localVideo: array expected";
             for (var i = 0; i < message.localVideo.length; ++i) {
-                var error = $root.SdkMeetingSessionLocalVideoTiming.verify(message.localVideo[i]);
+                var error = $root.SdkMeetingSessionLocalVideoTiming.verify(message.localVideo[i], long + 1);
                 if (error)
                     return "localVideo." + error;
             }
         }
-        if (message.remoteVideos != null && message.hasOwnProperty("remoteVideos")) {
+        if (message.remoteVideos != null && Object.hasOwnProperty.call(message, "remoteVideos")) {
             if (!Array.isArray(message.remoteVideos))
                 return "remoteVideos: array expected";
             for (var i = 0; i < message.remoteVideos.length; ++i) {
-                var error = $root.SdkMeetingSessionRemoteVideoTiming.verify(message.remoteVideos[i]);
+                var error = $root.SdkMeetingSessionRemoteVideoTiming.verify(message.remoteVideos[i], long + 1);
                 if (error)
                     return "remoteVideos." + error;
             }
@@ -15303,18 +16545,24 @@ $root.SdkMeetingSessionTimingFrame = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkMeetingSessionTimingFrame} SdkMeetingSessionTimingFrame
      */
-    SdkMeetingSessionTimingFrame.fromObject = function fromObject(object) {
+    SdkMeetingSessionTimingFrame.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkMeetingSessionTimingFrame)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkMeetingSessionTimingFrame: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkMeetingSessionTimingFrame();
         if (object.signaling) {
             if (!Array.isArray(object.signaling))
                 throw TypeError(".SdkMeetingSessionTimingFrame.signaling: array expected");
             message.signaling = [];
             for (var i = 0; i < object.signaling.length; ++i) {
-                if (typeof object.signaling[i] !== "object")
+                if (!$util.isObject(object.signaling[i]))
                     throw TypeError(".SdkMeetingSessionTimingFrame.signaling: object expected");
-                message.signaling[i] = $root.SdkMeetingSessionSignalingTiming.fromObject(object.signaling[i]);
+                message.signaling[i] = $root.SdkMeetingSessionSignalingTiming.fromObject(object.signaling[i], long + 1);
             }
         }
         if (object.remoteAudio) {
@@ -15322,9 +16570,9 @@ $root.SdkMeetingSessionTimingFrame = (function() {
                 throw TypeError(".SdkMeetingSessionTimingFrame.remoteAudio: array expected");
             message.remoteAudio = [];
             for (var i = 0; i < object.remoteAudio.length; ++i) {
-                if (typeof object.remoteAudio[i] !== "object")
+                if (!$util.isObject(object.remoteAudio[i]))
                     throw TypeError(".SdkMeetingSessionTimingFrame.remoteAudio: object expected");
-                message.remoteAudio[i] = $root.SdkMeetingSessionRemoteAudioTiming.fromObject(object.remoteAudio[i]);
+                message.remoteAudio[i] = $root.SdkMeetingSessionRemoteAudioTiming.fromObject(object.remoteAudio[i], long + 1);
             }
         }
         if (object.localAudio) {
@@ -15332,9 +16580,9 @@ $root.SdkMeetingSessionTimingFrame = (function() {
                 throw TypeError(".SdkMeetingSessionTimingFrame.localAudio: array expected");
             message.localAudio = [];
             for (var i = 0; i < object.localAudio.length; ++i) {
-                if (typeof object.localAudio[i] !== "object")
+                if (!$util.isObject(object.localAudio[i]))
                     throw TypeError(".SdkMeetingSessionTimingFrame.localAudio: object expected");
-                message.localAudio[i] = $root.SdkMeetingSessionLocalAudioTiming.fromObject(object.localAudio[i]);
+                message.localAudio[i] = $root.SdkMeetingSessionLocalAudioTiming.fromObject(object.localAudio[i], long + 1);
             }
         }
         if (object.localVideo) {
@@ -15342,9 +16590,9 @@ $root.SdkMeetingSessionTimingFrame = (function() {
                 throw TypeError(".SdkMeetingSessionTimingFrame.localVideo: array expected");
             message.localVideo = [];
             for (var i = 0; i < object.localVideo.length; ++i) {
-                if (typeof object.localVideo[i] !== "object")
+                if (!$util.isObject(object.localVideo[i]))
                     throw TypeError(".SdkMeetingSessionTimingFrame.localVideo: object expected");
-                message.localVideo[i] = $root.SdkMeetingSessionLocalVideoTiming.fromObject(object.localVideo[i]);
+                message.localVideo[i] = $root.SdkMeetingSessionLocalVideoTiming.fromObject(object.localVideo[i], long + 1);
             }
         }
         if (object.remoteVideos) {
@@ -15352,9 +16600,9 @@ $root.SdkMeetingSessionTimingFrame = (function() {
                 throw TypeError(".SdkMeetingSessionTimingFrame.remoteVideos: array expected");
             message.remoteVideos = [];
             for (var i = 0; i < object.remoteVideos.length; ++i) {
-                if (typeof object.remoteVideos[i] !== "object")
+                if (!$util.isObject(object.remoteVideos[i]))
                     throw TypeError(".SdkMeetingSessionTimingFrame.remoteVideos: object expected");
-                message.remoteVideos[i] = $root.SdkMeetingSessionRemoteVideoTiming.fromObject(object.remoteVideos[i]);
+                message.remoteVideos[i] = $root.SdkMeetingSessionRemoteVideoTiming.fromObject(object.remoteVideos[i], long + 1);
             }
         }
         return message;
@@ -15369,9 +16617,13 @@ $root.SdkMeetingSessionTimingFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkMeetingSessionTimingFrame.toObject = function toObject(message, options) {
+    SdkMeetingSessionTimingFrame.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.arrays || options.defaults) {
             object.signaling = [];
@@ -15383,27 +16635,27 @@ $root.SdkMeetingSessionTimingFrame = (function() {
         if (message.signaling && message.signaling.length) {
             object.signaling = [];
             for (var j = 0; j < message.signaling.length; ++j)
-                object.signaling[j] = $root.SdkMeetingSessionSignalingTiming.toObject(message.signaling[j], options);
+                object.signaling[j] = $root.SdkMeetingSessionSignalingTiming.toObject(message.signaling[j], options, q + 1);
         }
         if (message.remoteAudio && message.remoteAudio.length) {
             object.remoteAudio = [];
             for (var j = 0; j < message.remoteAudio.length; ++j)
-                object.remoteAudio[j] = $root.SdkMeetingSessionRemoteAudioTiming.toObject(message.remoteAudio[j], options);
+                object.remoteAudio[j] = $root.SdkMeetingSessionRemoteAudioTiming.toObject(message.remoteAudio[j], options, q + 1);
         }
         if (message.localAudio && message.localAudio.length) {
             object.localAudio = [];
             for (var j = 0; j < message.localAudio.length; ++j)
-                object.localAudio[j] = $root.SdkMeetingSessionLocalAudioTiming.toObject(message.localAudio[j], options);
+                object.localAudio[j] = $root.SdkMeetingSessionLocalAudioTiming.toObject(message.localAudio[j], options, q + 1);
         }
         if (message.localVideo && message.localVideo.length) {
             object.localVideo = [];
             for (var j = 0; j < message.localVideo.length; ++j)
-                object.localVideo[j] = $root.SdkMeetingSessionLocalVideoTiming.toObject(message.localVideo[j], options);
+                object.localVideo[j] = $root.SdkMeetingSessionLocalVideoTiming.toObject(message.localVideo[j], options, q + 1);
         }
         if (message.remoteVideos && message.remoteVideos.length) {
             object.remoteVideos = [];
             for (var j = 0; j < message.remoteVideos.length; ++j)
-                object.remoteVideos[j] = $root.SdkMeetingSessionRemoteVideoTiming.toObject(message.remoteVideos[j], options);
+                object.remoteVideos[j] = $root.SdkMeetingSessionRemoteVideoTiming.toObject(message.remoteVideos[j], options, q + 1);
         }
         return object;
     };
@@ -15469,7 +16721,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
     function SdkMeetingSessionSignalingTiming(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -15598,9 +16850,13 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkMeetingSessionSignalingTiming.encode = function encode(message, writer) {
+    SdkMeetingSessionSignalingTiming.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.startMs != null && Object.hasOwnProperty.call(message, "startMs"))
             writer.uint32(/* id 1, wireType 0 =*/8).int64(message.startMs);
         if (message.joinSentMs != null && Object.hasOwnProperty.call(message, "joinSentMs"))
@@ -15640,7 +16896,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkMeetingSessionSignalingTiming.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -15654,12 +16910,18 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkMeetingSessionSignalingTiming.decode = function decode(reader, length) {
+    SdkMeetingSessionSignalingTiming.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionSignalingTiming();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.startMs = reader.int64();
@@ -15714,7 +16976,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -15745,46 +17007,50 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkMeetingSessionSignalingTiming.verify = function verify(message) {
+    SdkMeetingSessionSignalingTiming.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.startMs != null && message.hasOwnProperty("startMs"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.startMs != null && Object.hasOwnProperty.call(message, "startMs"))
             if (!$util.isInteger(message.startMs) && !(message.startMs && $util.isInteger(message.startMs.low) && $util.isInteger(message.startMs.high)))
                 return "startMs: integer|Long expected";
-        if (message.joinSentMs != null && message.hasOwnProperty("joinSentMs"))
+        if (message.joinSentMs != null && Object.hasOwnProperty.call(message, "joinSentMs"))
             if (!$util.isInteger(message.joinSentMs) && !(message.joinSentMs && $util.isInteger(message.joinSentMs.low) && $util.isInteger(message.joinSentMs.high)))
                 return "joinSentMs: integer|Long expected";
-        if (message.joinAckReceivedMs != null && message.hasOwnProperty("joinAckReceivedMs"))
+        if (message.joinAckReceivedMs != null && Object.hasOwnProperty.call(message, "joinAckReceivedMs"))
             if (!$util.isInteger(message.joinAckReceivedMs) && !(message.joinAckReceivedMs && $util.isInteger(message.joinAckReceivedMs.low) && $util.isInteger(message.joinAckReceivedMs.high)))
                 return "joinAckReceivedMs: integer|Long expected";
-        if (message.transportConnectedMs != null && message.hasOwnProperty("transportConnectedMs"))
+        if (message.transportConnectedMs != null && Object.hasOwnProperty.call(message, "transportConnectedMs"))
             if (!$util.isInteger(message.transportConnectedMs) && !(message.transportConnectedMs && $util.isInteger(message.transportConnectedMs.low) && $util.isInteger(message.transportConnectedMs.high)))
                 return "transportConnectedMs: integer|Long expected";
-        if (message.createOfferMs != null && message.hasOwnProperty("createOfferMs"))
+        if (message.createOfferMs != null && Object.hasOwnProperty.call(message, "createOfferMs"))
             if (!$util.isInteger(message.createOfferMs) && !(message.createOfferMs && $util.isInteger(message.createOfferMs.low) && $util.isInteger(message.createOfferMs.high)))
                 return "createOfferMs: integer|Long expected";
-        if (message.setLocalDescriptionMs != null && message.hasOwnProperty("setLocalDescriptionMs"))
+        if (message.setLocalDescriptionMs != null && Object.hasOwnProperty.call(message, "setLocalDescriptionMs"))
             if (!$util.isInteger(message.setLocalDescriptionMs) && !(message.setLocalDescriptionMs && $util.isInteger(message.setLocalDescriptionMs.low) && $util.isInteger(message.setLocalDescriptionMs.high)))
                 return "setLocalDescriptionMs: integer|Long expected";
-        if (message.setRemoteDescriptionMs != null && message.hasOwnProperty("setRemoteDescriptionMs"))
+        if (message.setRemoteDescriptionMs != null && Object.hasOwnProperty.call(message, "setRemoteDescriptionMs"))
             if (!$util.isInteger(message.setRemoteDescriptionMs) && !(message.setRemoteDescriptionMs && $util.isInteger(message.setRemoteDescriptionMs.low) && $util.isInteger(message.setRemoteDescriptionMs.high)))
                 return "setRemoteDescriptionMs: integer|Long expected";
-        if (message.iceGatheringStartMs != null && message.hasOwnProperty("iceGatheringStartMs"))
+        if (message.iceGatheringStartMs != null && Object.hasOwnProperty.call(message, "iceGatheringStartMs"))
             if (!$util.isInteger(message.iceGatheringStartMs) && !(message.iceGatheringStartMs && $util.isInteger(message.iceGatheringStartMs.low) && $util.isInteger(message.iceGatheringStartMs.high)))
                 return "iceGatheringStartMs: integer|Long expected";
-        if (message.iceGatheringCompleteMs != null && message.hasOwnProperty("iceGatheringCompleteMs"))
+        if (message.iceGatheringCompleteMs != null && Object.hasOwnProperty.call(message, "iceGatheringCompleteMs"))
             if (!$util.isInteger(message.iceGatheringCompleteMs) && !(message.iceGatheringCompleteMs && $util.isInteger(message.iceGatheringCompleteMs.low) && $util.isInteger(message.iceGatheringCompleteMs.high)))
                 return "iceGatheringCompleteMs: integer|Long expected";
-        if (message.iceConnectedMs != null && message.hasOwnProperty("iceConnectedMs"))
+        if (message.iceConnectedMs != null && Object.hasOwnProperty.call(message, "iceConnectedMs"))
             if (!$util.isInteger(message.iceConnectedMs) && !(message.iceConnectedMs && $util.isInteger(message.iceConnectedMs.low) && $util.isInteger(message.iceConnectedMs.high)))
                 return "iceConnectedMs: integer|Long expected";
-        if (message.subscribeSentMs != null && message.hasOwnProperty("subscribeSentMs"))
+        if (message.subscribeSentMs != null && Object.hasOwnProperty.call(message, "subscribeSentMs"))
             if (!$util.isInteger(message.subscribeSentMs) && !(message.subscribeSentMs && $util.isInteger(message.subscribeSentMs.low) && $util.isInteger(message.subscribeSentMs.high)))
                 return "subscribeSentMs: integer|Long expected";
-        if (message.subscribeAckMs != null && message.hasOwnProperty("subscribeAckMs"))
+        if (message.subscribeAckMs != null && Object.hasOwnProperty.call(message, "subscribeAckMs"))
             if (!$util.isInteger(message.subscribeAckMs) && !(message.subscribeAckMs && $util.isInteger(message.subscribeAckMs.low) && $util.isInteger(message.subscribeAckMs.high)))
                 return "subscribeAckMs: integer|Long expected";
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             if (typeof message.timedOut !== "boolean")
                 return "timedOut: boolean expected";
         return null;
@@ -15798,13 +17064,19 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkMeetingSessionSignalingTiming} SdkMeetingSessionSignalingTiming
      */
-    SdkMeetingSessionSignalingTiming.fromObject = function fromObject(object) {
+    SdkMeetingSessionSignalingTiming.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkMeetingSessionSignalingTiming)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkMeetingSessionSignalingTiming: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkMeetingSessionSignalingTiming();
         if (object.startMs != null)
             if ($util.Long)
-                (message.startMs = $util.Long.fromValue(object.startMs)).unsigned = false;
+                message.startMs = $util.Long.fromValue(object.startMs, false);
             else if (typeof object.startMs === "string")
                 message.startMs = parseInt(object.startMs, 10);
             else if (typeof object.startMs === "number")
@@ -15813,7 +17085,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.startMs = new $util.LongBits(object.startMs.low >>> 0, object.startMs.high >>> 0).toNumber();
         if (object.joinSentMs != null)
             if ($util.Long)
-                (message.joinSentMs = $util.Long.fromValue(object.joinSentMs)).unsigned = false;
+                message.joinSentMs = $util.Long.fromValue(object.joinSentMs, false);
             else if (typeof object.joinSentMs === "string")
                 message.joinSentMs = parseInt(object.joinSentMs, 10);
             else if (typeof object.joinSentMs === "number")
@@ -15822,7 +17094,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.joinSentMs = new $util.LongBits(object.joinSentMs.low >>> 0, object.joinSentMs.high >>> 0).toNumber();
         if (object.joinAckReceivedMs != null)
             if ($util.Long)
-                (message.joinAckReceivedMs = $util.Long.fromValue(object.joinAckReceivedMs)).unsigned = false;
+                message.joinAckReceivedMs = $util.Long.fromValue(object.joinAckReceivedMs, false);
             else if (typeof object.joinAckReceivedMs === "string")
                 message.joinAckReceivedMs = parseInt(object.joinAckReceivedMs, 10);
             else if (typeof object.joinAckReceivedMs === "number")
@@ -15831,7 +17103,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.joinAckReceivedMs = new $util.LongBits(object.joinAckReceivedMs.low >>> 0, object.joinAckReceivedMs.high >>> 0).toNumber();
         if (object.transportConnectedMs != null)
             if ($util.Long)
-                (message.transportConnectedMs = $util.Long.fromValue(object.transportConnectedMs)).unsigned = false;
+                message.transportConnectedMs = $util.Long.fromValue(object.transportConnectedMs, false);
             else if (typeof object.transportConnectedMs === "string")
                 message.transportConnectedMs = parseInt(object.transportConnectedMs, 10);
             else if (typeof object.transportConnectedMs === "number")
@@ -15840,7 +17112,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.transportConnectedMs = new $util.LongBits(object.transportConnectedMs.low >>> 0, object.transportConnectedMs.high >>> 0).toNumber();
         if (object.createOfferMs != null)
             if ($util.Long)
-                (message.createOfferMs = $util.Long.fromValue(object.createOfferMs)).unsigned = false;
+                message.createOfferMs = $util.Long.fromValue(object.createOfferMs, false);
             else if (typeof object.createOfferMs === "string")
                 message.createOfferMs = parseInt(object.createOfferMs, 10);
             else if (typeof object.createOfferMs === "number")
@@ -15849,7 +17121,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.createOfferMs = new $util.LongBits(object.createOfferMs.low >>> 0, object.createOfferMs.high >>> 0).toNumber();
         if (object.setLocalDescriptionMs != null)
             if ($util.Long)
-                (message.setLocalDescriptionMs = $util.Long.fromValue(object.setLocalDescriptionMs)).unsigned = false;
+                message.setLocalDescriptionMs = $util.Long.fromValue(object.setLocalDescriptionMs, false);
             else if (typeof object.setLocalDescriptionMs === "string")
                 message.setLocalDescriptionMs = parseInt(object.setLocalDescriptionMs, 10);
             else if (typeof object.setLocalDescriptionMs === "number")
@@ -15858,7 +17130,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.setLocalDescriptionMs = new $util.LongBits(object.setLocalDescriptionMs.low >>> 0, object.setLocalDescriptionMs.high >>> 0).toNumber();
         if (object.setRemoteDescriptionMs != null)
             if ($util.Long)
-                (message.setRemoteDescriptionMs = $util.Long.fromValue(object.setRemoteDescriptionMs)).unsigned = false;
+                message.setRemoteDescriptionMs = $util.Long.fromValue(object.setRemoteDescriptionMs, false);
             else if (typeof object.setRemoteDescriptionMs === "string")
                 message.setRemoteDescriptionMs = parseInt(object.setRemoteDescriptionMs, 10);
             else if (typeof object.setRemoteDescriptionMs === "number")
@@ -15867,7 +17139,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.setRemoteDescriptionMs = new $util.LongBits(object.setRemoteDescriptionMs.low >>> 0, object.setRemoteDescriptionMs.high >>> 0).toNumber();
         if (object.iceGatheringStartMs != null)
             if ($util.Long)
-                (message.iceGatheringStartMs = $util.Long.fromValue(object.iceGatheringStartMs)).unsigned = false;
+                message.iceGatheringStartMs = $util.Long.fromValue(object.iceGatheringStartMs, false);
             else if (typeof object.iceGatheringStartMs === "string")
                 message.iceGatheringStartMs = parseInt(object.iceGatheringStartMs, 10);
             else if (typeof object.iceGatheringStartMs === "number")
@@ -15876,7 +17148,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.iceGatheringStartMs = new $util.LongBits(object.iceGatheringStartMs.low >>> 0, object.iceGatheringStartMs.high >>> 0).toNumber();
         if (object.iceGatheringCompleteMs != null)
             if ($util.Long)
-                (message.iceGatheringCompleteMs = $util.Long.fromValue(object.iceGatheringCompleteMs)).unsigned = false;
+                message.iceGatheringCompleteMs = $util.Long.fromValue(object.iceGatheringCompleteMs, false);
             else if (typeof object.iceGatheringCompleteMs === "string")
                 message.iceGatheringCompleteMs = parseInt(object.iceGatheringCompleteMs, 10);
             else if (typeof object.iceGatheringCompleteMs === "number")
@@ -15885,7 +17157,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.iceGatheringCompleteMs = new $util.LongBits(object.iceGatheringCompleteMs.low >>> 0, object.iceGatheringCompleteMs.high >>> 0).toNumber();
         if (object.iceConnectedMs != null)
             if ($util.Long)
-                (message.iceConnectedMs = $util.Long.fromValue(object.iceConnectedMs)).unsigned = false;
+                message.iceConnectedMs = $util.Long.fromValue(object.iceConnectedMs, false);
             else if (typeof object.iceConnectedMs === "string")
                 message.iceConnectedMs = parseInt(object.iceConnectedMs, 10);
             else if (typeof object.iceConnectedMs === "number")
@@ -15894,7 +17166,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.iceConnectedMs = new $util.LongBits(object.iceConnectedMs.low >>> 0, object.iceConnectedMs.high >>> 0).toNumber();
         if (object.subscribeSentMs != null)
             if ($util.Long)
-                (message.subscribeSentMs = $util.Long.fromValue(object.subscribeSentMs)).unsigned = false;
+                message.subscribeSentMs = $util.Long.fromValue(object.subscribeSentMs, false);
             else if (typeof object.subscribeSentMs === "string")
                 message.subscribeSentMs = parseInt(object.subscribeSentMs, 10);
             else if (typeof object.subscribeSentMs === "number")
@@ -15903,7 +17175,7 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
                 message.subscribeSentMs = new $util.LongBits(object.subscribeSentMs.low >>> 0, object.subscribeSentMs.high >>> 0).toNumber();
         if (object.subscribeAckMs != null)
             if ($util.Long)
-                (message.subscribeAckMs = $util.Long.fromValue(object.subscribeAckMs)).unsigned = false;
+                message.subscribeAckMs = $util.Long.fromValue(object.subscribeAckMs, false);
             else if (typeof object.subscribeAckMs === "string")
                 message.subscribeAckMs = parseInt(object.subscribeAckMs, 10);
             else if (typeof object.subscribeAckMs === "number")
@@ -15924,134 +17196,162 @@ $root.SdkMeetingSessionSignalingTiming = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkMeetingSessionSignalingTiming.toObject = function toObject(message, options) {
+    SdkMeetingSessionSignalingTiming.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.startMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.startMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.startMs = options.longs === String ? "0" : 0;
+                object.startMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.joinSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.joinSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.joinSentMs = options.longs === String ? "0" : 0;
+                object.joinSentMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.joinAckReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.joinAckReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.joinAckReceivedMs = options.longs === String ? "0" : 0;
+                object.joinAckReceivedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.transportConnectedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.transportConnectedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.transportConnectedMs = options.longs === String ? "0" : 0;
+                object.transportConnectedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.createOfferMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.createOfferMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.createOfferMs = options.longs === String ? "0" : 0;
+                object.createOfferMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.setLocalDescriptionMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.setLocalDescriptionMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.setLocalDescriptionMs = options.longs === String ? "0" : 0;
+                object.setLocalDescriptionMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.setRemoteDescriptionMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.setRemoteDescriptionMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.setRemoteDescriptionMs = options.longs === String ? "0" : 0;
+                object.setRemoteDescriptionMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.iceGatheringStartMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.iceGatheringStartMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.iceGatheringStartMs = options.longs === String ? "0" : 0;
+                object.iceGatheringStartMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.iceGatheringCompleteMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.iceGatheringCompleteMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.iceGatheringCompleteMs = options.longs === String ? "0" : 0;
+                object.iceGatheringCompleteMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.iceConnectedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.iceConnectedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.iceConnectedMs = options.longs === String ? "0" : 0;
+                object.iceConnectedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.subscribeSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.subscribeSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.subscribeSentMs = options.longs === String ? "0" : 0;
+                object.subscribeSentMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.subscribeAckMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.subscribeAckMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.subscribeAckMs = options.longs === String ? "0" : 0;
+                object.subscribeAckMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.timedOut = false;
         }
-        if (message.startMs != null && message.hasOwnProperty("startMs"))
-            if (typeof message.startMs === "number")
+        if (message.startMs != null && Object.hasOwnProperty.call(message, "startMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.startMs = typeof message.startMs === "number" ? BigInt(message.startMs) : $util.Long.fromBits(message.startMs.low >>> 0, message.startMs.high >>> 0, false).toBigInt();
+            else if (typeof message.startMs === "number")
                 object.startMs = options.longs === String ? String(message.startMs) : message.startMs;
             else
                 object.startMs = options.longs === String ? $util.Long.prototype.toString.call(message.startMs) : options.longs === Number ? new $util.LongBits(message.startMs.low >>> 0, message.startMs.high >>> 0).toNumber() : message.startMs;
-        if (message.joinSentMs != null && message.hasOwnProperty("joinSentMs"))
-            if (typeof message.joinSentMs === "number")
+        if (message.joinSentMs != null && Object.hasOwnProperty.call(message, "joinSentMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.joinSentMs = typeof message.joinSentMs === "number" ? BigInt(message.joinSentMs) : $util.Long.fromBits(message.joinSentMs.low >>> 0, message.joinSentMs.high >>> 0, false).toBigInt();
+            else if (typeof message.joinSentMs === "number")
                 object.joinSentMs = options.longs === String ? String(message.joinSentMs) : message.joinSentMs;
             else
                 object.joinSentMs = options.longs === String ? $util.Long.prototype.toString.call(message.joinSentMs) : options.longs === Number ? new $util.LongBits(message.joinSentMs.low >>> 0, message.joinSentMs.high >>> 0).toNumber() : message.joinSentMs;
-        if (message.joinAckReceivedMs != null && message.hasOwnProperty("joinAckReceivedMs"))
-            if (typeof message.joinAckReceivedMs === "number")
+        if (message.joinAckReceivedMs != null && Object.hasOwnProperty.call(message, "joinAckReceivedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.joinAckReceivedMs = typeof message.joinAckReceivedMs === "number" ? BigInt(message.joinAckReceivedMs) : $util.Long.fromBits(message.joinAckReceivedMs.low >>> 0, message.joinAckReceivedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.joinAckReceivedMs === "number")
                 object.joinAckReceivedMs = options.longs === String ? String(message.joinAckReceivedMs) : message.joinAckReceivedMs;
             else
                 object.joinAckReceivedMs = options.longs === String ? $util.Long.prototype.toString.call(message.joinAckReceivedMs) : options.longs === Number ? new $util.LongBits(message.joinAckReceivedMs.low >>> 0, message.joinAckReceivedMs.high >>> 0).toNumber() : message.joinAckReceivedMs;
-        if (message.transportConnectedMs != null && message.hasOwnProperty("transportConnectedMs"))
-            if (typeof message.transportConnectedMs === "number")
+        if (message.transportConnectedMs != null && Object.hasOwnProperty.call(message, "transportConnectedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.transportConnectedMs = typeof message.transportConnectedMs === "number" ? BigInt(message.transportConnectedMs) : $util.Long.fromBits(message.transportConnectedMs.low >>> 0, message.transportConnectedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.transportConnectedMs === "number")
                 object.transportConnectedMs = options.longs === String ? String(message.transportConnectedMs) : message.transportConnectedMs;
             else
                 object.transportConnectedMs = options.longs === String ? $util.Long.prototype.toString.call(message.transportConnectedMs) : options.longs === Number ? new $util.LongBits(message.transportConnectedMs.low >>> 0, message.transportConnectedMs.high >>> 0).toNumber() : message.transportConnectedMs;
-        if (message.createOfferMs != null && message.hasOwnProperty("createOfferMs"))
-            if (typeof message.createOfferMs === "number")
+        if (message.createOfferMs != null && Object.hasOwnProperty.call(message, "createOfferMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.createOfferMs = typeof message.createOfferMs === "number" ? BigInt(message.createOfferMs) : $util.Long.fromBits(message.createOfferMs.low >>> 0, message.createOfferMs.high >>> 0, false).toBigInt();
+            else if (typeof message.createOfferMs === "number")
                 object.createOfferMs = options.longs === String ? String(message.createOfferMs) : message.createOfferMs;
             else
                 object.createOfferMs = options.longs === String ? $util.Long.prototype.toString.call(message.createOfferMs) : options.longs === Number ? new $util.LongBits(message.createOfferMs.low >>> 0, message.createOfferMs.high >>> 0).toNumber() : message.createOfferMs;
-        if (message.setLocalDescriptionMs != null && message.hasOwnProperty("setLocalDescriptionMs"))
-            if (typeof message.setLocalDescriptionMs === "number")
+        if (message.setLocalDescriptionMs != null && Object.hasOwnProperty.call(message, "setLocalDescriptionMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.setLocalDescriptionMs = typeof message.setLocalDescriptionMs === "number" ? BigInt(message.setLocalDescriptionMs) : $util.Long.fromBits(message.setLocalDescriptionMs.low >>> 0, message.setLocalDescriptionMs.high >>> 0, false).toBigInt();
+            else if (typeof message.setLocalDescriptionMs === "number")
                 object.setLocalDescriptionMs = options.longs === String ? String(message.setLocalDescriptionMs) : message.setLocalDescriptionMs;
             else
                 object.setLocalDescriptionMs = options.longs === String ? $util.Long.prototype.toString.call(message.setLocalDescriptionMs) : options.longs === Number ? new $util.LongBits(message.setLocalDescriptionMs.low >>> 0, message.setLocalDescriptionMs.high >>> 0).toNumber() : message.setLocalDescriptionMs;
-        if (message.setRemoteDescriptionMs != null && message.hasOwnProperty("setRemoteDescriptionMs"))
-            if (typeof message.setRemoteDescriptionMs === "number")
+        if (message.setRemoteDescriptionMs != null && Object.hasOwnProperty.call(message, "setRemoteDescriptionMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.setRemoteDescriptionMs = typeof message.setRemoteDescriptionMs === "number" ? BigInt(message.setRemoteDescriptionMs) : $util.Long.fromBits(message.setRemoteDescriptionMs.low >>> 0, message.setRemoteDescriptionMs.high >>> 0, false).toBigInt();
+            else if (typeof message.setRemoteDescriptionMs === "number")
                 object.setRemoteDescriptionMs = options.longs === String ? String(message.setRemoteDescriptionMs) : message.setRemoteDescriptionMs;
             else
                 object.setRemoteDescriptionMs = options.longs === String ? $util.Long.prototype.toString.call(message.setRemoteDescriptionMs) : options.longs === Number ? new $util.LongBits(message.setRemoteDescriptionMs.low >>> 0, message.setRemoteDescriptionMs.high >>> 0).toNumber() : message.setRemoteDescriptionMs;
-        if (message.iceGatheringStartMs != null && message.hasOwnProperty("iceGatheringStartMs"))
-            if (typeof message.iceGatheringStartMs === "number")
+        if (message.iceGatheringStartMs != null && Object.hasOwnProperty.call(message, "iceGatheringStartMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.iceGatheringStartMs = typeof message.iceGatheringStartMs === "number" ? BigInt(message.iceGatheringStartMs) : $util.Long.fromBits(message.iceGatheringStartMs.low >>> 0, message.iceGatheringStartMs.high >>> 0, false).toBigInt();
+            else if (typeof message.iceGatheringStartMs === "number")
                 object.iceGatheringStartMs = options.longs === String ? String(message.iceGatheringStartMs) : message.iceGatheringStartMs;
             else
                 object.iceGatheringStartMs = options.longs === String ? $util.Long.prototype.toString.call(message.iceGatheringStartMs) : options.longs === Number ? new $util.LongBits(message.iceGatheringStartMs.low >>> 0, message.iceGatheringStartMs.high >>> 0).toNumber() : message.iceGatheringStartMs;
-        if (message.iceGatheringCompleteMs != null && message.hasOwnProperty("iceGatheringCompleteMs"))
-            if (typeof message.iceGatheringCompleteMs === "number")
+        if (message.iceGatheringCompleteMs != null && Object.hasOwnProperty.call(message, "iceGatheringCompleteMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.iceGatheringCompleteMs = typeof message.iceGatheringCompleteMs === "number" ? BigInt(message.iceGatheringCompleteMs) : $util.Long.fromBits(message.iceGatheringCompleteMs.low >>> 0, message.iceGatheringCompleteMs.high >>> 0, false).toBigInt();
+            else if (typeof message.iceGatheringCompleteMs === "number")
                 object.iceGatheringCompleteMs = options.longs === String ? String(message.iceGatheringCompleteMs) : message.iceGatheringCompleteMs;
             else
                 object.iceGatheringCompleteMs = options.longs === String ? $util.Long.prototype.toString.call(message.iceGatheringCompleteMs) : options.longs === Number ? new $util.LongBits(message.iceGatheringCompleteMs.low >>> 0, message.iceGatheringCompleteMs.high >>> 0).toNumber() : message.iceGatheringCompleteMs;
-        if (message.iceConnectedMs != null && message.hasOwnProperty("iceConnectedMs"))
-            if (typeof message.iceConnectedMs === "number")
+        if (message.iceConnectedMs != null && Object.hasOwnProperty.call(message, "iceConnectedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.iceConnectedMs = typeof message.iceConnectedMs === "number" ? BigInt(message.iceConnectedMs) : $util.Long.fromBits(message.iceConnectedMs.low >>> 0, message.iceConnectedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.iceConnectedMs === "number")
                 object.iceConnectedMs = options.longs === String ? String(message.iceConnectedMs) : message.iceConnectedMs;
             else
                 object.iceConnectedMs = options.longs === String ? $util.Long.prototype.toString.call(message.iceConnectedMs) : options.longs === Number ? new $util.LongBits(message.iceConnectedMs.low >>> 0, message.iceConnectedMs.high >>> 0).toNumber() : message.iceConnectedMs;
-        if (message.subscribeSentMs != null && message.hasOwnProperty("subscribeSentMs"))
-            if (typeof message.subscribeSentMs === "number")
+        if (message.subscribeSentMs != null && Object.hasOwnProperty.call(message, "subscribeSentMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.subscribeSentMs = typeof message.subscribeSentMs === "number" ? BigInt(message.subscribeSentMs) : $util.Long.fromBits(message.subscribeSentMs.low >>> 0, message.subscribeSentMs.high >>> 0, false).toBigInt();
+            else if (typeof message.subscribeSentMs === "number")
                 object.subscribeSentMs = options.longs === String ? String(message.subscribeSentMs) : message.subscribeSentMs;
             else
                 object.subscribeSentMs = options.longs === String ? $util.Long.prototype.toString.call(message.subscribeSentMs) : options.longs === Number ? new $util.LongBits(message.subscribeSentMs.low >>> 0, message.subscribeSentMs.high >>> 0).toNumber() : message.subscribeSentMs;
-        if (message.subscribeAckMs != null && message.hasOwnProperty("subscribeAckMs"))
-            if (typeof message.subscribeAckMs === "number")
+        if (message.subscribeAckMs != null && Object.hasOwnProperty.call(message, "subscribeAckMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.subscribeAckMs = typeof message.subscribeAckMs === "number" ? BigInt(message.subscribeAckMs) : $util.Long.fromBits(message.subscribeAckMs.low >>> 0, message.subscribeAckMs.high >>> 0, false).toBigInt();
+            else if (typeof message.subscribeAckMs === "number")
                 object.subscribeAckMs = options.longs === String ? String(message.subscribeAckMs) : message.subscribeAckMs;
             else
                 object.subscribeAckMs = options.longs === String ? $util.Long.prototype.toString.call(message.subscribeAckMs) : options.longs === Number ? new $util.LongBits(message.subscribeAckMs.low >>> 0, message.subscribeAckMs.high >>> 0).toNumber() : message.subscribeAckMs;
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             object.timedOut = message.timedOut;
         return object;
     };
@@ -16109,7 +17409,7 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
     function SdkMeetingSessionRemoteAudioTiming(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -16174,9 +17474,13 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkMeetingSessionRemoteAudioTiming.encode = function encode(message, writer) {
+    SdkMeetingSessionRemoteAudioTiming.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
             writer.uint32(/* id 1, wireType 0 =*/8).int64(message.addedMs);
         if (message.firstPacketReceivedMs != null && Object.hasOwnProperty.call(message, "firstPacketReceivedMs"))
@@ -16200,7 +17504,7 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkMeetingSessionRemoteAudioTiming.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -16214,12 +17518,18 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkMeetingSessionRemoteAudioTiming.decode = function decode(reader, length) {
+    SdkMeetingSessionRemoteAudioTiming.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionRemoteAudioTiming();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.addedMs = reader.int64();
@@ -16242,7 +17552,7 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -16273,22 +17583,26 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkMeetingSessionRemoteAudioTiming.verify = function verify(message) {
+    SdkMeetingSessionRemoteAudioTiming.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
             if (!$util.isInteger(message.addedMs) && !(message.addedMs && $util.isInteger(message.addedMs.low) && $util.isInteger(message.addedMs.high)))
                 return "addedMs: integer|Long expected";
-        if (message.firstPacketReceivedMs != null && message.hasOwnProperty("firstPacketReceivedMs"))
+        if (message.firstPacketReceivedMs != null && Object.hasOwnProperty.call(message, "firstPacketReceivedMs"))
             if (!$util.isInteger(message.firstPacketReceivedMs) && !(message.firstPacketReceivedMs && $util.isInteger(message.firstPacketReceivedMs.low) && $util.isInteger(message.firstPacketReceivedMs.high)))
                 return "firstPacketReceivedMs: integer|Long expected";
-        if (message.firstFrameRenderedMs != null && message.hasOwnProperty("firstFrameRenderedMs"))
+        if (message.firstFrameRenderedMs != null && Object.hasOwnProperty.call(message, "firstFrameRenderedMs"))
             if (!$util.isInteger(message.firstFrameRenderedMs) && !(message.firstFrameRenderedMs && $util.isInteger(message.firstFrameRenderedMs.low) && $util.isInteger(message.firstFrameRenderedMs.high)))
                 return "firstFrameRenderedMs: integer|Long expected";
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             if (typeof message.timedOut !== "boolean")
                 return "timedOut: boolean expected";
-        if (message.removed != null && message.hasOwnProperty("removed"))
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
             if (typeof message.removed !== "boolean")
                 return "removed: boolean expected";
         return null;
@@ -16302,13 +17616,19 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkMeetingSessionRemoteAudioTiming} SdkMeetingSessionRemoteAudioTiming
      */
-    SdkMeetingSessionRemoteAudioTiming.fromObject = function fromObject(object) {
+    SdkMeetingSessionRemoteAudioTiming.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkMeetingSessionRemoteAudioTiming)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkMeetingSessionRemoteAudioTiming: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkMeetingSessionRemoteAudioTiming();
         if (object.addedMs != null)
             if ($util.Long)
-                (message.addedMs = $util.Long.fromValue(object.addedMs)).unsigned = false;
+                message.addedMs = $util.Long.fromValue(object.addedMs, false);
             else if (typeof object.addedMs === "string")
                 message.addedMs = parseInt(object.addedMs, 10);
             else if (typeof object.addedMs === "number")
@@ -16317,7 +17637,7 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
                 message.addedMs = new $util.LongBits(object.addedMs.low >>> 0, object.addedMs.high >>> 0).toNumber();
         if (object.firstPacketReceivedMs != null)
             if ($util.Long)
-                (message.firstPacketReceivedMs = $util.Long.fromValue(object.firstPacketReceivedMs)).unsigned = false;
+                message.firstPacketReceivedMs = $util.Long.fromValue(object.firstPacketReceivedMs, false);
             else if (typeof object.firstPacketReceivedMs === "string")
                 message.firstPacketReceivedMs = parseInt(object.firstPacketReceivedMs, 10);
             else if (typeof object.firstPacketReceivedMs === "number")
@@ -16326,7 +17646,7 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
                 message.firstPacketReceivedMs = new $util.LongBits(object.firstPacketReceivedMs.low >>> 0, object.firstPacketReceivedMs.high >>> 0).toNumber();
         if (object.firstFrameRenderedMs != null)
             if ($util.Long)
-                (message.firstFrameRenderedMs = $util.Long.fromValue(object.firstFrameRenderedMs)).unsigned = false;
+                message.firstFrameRenderedMs = $util.Long.fromValue(object.firstFrameRenderedMs, false);
             else if (typeof object.firstFrameRenderedMs === "string")
                 message.firstFrameRenderedMs = parseInt(object.firstFrameRenderedMs, 10);
             else if (typeof object.firstFrameRenderedMs === "number")
@@ -16349,47 +17669,57 @@ $root.SdkMeetingSessionRemoteAudioTiming = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkMeetingSessionRemoteAudioTiming.toObject = function toObject(message, options) {
+    SdkMeetingSessionRemoteAudioTiming.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.addedMs = options.longs === String ? "0" : 0;
+                object.addedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.firstPacketReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.firstPacketReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.firstPacketReceivedMs = options.longs === String ? "0" : 0;
+                object.firstPacketReceivedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.firstFrameRenderedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.firstFrameRenderedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.firstFrameRenderedMs = options.longs === String ? "0" : 0;
+                object.firstFrameRenderedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.timedOut = false;
             object.removed = false;
         }
-        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
-            if (typeof message.addedMs === "number")
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.addedMs = typeof message.addedMs === "number" ? BigInt(message.addedMs) : $util.Long.fromBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.addedMs === "number")
                 object.addedMs = options.longs === String ? String(message.addedMs) : message.addedMs;
             else
                 object.addedMs = options.longs === String ? $util.Long.prototype.toString.call(message.addedMs) : options.longs === Number ? new $util.LongBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0).toNumber() : message.addedMs;
-        if (message.firstPacketReceivedMs != null && message.hasOwnProperty("firstPacketReceivedMs"))
-            if (typeof message.firstPacketReceivedMs === "number")
+        if (message.firstPacketReceivedMs != null && Object.hasOwnProperty.call(message, "firstPacketReceivedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.firstPacketReceivedMs = typeof message.firstPacketReceivedMs === "number" ? BigInt(message.firstPacketReceivedMs) : $util.Long.fromBits(message.firstPacketReceivedMs.low >>> 0, message.firstPacketReceivedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.firstPacketReceivedMs === "number")
                 object.firstPacketReceivedMs = options.longs === String ? String(message.firstPacketReceivedMs) : message.firstPacketReceivedMs;
             else
                 object.firstPacketReceivedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstPacketReceivedMs) : options.longs === Number ? new $util.LongBits(message.firstPacketReceivedMs.low >>> 0, message.firstPacketReceivedMs.high >>> 0).toNumber() : message.firstPacketReceivedMs;
-        if (message.firstFrameRenderedMs != null && message.hasOwnProperty("firstFrameRenderedMs"))
-            if (typeof message.firstFrameRenderedMs === "number")
+        if (message.firstFrameRenderedMs != null && Object.hasOwnProperty.call(message, "firstFrameRenderedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.firstFrameRenderedMs = typeof message.firstFrameRenderedMs === "number" ? BigInt(message.firstFrameRenderedMs) : $util.Long.fromBits(message.firstFrameRenderedMs.low >>> 0, message.firstFrameRenderedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.firstFrameRenderedMs === "number")
                 object.firstFrameRenderedMs = options.longs === String ? String(message.firstFrameRenderedMs) : message.firstFrameRenderedMs;
             else
                 object.firstFrameRenderedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameRenderedMs) : options.longs === Number ? new $util.LongBits(message.firstFrameRenderedMs.low >>> 0, message.firstFrameRenderedMs.high >>> 0).toNumber() : message.firstFrameRenderedMs;
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             object.timedOut = message.timedOut;
-        if (message.removed != null && message.hasOwnProperty("removed"))
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
             object.removed = message.removed;
         return object;
     };
@@ -16447,7 +17777,7 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
     function SdkMeetingSessionLocalAudioTiming(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -16512,9 +17842,13 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkMeetingSessionLocalAudioTiming.encode = function encode(message, writer) {
+    SdkMeetingSessionLocalAudioTiming.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
             writer.uint32(/* id 1, wireType 0 =*/8).int64(message.addedMs);
         if (message.firstFrameCapturedMs != null && Object.hasOwnProperty.call(message, "firstFrameCapturedMs"))
@@ -16538,7 +17872,7 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkMeetingSessionLocalAudioTiming.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -16552,12 +17886,18 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkMeetingSessionLocalAudioTiming.decode = function decode(reader, length) {
+    SdkMeetingSessionLocalAudioTiming.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionLocalAudioTiming();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.addedMs = reader.int64();
@@ -16580,7 +17920,7 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -16611,22 +17951,26 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkMeetingSessionLocalAudioTiming.verify = function verify(message) {
+    SdkMeetingSessionLocalAudioTiming.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
             if (!$util.isInteger(message.addedMs) && !(message.addedMs && $util.isInteger(message.addedMs.low) && $util.isInteger(message.addedMs.high)))
                 return "addedMs: integer|Long expected";
-        if (message.firstFrameCapturedMs != null && message.hasOwnProperty("firstFrameCapturedMs"))
+        if (message.firstFrameCapturedMs != null && Object.hasOwnProperty.call(message, "firstFrameCapturedMs"))
             if (!$util.isInteger(message.firstFrameCapturedMs) && !(message.firstFrameCapturedMs && $util.isInteger(message.firstFrameCapturedMs.low) && $util.isInteger(message.firstFrameCapturedMs.high)))
                 return "firstFrameCapturedMs: integer|Long expected";
-        if (message.firstPacketSentMs != null && message.hasOwnProperty("firstPacketSentMs"))
+        if (message.firstPacketSentMs != null && Object.hasOwnProperty.call(message, "firstPacketSentMs"))
             if (!$util.isInteger(message.firstPacketSentMs) && !(message.firstPacketSentMs && $util.isInteger(message.firstPacketSentMs.low) && $util.isInteger(message.firstPacketSentMs.high)))
                 return "firstPacketSentMs: integer|Long expected";
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             if (typeof message.timedOut !== "boolean")
                 return "timedOut: boolean expected";
-        if (message.removed != null && message.hasOwnProperty("removed"))
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
             if (typeof message.removed !== "boolean")
                 return "removed: boolean expected";
         return null;
@@ -16640,13 +17984,19 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkMeetingSessionLocalAudioTiming} SdkMeetingSessionLocalAudioTiming
      */
-    SdkMeetingSessionLocalAudioTiming.fromObject = function fromObject(object) {
+    SdkMeetingSessionLocalAudioTiming.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkMeetingSessionLocalAudioTiming)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkMeetingSessionLocalAudioTiming: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkMeetingSessionLocalAudioTiming();
         if (object.addedMs != null)
             if ($util.Long)
-                (message.addedMs = $util.Long.fromValue(object.addedMs)).unsigned = false;
+                message.addedMs = $util.Long.fromValue(object.addedMs, false);
             else if (typeof object.addedMs === "string")
                 message.addedMs = parseInt(object.addedMs, 10);
             else if (typeof object.addedMs === "number")
@@ -16655,7 +18005,7 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
                 message.addedMs = new $util.LongBits(object.addedMs.low >>> 0, object.addedMs.high >>> 0).toNumber();
         if (object.firstFrameCapturedMs != null)
             if ($util.Long)
-                (message.firstFrameCapturedMs = $util.Long.fromValue(object.firstFrameCapturedMs)).unsigned = false;
+                message.firstFrameCapturedMs = $util.Long.fromValue(object.firstFrameCapturedMs, false);
             else if (typeof object.firstFrameCapturedMs === "string")
                 message.firstFrameCapturedMs = parseInt(object.firstFrameCapturedMs, 10);
             else if (typeof object.firstFrameCapturedMs === "number")
@@ -16664,7 +18014,7 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
                 message.firstFrameCapturedMs = new $util.LongBits(object.firstFrameCapturedMs.low >>> 0, object.firstFrameCapturedMs.high >>> 0).toNumber();
         if (object.firstPacketSentMs != null)
             if ($util.Long)
-                (message.firstPacketSentMs = $util.Long.fromValue(object.firstPacketSentMs)).unsigned = false;
+                message.firstPacketSentMs = $util.Long.fromValue(object.firstPacketSentMs, false);
             else if (typeof object.firstPacketSentMs === "string")
                 message.firstPacketSentMs = parseInt(object.firstPacketSentMs, 10);
             else if (typeof object.firstPacketSentMs === "number")
@@ -16687,47 +18037,57 @@ $root.SdkMeetingSessionLocalAudioTiming = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkMeetingSessionLocalAudioTiming.toObject = function toObject(message, options) {
+    SdkMeetingSessionLocalAudioTiming.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.addedMs = options.longs === String ? "0" : 0;
+                object.addedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.firstFrameCapturedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.firstFrameCapturedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.firstFrameCapturedMs = options.longs === String ? "0" : 0;
+                object.firstFrameCapturedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.firstPacketSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.firstPacketSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.firstPacketSentMs = options.longs === String ? "0" : 0;
+                object.firstPacketSentMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.timedOut = false;
             object.removed = false;
         }
-        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
-            if (typeof message.addedMs === "number")
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.addedMs = typeof message.addedMs === "number" ? BigInt(message.addedMs) : $util.Long.fromBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.addedMs === "number")
                 object.addedMs = options.longs === String ? String(message.addedMs) : message.addedMs;
             else
                 object.addedMs = options.longs === String ? $util.Long.prototype.toString.call(message.addedMs) : options.longs === Number ? new $util.LongBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0).toNumber() : message.addedMs;
-        if (message.firstFrameCapturedMs != null && message.hasOwnProperty("firstFrameCapturedMs"))
-            if (typeof message.firstFrameCapturedMs === "number")
+        if (message.firstFrameCapturedMs != null && Object.hasOwnProperty.call(message, "firstFrameCapturedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.firstFrameCapturedMs = typeof message.firstFrameCapturedMs === "number" ? BigInt(message.firstFrameCapturedMs) : $util.Long.fromBits(message.firstFrameCapturedMs.low >>> 0, message.firstFrameCapturedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.firstFrameCapturedMs === "number")
                 object.firstFrameCapturedMs = options.longs === String ? String(message.firstFrameCapturedMs) : message.firstFrameCapturedMs;
             else
                 object.firstFrameCapturedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameCapturedMs) : options.longs === Number ? new $util.LongBits(message.firstFrameCapturedMs.low >>> 0, message.firstFrameCapturedMs.high >>> 0).toNumber() : message.firstFrameCapturedMs;
-        if (message.firstPacketSentMs != null && message.hasOwnProperty("firstPacketSentMs"))
-            if (typeof message.firstPacketSentMs === "number")
+        if (message.firstPacketSentMs != null && Object.hasOwnProperty.call(message, "firstPacketSentMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.firstPacketSentMs = typeof message.firstPacketSentMs === "number" ? BigInt(message.firstPacketSentMs) : $util.Long.fromBits(message.firstPacketSentMs.low >>> 0, message.firstPacketSentMs.high >>> 0, false).toBigInt();
+            else if (typeof message.firstPacketSentMs === "number")
                 object.firstPacketSentMs = options.longs === String ? String(message.firstPacketSentMs) : message.firstPacketSentMs;
             else
                 object.firstPacketSentMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstPacketSentMs) : options.longs === Number ? new $util.LongBits(message.firstPacketSentMs.low >>> 0, message.firstPacketSentMs.high >>> 0).toNumber() : message.firstPacketSentMs;
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             object.timedOut = message.timedOut;
-        if (message.removed != null && message.hasOwnProperty("removed"))
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
             object.removed = message.removed;
         return object;
     };
@@ -16785,7 +18145,7 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
     function SdkMeetingSessionLocalVideoTiming(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -16850,9 +18210,13 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkMeetingSessionLocalVideoTiming.encode = function encode(message, writer) {
+    SdkMeetingSessionLocalVideoTiming.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
             writer.uint32(/* id 1, wireType 0 =*/8).int64(message.addedMs);
         if (message.firstFrameCapturedMs != null && Object.hasOwnProperty.call(message, "firstFrameCapturedMs"))
@@ -16876,7 +18240,7 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkMeetingSessionLocalVideoTiming.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -16890,12 +18254,18 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkMeetingSessionLocalVideoTiming.decode = function decode(reader, length) {
+    SdkMeetingSessionLocalVideoTiming.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionLocalVideoTiming();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.addedMs = reader.int64();
@@ -16918,7 +18288,7 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -16949,22 +18319,26 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkMeetingSessionLocalVideoTiming.verify = function verify(message) {
+    SdkMeetingSessionLocalVideoTiming.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
             if (!$util.isInteger(message.addedMs) && !(message.addedMs && $util.isInteger(message.addedMs.low) && $util.isInteger(message.addedMs.high)))
                 return "addedMs: integer|Long expected";
-        if (message.firstFrameCapturedMs != null && message.hasOwnProperty("firstFrameCapturedMs"))
+        if (message.firstFrameCapturedMs != null && Object.hasOwnProperty.call(message, "firstFrameCapturedMs"))
             if (!$util.isInteger(message.firstFrameCapturedMs) && !(message.firstFrameCapturedMs && $util.isInteger(message.firstFrameCapturedMs.low) && $util.isInteger(message.firstFrameCapturedMs.high)))
                 return "firstFrameCapturedMs: integer|Long expected";
-        if (message.firstFrameSentMs != null && message.hasOwnProperty("firstFrameSentMs"))
+        if (message.firstFrameSentMs != null && Object.hasOwnProperty.call(message, "firstFrameSentMs"))
             if (!$util.isInteger(message.firstFrameSentMs) && !(message.firstFrameSentMs && $util.isInteger(message.firstFrameSentMs.low) && $util.isInteger(message.firstFrameSentMs.high)))
                 return "firstFrameSentMs: integer|Long expected";
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             if (typeof message.timedOut !== "boolean")
                 return "timedOut: boolean expected";
-        if (message.removed != null && message.hasOwnProperty("removed"))
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
             if (typeof message.removed !== "boolean")
                 return "removed: boolean expected";
         return null;
@@ -16978,13 +18352,19 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkMeetingSessionLocalVideoTiming} SdkMeetingSessionLocalVideoTiming
      */
-    SdkMeetingSessionLocalVideoTiming.fromObject = function fromObject(object) {
+    SdkMeetingSessionLocalVideoTiming.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkMeetingSessionLocalVideoTiming)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkMeetingSessionLocalVideoTiming: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkMeetingSessionLocalVideoTiming();
         if (object.addedMs != null)
             if ($util.Long)
-                (message.addedMs = $util.Long.fromValue(object.addedMs)).unsigned = false;
+                message.addedMs = $util.Long.fromValue(object.addedMs, false);
             else if (typeof object.addedMs === "string")
                 message.addedMs = parseInt(object.addedMs, 10);
             else if (typeof object.addedMs === "number")
@@ -16993,7 +18373,7 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
                 message.addedMs = new $util.LongBits(object.addedMs.low >>> 0, object.addedMs.high >>> 0).toNumber();
         if (object.firstFrameCapturedMs != null)
             if ($util.Long)
-                (message.firstFrameCapturedMs = $util.Long.fromValue(object.firstFrameCapturedMs)).unsigned = false;
+                message.firstFrameCapturedMs = $util.Long.fromValue(object.firstFrameCapturedMs, false);
             else if (typeof object.firstFrameCapturedMs === "string")
                 message.firstFrameCapturedMs = parseInt(object.firstFrameCapturedMs, 10);
             else if (typeof object.firstFrameCapturedMs === "number")
@@ -17002,7 +18382,7 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
                 message.firstFrameCapturedMs = new $util.LongBits(object.firstFrameCapturedMs.low >>> 0, object.firstFrameCapturedMs.high >>> 0).toNumber();
         if (object.firstFrameSentMs != null)
             if ($util.Long)
-                (message.firstFrameSentMs = $util.Long.fromValue(object.firstFrameSentMs)).unsigned = false;
+                message.firstFrameSentMs = $util.Long.fromValue(object.firstFrameSentMs, false);
             else if (typeof object.firstFrameSentMs === "string")
                 message.firstFrameSentMs = parseInt(object.firstFrameSentMs, 10);
             else if (typeof object.firstFrameSentMs === "number")
@@ -17025,47 +18405,57 @@ $root.SdkMeetingSessionLocalVideoTiming = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkMeetingSessionLocalVideoTiming.toObject = function toObject(message, options) {
+    SdkMeetingSessionLocalVideoTiming.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.addedMs = options.longs === String ? "0" : 0;
+                object.addedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.firstFrameCapturedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.firstFrameCapturedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.firstFrameCapturedMs = options.longs === String ? "0" : 0;
+                object.firstFrameCapturedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.firstFrameSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.firstFrameSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.firstFrameSentMs = options.longs === String ? "0" : 0;
+                object.firstFrameSentMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.timedOut = false;
             object.removed = false;
         }
-        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
-            if (typeof message.addedMs === "number")
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.addedMs = typeof message.addedMs === "number" ? BigInt(message.addedMs) : $util.Long.fromBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.addedMs === "number")
                 object.addedMs = options.longs === String ? String(message.addedMs) : message.addedMs;
             else
                 object.addedMs = options.longs === String ? $util.Long.prototype.toString.call(message.addedMs) : options.longs === Number ? new $util.LongBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0).toNumber() : message.addedMs;
-        if (message.firstFrameCapturedMs != null && message.hasOwnProperty("firstFrameCapturedMs"))
-            if (typeof message.firstFrameCapturedMs === "number")
+        if (message.firstFrameCapturedMs != null && Object.hasOwnProperty.call(message, "firstFrameCapturedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.firstFrameCapturedMs = typeof message.firstFrameCapturedMs === "number" ? BigInt(message.firstFrameCapturedMs) : $util.Long.fromBits(message.firstFrameCapturedMs.low >>> 0, message.firstFrameCapturedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.firstFrameCapturedMs === "number")
                 object.firstFrameCapturedMs = options.longs === String ? String(message.firstFrameCapturedMs) : message.firstFrameCapturedMs;
             else
                 object.firstFrameCapturedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameCapturedMs) : options.longs === Number ? new $util.LongBits(message.firstFrameCapturedMs.low >>> 0, message.firstFrameCapturedMs.high >>> 0).toNumber() : message.firstFrameCapturedMs;
-        if (message.firstFrameSentMs != null && message.hasOwnProperty("firstFrameSentMs"))
-            if (typeof message.firstFrameSentMs === "number")
+        if (message.firstFrameSentMs != null && Object.hasOwnProperty.call(message, "firstFrameSentMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.firstFrameSentMs = typeof message.firstFrameSentMs === "number" ? BigInt(message.firstFrameSentMs) : $util.Long.fromBits(message.firstFrameSentMs.low >>> 0, message.firstFrameSentMs.high >>> 0, false).toBigInt();
+            else if (typeof message.firstFrameSentMs === "number")
                 object.firstFrameSentMs = options.longs === String ? String(message.firstFrameSentMs) : message.firstFrameSentMs;
             else
                 object.firstFrameSentMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameSentMs) : options.longs === Number ? new $util.LongBits(message.firstFrameSentMs.low >>> 0, message.firstFrameSentMs.high >>> 0).toNumber() : message.firstFrameSentMs;
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             object.timedOut = message.timedOut;
-        if (message.removed != null && message.hasOwnProperty("removed"))
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
             object.removed = message.removed;
         return object;
     };
@@ -17124,7 +18514,7 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
     function SdkMeetingSessionRemoteVideoTiming(properties) {
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
                     this[keys[i]] = properties[keys[i]];
     }
 
@@ -17197,9 +18587,13 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
      * @param {$protobuf.Writer} [writer] Writer to encode to
      * @returns {$protobuf.Writer} Writer
      */
-    SdkMeetingSessionRemoteVideoTiming.encode = function encode(message, writer) {
+    SdkMeetingSessionRemoteVideoTiming.encode = function encode(message, writer, q) {
         if (!writer)
             writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.groupId);
         if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
@@ -17225,7 +18619,7 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
      * @returns {$protobuf.Writer} Writer
      */
     SdkMeetingSessionRemoteVideoTiming.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
     };
 
     /**
@@ -17239,12 +18633,18 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    SdkMeetingSessionRemoteVideoTiming.decode = function decode(reader, length) {
+    SdkMeetingSessionRemoteVideoTiming.decode = function decode(reader, length, error, long) {
         if (!(reader instanceof $Reader))
             reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionRemoteVideoTiming();
         while (reader.pos < end) {
             var tag = reader.uint32();
+            if (tag === error)
+                break;
             switch (tag >>> 3) {
             case 1: {
                     message.groupId = reader.uint32();
@@ -17271,7 +18671,7 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
                     break;
                 }
             default:
-                reader.skipType(tag & 7);
+                reader.skipType(tag & 7, long);
                 break;
             }
         }
@@ -17302,25 +18702,29 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
      * @param {Object.<string,*>} message Plain object to verify
      * @returns {string|null} `null` if valid, otherwise the reason why it is not
      */
-    SdkMeetingSessionRemoteVideoTiming.verify = function verify(message) {
+    SdkMeetingSessionRemoteVideoTiming.verify = function verify(message, long) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             if (!$util.isInteger(message.groupId))
                 return "groupId: integer expected";
-        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
             if (!$util.isInteger(message.addedMs) && !(message.addedMs && $util.isInteger(message.addedMs.low) && $util.isInteger(message.addedMs.high)))
                 return "addedMs: integer|Long expected";
-        if (message.firstPacketReceivedMs != null && message.hasOwnProperty("firstPacketReceivedMs"))
+        if (message.firstPacketReceivedMs != null && Object.hasOwnProperty.call(message, "firstPacketReceivedMs"))
             if (!$util.isInteger(message.firstPacketReceivedMs) && !(message.firstPacketReceivedMs && $util.isInteger(message.firstPacketReceivedMs.low) && $util.isInteger(message.firstPacketReceivedMs.high)))
                 return "firstPacketReceivedMs: integer|Long expected";
-        if (message.firstFrameRenderedMs != null && message.hasOwnProperty("firstFrameRenderedMs"))
+        if (message.firstFrameRenderedMs != null && Object.hasOwnProperty.call(message, "firstFrameRenderedMs"))
             if (!$util.isInteger(message.firstFrameRenderedMs) && !(message.firstFrameRenderedMs && $util.isInteger(message.firstFrameRenderedMs.low) && $util.isInteger(message.firstFrameRenderedMs.high)))
                 return "firstFrameRenderedMs: integer|Long expected";
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             if (typeof message.timedOut !== "boolean")
                 return "timedOut: boolean expected";
-        if (message.removed != null && message.hasOwnProperty("removed"))
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
             if (typeof message.removed !== "boolean")
                 return "removed: boolean expected";
         return null;
@@ -17334,15 +18738,21 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
      * @param {Object.<string,*>} object Plain object
      * @returns {SdkMeetingSessionRemoteVideoTiming} SdkMeetingSessionRemoteVideoTiming
      */
-    SdkMeetingSessionRemoteVideoTiming.fromObject = function fromObject(object) {
+    SdkMeetingSessionRemoteVideoTiming.fromObject = function fromObject(object, long) {
         if (object instanceof $root.SdkMeetingSessionRemoteVideoTiming)
             return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkMeetingSessionRemoteVideoTiming: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
         var message = new $root.SdkMeetingSessionRemoteVideoTiming();
         if (object.groupId != null)
             message.groupId = object.groupId >>> 0;
         if (object.addedMs != null)
             if ($util.Long)
-                (message.addedMs = $util.Long.fromValue(object.addedMs)).unsigned = false;
+                message.addedMs = $util.Long.fromValue(object.addedMs, false);
             else if (typeof object.addedMs === "string")
                 message.addedMs = parseInt(object.addedMs, 10);
             else if (typeof object.addedMs === "number")
@@ -17351,7 +18761,7 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
                 message.addedMs = new $util.LongBits(object.addedMs.low >>> 0, object.addedMs.high >>> 0).toNumber();
         if (object.firstPacketReceivedMs != null)
             if ($util.Long)
-                (message.firstPacketReceivedMs = $util.Long.fromValue(object.firstPacketReceivedMs)).unsigned = false;
+                message.firstPacketReceivedMs = $util.Long.fromValue(object.firstPacketReceivedMs, false);
             else if (typeof object.firstPacketReceivedMs === "string")
                 message.firstPacketReceivedMs = parseInt(object.firstPacketReceivedMs, 10);
             else if (typeof object.firstPacketReceivedMs === "number")
@@ -17360,7 +18770,7 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
                 message.firstPacketReceivedMs = new $util.LongBits(object.firstPacketReceivedMs.low >>> 0, object.firstPacketReceivedMs.high >>> 0).toNumber();
         if (object.firstFrameRenderedMs != null)
             if ($util.Long)
-                (message.firstFrameRenderedMs = $util.Long.fromValue(object.firstFrameRenderedMs)).unsigned = false;
+                message.firstFrameRenderedMs = $util.Long.fromValue(object.firstFrameRenderedMs, false);
             else if (typeof object.firstFrameRenderedMs === "string")
                 message.firstFrameRenderedMs = parseInt(object.firstFrameRenderedMs, 10);
             else if (typeof object.firstFrameRenderedMs === "number")
@@ -17383,50 +18793,60 @@ $root.SdkMeetingSessionRemoteVideoTiming = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkMeetingSessionRemoteVideoTiming.toObject = function toObject(message, options) {
+    SdkMeetingSessionRemoteVideoTiming.toObject = function toObject(message, options, q) {
         if (!options)
             options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
         var object = {};
         if (options.defaults) {
             object.groupId = 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.addedMs = options.longs === String ? "0" : 0;
+                object.addedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.firstPacketReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.firstPacketReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.firstPacketReceivedMs = options.longs === String ? "0" : 0;
+                object.firstPacketReceivedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
-                object.firstFrameRenderedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                object.firstFrameRenderedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : typeof BigInt !== "undefined" && options.longs === BigInt ? long.toBigInt() : long;
             } else
-                object.firstFrameRenderedMs = options.longs === String ? "0" : 0;
+                object.firstFrameRenderedMs = options.longs === String ? "0" : typeof BigInt !== "undefined" && options.longs === BigInt ? BigInt("0") : 0;
             object.timedOut = false;
             object.removed = false;
         }
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             object.groupId = message.groupId;
-        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
-            if (typeof message.addedMs === "number")
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.addedMs = typeof message.addedMs === "number" ? BigInt(message.addedMs) : $util.Long.fromBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.addedMs === "number")
                 object.addedMs = options.longs === String ? String(message.addedMs) : message.addedMs;
             else
                 object.addedMs = options.longs === String ? $util.Long.prototype.toString.call(message.addedMs) : options.longs === Number ? new $util.LongBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0).toNumber() : message.addedMs;
-        if (message.firstPacketReceivedMs != null && message.hasOwnProperty("firstPacketReceivedMs"))
-            if (typeof message.firstPacketReceivedMs === "number")
+        if (message.firstPacketReceivedMs != null && Object.hasOwnProperty.call(message, "firstPacketReceivedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.firstPacketReceivedMs = typeof message.firstPacketReceivedMs === "number" ? BigInt(message.firstPacketReceivedMs) : $util.Long.fromBits(message.firstPacketReceivedMs.low >>> 0, message.firstPacketReceivedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.firstPacketReceivedMs === "number")
                 object.firstPacketReceivedMs = options.longs === String ? String(message.firstPacketReceivedMs) : message.firstPacketReceivedMs;
             else
                 object.firstPacketReceivedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstPacketReceivedMs) : options.longs === Number ? new $util.LongBits(message.firstPacketReceivedMs.low >>> 0, message.firstPacketReceivedMs.high >>> 0).toNumber() : message.firstPacketReceivedMs;
-        if (message.firstFrameRenderedMs != null && message.hasOwnProperty("firstFrameRenderedMs"))
-            if (typeof message.firstFrameRenderedMs === "number")
+        if (message.firstFrameRenderedMs != null && Object.hasOwnProperty.call(message, "firstFrameRenderedMs"))
+            if (typeof BigInt !== "undefined" && options.longs === BigInt)
+                object.firstFrameRenderedMs = typeof message.firstFrameRenderedMs === "number" ? BigInt(message.firstFrameRenderedMs) : $util.Long.fromBits(message.firstFrameRenderedMs.low >>> 0, message.firstFrameRenderedMs.high >>> 0, false).toBigInt();
+            else if (typeof message.firstFrameRenderedMs === "number")
                 object.firstFrameRenderedMs = options.longs === String ? String(message.firstFrameRenderedMs) : message.firstFrameRenderedMs;
             else
                 object.firstFrameRenderedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameRenderedMs) : options.longs === Number ? new $util.LongBits(message.firstFrameRenderedMs.low >>> 0, message.firstFrameRenderedMs.high >>> 0).toNumber() : message.firstFrameRenderedMs;
-        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
             object.timedOut = message.timedOut;
-        if (message.removed != null && message.hasOwnProperty("removed"))
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
             object.removed = message.removed;
         return object;
     };

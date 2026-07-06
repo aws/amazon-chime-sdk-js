@@ -3,38 +3,60 @@
 
 import Logger from '../logger/Logger';
 
+export enum BackgroundSegmentationInitializationStatus {
+  SUCCESS = 0,
+  ASSET_LOADING_FAILURE = 1,
+  COMPATIBILITY_FAILURE = 2,
+  PROCESSOR_CREATION_FAILURE = 3,
+}
+
 /**
- * [[BackgroundSegmentationMetricReport]] will contain metrics reported
- * by the [[BackgroundSegmentationVideoFrameProcessor]]
+ * [[BackgroundSegmentationInitializationMetrics]] contains metrics reported
+ * once per processor creation by [[BackgroundSegmentationVideoFrameProcessor]].
  */
-export class BackgroundSegmentationMetricReport {
-  metricName: string = '';
-  timestamp: number = 0;
-  assetType?: string;
-  loadTimeMs?: number;
-  success?: number;
-  error?: string;
-  errorType?: string;
-  errorMessage?: string;
-  modelType?: string;
-  isCompatible?: boolean;
-  missingFeatures?: string;
+export interface BackgroundSegmentationInitializationMetrics {
+  initializationStatus: BackgroundSegmentationInitializationStatus;
+  assetLoadingTimeMs?: number;
+}
+
+export interface BackgroundSegmentationProcessorMetrics {
+  segmentationDurationMs: number;
+  effectRenderDurationMs: number;
+  framesPerSegmentation: number;
+  framesSubmitted: number;
+  framesSegmented: number;
+  estimatedCPUUsagePercentage: number;
+  modelType: string;
+  delegateType: string;
+  initializationDurationMs?: number;
+  initializationFailure?: number;
+  errorCount: number;
 }
 
 /**
  * Observer interface for receiving background segmentation metrics
  */
 export interface BackgroundSegmentationMetricsObserver {
-  backgroundSegmentationMetricsDidReceive(metricReport: BackgroundSegmentationMetricReport): void;
+  backgroundSegmentationInitializationMetricsDidReceive(
+    metric: BackgroundSegmentationInitializationMetrics
+  ): void;
+  backgroundSegmentationProcessorMetricsDidReceive(
+    metric: BackgroundSegmentationProcessorMetrics
+  ): void;
 }
 
 /**
- * Metrics collection for background segmentation processing
+ * Metrics collection for background segmentation processing.
+ * Collects one-time processor creation metrics and periodic CDN processor metrics.
  */
 export default class BackgroundSegmentationMetrics {
   private static readonly MAX_BUFFERED_METRICS = 100;
   private metricsCollector: BackgroundSegmentationMetricsObserver | undefined;
-  private bufferedMetrics: BackgroundSegmentationMetricReport[] = [];
+  private bufferedMetrics: BackgroundSegmentationInitializationMetrics[] = [];
+
+  private _initializationStatus: BackgroundSegmentationInitializationStatus =
+    BackgroundSegmentationInitializationStatus.SUCCESS;
+  private _assetLoadingTimeMs: number | undefined;
 
   constructor(
     private logger: Logger,
@@ -61,75 +83,69 @@ export default class BackgroundSegmentationMetrics {
     this.bufferedMetrics = [];
 
     metricsToFlush.forEach(metric => {
-      this.emitMetricReport(metric);
+      this.sendToCollector(metric);
     });
   }
 
-  reportAssetLoadingResult(assetType: string, error?: string, loadTimeMs?: number): void {
-    try {
-      const metricReport = new BackgroundSegmentationMetricReport();
-      metricReport.metricName = 'BackgroundSegmentationAssetLoadingResult';
-      metricReport.assetType = assetType;
-      metricReport.success = error ? 0 : 1;
-      metricReport.error = error;
-      metricReport.loadTimeMs = loadTimeMs;
-      metricReport.timestamp = Date.now();
-
-      this.emitMetricReport(metricReport);
-    } catch (err) {
-      this.logger.warn(
-        `[BackgroundSegmentationMetrics] Failed to report asset loading status: ${err}`
-      );
+  reportCompatibilityCheck(isCompatible: boolean): void {
+    if (!isCompatible) {
+      this._initializationStatus = BackgroundSegmentationInitializationStatus.COMPATIBILITY_FAILURE;
     }
   }
 
-  reportProcessorError(errorType: string, errorMessage: string, modelType: string): void {
-    try {
-      const metricReport = new BackgroundSegmentationMetricReport();
-      metricReport.metricName = 'BackgroundSegmentationProcessorError';
-      metricReport.errorType = errorType;
-      metricReport.errorMessage = errorMessage;
-      metricReport.modelType = modelType;
-      metricReport.timestamp = Date.now();
+  reportAssetLoadingResult(error?: string, loadTimeMs?: number): void {
+    if (
+      error &&
+      this._initializationStatus === BackgroundSegmentationInitializationStatus.SUCCESS
+    ) {
+      this._initializationStatus = BackgroundSegmentationInitializationStatus.ASSET_LOADING_FAILURE;
+    }
+    this._assetLoadingTimeMs = loadTimeMs;
+  }
 
-      this.emitMetricReport(metricReport);
+  reportProcessorError(): void {
+    if (this._initializationStatus === BackgroundSegmentationInitializationStatus.SUCCESS) {
+      this._initializationStatus =
+        BackgroundSegmentationInitializationStatus.PROCESSOR_CREATION_FAILURE;
+    }
+  }
+
+  emitInitializationMetrics(): void {
+    const metric: BackgroundSegmentationInitializationMetrics = {
+      initializationStatus: this._initializationStatus,
+      assetLoadingTimeMs: this._assetLoadingTimeMs,
+    };
+
+    this.sendToCollector(metric);
+  }
+
+  reportProcessorMetrics(metric: BackgroundSegmentationProcessorMetrics): void {
+    if (!this.metricsCollector) {
+      return;
+    }
+    try {
+      this.metricsCollector.backgroundSegmentationProcessorMetricsDidReceive(metric);
     } catch (error) {
       this.logger.warn(
-        `[BackgroundSegmentationMetrics] Failed to report processor error: ${error}`
+        `[BackgroundSegmentationMetrics] Failed to send processor metrics to collector: ${error}`
       );
     }
   }
 
-  reportCompatibilityCheck(isCompatible: boolean, missingFeatures: string[]): void {
-    try {
-      const metricReport = new BackgroundSegmentationMetricReport();
-      metricReport.metricName = 'BackgroundSegmentationCompatibilityCheck';
-      metricReport.isCompatible = isCompatible;
-      metricReport.missingFeatures = missingFeatures.join(',');
-      metricReport.timestamp = Date.now();
-
-      this.emitMetricReport(metricReport);
-    } catch (error) {
-      this.logger.warn(
-        `[BackgroundSegmentationMetrics] Failed to report compatibility check: ${error}`
-      );
-    }
-  }
-
-  private emitMetricReport(metricReport: BackgroundSegmentationMetricReport): void {
+  private sendToCollector(metric: BackgroundSegmentationInitializationMetrics): void {
     if (!this.metricsCollector) {
       if (this.bufferedMetrics.length >= BackgroundSegmentationMetrics.MAX_BUFFERED_METRICS) {
         this.bufferedMetrics.shift();
       }
-      this.bufferedMetrics.push(metricReport);
+      this.bufferedMetrics.push(metric);
       return;
     }
 
     try {
-      this.metricsCollector.backgroundSegmentationMetricsDidReceive(metricReport);
+      this.metricsCollector.backgroundSegmentationInitializationMetricsDidReceive(metric);
     } catch (error) {
       this.logger.warn(
-        `[BackgroundSegmentationMetrics] Failed to send metric report to collector: ${error}`
+        `[BackgroundSegmentationMetrics] Failed to send initialization metric to collector: ${error}`
       );
     }
   }

@@ -170,9 +170,13 @@ walk('src')
 
     if (typeToImport === 'BackgroundSegmentationMetrics') {
       importStrings.push(`import { BackgroundSegmentationMetricsObserver } from '${pathToImport}/BackgroundSegmentationMetrics';`);
-      importStrings.push(`import { BackgroundSegmentationMetricReport } from '${pathToImport}/BackgroundSegmentationMetrics';`);
+      importStrings.push(`import { BackgroundSegmentationInitializationMetrics } from '${pathToImport}/BackgroundSegmentationMetrics';`);
+      importStrings.push(`import { BackgroundSegmentationInitializationStatus } from '${pathToImport}/BackgroundSegmentationMetrics';`);
+      importStrings.push(`import { BackgroundSegmentationProcessorMetrics } from '${pathToImport}/BackgroundSegmentationMetrics';`);
       exportStrings.push(`BackgroundSegmentationMetricsObserver`);
-      exportStrings.push(`BackgroundSegmentationMetricReport`);
+      exportStrings.push(`BackgroundSegmentationInitializationMetrics`);
+      exportStrings.push(`BackgroundSegmentationInitializationStatus`);
+      exportStrings.push(`BackgroundSegmentationProcessorMetrics`);
     }
   });
 
