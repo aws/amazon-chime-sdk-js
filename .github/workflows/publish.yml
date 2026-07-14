@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '26'
           registry-url: 'https://registry.npmjs.org'
       # Ensure npm 11.5.1 or later is installed
       - name: Update npm
