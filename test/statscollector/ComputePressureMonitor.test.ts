@@ -5,6 +5,8 @@ import * as chai from 'chai';
 
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import ComputePressureMonitor from '../../src/statscollector/ComputePressureMonitor';
+import DOMMockBehavior from '../dommock/DOMMockBehavior';
+import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 type PressureRecord = { source: 'cpu'; state: 'nominal' | 'fair' | 'serious' | 'critical' };
 type PressureCallback = (records: PressureRecord[]) => void;
@@ -17,8 +19,10 @@ describe('ComputePressureMonitor', () => {
   const globalScope = globalThis as any;
 
   let savedPressureObserver: unknown;
+  let domMockBuilder: DOMMockBuilder;
 
   beforeEach(() => {
+    domMockBuilder = new DOMMockBuilder(new DOMMockBehavior());
     savedPressureObserver = globalScope.PressureObserver;
   });
 
@@ -28,7 +32,27 @@ describe('ComputePressureMonitor', () => {
     } else {
       globalScope.PressureObserver = savedPressureObserver;
     }
+    domMockBuilder.cleanup();
   });
+
+  function setFeaturePolicy(allowed: boolean | undefined): void {
+    if (allowed === undefined) {
+      Object.defineProperty(document, 'featurePolicy', {
+        configurable: true,
+        value: undefined,
+      });
+      return;
+    }
+    Object.defineProperty(document, 'featurePolicy', {
+      configurable: true,
+      value: {
+        allowsFeature: (feature: string) => {
+          expect(feature).to.equal('compute-pressure');
+          return allowed;
+        },
+      },
+    });
+  }
 
   function installFakeObserver(
     options: {
@@ -165,6 +189,39 @@ describe('ComputePressureMonitor', () => {
     monitor.stop();
     expect(handle.disconnectCount()).to.equal(1);
     expect(monitor.currentState()).to.equal(null);
+  });
+
+  it('does not observe when compute-pressure is disallowed by Permissions Policy', async () => {
+    const handle = installFakeObserver();
+    setFeaturePolicy(false);
+    const monitor = new ComputePressureMonitor(logger);
+    await monitor.start();
+    // observe() was never reached, so no callback was captured and no sample.
+    expect(handle.callback()).to.equal(undefined);
+    expect(monitor.currentState()).to.equal(null);
+    monitor.stop();
+    // Nothing to disconnect since start() bailed before creating an observer.
+    expect(handle.disconnectCount()).to.equal(0);
+  });
+
+  it('observes when compute-pressure is allowed by Permissions Policy', async () => {
+    const handle = installFakeObserver();
+    setFeaturePolicy(true);
+    const monitor = new ComputePressureMonitor(logger);
+    await monitor.start();
+    handle.callback()([{ source: 'cpu', state: 'fair' }]);
+    expect(monitor.currentState()).to.equal('fair');
+    monitor.stop();
+  });
+
+  it('observes when document.featurePolicy is unavailable', async () => {
+    const handle = installFakeObserver();
+    setFeaturePolicy(undefined);
+    const monitor = new ComputePressureMonitor(logger);
+    await monitor.start();
+    handle.callback()([{ source: 'cpu', state: 'serious' }]);
+    expect(monitor.currentState()).to.equal('serious');
+    monitor.stop();
   });
 
   it('treats a non-function PressureObserver as missing', async () => {

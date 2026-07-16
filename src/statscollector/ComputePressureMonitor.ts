@@ -39,6 +39,12 @@ export default class ComputePressureMonitor {
       this.logger.debug(() => 'PressureObserver is not available; CPU pressure metric disabled');
       return;
     }
+    if (!this.isComputePressureAllowed()) {
+      this.logger.debug(
+        () => 'compute-pressure is not allowed in this document; CPU pressure metric disabled'
+      );
+      return;
+    }
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.observer = new ctor((records: any[]) => {
@@ -87,5 +93,18 @@ export default class ComputePressureMonitor {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ctor = (globalThis as any).PressureObserver;
     return typeof ctor === 'function' ? ctor : null;
+  }
+
+  private isComputePressureAllowed(): boolean {
+    /* istanbul ignore next */
+    if (typeof document === 'undefined') {
+      return true;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const featurePolicy = (document as any).featurePolicy;
+    if (featurePolicy && typeof featurePolicy.allowsFeature === 'function') {
+      return featurePolicy.allowsFeature('compute-pressure');
+    }
+    return true;
   }
 }

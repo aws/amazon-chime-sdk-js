@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed a Chrome `[Violation] Permissions policy violation: compute-pressure is not allowed in this document.` console message by skipping CPU pressure observation when the `compute-pressure` Permissions Policy feature is not allowed (e.g. in cross-origin iframes such as embedded CCP).
+
 ## [3.32.0] - 2026-05-14
 
 ### Added
