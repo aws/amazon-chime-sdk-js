@@ -11,6 +11,7 @@ import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport'
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import {
   SdkIndexFrame,
+  SdkMetric,
   SdkStreamDescriptor,
   SdkStreamMediaType,
 } from '../../src/signalingprotocol/SignalingProtocol';
@@ -571,6 +572,17 @@ describe('ClientMetricReport', () => {
       expect(
         clientMetricReport.videoDownstreamMetricMap['videoReceivedTransformPps'].transform
       ).to.equal(clientMetricReport.countPerSecond);
+    });
+
+    it('videoDownstreamMetricMap contains retransmittedBytesReceived', () => {
+      expect(clientMetricReport.videoDownstreamMetricMap['retransmittedBytesReceived']).to.not.be
+        .undefined;
+      expect(
+        clientMetricReport.videoDownstreamMetricMap['retransmittedBytesReceived'].transform
+      ).to.equal(clientMetricReport.bitsPerSecond);
+      expect(
+        clientMetricReport.videoDownstreamMetricMap['retransmittedBytesReceived'].type
+      ).to.equal(SdkMetric.Type.VIDEO_RECEIVED_RETRANSMIT_BITRATE);
     });
 
     it('returns countPerSecond for audioSentTransformPps', () => {
