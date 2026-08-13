@@ -3,6 +3,23 @@ const getConfig = () => {
   const macVersionMatch = platformName.match(/^macOS\s+(\d+)/);
   const isMacOS14OrHigher = macVersionMatch && parseInt(macVersionMatch[1], 10) >= 14;
 
+  // Only tests that verify pixel output (e.g. background segmentation filters) need a
+  // deterministic fake video source. The file lives on the machine running the test, so it is
+  // only reachable when the browser is on the same host (`--host local`). On remote hosts like
+  // SauceLabs the path does not exist, which breaks video device enumeration for every test.
+  let testName = '';
+  try {
+    testName = (JSON.parse(process.env.TEST || '{}').name) || '';
+  } catch (e) {
+    testName = '';
+  }
+  const testsNeedingCustomVideoFile = ['VideoProcessingTest'];
+  const useCustomVideoFile =
+    process.env.HOST === 'local' && testsNeedingCustomVideoFile.includes(testName);
+  const customVideoFileArgs = useCustomVideoFile
+    ? ['--use-file-for-fake-video-capture=' + require('path').resolve(__dirname, '../fake_stream/output.y4m')]
+    : [];
+
   return {
     firefoxOptions: {
       browserName: 'firefox',
@@ -30,7 +47,7 @@ const getConfig = () => {
             ? [
                 '--use-fake-device-for-media-stream',
                 '--use-fake-ui-for-media-stream',
-                '--use-file-for-fake-video-capture=' + require('path').resolve(__dirname, '../fake_stream/output.y4m'),
+                ...customVideoFileArgs,
                 '--headless=new',
                 '--window-size=1920,1080',
                 '--no-sandbox',
@@ -44,7 +61,7 @@ const getConfig = () => {
                 '--use-fake-device-for-media-stream',
                 '--use-fake-ui-for-media-stream',
                 '--disable-local-discovery',
-                '--use-file-for-fake-video-capture=' + require('path').resolve(__dirname, '../fake_stream/output.y4m'),
+                ...customVideoFileArgs,
                 '--window-size=1920,1080',
               ],
       },

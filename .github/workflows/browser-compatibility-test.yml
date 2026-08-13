@@ -38,9 +38,13 @@ jobs:
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
           browser-compatibility-test: true
       - name: Run Audio Test
+        id: audio_test
+        continue-on-error: true
         working-directory: ./integration
         run: npm run test -- --test-name AudioTest --host saucelabs --test-type browser-compatibility
       - name: Run Video Test
+        id: video_test
+        continue-on-error: true
         working-directory: ./integration
         run: npm run test -- --test-name VideoTest --host saucelabs --test-type browser-compatibility
       # - name: Run Video Processing Test
@@ -59,7 +63,8 @@ jobs:
           node -e "
           const { CloudWatchClient, PutMetricDataCommand } = require('@aws-sdk/client-cloudwatch');
           const client = new CloudWatchClient({ region: 'us-east-1' });
-          const value = '${{ job.status }}' === 'success' ? 1 : 0;
+          const allPassed = '${{ steps.audio_test.outcome }}' === 'success' && '${{ steps.video_test.outcome }}' === 'success';
+          const value = allPassed ? 1 : 0;
           const command = new PutMetricDataCommand({
             Namespace: process.env.METRIC_NAMESPACE,
             MetricData: [{
@@ -75,3 +80,11 @@ jobs:
             process.exit(1);
           });
           "
+      - name: Fail job if any test failed
+        if: always()
+        run: |
+          if [ "${{ steps.audio_test.outcome }}" != "success" ] || [ "${{ steps.video_test.outcome }}" != "success" ]; then
+            echo "One or more browser compatibility tests failed (AudioTest=${{ steps.audio_test.outcome }}, VideoTest=${{ steps.video_test.outcome }})"
+            exit 1
+          fi
+          echo "All browser compatibility tests passed"
