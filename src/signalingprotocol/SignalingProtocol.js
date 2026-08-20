@@ -8408,6 +8408,13 @@ $root.SdkMetric = (function() {
             case 120:
             case 121:
             case 122:
+            case 123:
+            case 124:
+            case 125:
+            case 126:
+            case 127:
+            case 128:
+            case 129:
                 break;
             }
         if (message.value != null && Object.hasOwnProperty.call(message, "value"))
@@ -8837,6 +8844,10 @@ $root.SdkMetric = (function() {
         case 128:
             message.type = 128;
             break;
+        case "VIDEO_RECEIVED_RETRANSMIT_BITRATE":
+        case 129:
+            message.type = 129;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -9000,6 +9011,7 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS=126 VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS value
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE=127 VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE value
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE=128 VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE value
+     * @property {number} VIDEO_RECEIVED_RETRANSMIT_BITRATE=129 VIDEO_RECEIVED_RETRANSMIT_BITRATE value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -9102,6 +9114,7 @@ $root.SdkMetric = (function() {
         values[valuesById[126] = "VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS"] = 126;
         values[valuesById[127] = "VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE"] = 127;
         values[valuesById[128] = "VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE"] = 128;
+        values[valuesById[129] = "VIDEO_RECEIVED_RETRANSMIT_BITRATE"] = 129;
         return values;
     })();
 
@@ -9952,6 +9965,7 @@ $root.SdkStreamDimension = (function() {
             case 2:
             case 3:
             case 4:
+            case 5:
                 break;
             }
         if (message.value != null && Object.hasOwnProperty.call(message, "value")) {
@@ -10078,6 +10092,7 @@ $root.SdkStreamDimension = (function() {
      * @property {number} VIDEO_DECODER_NAME=2 VIDEO_DECODER_NAME value
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE=3 VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE value
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE=4 VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE value
+     * @property {number} VIDEO_PROCESSOR_NAME=5 VIDEO_PROCESSOR_NAME value
      */
     SdkStreamDimension.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
