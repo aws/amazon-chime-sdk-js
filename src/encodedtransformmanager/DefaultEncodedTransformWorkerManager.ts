@@ -29,6 +29,11 @@ export default class DefaultEncodedTransformWorkerManager implements EncodedTran
   private redManager: RedundantAudioEncodedTransformManager | null = null;
   private metricsManager: MediaMetricsTransformManager | null = null;
 
+  // Senders/receivers already set up via the legacy `createEncodedStreams()` API,
+  // which unlike `RTCRtpScriptTransform` leaves `.transform` unset and throws an
+  // `InvalidStateError` if called twice on the same object.
+  private legacyEncodedStreamsCreated: WeakSet<RTCRtpSender | RTCRtpReceiver> = new WeakSet();
+
   // @ts-ignore
   private readonly supportsRTCScriptTransform: boolean = !!window.RTCRtpScriptTransform;
   // @ts-ignore
@@ -123,6 +128,13 @@ export default class DefaultEncodedTransformWorkerManager implements EncodedTran
       // @ts-ignore
       senderOrReceiver.transform = new RTCRtpScriptTransform(this.worker, options);
     } else if (this.supportsInsertableStreams) {
+      // Renegotiation can re-fire `track` events for a receiver whose encoded
+      // streams are already piped to the worker; skip to avoid an `InvalidStateError`.
+      if (this.legacyEncodedStreamsCreated.has(senderOrReceiver)) {
+        return;
+      }
+      this.legacyEncodedStreamsCreated.add(senderOrReceiver);
+
       // @ts-ignore - Legacy API
       const streams = senderOrReceiver.createEncodedStreams();
 

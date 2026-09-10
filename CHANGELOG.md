@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+- Fixed an unhandled `InvalidStateError` thrown when the legacy `createEncodedStreams()` API was called more than once on the same receiver during renegotiation on browsers without `RTCRtpScriptTransform` (e.g. Chrome). See [#3255](https://github.com/aws/amazon-chime-sdk-js/issues/3255).
+
 ## [3.33.0] - 2026-07-08
 
 ### Added

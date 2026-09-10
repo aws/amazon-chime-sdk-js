@@ -251,6 +251,50 @@ describe('DefaultEncodedTransformWorkerManager', () => {
       // @ts-ignore
       expect(receiver.transform).to.not.be.undefined;
     });
+
+    it('calls createEncodedStreams only once per receiver on the legacy path', async () => {
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+      const newManager = new DefaultEncodedTransformWorkerManager(logger);
+      await newManager.start();
+      // @ts-ignore
+      const track = new MediaStreamTrack('video-track', 'video');
+      // @ts-ignore
+      const receiver = new RTCRtpReceiver(track);
+      // @ts-ignore - legacy API not in DOM typings
+      const spy = sinon.spy(receiver, 'createEncodedStreams');
+
+      // Simulates renegotiation re-firing a `track` event for the same receiver.
+      newManager.setupVideoReceiverTransform(receiver);
+      newManager.setupVideoReceiverTransform(receiver);
+
+      expect(spy.calledOnce).to.be.true;
+      await newManager.stop();
+    });
+
+    it('creates encoded streams separately for distinct receivers on the legacy path', async () => {
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+      const newManager = new DefaultEncodedTransformWorkerManager(logger);
+      await newManager.start();
+      // @ts-ignore
+      const track = new MediaStreamTrack('video-track', 'video');
+      // @ts-ignore
+      const receiver1 = new RTCRtpReceiver(track);
+      // @ts-ignore
+      const receiver2 = new RTCRtpReceiver(track);
+      // @ts-ignore - legacy API not in DOM typings
+      const spy1 = sinon.spy(receiver1, 'createEncodedStreams');
+      // @ts-ignore - legacy API not in DOM typings
+      const spy2 = sinon.spy(receiver2, 'createEncodedStreams');
+
+      newManager.setupVideoReceiverTransform(receiver1);
+      newManager.setupVideoReceiverTransform(receiver2);
+
+      expect(spy1.calledOnce).to.be.true;
+      expect(spy2.calledOnce).to.be.true;
+      await newManager.stop();
+    });
   });
 
   describe('stop', () => {
