@@ -238,6 +238,25 @@ describe('DefaultEncodedTransformWorkerManager', () => {
       // @ts-ignore
       expect(sender.transform).to.not.be.undefined;
     });
+
+    it('creates encoded streams only once per sender on the legacy insertable streams path', async () => {
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+      const legacyManager = new DefaultEncodedTransformWorkerManager(logger);
+      await legacyManager.start();
+      // @ts-ignore
+      const track = new MediaStreamTrack('video-track', 'video');
+      // @ts-ignore
+      const sender = new RTCRtpSender(track);
+      // @ts-ignore
+      const createEncodedStreamsSpy = sinon.spy(sender, 'createEncodedStreams');
+
+      legacyManager.setupVideoSenderTransform(sender);
+      legacyManager.setupVideoSenderTransform(sender);
+
+      expect(createEncodedStreamsSpy.callCount).to.equal(1);
+      await legacyManager.stop();
+    });
   });
 
   describe('setupVideoReceiverTransform', () => {
