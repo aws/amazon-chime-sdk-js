@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed an unhandled `InvalidStateError: Failed to execute 'createEncodedStreams' on 'RTCRtpReceiver': Encoded streams already created` on Chromium builds without `RTCRtpScriptTransform` (Chrome M140 and earlier). A repeat `track` event for a transceiver that re-enters a receiving direction reapplied the encoded transform to a receiver whose encoded streams already existed.
+
 ## [3.33.0] - 2026-07-08
 
 ### Added
