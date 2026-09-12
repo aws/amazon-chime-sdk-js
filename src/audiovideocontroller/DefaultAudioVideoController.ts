@@ -102,6 +102,7 @@ import VideoTileController, {
 } from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
 import DefaultSimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
+import DefaultSimulcastUplinkPolicyForContentShare from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import SimulcastUplinkObserver from '../videouplinkbandwidthpolicy/SimulcastUplinkObserver';
 import SimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
@@ -526,15 +527,38 @@ export default class DefaultAudioVideoController
       this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
+    // Chromium browsers do not support simulcast for AV1, so an AV1 content share with
+    // simulcast enabled would silently never transmit the high simulcast layer. SVC provides
+    // equivalent adaptation for AV1, so fall back to it for this connection.
+    const isContentAttendee = new DefaultModality(
+      this.configuration.credentials.attendeeId
+    ).hasModality(DefaultModality.MODALITY_CONTENT);
+    let overrideSimulcastWithSVCForAv1Content = false;
+    if (
+      this.enableSimulcast &&
+      isContentAttendee &&
+      this.videoSendCodecPreferences !== undefined &&
+      this.videoSendCodecPreferences.length > 0 &&
+      this.videoSendCodecPreferences[0].equals(VideoCodecCapability.av1Main()) &&
+      new DefaultBrowserBehavior().supportsScalableVideoCoding()
+    ) {
+      this.logger.warn(
+        'Simulcast is not supported for AV1 content share. Using SVC instead, which provides equivalent adaptation for AV1.'
+      );
+      overrideSimulcastWithSVCForAv1Content = true;
+      this.enableSimulcast = false;
+    }
+
     if (this.enableSimulcast && this.configuration.enableSVC) {
       this.logger.warn(
         'SVC cannot be enabled at the same time as simulcast. Disabling SVC, using simulcast.'
       );
     }
     this.enableSVC =
-      !this.enableSimulcast &&
-      this.configuration.enableSVC &&
-      new DefaultBrowserBehavior().supportsScalableVideoCoding();
+      overrideSimulcastWithSVCForAv1Content ||
+      (!this.enableSimulcast &&
+        this.configuration.enableSVC &&
+        new DefaultBrowserBehavior().supportsScalableVideoCoding());
 
     const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
 
@@ -596,7 +620,13 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videoDownlinkBandwidthPolicy =
       this.configuration.videoDownlinkBandwidthPolicy;
     this.meetingSessionContext.videoUplinkBandwidthPolicy =
-      this.configuration.videoUplinkBandwidthPolicy;
+      overrideSimulcastWithSVCForAv1Content &&
+      this.configuration.videoUplinkBandwidthPolicy instanceof
+        DefaultSimulcastUplinkPolicyForContentShare
+        ? // This policy was installed by `enableSimulcastForContentShare`; ignore it so the
+          // SVC-capable default uplink policy is used instead.
+          undefined
+        : this.configuration.videoUplinkBandwidthPolicy;
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
     this.meetingSessionContext.enableSVC = this.enableSVC;
 

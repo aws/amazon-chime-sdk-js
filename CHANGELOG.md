@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Content share with simulcast enabled will now automatically use SVC instead when the preferred content share codec is AV1 (the default on Chromium-based browsers since 3.28), since AV1 does not support simulcast and the high simulcast layer would silently never transmit. To keep using simulcast for content share, set an H.264 or VP8 preference via `setContentShareVideoCodecPreferences`.
+- Documented content share codec restrictions for simulcast and SVC in the simulcast guide and in `ContentShareControllerFacade`.
+
 ## [3.33.0] - 2026-07-08
 
 ### Added

@@ -78,6 +78,7 @@ import { VideoPreferences } from '../../src/videodownlinkbandwidthpolicy/VideoPr
 import VideoPriorityBasedPolicy from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoSource from '../../src/videosource/VideoSource';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
+import DefaultSimulcastUplinkPolicyForContentShare from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
@@ -1265,6 +1266,87 @@ describe('DefaultAudioVideoController', () => {
       await tick(defaultDelay);
       await stop();
       audioVideoController.removeObserver(observer);
+    });
+
+    it('falls back to SVC when simulcast is enabled for AV1 content share', async () => {
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      setUserAgent(CHROME_116_USER_AGENT);
+
+      configuration.credentials.attendeeId = defaultAttendeeId + ContentShareConstants.Modality;
+      // Simulcast is off at construction, matching `MeetingSession` creation, so the
+      // AV1-first content share codec defaults are applied.
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      // Matches what `DefaultContentShareController.enableSimulcastForContentShare(true)` does
+      // after the controller has been constructed.
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      configuration.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicyForContentShare(
+        new NoOpDebugLogger()
+      );
+
+      await start();
+      await tick(defaultDelay);
+
+      // @ts-ignore
+      expect(audioVideoController.enableSimulcast).to.be.false;
+      // @ts-ignore
+      expect(audioVideoController.enableSVC).to.be.true;
+      // @ts-ignore
+      const uplink = audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy;
+      expect(uplink instanceof NScaleVideoUplinkBandwidthPolicy).to.be.true;
+
+      await sendICEEventAndSubscribeAckFrame();
+      await tick(defaultDelay);
+      await stop();
+    });
+
+    it('keeps simulcast for content share when codec preference is not AV1', async () => {
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      setUserAgent(CHROME_116_USER_AGENT);
+
+      configuration.credentials.attendeeId = defaultAttendeeId + ContentShareConstants.Modality;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      configuration.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicyForContentShare(
+        new NoOpDebugLogger()
+      );
+      audioVideoController.setVideoCodecSendPreferences([
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+      ]);
+
+      await start();
+      await tick(defaultDelay);
+
+      // @ts-ignore
+      expect(audioVideoController.enableSimulcast).to.be.true;
+      // @ts-ignore
+      expect(audioVideoController.enableSVC).to.be.false;
+      // @ts-ignore
+      const uplink = audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy;
+      expect(uplink instanceof DefaultSimulcastUplinkPolicyForContentShare).to.be.true;
+
+      await sendICEEventAndSubscribeAckFrame();
+      await tick(defaultDelay);
+      await stop();
     });
   });
 

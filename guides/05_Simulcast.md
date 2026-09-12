@@ -152,6 +152,26 @@ You can use `enableSimulcastForContentShare` to toggle simulcast on/off for cont
 to set `enableSimulcastForUnifiedPlanChromiumBasedBrowsers` yourself as this configuration will be set automatically 
 for content share attendee as part of `enableSimulcastForContentShare`.
 
+**Note: Simulcast is only supported for the H.264 and VP8 codecs.** Therefore, when simulcast is enabled for an AV1 content share, the SDK will 
+log a warning and automatically use scalable video coding (SVC) instead, which provides equivalent adaptation for 
+AV1 (this is the same behavior as calling 
+[`enableSVCForContentShare`](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentsharecontrollerfacade.html#enablesvcforcontentshare)). 
+If you want to use simulcast for content share, set an H.264 or VP8 codec preference via 
+[`setContentShareVideoCodecPreferences`](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentsharecontrollerfacade.html#setcontentsharevideocodecpreferences):
+
+```js
+// Use simulcast with H.264 for content share
+meetingSession.audioVideo.setContentShareVideoCodecPreferences([
+  VideoCodecCapability.h264ConstrainedBaselineProfile(),
+]);
+await meetingSession.audioVideo.enableSimulcastForContentShare(true);
+await meetingSession.audioVideo.startContentShareFromScreenCapture();
+
+// Or, preferred for AV1 content share: use SVC directly
+await meetingSession.audioVideo.enableSVCForContentShare(true);
+await meetingSession.audioVideo.startContentShareFromScreenCapture();
+```
+
 ```js
 // Enable simulcast
 await meetingSession.audioVideo.enableSimulcastForContentShare(true);
