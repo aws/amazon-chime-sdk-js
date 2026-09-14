@@ -1309,6 +1309,49 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
+    it('falls back to SVC when simulcast is enabled for VP9 content share', async () => {
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      setUserAgent(CHROME_116_USER_AGENT);
+
+      configuration.credentials.attendeeId = defaultAttendeeId + ContentShareConstants.Modality;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      configuration.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicyForContentShare(
+        new NoOpDebugLogger()
+      );
+      // VP9 is second in the default content share preferences, so it is what a sender falls
+      // back to when AV1 is unavailable. It cannot do simulcast either.
+      audioVideoController.setVideoCodecSendPreferences([
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+      ]);
+
+      await start();
+      await tick(defaultDelay);
+
+      // @ts-ignore
+      expect(audioVideoController.enableSimulcast).to.be.false;
+      // @ts-ignore
+      expect(audioVideoController.enableSVC).to.be.true;
+      // @ts-ignore
+      const uplink = audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy;
+      expect(uplink instanceof NScaleVideoUplinkBandwidthPolicy).to.be.true;
+
+      await sendICEEventAndSubscribeAckFrame();
+      await tick(defaultDelay);
+      await stop();
+    });
+
     it('keeps simulcast for content share when codec preference is not AV1', async () => {
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);

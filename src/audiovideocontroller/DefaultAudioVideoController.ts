@@ -144,6 +144,11 @@ export default class DefaultAudioVideoController
   private static MIN_VOLUME_DECIBELS = -42;
   private static MAX_VOLUME_DECIBELS = -14;
   private static PING_PONG_INTERVAL_MS = 10000;
+  // Chromium browsers only implement simulcast for these codecs.
+  private static SIMULCAST_CAPABLE_CODEC_NAMES = [
+    VideoCodecCapability.h264ConstrainedBaselineProfile().codecName,
+    VideoCodecCapability.vp8().codecName,
+  ];
 
   private enableSimulcast: boolean = false;
   private enableSVC: boolean = false;
@@ -527,25 +532,27 @@ export default class DefaultAudioVideoController
       this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
-    // Chromium browsers do not support simulcast for AV1, so an AV1 content share with
-    // simulcast enabled would silently never transmit the high simulcast layer. SVC provides
-    // equivalent adaptation for AV1, so fall back to it for this connection.
+    // Chromium browsers only support simulcast for H.264 and VP8. A content share preferring
+    // AV1 (the default since 3.28) or VP9 with simulcast enabled would silently never transmit
+    // the high simulcast layer, so fall back to SVC for this connection instead.
     const isContentAttendee = new DefaultModality(
       this.configuration.credentials.attendeeId
     ).hasModality(DefaultModality.MODALITY_CONTENT);
-    let overrideSimulcastWithSVCForAv1Content = false;
+    let overrideSimulcastWithSVCForContent = false;
     if (
       this.enableSimulcast &&
       isContentAttendee &&
       this.videoSendCodecPreferences !== undefined &&
       this.videoSendCodecPreferences.length > 0 &&
-      this.videoSendCodecPreferences[0].equals(VideoCodecCapability.av1Main()) &&
+      !DefaultAudioVideoController.SIMULCAST_CAPABLE_CODEC_NAMES.includes(
+        this.videoSendCodecPreferences[0].codecName
+      ) &&
       new DefaultBrowserBehavior().supportsScalableVideoCoding()
     ) {
       this.logger.warn(
-        'Simulcast is not supported for AV1 content share. Using SVC instead, which provides equivalent adaptation for AV1.'
+        `Simulcast is not supported for ${this.videoSendCodecPreferences[0].codecName} content share. Using SVC instead.`
       );
-      overrideSimulcastWithSVCForAv1Content = true;
+      overrideSimulcastWithSVCForContent = true;
       this.enableSimulcast = false;
     }
 
@@ -555,7 +562,7 @@ export default class DefaultAudioVideoController
       );
     }
     this.enableSVC =
-      overrideSimulcastWithSVCForAv1Content ||
+      overrideSimulcastWithSVCForContent ||
       (!this.enableSimulcast &&
         this.configuration.enableSVC &&
         new DefaultBrowserBehavior().supportsScalableVideoCoding());
@@ -620,7 +627,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videoDownlinkBandwidthPolicy =
       this.configuration.videoDownlinkBandwidthPolicy;
     this.meetingSessionContext.videoUplinkBandwidthPolicy =
-      overrideSimulcastWithSVCForAv1Content &&
+      overrideSimulcastWithSVCForContent &&
       this.configuration.videoUplinkBandwidthPolicy instanceof
         DefaultSimulcastUplinkPolicyForContentShare
         ? // This policy was installed by `enableSimulcastForContentShare`; ignore it so the

@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a warning log when simulcast is enabled but the negotiated video send codec does not support simulcast, which can happen when a codec preference is dropped by the intersection with the meeting's supported receive codecs.
+
 ### Changed
 
-- Content share with simulcast enabled will now automatically use SVC instead when the preferred content share codec is AV1 (the default on Chromium-based browsers since 3.28), since AV1 does not support simulcast and the high simulcast layer would silently never transmit. To keep using simulcast for content share, set an H.264 or VP8 preference via `setContentShareVideoCodecPreferences`.
+- Content share with simulcast enabled will now automatically use SVC instead when the preferred content share codec is AV1 (the default on Chromium-based browsers since 3.28) or VP9, since Chromium only supports simulcast for H.264 and VP8 and the high simulcast layer would silently never transmit. To keep using simulcast for content share, set an H.264 or VP8 preference via `setContentShareVideoCodecPreferences`.
 - Documented content share codec restrictions for simulcast and SVC in the simulcast guide and in `ContentShareControllerFacade`.
 
 ## [3.33.0] - 2026-07-08

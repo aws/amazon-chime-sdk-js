@@ -152,11 +152,14 @@ You can use `enableSimulcastForContentShare` to toggle simulcast on/off for cont
 to set `enableSimulcastForUnifiedPlanChromiumBasedBrowsers` yourself as this configuration will be set automatically 
 for content share attendee as part of `enableSimulcastForContentShare`.
 
-**Note: Simulcast is only supported for the H.264 and VP8 codecs.** Therefore, when simulcast is enabled for an AV1 content share, the SDK will 
-log a warning and automatically use scalable video coding (SVC) instead, which provides equivalent adaptation for 
-AV1 (this is the same behavior as calling 
-[`enableSVCForContentShare`](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentsharecontrollerfacade.html#enablesvcforcontentshare)). 
-If you want to use simulcast for content share, set an H.264 or VP8 codec preference via 
+**Note: Simulcast is only supported for the H.264 and VP8 codecs.** Therefore, when the preferred content share 
+codec is AV1 (the default on Chromium-based browsers since 3.28) or VP9, enabling simulcast logs a warning and uses 
+scalable video coding (SVC) instead, the same as calling 
+[`enableSVCForContentShare`](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentsharecontrollerfacade.html#enablesvcforcontentshare). 
+For AV1 this provides equivalent adaptation; VP9 content share cannot use temporal scalability in Chromium, so it 
+sends a single stream. Either way the full resolution is transmitted, whereas simulcast with these codecs would have 
+transmitted only the lowest layer. If you want to use simulcast for content share, set an H.264 or VP8 codec 
+preference via 
 [`setContentShareVideoCodecPreferences`](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentsharecontrollerfacade.html#setcontentsharevideocodecpreferences):
 
 ```js
@@ -171,6 +174,10 @@ await meetingSession.audioVideo.startContentShareFromScreenCapture();
 await meetingSession.audioVideo.enableSVCForContentShare(true);
 await meetingSession.audioVideo.startContentShareFromScreenCapture();
 ```
+
+Note that the codec actually negotiated can still differ from your first preference, e.g. when that preference is 
+not supported by the other attendees in the meeting and is dropped. If the negotiated codec cannot do simulcast 
+while simulcast is enabled, the SDK logs a warning that only the lowest layer will transmit.
 
 ```js
 // Enable simulcast
