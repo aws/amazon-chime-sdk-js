@@ -7,6 +7,7 @@ import * as sinon from 'sinon';
 import { AudioVideoControllerState, NoOpAudioVideoController } from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
+import DefaultEncodedTransformWorkerManager from '../../src/encodedtransformmanager/DefaultEncodedTransformWorkerManager';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -1140,6 +1141,45 @@ describe('DefaultTransceiverController', () => {
 
       expect(mockEncodedTransformWorkerManager.setupVideoReceiverTransform.calledWith(mockReceiver))
         .to.be.true;
+    });
+
+    it('survives a repeat track event for a reused receiver on the legacy insertable streams path', async () => {
+      // Chromium builds without RTCRtpScriptTransform take the createEncodedStreams path, which
+      // never sets `receiver.transform`, so the guard in handleTrack cannot see the earlier setup.
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+      const legacyManager = new DefaultEncodedTransformWorkerManager(logger);
+      await legacyManager.start();
+
+      const tcWithManager = new DefaultTransceiverController(
+        logger,
+        context.browserBehavior,
+        context,
+        legacyManager
+      );
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcWithManager.setPeer(peer);
+      tcWithManager.setupLocalTransceivers();
+
+      const videoTrack = new MediaStreamTrack();
+      // @ts-ignore
+      videoTrack.kind = 'video';
+      // @ts-ignore
+      const receiver = new RTCRtpReceiver(videoTrack);
+      const trackEvent = {
+        type: 'track',
+        track: videoTrack,
+        receiver,
+        transceiver: peer.getTransceivers()[0],
+        streams: [],
+      } as unknown as RTCTrackEvent;
+
+      tcWithManager['handleTrack'](trackEvent);
+      // A renegotiation that reuses the transceiver delivers a second track event for the
+      // same receiver.
+      expect(() => tcWithManager['handleTrack'](trackEvent)).to.not.throw();
+
+      await legacyManager.stop();
     });
 
     it('does not call setupVideoReceiverTransform when transform is already set', () => {
