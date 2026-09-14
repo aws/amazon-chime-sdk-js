@@ -29,6 +29,12 @@ export default class DefaultEncodedTransformWorkerManager implements EncodedTran
   private redManager: RedundantAudioEncodedTransformManager | null = null;
   private metricsManager: MediaMetricsTransformManager | null = null;
 
+  // Senders and receivers whose encoded streams have already been created. `createEncodedStreams`
+  // throws `InvalidStateError` when called twice for the same sender or receiver and, unlike
+  // `RTCRtpScriptTransform`, leaves no marker on it, so callers cannot tell that the transform is
+  // already applied. Keyed weakly so entries disappear with the peer connection.
+  private legacyTransformTargets: WeakSet<RTCRtpSender | RTCRtpReceiver> = new WeakSet();
+
   // @ts-ignore
   private readonly supportsRTCScriptTransform: boolean = !!window.RTCRtpScriptTransform;
   // @ts-ignore
@@ -123,8 +129,18 @@ export default class DefaultEncodedTransformWorkerManager implements EncodedTran
       // @ts-ignore
       senderOrReceiver.transform = new RTCRtpScriptTransform(this.worker, options);
     } else if (this.supportsInsertableStreams) {
+      if (this.legacyTransformTargets.has(senderOrReceiver)) {
+        this.logger.info(
+          `[EncodedTransform] Encoded streams already created for this ${mediaType} ${
+            operation === 'send' ? 'sender' : 'receiver'
+          }, skipping transform setup`
+        );
+        return;
+      }
+
       // @ts-ignore - Legacy API
       const streams = senderOrReceiver.createEncodedStreams();
+      this.legacyTransformTargets.add(senderOrReceiver);
 
       this.worker.postMessage(
         {
