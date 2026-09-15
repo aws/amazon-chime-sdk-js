@@ -15,9 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Content share with simulcast enabled will now automatically use SVC instead when the preferred content share codec is AV1 (the default on Chromium-based browsers since 3.28) or VP9, since Chromium only supports simulcast for H.264 and VP8 and the high simulcast layer would silently never transmit. To keep using simulcast for content share, set an H.264 or VP8 preference via `setContentShareVideoCodecPreferences`.
+- Documented content share codec restrictions for simulcast and SVC in the simulcast guide and in `ContentShareControllerFacade`.
+
 ### Fixed
 
 - Fixed a Chrome `[Violation] Permissions policy violation: compute-pressure is not allowed in this document.` console message by skipping CPU pressure observation when the `compute-pressure` Permissions Policy feature is not allowed (e.g. in cross-origin iframes such as embedded CCP).
+- Fixed an unhandled `InvalidStateError: Failed to execute 'createEncodedStreams' on 'RTCRtpReceiver': Encoded streams already created` on Chromium builds without `RTCRtpScriptTransform` (Chrome M140 and earlier). A repeat `track` event for a transceiver that re-enters a receiving direction reapplied the encoded transform to a receiver whose encoded streams already existed.
 
 ## [3.32.0] - 2026-05-14
 
