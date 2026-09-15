@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added the `VIDEO_RECEIVED_RETRANSMIT_BITRATE` client metric, reporting the RTX bitrate received on video streams from the `retransmittedBytesReceived` WebRTC stat.
+
 ### Removed
 
 ### Changed

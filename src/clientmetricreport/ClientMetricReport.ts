@@ -493,6 +493,10 @@ export default class ClientMetricReport {
     firCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FIRS_SENT },
     pliCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PLIS_SENT },
     bytesReceived: { transform: this.bitsPerSecond, type: SdkMetric.Type.VIDEO_RECEIVED_BITRATE },
+    retransmittedBytesReceived: {
+      transform: this.bitsPerSecond,
+      type: SdkMetric.Type.VIDEO_RECEIVED_RETRANSMIT_BITRATE,
+    },
     jitter: {
       transform: this.secondsToMilliseconds,
       type: SdkMetric.Type.VIDEO_RECEIVED_JITTER_MS,
