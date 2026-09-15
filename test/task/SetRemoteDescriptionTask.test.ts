@@ -205,6 +205,42 @@ describe('SetRemoteDescriptionTask', () => {
       await runPromise;
     });
 
+    it('warns when simulcast is enabled but the negotiated codec cannot do simulcast', async () => {
+      context.sdpAnswer = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_AV1;
+      context.enableSimulcast = true;
+      const warnSpy = sinon.spy(context.logger, 'warn');
+      const runPromise = task.run();
+      await tick(clock, ASYNC_WAIT_MS);
+      await runPromise;
+      expect(context.currentVideoSendCodec.codecName).to.equal(
+        VideoCodecCapability.av1Main().codecName
+      );
+      expect(warnSpy.calledWithMatch(sinon.match(/does not support simulcast/))).to.be.true;
+      warnSpy.restore();
+    });
+
+    it('does not warn when simulcast is enabled and the negotiated codec can do simulcast', async () => {
+      context.sdpAnswer = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO;
+      context.enableSimulcast = true;
+      const warnSpy = sinon.spy(context.logger, 'warn');
+      const runPromise = task.run();
+      await tick(clock, ASYNC_WAIT_MS);
+      await runPromise;
+      expect(warnSpy.calledWithMatch(sinon.match(/does not support simulcast/))).to.be.false;
+      warnSpy.restore();
+    });
+
+    it('does not warn about simulcast codec support when simulcast is disabled', async () => {
+      context.sdpAnswer = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_AV1;
+      context.enableSimulcast = false;
+      const warnSpy = sinon.spy(context.logger, 'warn');
+      const runPromise = task.run();
+      await tick(clock, ASYNC_WAIT_MS);
+      await runPromise;
+      expect(warnSpy.calledWithMatch(sinon.match(/does not support simulcast/))).to.be.false;
+      warnSpy.restore();
+    });
+
     it('can handle undefined current video send codec', async () => {
       context.sdpAnswer = SDPMock.CHROME_UNIFIED_PLAN_AUDIO_ONLY_WITH_VIDEO_CHECK_IN;
       context.audioVideoController.configuration.credentials.attendeeId = 'attendee#content';

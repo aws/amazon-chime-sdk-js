@@ -19,6 +19,13 @@ export default interface ContentShareControllerFacade {
    * `startContentShareFromScreenCapture`. The default encoding parameters are:
    * - High layer: 1200 kbps max bitrate
    * - Low layer: 300 kbps max bitrate, scale down resolution by 2, and 5 fps max frame rate.
+   *
+   * Simulcast is only supported for the H.264 and VP8 codecs. On Chromium-based browsers the
+   * default content share codec is AV1, which does not support simulcast; when the preferred
+   * codec is AV1 or VP9 the SDK will automatically use SVC instead (see
+   * `enableSVCForContentShare`). To use simulcast, additionally set an H.264 or VP8 preference
+   * via `setContentShareVideoCodecPreferences`.
+   *
    * @param enable Enable/disable simulcast
    * @param encodingParams Overide the default encoding params for either layer in max bitrate, scale resolution
    * down by, or max frame rate.
@@ -31,7 +38,8 @@ export default interface ContentShareControllerFacade {
   /**
    * Toggle SVC for content share. This should be called before calling `startContentShare` or
    * `startContentShareFromScreenCapture`. This will only have impact if using an SVC supporting
-   * codec like VP9. It cannot be enabled at the same time as simulcast.
+   * codec for content share, which is currently only AV1 (the default content share codec on
+   * Chromium-based browsers). It cannot be enabled at the same time as simulcast.
    *
    * @param enable Enable/disable SVC
    */
