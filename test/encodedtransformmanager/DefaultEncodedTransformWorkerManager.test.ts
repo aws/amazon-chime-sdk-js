@@ -238,6 +238,25 @@ describe('DefaultEncodedTransformWorkerManager', () => {
       // @ts-ignore
       expect(sender.transform).to.not.be.undefined;
     });
+
+    it('creates encoded streams only once per sender on the legacy insertable streams path', async () => {
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+      const legacyManager = new DefaultEncodedTransformWorkerManager(logger);
+      await legacyManager.start();
+      // @ts-ignore
+      const track = new MediaStreamTrack('video-track', 'video');
+      // @ts-ignore
+      const sender = new RTCRtpSender(track);
+      // @ts-ignore
+      const createEncodedStreamsSpy = sinon.spy(sender, 'createEncodedStreams');
+
+      legacyManager.setupVideoSenderTransform(sender);
+      legacyManager.setupVideoSenderTransform(sender);
+
+      expect(createEncodedStreamsSpy.callCount).to.equal(1);
+      await legacyManager.stop();
+    });
   });
 
   describe('setupVideoReceiverTransform', () => {
@@ -250,6 +269,49 @@ describe('DefaultEncodedTransformWorkerManager', () => {
       manager.setupVideoReceiverTransform(receiver);
       // @ts-ignore
       expect(receiver.transform).to.not.be.undefined;
+    });
+
+    it('creates encoded streams only once per receiver on the legacy insertable streams path', async () => {
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+      const legacyManager = new DefaultEncodedTransformWorkerManager(logger);
+      await legacyManager.start();
+      // @ts-ignore
+      const track = new MediaStreamTrack('video-track', 'video');
+      // @ts-ignore
+      const receiver = new RTCRtpReceiver(track);
+      // @ts-ignore
+      const createEncodedStreamsSpy = sinon.spy(receiver, 'createEncodedStreams');
+
+      // A repeat `track` event for a reused transceiver applies the transform again.
+      legacyManager.setupVideoReceiverTransform(receiver);
+      legacyManager.setupVideoReceiverTransform(receiver);
+
+      expect(createEncodedStreamsSpy.callCount).to.equal(1);
+      await legacyManager.stop();
+    });
+
+    it('creates encoded streams for a new receiver after the worker restarted', async () => {
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+      const legacyManager = new DefaultEncodedTransformWorkerManager(logger);
+      await legacyManager.start();
+      // @ts-ignore
+      const track = new MediaStreamTrack('video-track', 'video');
+      // @ts-ignore
+      const receiver = new RTCRtpReceiver(track);
+      legacyManager.setupVideoReceiverTransform(receiver);
+      await legacyManager.stop();
+
+      // A new peer connection means new receivers, so the old bookkeeping must not leak.
+      await legacyManager.start();
+      // @ts-ignore
+      const newReceiver = new RTCRtpReceiver(track);
+      // @ts-ignore
+      const createEncodedStreamsSpy = sinon.spy(newReceiver, 'createEncodedStreams');
+      legacyManager.setupVideoReceiverTransform(newReceiver);
+      expect(createEncodedStreamsSpy.callCount).to.equal(1);
+      await legacyManager.stop();
     });
   });
 

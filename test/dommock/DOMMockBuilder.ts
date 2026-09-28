@@ -1131,12 +1131,22 @@ export default class DOMMockBuilder {
       readonly track: MediaStreamTrack;
       // @ts-ignore
       transform?: RTCRtpScriptTransform;
+      private encodedStreamsCreated: boolean = false;
 
       constructor(track: MediaStreamTrack) {
         this.track = track;
       }
 
       createEncodedStreams(): TransformStream {
+        // Chromium throws InvalidStateError if called more than once for a receiver.
+        if (this.encodedStreamsCreated) {
+          const error = new Error(
+            `Failed to execute 'createEncodedStreams' on 'RTCRtpReceiver': Encoded streams already created`
+          );
+          error.name = 'InvalidStateError';
+          throw error;
+        }
+        this.encodedStreamsCreated = true;
         return new TransformStream();
       }
     };
@@ -1146,6 +1156,7 @@ export default class DOMMockBuilder {
       parameter: RTCRtpSendParameters;
       // @ts-ignore
       transform?: RTCRtpScriptTransform;
+      private encodedStreamsCreated: boolean = false;
 
       constructor(track: MediaStreamTrack) {
         this.track = track;
@@ -1175,6 +1186,15 @@ export default class DOMMockBuilder {
       }
 
       createEncodedStreams(): TransformStream {
+        // Chromium throws InvalidStateError if called more than once for a sender.
+        if (this.encodedStreamsCreated) {
+          const error = new Error(
+            `Failed to execute 'createEncodedStreams' on 'RTCRtpSender': Encoded streams already created`
+          );
+          error.name = 'InvalidStateError';
+          throw error;
+        }
+        this.encodedStreamsCreated = true;
         return new TransformStream();
       }
 
