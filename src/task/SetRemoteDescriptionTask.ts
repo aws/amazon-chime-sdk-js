@@ -15,6 +15,12 @@ import BaseTask from './BaseTask';
 export default class SetRemoteDescriptionTask extends BaseTask {
   protected taskName = 'SetRemoteDescriptionTask';
 
+  // Chromium browsers only implement simulcast for these codecs.
+  private static SIMULCAST_CAPABLE_CODEC_NAMES = [
+    VideoCodecCapability.h264ConstrainedBaselineProfile().codecName,
+    VideoCodecCapability.vp8().codecName,
+  ];
+
   private cancelICEPromise: () => void;
 
   constructor(private context: AudioVideoControllerState) {
@@ -55,10 +61,28 @@ export default class SetRemoteDescriptionTask extends BaseTask {
     this.context.prioritizedSendVideoCodecCapabilities = new SDP(
       sdp
     ).prioritizedSendVideoCodecCapabilities();
+    const previousVideoSendCodec = this.context.currentVideoSendCodec;
     this.context.currentVideoSendCodec =
       this.context.prioritizedSendVideoCodecCapabilities.length > 0
         ? this.context.prioritizedSendVideoCodecCapabilities[0]
         : undefined;
+
+    // The negotiated codec can differ from the first configured send preference, e.g. when a
+    // preference is dropped by the intersection with the meeting's supported receive codecs. If
+    // it does not support simulcast, the higher simulcast layers will never transmit. Only log on
+    // a codec change so renegotiations do not repeat this.
+    if (
+      this.context.enableSimulcast &&
+      this.context.currentVideoSendCodec !== undefined &&
+      !this.context.currentVideoSendCodec.equals(previousVideoSendCodec) &&
+      !SetRemoteDescriptionTask.SIMULCAST_CAPABLE_CODEC_NAMES.includes(
+        this.context.currentVideoSendCodec.codecName
+      )
+    ) {
+      this.logger.warn(
+        `Simulcast is enabled but the negotiated video send codec ${this.context.currentVideoSendCodec.codecName} does not support simulcast, so only the lowest layer will transmit. Prefer H.264 or VP8 to use simulcast, or use SVC instead.`
+      );
+    }
 
     const mediaStream = this.context.activeVideoInput;
     if (mediaStream !== undefined) {
