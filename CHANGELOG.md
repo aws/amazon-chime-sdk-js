@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed a `TypeError: Cannot read properties of undefined (reading 'credentials')` thrown by `DefaultEventController.getAttributes` when an event is published after `destroy()` (for example, a terminal `meetingEnded` event during teardown). Meeting identity is now read through optional chaining, so a late publish degrades to undefined identity fields instead of throwing.
 - Fixed a Chrome `[Violation] Permissions policy violation: compute-pressure is not allowed in this document.` console message by skipping CPU pressure observation when the `compute-pressure` Permissions Policy feature is not allowed (e.g. in cross-origin iframes such as embedded CCP).
 - Fixed an unhandled `InvalidStateError: Failed to execute 'createEncodedStreams' on 'RTCRtpReceiver': Encoded streams already created` on Chromium builds without `RTCRtpScriptTransform` (Chrome M140 and earlier). A repeat `track` event for a transceiver that re-enters a receiving direction reapplied the encoded transform to a receiver whose encoded streams already existed.
 
