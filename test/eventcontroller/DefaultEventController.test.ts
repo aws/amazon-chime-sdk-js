@@ -177,6 +177,33 @@ describe('DefaultEventController', () => {
       await eventController.publishEvent(eventName, attributes);
       assert(spy.calledOnce);
     });
+
+    it('does not throw when publishing after destroy and omits meeting identity', async () => {
+      // destroy() clears configuration, yet the stop sequence can still publish a terminal event
+      // afterward. getAttributes must degrade to undefined identity rather than throw.
+      emptyConfiguration.credentials.attendeeId = 'attendee-1';
+      emptyConfiguration.meetingId = 'meeting-1';
+      eventController = new DefaultEventController(emptyConfiguration, logger);
+      let receivedName: EventName | undefined;
+      let receivedAttributes: EventAttributes | undefined;
+      eventController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          receivedName = name;
+          receivedAttributes = attributes;
+        },
+      });
+
+      await eventController.destroy();
+
+      const eventName = 'audioInputFailed';
+      await eventController.publishEvent(eventName);
+      await clock.tickAsync(100);
+
+      expect(receivedName).to.equal(eventName);
+      expect(receivedAttributes?.attendeeId).to.be.undefined;
+      expect(receivedAttributes?.meetingId).to.be.undefined;
+      expect(receivedAttributes?.externalMeetingId).to.equal('');
+    });
   });
 
   describe('device names', () => {

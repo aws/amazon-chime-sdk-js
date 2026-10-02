@@ -144,19 +144,23 @@ export default class DefaultEventController implements EventController, Destroya
   }
 
   private getAttributes(timestampMs: number): EventAttributes {
+    // `destroy()` clears `configuration`, yet a terminal event can still be published afterward
+    // (the stop sequence publishes `meetingEnded` asynchronously). Read meeting identity through
+    // optional chaining so a late publish degrades to undefined fields instead of throwing.
+    const credentials = this.configuration?.credentials;
     return {
-      attendeeId: this.configuration.credentials.attendeeId,
+      attendeeId: credentials?.attendeeId,
       browserMajorVersion: this.parserResult.browserMajorVersion,
       browserName: this.parserResult.browserName,
       browserVersion: this.parserResult.browserVersion,
       deviceName: this.parserResult.deviceName,
       externalMeetingId:
-        typeof this.configuration.externalMeetingId === 'string'
+        typeof this.configuration?.externalMeetingId === 'string'
           ? this.configuration.externalMeetingId
           : '',
-      externalUserId: this.configuration.credentials.externalUserId,
+      externalUserId: credentials?.externalUserId,
       meetingHistory: this.meetingHistoryStates,
-      meetingId: this.configuration.meetingId,
+      meetingId: this.configuration?.meetingId,
       osName: this.parserResult.osName,
       osVersion: this.parserResult.osVersion,
       sdkVersion: Versioning.sdkVersion,
