@@ -151,6 +151,11 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     }
     if (isDestroyable(this.eventController)) {
       await this.eventController.destroy();
+      // Unbind the event controller this session just destroyed, so a reused device
+      // controller binds a live one on the next session.
+      if (this._deviceController.eventController === this._eventController) {
+        this._deviceController.eventController = undefined;
+      }
     }
     await this.encodedTransformWorkerManager?.stop();
     await this.contentShareEncodedTransformWorkerManager?.stop();

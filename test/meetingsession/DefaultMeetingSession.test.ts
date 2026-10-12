@@ -10,8 +10,10 @@ import NoOpDeviceController, {
 } from '../../src/devicecontroller/NoOpDeviceController';
 import DefaultEncodedTransformWorkerManager from '../../src/encodedtransformmanager/DefaultEncodedTransformWorkerManager';
 import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
+import EventController from '../../src/eventcontroller/EventController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultMeetingSession from '../../src/meetingsession/DefaultMeetingSession';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -332,6 +334,101 @@ describe('DefaultMeetingSession', () => {
         (session.deviceController as NoOpDeviceControllerWithEventController).eventController
       ).to.not.equal(session.eventController);
       mockBuilder.cleanup();
+    });
+  });
+
+  describe('destroy unbinds the destroyed event controller from the device controller', () => {
+    let mockBuilder: DOMMockBuilder;
+
+    const configuration = (): MeetingSessionConfiguration =>
+      new NoOpAudioVideoController().configuration;
+    const newEventController = (): DefaultEventController =>
+      new DefaultEventController(configuration(), new NoOpLogger());
+    const newSession = (
+      deviceController: NoOpDeviceControllerWithEventController,
+      eventController?: EventController
+    ): DefaultMeetingSession =>
+      new DefaultMeetingSession(
+        configuration(),
+        new NoOpLogger(),
+        deviceController,
+        eventController
+      );
+
+    beforeEach(() => {
+      mockBuilder = new DOMMockBuilder();
+    });
+
+    afterEach(() => {
+      mockBuilder.cleanup();
+    });
+
+    it('unbinds an SDK-created event controller so the next session binds its own', async () => {
+      const deviceController = new NoOpDeviceControllerWithEventController(undefined);
+      const first = newSession(deviceController);
+      expect(deviceController.eventController).to.equal(first.eventController);
+
+      await first.destroy();
+      expect(deviceController.eventController).to.be.undefined;
+
+      const second = newSession(deviceController);
+      expect(deviceController.eventController).to.equal(second.eventController);
+    });
+
+    it('unbinds a builder event controller that the session bound onto an empty device controller', async () => {
+      const deviceController = new NoOpDeviceControllerWithEventController(undefined);
+      const firstEventController = newEventController();
+      await newSession(deviceController, firstEventController).destroy();
+      expect(deviceController.eventController).to.be.undefined;
+
+      const secondEventController = newEventController();
+      newSession(deviceController, secondEventController);
+      expect(deviceController.eventController).to.equal(secondEventController);
+    });
+
+    it('unbinds a builder event controller mounted on the device controller and passed to the session', async () => {
+      const eventController = newEventController();
+      const deviceController = new NoOpDeviceControllerWithEventController(eventController);
+      await newSession(deviceController, eventController).destroy();
+      expect(deviceController.eventController).to.be.undefined;
+    });
+
+    it('keeps a builder event controller mounted on the device controller', async () => {
+      const mountedEventController = newEventController();
+      const deviceController = new NoOpDeviceControllerWithEventController(mountedEventController);
+      const session = newSession(deviceController);
+      expect(session.eventController).to.not.equal(mountedEventController);
+
+      await session.destroy();
+      expect(deviceController.eventController).to.equal(mountedEventController);
+    });
+
+    it('keeps the device controller event controller when the session uses a different one', async () => {
+      const mountedEventController = newEventController();
+      const deviceController = new NoOpDeviceControllerWithEventController(mountedEventController);
+      await newSession(deviceController, newEventController()).destroy();
+      expect(deviceController.eventController).to.equal(mountedEventController);
+    });
+
+    it('keeps an event controller the builder rebinds onto the device controller during the session', async () => {
+      const deviceController = new NoOpDeviceControllerWithEventController(undefined);
+      const session = newSession(deviceController);
+      const reboundEventController = newEventController();
+      deviceController.eventController = reboundEventController;
+
+      await session.destroy();
+      expect(deviceController.eventController).to.equal(reboundEventController);
+    });
+
+    it('keeps a builder event controller that has no destroy()', async () => {
+      const eventController: EventController = {
+        addObserver: (): void => {},
+        removeObserver: (): void => {},
+        publishEvent: async (): Promise<void> => {},
+      };
+      const deviceController = new NoOpDeviceControllerWithEventController(undefined);
+      await newSession(deviceController, eventController).destroy();
+      expect(deviceController.eventController).to.equal(eventController);
     });
   });
 
