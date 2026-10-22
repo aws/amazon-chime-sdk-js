@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `DefaultDeviceController.stopAudioInput()` now resets the local audio mute state. Previously, when a device controller was reused across meeting sessions, leaving a meeting while muted caused an audio transform device (such as Amazon Voice Focus) chosen in the next meeting to start muted, so noise suppression stayed bypassed until the user muted and unmuted.
 - `DefaultMeetingSession.destroy()` now unbinds the `EventController` it destroyed from the `deviceController`, preventing a stale binding when the device controller is reused ([#3264](https://github.com/aws/amazon-chime-sdk-js/issues/3264)).
 - Fixed a `TypeError: Cannot read properties of undefined (reading 'credentials')` thrown by `DefaultEventController.getAttributes` when an event is published after `destroy()` (for example, a terminal `meetingEnded` event during teardown). Meeting identity is now read through optional chaining, so a late publish degrades to undefined identity fields instead of throwing.
 - Fixed a Chrome `[Violation] Permissions policy violation: compute-pressure is not allowed in this document.` console message by skipping CPU pressure observation when the `compute-pressure` Permissions Policy feature is not allowed (e.g. in cross-origin iframes such as embedded CCP).
