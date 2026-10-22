@@ -272,6 +272,10 @@ export default class DefaultDeviceController
       }
       this.stopTracksAndRemoveCallbacks('audio');
     } finally {
+      // The muted flag mirrors the enabled state of the audio input track. That track is now
+      // stopped, and the next `startAudioInput` produces a new, enabled track, so the flag must
+      // not carry over (for example, into a new meeting session that reuses this controller).
+      this.muted = false;
       this.watchForDeviceChangesIfNecessary();
       this.publishAudioInputDidChangeEvent(undefined);
     }

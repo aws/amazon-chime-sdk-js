@@ -489,6 +489,53 @@ describe('DefaultDeviceController', () => {
 
       expect(device.muted).to.deep.equal([false, true, false, true]);
     });
+
+    it('does not carry the mute state over a stopAudioInput into a transform started later', async () => {
+      enableWebAudio(true);
+      await deviceController.startAudioInput('foo');
+      deviceController.muteLocalAudioInputStream();
+      await deviceController.stopAudioInput();
+
+      // The same controller is reused, for example by a new meeting session that starts unmuted.
+      await deviceController.startAudioInput('foo');
+      const device = new MutingTransformDevice('foo');
+      await deviceController.startAudioInput(device);
+      expect(device.muted).to.deep.equal([false]);
+
+      deviceController.muteLocalAudioInputStream();
+      deviceController.unmuteLocalAudioInputStream();
+      expect(device.muted).to.deep.equal([false, true, false]);
+    });
+
+    it('keeps the mute state when a transform is chosen without stopping audio input', async () => {
+      enableWebAudio(true);
+      await deviceController.startAudioInput('foo');
+      deviceController.muteLocalAudioInputStream();
+
+      const device = new MutingTransformDevice('foo');
+      await deviceController.startAudioInput(device);
+      expect(device.muted).to.deep.equal([true]);
+
+      deviceController.unmuteLocalAudioInputStream();
+      expect(device.muted).to.deep.equal([true, false]);
+    });
+
+    it('resets the mute state on stopAudioInput without Web Audio', async () => {
+      enableWebAudio(false);
+      await deviceController.startAudioInput('foo');
+      deviceController.muteLocalAudioInputStream();
+      // @ts-ignore
+      expect(deviceController.muted).to.be.true;
+
+      await deviceController.stopAudioInput();
+      // @ts-ignore
+      expect(deviceController.muted).to.be.false;
+
+      const stream = await deviceController.startAudioInput('foo');
+      expect(stream.getAudioTracks()[0].enabled).to.be.true;
+      deviceController.muteLocalAudioInputStream();
+      expect(stream.getAudioTracks()[0].enabled).to.be.false;
+    });
   });
 
   describe('startAudioInput transform device permissions', () => {
