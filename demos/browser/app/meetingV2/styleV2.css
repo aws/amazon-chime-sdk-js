@@ -1,0 +1,2258 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Meeting demo stylesheet: plain CSS over the shared tokens (`app/tokens.css`) and generic
+ * components (`app/base.css`); no framework. Dark is the default meeting surface, light follows
+ * the system or the Appearance setting.
+ */
+
+@import '../tokens.css';
+@import '../base.css';
+
+.flow-fatal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--fatal-bg);
+  color: var(--on-media);
+  padding: var(--space-5);
+
+  .fatal-card {
+    max-width: 720px;
+  }
+
+  & pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: rgb(0 0 0 / 0.3);
+    padding: var(--space-3);
+    border-radius: var(--radius-m);
+  }
+}
+
+textarea.code {
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  .select,
+  .input {
+    width: clamp(200px, 38%, 360px);
+    flex: none;
+  }
+}
+
+/* Label above the control, for controls too wide to sit beside it. */
+.setting-stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+/* Segmented control: the choices of a select side by side, one pressed. */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: var(--bg);
+
+  & .segment {
+    font: inherit;
+    font-size: 13px;
+    flex: 1 1 auto;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: calc(var(--radius-m) - 2px);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+
+    &[aria-checked='true'] {
+      background: var(--accent-strong);
+      color: var(--accent-contrast);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.setting-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.setting-help {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.inline-switch .setting {
+  padding: 6px 0;
+  border: 0;
+}
+
+.setting-applies {
+  font-size: 11px;
+  color: var(--warning);
+  display: none;
+}
+
+.settings-in-meeting .setting-applies {
+  display: inline;
+}
+
+.settings-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: var(--space-3) 0 var(--space-1);
+}
+
+/* A picker with a control beside it (microphone level, speaker Test), as wide as the others. */
+.setting .field-inline {
+  width: clamp(200px, 38%, 360px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  .select {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+  }
+
+  > :last-child {
+    flex: none;
+    width: 56px;
+  }
+
+  .level {
+    background: var(--control-off);
+  }
+}
+
+/* Button reset for the blocks below; it stays above them so their own declarations win. */
+:is(.icon-button, .dock-button, .dock-chevron, .menu-item, .settings-tab) {
+  font: inherit;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-m);
+  color: var(--text);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/*
+ * Dock buttons: icon over label, pressed state drawn from aria-pressed so assistive tech and
+ * the visuals never disagree.
+ */
+.dock-button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 64px;
+  height: 56px;
+  padding: 6px 10px;
+  border-radius: var(--radius-m);
+  color: var(--text);
+  position: relative;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  & svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Off state of a device toggle: red icon, slashed by the icon swap in TS. */
+  &[aria-pressed='false'][data-kind='device'] {
+    color: var(--danger);
+  }
+
+  /* Device that cannot be used (blocked, missing, busy): amber with a warning dot. */
+  &[data-blocked][data-kind='device'] {
+    color: var(--warning);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      right: calc(50% - 16px);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+      box-shadow: 0 0 0 2px var(--bg-elevated);
+    }
+  }
+
+  /* Pressed feature toggles (share, panels), and React while our hand is raised */
+  &[aria-pressed='true'][data-kind='feature'],
+  &.hand-raised {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
+
+    & .dock-label {
+      color: var(--text);
+    }
+  }
+}
+
+.dock-label {
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+.dock-badge {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--surface-active);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+
+  &:empty {
+    display: none;
+  }
+}
+
+/* A background effect is on: small accent mark on the camera button (effects live in its menu). */
+.dock-button[data-video-filter]::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.menu-share {
+  min-width: 300px;
+}
+
+/* Raised hands, beside the participant count on the Participants tab. */
+.badge-hand {
+  background: color-mix(in srgb, var(--warning) 22%, transparent);
+  color: var(--text);
+}
+
+.dock-badge-accent {
+  background: var(--accent-strong);
+  color: var(--accent-contrast);
+}
+
+.dock-split {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: var(--radius-m);
+
+  .dock-button {
+    border-radius: var(--radius-m) 0 0 var(--radius-m);
+  }
+}
+
+.dock-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 56px;
+  border-left: 1px solid var(--border);
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+  color: var(--text-muted);
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  &[aria-expanded='true'] {
+    background: var(--surface-active);
+  }
+}
+
+/* Developer-only affordances are hidden unless the body carries the flag. */
+body:not(.developer-mode) .developer-only {
+  display: none !important;
+}
+
+.menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 6px;
+  min-width: 220px;
+  max-width: min(360px, calc(100vw - 16px));
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-2);
+  z-index: 50;
+
+  /* Menu.ts sets [popover] only where the API exists; elsewhere it toggles .menu-open. */
+  &:not([popover]):not(.menu-open) {
+    display: none;
+  }
+
+  @supports selector(:popover-open) {
+    &[popover]:not(:popover-open) {
+      display: none;
+    }
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--radius-s);
+  color: var(--text);
+  text-align: left;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--surface-hover);
+    outline: none;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.menu-check {
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+  visibility: hidden;
+
+  [aria-checked='true'] > & {
+    visibility: visible;
+  }
+}
+
+.menu-icon {
+  display: flex;
+  flex: none;
+  color: var(--text-muted);
+}
+
+/* In a menu where some items carry a checkmark or an icon, the others get the same empty column,
+   so every label starts at the same place. */
+.menu:has(> .menu-item > .menu-check, > .menu-item > .menu-icon)
+  > .menu-item:not(:has(> .menu-check, > .menu-icon), .reaction-emoji)::before {
+  content: '';
+  flex: none;
+  width: 16px;
+}
+
+.menu-label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+
+  > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.menu-description {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.menu-header {
+  padding: 6px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.menu-note {
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.menu-separator {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--border);
+}
+
+/* React: a row of emoji over a Raise hand item, as in Teams. */
+.reactions-menu {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 44px);
+  gap: 4px;
+  padding: 6px;
+
+  .reaction-emoji {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    font-size: 24px;
+
+    .menu-label > span:first-child {
+      overflow: visible;
+    }
+  }
+
+  .menu-separator,
+  #menu-item-raise-hand {
+    grid-column: 1 / -1;
+  }
+
+  .menu-separator {
+    margin: 2px 4px;
+  }
+
+  #menu-item-raise-hand[aria-checked='true'] {
+    color: var(--accent);
+  }
+}
+
+dialog.dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  background: var(--bg-elevated);
+  color: var(--text);
+  box-shadow: var(--shadow-2);
+  display: none;
+  flex-direction: column;
+
+  &[open] {
+    display: flex;
+  }
+
+  &::backdrop {
+    background: var(--media-scrim);
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* Size variants carry the `dialog` type so they outrank the base `dialog.dialog` width. */
+dialog.dialog-wide {
+  width: min(760px, calc(100vw - 32px));
+}
+
+dialog.dialog-small {
+  width: min(420px, calc(100vw - 32px));
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+
+  & h2 {
+    font-size: 17px;
+  }
+}
+
+.dialog-body {
+  padding: var(--space-4) var(--space-5);
+  overflow-y: auto;
+}
+
+.dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 16px;
+  margin: 0;
+
+  & dt {
+    color: var(--text-muted);
+  }
+
+  & dd {
+    margin: 0;
+    word-break: break-all;
+  }
+}
+
+/* Settings dialog */
+dialog.dialog-settings {
+  /* Developer options: 72% of the window, never smaller than the customer size below, never over
+     1100px or the viewport. Turning them on or off resizes the open dialog. */
+  width: min(max(900px, 72vw), 1100px, calc(100vw - 32px));
+  height: min(max(680px, 78vh), 900px, calc(100vh - 48px));
+  transition:
+    width 0.2s ease,
+    height 0.2s ease;
+
+  /* Customers see a handful of options; a smaller dialog fits them. */
+  body:not(.developer-mode) & {
+    width: min(760px, calc(100vw - 32px));
+    height: min(600px, calc(100vh - 48px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.dialog-settings {
+    transition: none;
+  }
+}
+
+.settings-permission-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 8px 0;
+}
+
+.settings-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+}
+
+.settings-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  border-right: 1px solid var(--border);
+  min-width: 160px;
+}
+
+.settings-tab {
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: var(--radius-s);
+  color: var(--text-muted);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  &[aria-selected='true'] {
+    background: var(--surface-active);
+    color: var(--text);
+    font-weight: 600;
+  }
+}
+
+.settings-panels {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-5);
+}
+
+.settings-filter {
+  margin-left: auto;
+  margin-right: var(--space-3);
+  width: min(240px, 40%);
+}
+
+.settings-no-match {
+  margin: 0;
+  padding: var(--space-5);
+  color: var(--text-muted);
+
+  & .link {
+    font: inherit;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+/* Phones: the filter gets its own row under the title. */
+
+/* Filtering shows matches from every tab in one list; the tab rail and section headings go away. */
+.settings-filtering {
+  .settings-tabs,
+  .settings-section-title,
+  .settings-actions {
+    display: none;
+  }
+
+  .settings-panel:not([hidden]) + .settings-panel:not([hidden]) {
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+}
+
+.level {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.level-bar {
+  height: 100%;
+  width: 0;
+  background: var(--success);
+  transition: width 33ms linear;
+}
+
+.prejoin {
+  width: min(100%, 920px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.prejoin-subtitle {
+  margin-top: calc(-1 * var(--space-4));
+}
+
+.prejoin-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.prejoin-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.preview-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  background: var(--tile-bg);
+
+  & video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scaleX(-1);
+  }
+}
+
+body.no-mirror .preview-frame video {
+  transform: none;
+}
+
+.preview-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  color: var(--tile-fg);
+
+  & svg {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.prejoin-preview-controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.preview-placeholder-error {
+  color: var(--warning);
+  text-align: center;
+  padding: 0 var(--space-4);
+}
+
+.prejoin-warning {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-m);
+  border: 1px solid color-mix(in srgb, var(--warning) 45%, transparent);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  font-size: 13px;
+}
+
+
+.meeting {
+  display: grid;
+  grid-template-rows: var(--header-height) minmax(0, 1fr) var(--dock-height);
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg);
+}
+
+/* The title and its details button at the left; status, media region and clock at the right. */
+.meeting-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-3);
+  gap: var(--space-3);
+  min-width: 0;
+
+  .icon-button {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.meeting-title {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.meeting-name {
+  margin: 0;
+  font-size: inherit;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meeting-region {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.meeting-header-end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+}
+
+.connection-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--warning);
+  font-size: 12px;
+  font-weight: 600;
+
+  & svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.recording-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 600;
+
+  & svg {
+    width: 14px;
+    height: 14px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.meeting-main {
+  display: flex;
+  min-height: 0;
+  padding: 0 6px 6px;
+  gap: 6px;
+}
+
+.stage {
+  /* A size container so the speaker layout's side tiles can be sized to the stage height. */
+  container-type: size;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-sunken);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+
+/* Banners over the top of the stage: "You're sharing" and the alone-in-the-meeting invite. */
+.stage-banner {
+  position: absolute;
+  top: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: calc(100% - 2 * var(--space-3));
+  padding: 6px 6px 6px 14px;
+  border-radius: var(--radius-l);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-2);
+  font-size: 13px;
+
+  & svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+}
+
+.sharing-bar {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+}
+
+/* Both at once: the invite sits under the sharing bar. */
+.sharing-bar:not([hidden]) ~ .stage-invite {
+  top: calc(var(--space-3) + 52px);
+}
+
+.stage-invite-text {
+  min-width: 0;
+}
+
+.stage-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  pointer-events: none;
+
+  & svg {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.paginate {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 64px;
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--media-scrim);
+  color: var(--on-media);
+  cursor: pointer;
+  z-index: 2;
+
+  &.paginate-left {
+    left: var(--space-2);
+  }
+
+  &.paginate-right {
+    right: var(--space-2);
+  }
+}
+
+/* The buttons centred in the window and Leave/End at the right; the right column never gets
+   narrower than Leave/End, so on a narrow window the centre gives way instead of overlapping. */
+.dock {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
+  align-items: center;
+  padding: 0 var(--space-3);
+  gap: var(--space-2);
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.dock-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* Between your own media (mic, camera, share) and the rest. */
+.dock-divider {
+  flex: none;
+  width: 1px;
+  height: 32px;
+  background: var(--border);
+}
+
+.dock-center {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.dock-end {
+  grid-column: 3;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.v-grid {
+  --cols: 1;
+  --rows: 1;
+  --tile-gap: 4px;
+  display: grid;
+  height: 100%;
+  width: 100%;
+  gap: var(--tile-gap);
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+  align-content: center;
+
+  /* Speaker: the featured tile on the left and a column of 16:9 tiles on the right, centred by
+     the empty ::before and ::after rows and shrunk to fit when there are many; the column is as
+     wide as its tiles, so the featured tile takes what they free up. */
+  &.featured {
+    --side-w: max(160px, 22cqw);
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) repeat(var(--rows), auto) minmax(0, 1fr);
+
+    &::before,
+    &::after {
+      content: '';
+      grid-column: 2;
+    }
+
+    & > .featured {
+      grid-column: 1;
+      grid-row: 1 / -1;
+    }
+
+    & > :not(.featured) {
+      grid-column: 2;
+      height: min(
+        var(--side-w) * 9 / 16,
+        (100cqh - (var(--rows) + 1) * var(--tile-gap)) / var(--rows)
+      );
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  /* Speaker with only your own tile beside it: yours floats over the featured tile's corner. */
+  &.featured.pip {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+
+    &::before,
+    &::after {
+      content: none;
+    }
+
+    /* Auto placement makes the stage, not a grid cell, its containing block. */
+    & > :not(.featured) {
+      grid-area: auto;
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      z-index: 2;
+      width: clamp(120px, 22%, 280px);
+      height: auto;
+      aspect-ratio: 16 / 9;
+      box-shadow: var(--shadow-2);
+    }
+  }
+
+  /* Spotlight: the featured tile alone. */
+  &.spotlight {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+
+    &::before,
+    &::after {
+      content: none;
+    }
+
+    & video-tile.active:not(.featured),
+    & .avatar-tile:not(.featured) {
+      display: none;
+    }
+  }
+
+  &.empty {
+    display: none;
+  }
+}
+
+/* Someone without video: initials on a colour of their own, the speaking ring on the circle. */
+.avatar-tile.featured {
+  & .avatar-circle {
+    width: clamp(96px, 20%, 200px);
+  }
+
+  & .avatar-initials {
+    font-size: clamp(32px, 7cqi, 72px);
+  }
+}
+
+.avatar-tile {
+  container-type: inline-size;
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--tile-bg);
+  color: var(--tile-fg);
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: outline-color 0.15s;
+
+  & .video-tile-overlay {
+    background: none;
+  }
+
+  &.speaking {
+    outline-color: var(--success);
+
+    & .avatar-circle {
+      box-shadow:
+        0 0 0 3px var(--tile-bg),
+        0 0 0 6px var(--success);
+    }
+  }
+}
+
+.avatar-circle {
+  display: grid;
+  place-items: center;
+  width: clamp(40px, 28%, 112px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  /* 32% lightness keeps white initials above 4.5:1 for every hue. */
+  background: hsl(var(--avatar-hue, 210) 42% 32%);
+  color: var(--on-media);
+  transition: box-shadow 0.15s;
+}
+
+.avatar-initials {
+  font-size: clamp(16px, 9cqi, 40px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* A shared link to a meeting that is not running: usually a typo, so say it loudly. */
+.meeting-status-warning {
+  display: block;
+  margin-top: 4px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-m);
+  border: 1px solid color-mix(in srgb, var(--warning) 45%, transparent);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  color: var(--text);
+  font-size: 13px;
+}
+
+/* A meeting that is already running: a live dot, the way calendar apps mark one in progress. */
+.meeting-status-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-m);
+  border: 1px solid color-mix(in srgb, var(--success) 45%, transparent);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  color: var(--text);
+  font-size: 13px;
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 60%, transparent);
+    animation: live-pulse 2s ease-out infinite;
+  }
+}
+
+@keyframes live-pulse {
+  to {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meeting-status-live::before {
+    animation: none;
+  }
+}
+
+/* Join screen media region: the card grows to show it when this join would create the meeting.
+   clip-path, not overflow, clips the slide so the focus ring stays visible. */
+.reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: calc(-1 * var(--space-3));
+  opacity: 0;
+  clip-path: inset(-4px);
+  transition:
+    grid-template-rows 0.25s ease,
+    margin-top 0.25s ease,
+    opacity 0.2s ease;
+
+  > * {
+    min-height: 0;
+  }
+
+  &.reveal-open {
+    grid-template-rows: 1fr;
+    margin-top: 0;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transition: none;
+  }
+}
+
+/* Join screen: Continue with the settings cog to its right, set apart from the fields. */
+.join-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  align-self: stretch;
+
+  & .button-primary {
+    flex: 1;
+  }
+
+  & .button-icon {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* Settings footer: the developer switch on the left, the actions on the right. */
+.settings-footer-start {
+  display: flex;
+  align-items: center;
+}
+
+/* The Video tab's camera preview (the same stream as the tile or pre-join preview), beside the
+   camera's pickers. */
+.settings-camera {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.settings-preview {
+  width: 100%;
+  margin: var(--space-2) 0;
+}
+
+/* The background colour and image controls beside the camera preview. */
+.color-input {
+  width: 44px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--surface);
+  cursor: pointer;
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  /* Separate rules: a browser drops a whole selector list with a pseudo-element it does not know. */
+  &::-webkit-color-swatch {
+    border: 0;
+    border-radius: 4px;
+  }
+
+  &::-moz-color-swatch {
+    border: 0;
+    border-radius: 4px;
+  }
+}
+
+.background-image-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.background-image-preview {
+  width: 64px;
+  height: 36px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+}
+
+.settings-dev-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* A join-time option changed during the meeting: its note points at Rejoin. */
+.setting-pending .setting-applies {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+video-tile {
+  display: none;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--tile-bg);
+  color: var(--tile-fg);
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: outline-color 0.15s;
+
+  &.active {
+    display: block;
+  }
+
+  &.speaking {
+    outline-color: var(--success);
+  }
+
+  &.local.mirrored .video-tile-video {
+    transform: scaleX(-1);
+  }
+
+  &.content .video-tile-video {
+    object-fit: contain !important;
+    background: #000;
+  }
+
+  &.paused .video-tile-video {
+    filter: grayscale(1) brightness(0.5);
+  }
+}
+
+.video-tile-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: var(--tile-bg);
+}
+
+.video-tile-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--media-scrim), transparent 35%);
+}
+
+.video-tile-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.video-tile-nameplate {
+  color: var(--on-media);
+  font-size: 13px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-tile-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--on-media);
+
+  & svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:empty {
+    display: none;
+  }
+}
+
+.video-tile-pause-state {
+  color: var(--warning);
+  font-size: 12px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.video-tile-attendee-id {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgb(255 255 255 / 0.7);
+  display: none;
+
+  :is(body).developer-mode & {
+    display: block;
+  }
+}
+
+.video-tile-reaction {
+  position: absolute;
+  top: 8px;
+  right: 44px;
+  font-size: 28px;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.6));
+
+  &:empty {
+    display: none;
+  }
+}
+
+.video-tile-menu-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--media-scrim);
+  color: var(--on-media);
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  :is(video-tile):hover &,
+  :is(video-tile):focus-within &,
+  &[aria-expanded='true'] {
+    opacity: 1;
+  }
+}
+
+.stats-info {
+  position: absolute;
+  top: 36px;
+  left: 8px;
+  right: 8px;
+  max-height: calc(100% - 70px);
+  overflow: auto;
+  background: var(--media-scrim);
+  color: var(--on-media);
+  font-family: var(--mono);
+  font-size: 10px;
+  border-radius: var(--radius-s);
+  padding: 4px 6px;
+
+  & table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  & td {
+    padding: 1px 4px;
+  }
+}
+
+/* Stats: a scrolling column of live charts above the connection facts. */
+.panel-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-3);
+}
+
+.stats-charts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* The stats pages are tabs; the selected one reads like a pressed segment. */
+.stats-tabs .segment[aria-selected='true'] {
+  background: var(--accent-strong);
+  color: var(--accent-contrast);
+}
+
+.chart {
+  margin: 0;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: var(--bg);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.chart-title {
+  font-weight: 600;
+}
+
+.chart-max {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-body {
+  height: 64px;
+}
+
+.chart-plot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.chart-grid {
+  stroke: var(--border);
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chart-value {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-swatch {
+  width: 10px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+/* One colour per series position, shared by the line and its legend swatch. */
+.chart-series-0 {
+  stroke: var(--accent);
+  background: var(--accent);
+}
+
+.chart-series-1 {
+  stroke: var(--success);
+  background: var(--success);
+}
+
+.chart-series-2 {
+  stroke: var(--warning);
+  background: var(--warning);
+}
+
+.side-panel {
+  width: var(--panel-width);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 6px 6px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  flex: 1 1 0;
+
+  /* Stacked sections (participants above chat) share the height and get a divider. */
+  &:not([hidden]) ~ .panel:not([hidden]) {
+    border-top: 1px solid var(--border);
+  }
+}
+
+.roster-menu {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.roster {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.roster-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-s);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  &.speaking .roster-avatar {
+    outline: 2px solid var(--success);
+  }
+
+  &.hand-raised .roster-hand {
+    display: inline-flex;
+  }
+
+  .roster-checkbox {
+    margin: 0;
+  }
+}
+
+.roster-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--on-media);
+  background: hsl(var(--avatar-hue, 210) 42% 32%);
+  flex: none;
+}
+
+.roster-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roster-hand {
+  display: none;
+  color: var(--warning);
+}
+
+.roster-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &[data-status='muted'] {
+    color: var(--danger);
+  }
+
+  &[data-status='speaking'] {
+    color: var(--success);
+  }
+
+  &[data-status='weak'] {
+    color: var(--warning);
+  }
+
+  &[data-status='lost'] {
+    color: var(--danger);
+  }
+}
+
+/* Chat */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--space-2);
+
+  &.self {
+    align-items: flex-end;
+  }
+}
+
+.message-bubble-sender {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 0 6px;
+  display: flex;
+  gap: 6px;
+}
+
+.message-bubble-self,
+.message-bubble-other {
+  max-width: 85%;
+  padding: 7px 10px;
+  border-radius: 12px;
+  word-break: break-word;
+
+  & a {
+    color: inherit;
+    text-decoration: underline;
+  }
+}
+
+.message-bubble-other {
+  background: var(--surface-hover);
+  border-bottom-left-radius: 4px;
+}
+
+.message-bubble-self {
+  background: var(--accent-strong);
+  color: var(--accent-contrast);
+  border-bottom-right-radius: 4px;
+}
+
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: var(--space-2);
+  border-top: 1px solid var(--border);
+
+  & textarea {
+    flex: 1;
+    resize: none;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+}
+
+#panel-chat {
+  position: relative;
+}
+
+/* Shown when a message arrives while the reader is scrolled up. */
+.chat-new-messages {
+  position: absolute;
+  left: 50%;
+  bottom: 64px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent-strong);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-size: 12px;
+  box-shadow: var(--shadow-1);
+  cursor: pointer;
+
+  & svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Transcript / captions */
+.transcript {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-wrap: anywhere;
+
+  .transcript-speaker {
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .transcript-status {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+}
+
+.confidence-style {
+  text-decoration: underline wavy var(--danger);
+}
+
+.entity-color {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.captions-bar {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-3);
+  transform: translateX(-50%);
+  max-width: min(80%, 900px);
+  padding: 8px 14px;
+  border-radius: var(--radius-m);
+  background: var(--media-scrim-strong);
+  color: var(--on-media);
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: left;
+  z-index: 2;
+  cursor: pointer;
+
+  &[data-size='small'] {
+    font-size: 13px;
+  }
+
+  &[data-size='large'] {
+    font-size: 20px;
+  }
+
+  .caption-line + .caption-line {
+    margin-top: 2px;
+  }
+
+  /* Each speaker keeps one of eight hues for the whole meeting (hashed from the attendee id). */
+  .caption-speaker {
+    color: var(--speaker-color, var(--accent));
+    font-weight: 600;
+  }
+
+  .caption-language {
+    opacity: 0.7;
+    font-size: 0.8em;
+    margin-left: 4px;
+  }
+}
+
+.speaker-color-0 { --speaker-color: var(--speaker-0); }
+.speaker-color-1 { --speaker-color: var(--speaker-1); }
+.speaker-color-2 { --speaker-color: var(--speaker-2); }
+.speaker-color-3 { --speaker-color: var(--speaker-3); }
+.speaker-color-4 { --speaker-color: var(--speaker-4); }
+.speaker-color-5 { --speaker-color: var(--speaker-5); }
+.speaker-color-6 { --speaker-color: var(--speaker-6); }
+.speaker-color-7 { --speaker-color: var(--speaker-7); }
+
+/* Reactions */
+.reactions-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.reaction-float {
+  position: absolute;
+  bottom: 0;
+  font-size: 32px;
+  animation: reaction-rise 2.6s ease-out forwards;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.5));
+
+  .reaction-sender {
+    display: block;
+    font-size: 11px;
+    color: var(--on-media);
+    text-align: center;
+  }
+}
+
+@keyframes reaction-rise {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-120%) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* Top right, clear of the centered join and device cards. */
+.toast-container {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  transition: right 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 100;
+  width: min(400px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px 8px 8px 14px;
+  border-radius: var(--radius-m);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-2);
+  animation: toast-in 0.16s ease-out;
+
+  &.toast-leaving {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.16s, transform 0.16s;
+  }
+}
+
+.toast-message {
+  flex: 1;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.toast-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toast-close {
+  width: 28px;
+  height: 28px;
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* Toasts sit left of the open side panel instead of over its header. */
+@media (min-width: 761px) {
+  body:has(#side-panel:not([hidden])) .toast-container {
+    right: calc(var(--panel-width) + var(--space-4) * 2);
+  }
+}
+
+@media (max-width: 900px) {
+  .dock-label {
+    display: none;
+  }
+
+  .dock-button {
+    min-width: 44px;
+    height: 44px;
+  }
+
+  .dock-chevron {
+    height: 44px;
+  }
+}
+
+@media (max-width: 760px) {
+  .prejoin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Keep Join in reach: the actions stick to the bottom while the device list scrolls. */
+  .prejoin-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    align-self: stretch;
+    justify-content: flex-end;
+    margin: 0 calc(-1 * var(--space-3));
+    padding: var(--space-3) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+
+  .connection-label {
+    display: none;
+  }
+
+  .meeting-main {
+    position: relative;
+    padding: 0 4px 4px;
+  }
+
+  .side-panel {
+    position: absolute;
+    inset: 0 var(--space-2) var(--space-2);
+    width: auto;
+    z-index: 5;
+  }
+
+  .dock {
+    padding: 0 var(--space-2);
+  }
+
+  /* Compact dock: the device chevrons go, and the buttons marked dock-overflow move into the
+     More menu (Dock.ts adds them there at this width). */
+  .dock-chevron {
+    display: none;
+  }
+
+  .dock-overflow {
+    display: none;
+  }
+
+  .dock-split .dock-button {
+    border-radius: var(--radius-m);
+  }
+
+  .dock-group {
+    gap: 0;
+  }
+
+  .button-danger span:last-child {
+    display: none;
+  }
+
+  .button-danger,
+  .button-ghost-danger {
+    padding: 9px 10px;
+  }
+
+  /* Featured tile across the full width on top, the rest wrapping underneath. The columns are
+     explicit (auto-fill) so the featured tile's 1 / -1 spans all of them. */
+  .v-grid.featured {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-rows: minmax(0, 3fr);
+    grid-auto-rows: minmax(96px, 1fr);
+    grid-auto-flow: row;
+    align-items: stretch;
+    overflow-y: auto;
+
+    &::before,
+    &::after {
+      content: none;
+    }
+
+    & > .featured {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+
+    & > :not(.featured) {
+      grid-column: auto;
+      justify-self: stretch;
+      height: auto;
+      aspect-ratio: auto;
+    }
+  }
+
+  .settings-body {
+    flex-direction: column;
+  }
+
+  .settings-tabs {
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .setting .select,
+  .setting .input {
+    width: 140px;
+  }
+
+  .setting .field-inline {
+    width: 204px;
+  }
+}
+
+@media (max-width: 600px) {
+  .dialog-settings .dialog-header {
+    flex-wrap: wrap;
+  }
+
+  .settings-camera {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .settings-preview {
+    width: min(100%, 360px);
+  }
+
+  .settings-filter {
+    order: 3;
+    flex: 1 0 100%;
+    width: 100%;
+    margin: var(--space-2) 0 0;
+  }
+
+  /* The developer switch takes its own row, so Reset, Rejoin and Done stay together. */
+  .dialog-settings .settings-footer-start {
+    flex: 1 0 100%;
+  }
+
+  .dialog-settings .dialog-footer .spacer {
+    display: none;
+  }
+
+  /* Menus become bottom sheets: easier to reach and never clipped by the dock. */
+  .menu-sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    max-width: none;
+    max-height: 70vh;
+    padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+    border-bottom: 0;
+
+    .menu-item {
+      padding: 12px 10px;
+    }
+  }
+
+  .meeting-header {
+    padding: 0 var(--space-2);
+  }
+
+  .meeting-name {
+    max-width: 40vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Phones keep the title and clock; the region is in Meeting details. */
+  .meeting-region {
+    display: none;
+  }
+
+  .dock {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .dock-button {
+    min-width: 40px;
+  }
+
+  .captions-bar {
+    max-width: calc(100% - 16px);
+    bottom: var(--space-2);
+  }
+}
+
+/* Portrait phones: the gallery is two columns that scroll instead of a grid of thumbnails. */
+@media (max-width: 600px) and (orientation: portrait) {
+  .v-grid:not(.featured) {
+    grid-template-columns: repeat(var(--phone-cols, 1), minmax(0, 1fr));
+    grid-template-rows: none;
+    grid-auto-rows: minmax(140px, 1fr);
+    align-content: start;
+    overflow-y: auto;
+  }
+}

@@ -2,1104 +2,686 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-  <title>Meeting Demo</title>
-  <link rel="stylesheet" href="./styleV2.scss">
+  <title>Amazon Chime SDK Meeting Demo</title>
 </head>
 <body>
 <script type="module" src="./meetingV2.ts"></script>
 
-<div id="flow-fatal" class="flow">
-  <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
+<!-- Fatal error screen. Shown only when "Abort on fatal errors" is on (default on localhost). -->
+<main id="app">
+<section id="flow-fatal" class="flow flow-fatal" hidden>
+  <div class="fatal-card">
     <h1>Fatal error</h1>
-    <p>An error was thrown that should not occur in ordinary use. This should be considered a fatal error for testing
-      and canary purposes.</p>
-    <p>This error will ordinarily be muffled, but you should consider removing this code if you are building an app
-      based on this demo.</p>
-    <code id="stack"></code>
+    <p>An error was thrown that should not occur in ordinary use. This is treated as fatal for testing and
+      canary purposes; it would be muffled in a production application.</p>
+    <pre><code id="stack"></code></pre>
   </div>
-</div>
+</section>
 
-<!-- Initial meeting authentication screen with meeting and name inputs -->
-<div id="flow-authenticate" class="flow text-center p-2">
-  <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
-  <div class="container">
-    <form id="form-authenticate">
-      <h1 class="h3 mb-3 fw-normal">Join a meeting</h1>
-      <div class="form-floating row mt-3">
-        <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required autofocus>
-        <label for="inputMeeting" style="text-align: left;">Meeting Title or ID</label>
-      </div>
-      <div class="form-floating row mt-3">
-        <input type="name" id="inputName" class="form-control" placeholder="Your Name" required>
-        <label for="inputName" style="text-align: left;">Your Name</label>
-      </div>
-      <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
-        <select id="inputRegion" class="form-select" style="width:100%">
-          <option value="us-east-1" selected>United States (N. Virginia)</option>
-          <option value="ap-northeast-1">Japan (Tokyo)</option>
-          <option value="ap-southeast-1">Singapore</option>
-          <option value="af-south-1">South Africa (Cape Town)</option>
-          <option value="eu-south-1">Italy (Milan)</option>
-          <option value="ap-south-1">India (Mumbai)</option>
-          <option value="ap-northeast-2">South Korea (Seoul)</option>
-          <option value="ap-southeast-2">Australia (Sydney)</option>
-          <option value="ca-central-1">Canada</option>
-          <option value="eu-central-1">Germany (Frankfurt)</option>
-          <option value="eu-north-1">Sweden (Stockholm)</option>
-          <option value="eu-west-1">Ireland</option>
-          <option value="eu-west-2">United Kingdom (London)</option>
-          <option value="eu-west-3">France (Paris)</option>
-          <option value="sa-east-1">Brazil (São Paulo)</option>
-          <option value="il-central-1">Israel (Tel Aviv)</option>
-          <option value="us-east-2">United States (Ohio)</option>
-          <option value="us-west-1">United States (N. California)</option>
-          <option value="us-west-2">United States (Oregon)</option>
-          <option value="us-gov-west-1">GovCloud (US-West)</option>
-          <option value="us-gov-east-1">GovCloud (US-East)</option>
-        </select>
-        <label for="inputRegion" style="text-align: left;"> Media Region</label>
-      </div>
-      <div class="row mt-3">
-        <button type="button" class="btn btn-outline-secondary h-50 d-sm-block" data-bs-toggle="modal" id="additional-options-button"
-                data-bs-target="#additional-options-modal">
-          Additional Options
-        </button>
-      </div>
-      <div class="row mt-3">
-        <div class="btn-group p-0" role="group">
-          <button id="authenticate" class="btn btn-lg btn-secondary w-100" type="submit">Continue</button>
-          <button id="quick-join" class="btn btn-lg btn-success" title="Skip Device Selection"><%= require('../../node_modules/open-iconic/svg/bolt.svg') %></button>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <p>Anyone with access to the meeting link can join.</p>
-      </div>
-      <div class="row mt-3">
-        <a id="to-sip-flow" href="#">Joining via SIP? Click here.</a>
-      </div>
-      <div class="row mt-3">
-        <div id="progress-authenticate" class="w-100 progress progress-hidden">
-          <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-               aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Additional options modal -->
-
-<div class="modal fade" id="additional-options-modal" tabindex="-1"
-     aria-labelledby="additional-options-modal-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="additional-options-modal-label">Additional Options</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <fieldset>
-          <div class="form-floating mb-3" style="text-align: left;">
-            <select name="logLevel" class="form-select" id="logLevelSelect">
-              <option value="debug">Debug</option>
-              <option value="info">Info</option>
-              <option value="warn">Warn</option>
-              <option value="error">Error</option>
-              <option value="off">Off</option>
-            </select>
-            <label for="logLevel" style="text-align: left;">Log Level:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="videoCapability" class="form-select" id="videoCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="videoCapability"  style="text-align: left;">Video capability:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="contentCapability" class="form-select" id="contentCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="contentCapability"  style="text-align: left;">Content capability:</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="join-muted" class="form-check-input"></input>
-            <label for="join-muted-setting" class="form-check-label">Join Muted</label>
-          </div>
-        <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="allow-voice-focus" class="form-check-input">
-            <label for="allow-voice-focus" class="form-check-label">Allow Voice Focus</label>
-          </div>
-          <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
-            <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
-            <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction</label>
-          </div>
-          <div class="form-check" id="disable-audio-redundancy-checkbox" style="text-align: left; display: block;">
-            <input type="checkbox" id="disable-audio-redundancy" class="form-check-input">
-            <label for="disable-audio-redundancy" class="form-check-label">Disable Audio Redundancy</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
-            <label for="fullband-speech-mono-quality" class="form-check-label">Set fullband speech (mono)
-              quality</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-music-mono-quality" class="form-check-input">
-            <label for="fullband-music-mono-quality" class="form-check-label">Set fullband music (mono)
-              quality</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-music-stereo-quality" class="form-check-input">
-            <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
-              quality</label>
-          </div>
-          <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
-          <select name="videoCodec" class="form-select" id="videoCodecSelect">
-            <option value="default">Meeting Default</option>
-            <option value="vp8">VP8</option>
-            <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
-            <option value="h264BaselineProfile">H.264 Baseline Profile</option>
-            <option value="h264MainProfile">H.264 Main Profile</option>
-            <option value="h264HighProfile">H.264 High Profile</option>
-            <option value="vp9Profile0" id="vp9-video-codec">VP9 Profile 0</option>
-            <option value="av1Main" id="av1Main-video-codec">AV1 Main Profile</option>
-          </select>
-          <label for="contentCodec"  style="text-align: left;">Preferred Content Send Codec:</label>
-          <select name="contentCodec" class="form-select" id="contentCodecSelect">
-            <option value="default">Meeting Default</option>
-            <option value="vp8">VP8</option>
-            <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
-            <option value="h264BaselineProfile">H.264 Baseline Profile</option>
-            <option value="h264MainProfile">H.264 Main Profile</option>
-            <option value="h264HighProfile">H.264 High Profile</option>
-            <option value="vp9Profile0" id="vp9Profile0-content-codec">VP9 Profile 0</option>
-            <option value="av1Main" id="av1Main-content-codec">AV1 Main Profile</option>
-          </select>
-          <label for="videoFeature" id="videoFeatureTitle" style="text-align: left;">Meeting Maximum Camera Video Resolution:</label>
-          <select name="videoFeature" class="form-select" id="videoFeatureSelect">
-            <option value="none">Disable Camera Video</option>
-            <option value="hd" selected>HD 720p</option>
-            <option value="fhd">FHD 1080p (requires max attendee)</option>
-          </select>
-          <label for="contentFeature" id="contentFeatureTitle" style="text-align: left;">Meeting Maximum Content Share Resolution:</label>
-            <select name="contentFeature" class="form-select" id="contentFeatureSelect">
-              <option value="none">Disable Content Share</option>
-              <option value="fhd" selected>FHD 1080p</option>
-              <option value="uhd">UHD 2160p (requires max attendee)</option>
-            </select>
-          <div class="form-group row" style="text-align: left;">
-            <label style="padding-top:5px" class="col-md-9 col-form-label">Max attendees allowed (range: 1 - 250):</label>
-            <input for="max-attendee-count" class="col-md-3" type="number" id="max-attendee-cnt">
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="simulcast" class="form-check-input">
-            <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="svc" class="form-check-input">
-            <label for="svc" class="form-check-label">Enable SVC for Chrome</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
-            <label for="priority-downlink-policy" class="form-check-label">Enable remote video quality adaptation</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="max-content-share" class="form-check-input">
-            <label for="max-content-share" class="form-check-label">Allow Max Content Shares</label>
-          </div>
-          <label id="pagination-title" for="pagination-page-size" style="padding-top:5px">Paginate displayed video tiles</label>
-          <select id="pagination-page-size" class="form-select" style="width:100%;">
-            <option value="1">1</option>
-            <option value="4">4</option>
-            <option value="9">9</option>
-            <option value="16">16</option>
-            <option value="25" selected>25</option>
-          </select>      
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" checked id="preconnect" class="form-check-input">
-            <label for="preconnect" class="form-check-label">Open signaling connection early</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="join-view-only" class="form-check-input">
-            <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="pause-last-frame" class="form-check-input">
-            <label for="pause-last-frame" class="form-check-label">Keep last video frame when paused</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="event-reporting" class="form-check-input">
-            <label for="event-reporting" class="form-check-label">Enable event reporting</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="replica-meeting-input" class="form-check-input">
-            <label for="replica-meeting-input" class="form-check-label">Create meeting as replica</label>
-            <input type="name" id="primary-meeting-external-id" class="form-control"
-                   placeholder="Primary Meeting Title or ID">
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="delete-attendee" class="form-check-input">
-            <label for="delete-attendee" class="form-check-label">Delete own attendee to leave</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="disable-content-keyframe" class="form-check-input">
-            <label for="disable-content-keyframe" class="form-check-label">Disable periodic keyframe request to content senders</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="allow-attendee-capabilities" class="form-check-input">
-            <label for="allow-attendee-capabilities" class="form-check-label">Allow updating of attendee capabilities after start</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="die" class="form-check-input" checked=true>
-            <label for="die" class="form-check-label">Abort on fatal errors</label>
-          </div>
-        </fieldset>
-      </div>
-      <button type="button" class="btn btn-outline-secondary mb-3" data-bs-toggle="modal" data-bs-target="#join-info-override-modal">Override Join Info</button>
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="additional-options-save-button">Save</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="join-info-override-modal" tabindex="-1" aria-labelledby="join-info-override-modal-label"
-  aria-hidden="true">
-  <div class="modal-dialog modal-lg" style="width: 90%">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="join-info-override-modal-label">Join Info Override</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Use the following overrides to enable joining meetings created from services that do not utilize the
-          serverless demo, for example, meetings created for your application, or meetings created in
-          different accounts. To get these response you can use the following CLI commands with appropriate
-          credentials</p>
-        <ul>
-          <li>
-            <code>aws chime-sdk-meetings create-attendee --meeting-id &lt;value&gt; --external-user-id &lt;value&gt; --region &lt;region&gt;</code>
-          </li>
-          <li><code>aws chime-sdk-meetings get-meeting --meeting-id &lt;value&gt; --region &lt;region&gt;</code></li>
-        </ul>
-        <div class="form-group">
-          <label for="create-attendee-override-input" class="mb-2">
-            <h6><a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">
-                CreateAttendee</a> Override</h6>
-          </label>
-          <textarea class="form-control" id="create-attendee-override-input" rows="7" placeholder='{
-  "Attendee": {
-      "ExternalUserId": "John",
-      "AttendeeId": "18ba3ce2-9d76-722f-6b58-2c2fe0db5c94",
-      "JoinToken": "..."
-  }
-}
-'></textarea>
-          <div class="form-group">
-            <label for="get-meeting-override-input" class="mb-2 mt-3">
-              <h6><a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_GetMeeting.html">
-                  GetMeeting</a> Override</h6>
-            </label>
-            <textarea class="form-control" id="get-meeting-override-input" rows="17" placeholder='{
-  "Meeting": {
-      "MeetingId": "35f23a2b-c4d7-413f-a299-2b1dc3f63314",
-      "ExternalMeetingId": "f7f76d4a-08ba-4001-8900-2b3fba4b6b3f",
-      "MediaRegion": "us-east-1",
-      "MediaPlacement": {
-          "AudioHostUrl": "...",
-          "AudioFallbackUrl": "...",
-          "SignalingUrl": "...",
-          "TurnControlUrl": "...",
-          "ScreenDataUrl": "...",
-          "ScreenViewingUrl": "...",
-          "ScreenSharingUrl": "...",
-          "EventIngestionUrl": "..."
-      }
-  }
-}'></textarea>
-          </div>
-        </div>
-      </div>
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="join-info-override-join-button">Join
-        Meeting</button>
-    </div>
-  </div>
-</div>
-
-<!-- Authenticate for SIP with meeting and voice connector ID -->
-
-<div id="flow-sip-authenticate" class="flow text-center">
-  <div class="container">
-    <form id="form-sip-authenticate">
-      <h1 class="h3 mb-3 font-weight-normal">Join a meeting via SIP</h1>
-      <div class="row mt-3">
-        <label for="sip-inputMeeting" class="visually-hidden">Meeting Title</label>
-        <input type="name" id="sip-inputMeeting" class="form-control" placeholder="Meeting Title" required autofocus>
-      </div>
-      <div class="row mt-3">
-        <label for="voiceConnectorId" class="visually-hidden">Voice Connector ID</label>
-        <input type="name" id="voiceConnectorId" class="form-control" placeholder="Voice Connector ID" required>
-      </div>
-      <div class="row mt-3">
-        <button id="button-sip-authenticate" class="btn btn-lg btn-primary" type="submit">Continue</button>
-      </div>
-      <div class="row mt-3">
-        <p>You will need a SIP client in order to join the meeting.</p>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Failure card if meeting is invalid -->
-
-<div id="flow-failed-meeting" class="flow">
-  <div class="container">
-    <form id="form-failed-meeting">
-      <div class="card border-warning mb-3" style="max-width: 20rem;">
-        <div id="failed-meeting" class="card-header"></div>
-        <div class="card-body">
-          <h4 class="card-title">Unable to find meeting</h4>
-          <p class="card-text">There was an issue finding that meeting. The meeting may have already ended, or your
-            authorization may have expired.</p>
-          <small id="failed-meeting-error" class="text-muted"></small>
-        </div>
-      </div>
-      <div class="d-grid gap-2">
-        <button class="btn btn-lg btn-outline-warning" type="submit">OK</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Prompt for permission to get access to device labels -->
-
-<div id="flow-need-permission" class="flow">
-  <div class="container">
-    <form id="form-need-permission">
-      <div class="card border-info mb-3" style="max-width: 20rem;">
-        <div class="card-header">Permissions check</div>
-        <div class="card-body">
-          <h4 class="card-title">Unable to get device labels</h4>
-          <p class="card-text">In order to select media devices, we need to do a quick permissions check of your mic
-            and camera. When the pop-up appears, choose <b>Allow</b>.</p>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Display SIP URI -->
-
-<div id="flow-sip-uri" class="flow">
-  <div class="container">
-    <form id="sip-uri-form">
-      <div class="card border-info mb-3" style="max-width: 20rem;">
-        <div class="card-header">SIP URI</div>
-        <div class="card-body">
-          <a id="copy-sip-uri" class="card-title" href="#">Copy</a>
-          <input id="sip-uri" class="card-text"></input>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Device management and preview screen -->
-
-<div id="flow-devices" class="flow">
-  <div class="container">
-    <form id="form-devices">
-      <h1 class="h3 mb-3 font-weight-normal text-center">Select devices</h1>
-      <div class="row mt-3">
-        <div class="col-12 text-center d-sm-block video-preview">
-          <video id="video-preview" class="" style="border-radius:8px"></video>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-12">
-          <label for="audio-input block">Microphone</label>
-          <select id="audio-input" class="form-select" style="width:100%"></select>
-        </div>
-
-        <div class="text-center col-12 d-sm-block">
-          <label>Preview</label>
-          <div class="w-100 progress" style="margin-top:0.75rem">
-            <div id="audio-preview" class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
-                 aria-valuemin="0" aria-valuemax="100"></div>
-          </div>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div id="voice-focus-setting" class="col-12 hidden">
-          <input autocomplete="off" type="checkbox" id="add-voice-focus"></input>
-          <label style="margin-left: 0.5em" for="voice-focus-setting block">Add Voice Focus</label>
-          <div id="add-voice-focus-info" class="text-muted small" style="margin-left: 1.5em; display: none;">
-            Voice Focus is not supported on this device
-          </div>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-12">
-          <label for="video-input block">Camera</label>
-          <select id="video-input" class="form-select" style="width:100%"></select>
-        </div>
-
-      </div>
-      <div class="row mt-3">
-        <div class="col-12">
-          <label for="video-input-quality block">Resolution</label>
-          <select id="video-input-quality" class="form-select" style="width:100%">
-            <option value="360p">360p (nHD) @ 15 fps (600 Kbps max)</option>
-            <option value="540p" selected>540p (qHD) @ 15 fps (1.4 Mbps max)</option>
-            <option value="720p">720p (HD) @ 15 fps (1.5 Mbps max)</option>
-            <option value="1080p" id="1080p">1080p (FHD) @ 15 fps (2.5 Mbps max)</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mt-3" id="video-input-filter-container">
-        <div class="col-12">
-          <label for="video-input-filter block">Video Filter</label>
-          <select id="video-input-filter" class="form-select" style="width:100%">
-            <option value="None" selected>None</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-12">
-          <label for="audio-output block">Speaker</label>
-          <select id="audio-output" class="form-select" style="width:100%"></select>
-        </div>
-        <div class="col-12">
-          <button id="button-test-sound" class="btn btn-outline-secondary h-50 d-sm-block"
-                  style="width:100%;margin-top:2rem">Test Speaker</button>
-        </div>
-      </div>
-
-      <div class="row mt-3">
-        <div class="col-lg">
-          <button id="joinButton" class="btn btn-lg btn-primary" style="width:100%"
-                  type="submit">Join</button>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-lg">
-          <p>Ready to join meeting <b><span id="info-meeting"></span></b> as <b><span id="info-name"></span></b>.</p>
-        </div>
-      </div>
-    </form>
-    <div id="progress-join" class="w-100 progress progress-hidden">
-      <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100"
-           aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-  </div>
-</div>
-
-<!-- In-meeting screen -->
-
-<div id="flow-meeting" class="flow" style="position:absolute;left:0;top:0;bottom:55px;right:0">
-  <div id="live-transcription-modal" class="modal">
-    <div id="live-transcription-modal-content" class="modal-content">
-      <div class="modal-content-header">
-        <span></span>
-        <span class="modal-title text-muted">Live Transcription Configuration</span>
-        <span id="button-live-transcription-modal-close" class="close">&times;</span>
-      </div>
-      <div id="engine-option-group active">
-        <input type="radio" id="engine-transcribe" name="transcription-engine" value="engine-transcribe" checked=true>
-        <label for="engine-transcribe">Amazon Transcribe</label><br>
-        <input type="radio" id="engine-transcribe-medical" name="transcription-engine"
-               value="engine-transcribe-medical">
-        <label for="engine-transcribe-medical">Amazon Transcribe Medical</label><br>
-      </div>
-      <div id="engine-language-group">
-        <div id="engine-transcribe-language">
-          <label for="transcribe-language" class="visually-hidden">Language</label>
-          <select id="transcribe-language" class="form-select" style="width:100%">
-            <option value="en-US" selected>US English (en-US)</option>
-            <option value="en-GB">British English (en-GB)</option>
-            <option value="en-AU">Australian English (en-AU)</option>
-            <option value="es-US">US Spanish (es-US)</option>
-            <option value="fr-CA">Canadian French (fr-CA)</option>
-            <option value="fr-FR">French (fr-FR)</option>
-            <option value="it-IT">Italian (it-IT)</option>
-            <option value="de-DE">German (de-DE)</option>
-            <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
-            <option value="ja-JP">Japanese (ja-JP)</option>
-            <option value="ko-KR">Korean (ko-KR)</option>
-            <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
-            <option value="hi-IN">Hindi, Indian (hi-IN)</option>
-            <option value="th-TH">Thai (th-TH)</option>
-          </select>
-        </div>
-        <div id="engine-transcribe-medical-language" class="hidden">
-          <label for="transcribe-medical-language" class="visually-hidden">Language</label>
-          <select id="transcribe-medical-language" class="form-select" style="width:100%">
-            <option value="en-US" selected>US English (en-US)</option>
-          </select>
-        </div>
-      </div>
-      <div id="transcription-region-group">
-        <div id="engine-transcribe-region">
-          <label for="transcribe-region" class="visually-hidden">Region</label>
-          <select id="transcribe-region" class="form-select" style="width:100%">
-            <option value="auto" selected>Auto</option>
-            <option value="">Not specified</option>
+<!-- Join screen -->
+<section id="flow-authenticate" class="flow flow-centered" hidden>
+  <div class="card join-card">
+    <h1 class="card-title">Join a meeting</h1>
+    <form id="form-authenticate" class="stack" autocomplete="off">
+      <label class="field">
+        <span class="field-label">Meeting title or ID</span>
+        <input id="inputMeeting" class="input" type="text" required autofocus placeholder="team-standup">
+        <span id="meeting-status" class="field-help" role="status" hidden></span>
+      </label>
+      <label class="field">
+        <span class="field-label">Your name</span>
+        <input id="inputName" class="input" type="text" required maxlength="55" placeholder="Ada">
+      </label>
+      <div id="region-field" class="reveal" inert>
+        <label class="field">
+          <span class="field-label">Media region</span>
+          <select id="inputRegion" class="select">
+            <option value="us-east-1" selected>United States (N. Virginia)</option>
             <option value="ap-northeast-1">Japan (Tokyo)</option>
+            <option value="ap-southeast-1">Singapore</option>
+            <option value="af-south-1">South Africa (Cape Town)</option>
+            <option value="eu-south-1">Italy (Milan)</option>
+            <option value="ap-south-1">India (Mumbai)</option>
             <option value="ap-northeast-2">South Korea (Seoul)</option>
             <option value="ap-southeast-2">Australia (Sydney)</option>
             <option value="ca-central-1">Canada</option>
             <option value="eu-central-1">Germany (Frankfurt)</option>
+            <option value="eu-north-1">Sweden (Stockholm)</option>
             <option value="eu-west-1">Ireland</option>
             <option value="eu-west-2">United Kingdom (London)</option>
+            <option value="eu-west-3">France (Paris)</option>
             <option value="sa-east-1">Brazil (São Paulo)</option>
-            <option value="us-east-1">United States (N. Virginia)</option>
+            <option value="il-central-1">Israel (Tel Aviv)</option>
             <option value="us-east-2">United States (Ohio)</option>
+            <option value="us-west-1">United States (N. California)</option>
             <option value="us-west-2">United States (Oregon)</option>
             <option value="us-gov-west-1">GovCloud (US-West)</option>
+            <option value="us-gov-east-1">GovCloud (US-East)</option>
           </select>
-        </div>
-        <div id="engine-transcribe-medical-region" class="hidden">
-          <label for="transcribe-medical-region" class="visually-hidden">Language</label>
-          <select id="transcribe-medical-region" class="form-select" style="width:100%">
-            <option value="auto" selected>Auto</option>
-            <option value="">Not specified</option>
-            <option value="ap-southeast-2">Australia (Sydney)</option>
-            <option value="ca-central-1">Canada</option>
-            <option value="eu-west-1">Ireland</option>
-            <option value="us-east-1">United States (N. Virginia)</option>
-            <option value="us-east-2">United States (Ohio)</option>
-            <option value="us-west-2">United States (Oregon)</option>
-          </select>
-        </div>
+        </label>
       </div>
-      <div id="engine-transcribe-language-identification">
-        <div id="engine-transcribe-identify-language" class="form-check" style="text-align: left;">
-          <input type="checkbox" id="identify-language-checkbox" class="form-check-input">
-          <label for="identify-language-checkbox" class="form-check-label"
-                 title="Automatically identify the language spoken in a media file without you having to specify a language code">Enable
-            Automatic Language Identification</label>
-        </div>
-        <div id="language-options" class="hidden">
-          <label for="language-options" class="visually-hidden">Language Options</label>
-          <p
-                  title="For better accuracy of automatic language identification, select at least 2 languages, one from each group.">
-            <small>Select a minimum of 2 language options</small>
-          </p>
-          <select name="language-options" id="language-options" multiple="multiple" class="form-select"
-                  style="width:100%">
-            <optgroup id="group1" label="English">
-              <option value="en-US">US English (en-US)</option>
-              <option value="en-GB">British English (en-GB)</option>
-              <option value="en-AU">Australian English (en-AU)</option>
-            </optgroup>
-            <optgroup id="group2" label="Spanish">
-              <option value="es-US">US Spanish (es-US)</option>
-            </optgroup>
-            <optgroup id="group3" label="French">
-              <option value="fr-FR">French (fr-FR)</option>
-              <option value="fr-CA">Canadian French (fr-CA)</option>
-            </optgroup>
-            <optgroup id="group4" label="German">
-              <option value="de-DE">German (de-DE)</option>
-            </optgroup>
-            <optgroup id="group5" label="Chinese">
-              <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
-            </optgroup>
-            <optgroup id="group6" label="Italian">
-              <option value="it-IT">Italian (it-IT)</option>
-            </optgroup>
-            <optgroup id="group7" label="Portuguese">
-              <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
-            </optgroup>
-            <optgroup id="group8" label="Japanese">
-              <option value="ja-JP">Japanese (ja-JP)</option>
-            </optgroup>
-            <optgroup id="group9" label="Korean">
-              <option value="ko-KR">Korean (ko-KR)</option>
-            </optgroup>
-            <optgroup id="group10" label="Hindi">
-              <option value="hi-IN">Hindi, Indian (hi-IN)</option>
-            </optgroup>
-            <optgroup id="group11" label="Thai">
-              <option value="th-TH">Thai (th-TH)</option>
-            </optgroup>
-          </select>
-          <div id="language-options-selected-options-container"><i><small>Selected: <span id="language-options-selected-options">None</span></small></i></div>
-          <div id="language-options-error-message"></div>
-        </div>
-        <div id="preferred-language" class="hidden" style="margin-top: 10px">
-          <label for="preferred-language-selection" class="visually-hidden">Preferred Language</label>
-          <p title="Help Amazon Transcribe identify the language in the first few seconds of your stream.">
-            <small>Specify one preferred language</small>
-          </p>
-          <select id="preferred-language-selection" class="form-select" style="width:100%">
-            <option value="" selected> -- Optional -- </option>
-          </select>
-
-        </div>
-        <div id="vocabulary-names" class="hidden" style="margin-top: 10px">
-          <small>Vocabulary Names</small>
-          <input type="text" id="vocabulary-names-input-text" style="text-align: left; width:100%">
-        </div>
-        <div id="vocabulary-filter-names" class="hidden" style="margin-top: 10px">
-          <small>Vocabulary Filter Names</small>
-          <input type="text" id="vocabulary-filter-names-input-text" style="text-align: left; width:100%">
-        </div>
-      </div>
-      <div id="engine-transcribe-custom-language-model">
-        <div id="engine-transcribe-language-model" class="form-check" style="text-align: left;">
-          <input type="checkbox" id="custom-language-model-checkbox" class="form-check-input">
-          <label for="custom-language-model-checkbox" class="form-check-label">Enable Custom Language Model</label>
-        </div>
-        <div id="language-model" class="hidden">
-          <input type="text" id="language-model-input-text" style="text-align: left; width:100%">
-        </div>
-      </div>
-      <div id="engine-transcribe-stability">
-        <div id="engine-transcribe-partial-stabilization" class="form-check" style="text-align: left;">
-          <input type="checkbox" id="partial-stabilization-checkbox" class="form-check-input">
-          <label for="partial-stabilization-checkbox" class="form-check-label">Enable Partial Results
-            Stabilization</label>
-        </div>
-        <div id="transcribe-partial-stability" class="hidden">
-          <label for="partial-stability" class="visually-hidden">Transcribe Entities</label>
-          <select id="partial-stability" class="form-select" style="width:100%">
-            <option value="" selected> -- DEFAULT (HIGH) -- </option>
-            <option value="low">LOW</option>
-            <option value="medium">MEDIUM</option>
-            <option value="high">HIGH</option>
-          </select>
-        </div>
-      </div>
-      <div id="engine-transcribe-content-identification" class="form-check" style="text-align: left;">
-        <input type="checkbox" id="content-identification-checkbox" class="form-check-input">
-        <label for="content-identification-checkbox" class="form-check-label">Enable PII Content
-          Identification</label>
-      </div>
-      <div id="engine-transcribe-medical-content-identification" class="form-check hidden" style="text-align: left;">
-        <input type="checkbox" id="medical-content-identification-checkbox" class="form-check-input">
-        <label for="medical-content-identification-checkbox" class="form-check-label">Enable PHI Content
-          Identification</label>
-      </div>
-      <div id="engine-transcribe-redaction" class="form-check" style="text-align: left;">
-        <input type="checkbox" id="content-redaction-checkbox" class="form-check-input">
-        <label for="content-redaction-checkbox" class="form-check-label">Enable PII Content Redaction</label>
-      </div>
-      <div id="transcribe-entity-types" class="hidden">
-        <label for="transcribe-entity" class="visually-hidden">Transcribe Entities</label>
-        <select id="transcribe-entity" class="form-select" style="width:100%" multiple>
-          <option selected value> -- DEFAULT (ALL) -- </option>
-          <option value="BANK_ROUTING">BANK ROUTING</option>
-          <option value="CREDIT_DEBIT_NUMBER">CREDIT/DEBIT NUMBER</option>
-          <option value="CREDIT_DEBIT_CVV">CREDIT/DEBIT CVV</option>
-          <option value="CREDIT_DEBIT_EXPIRY">CREDIT/DEBIT EXPIRY</option>
-          <option value="PIN">PIN</option>
-          <option value="EMAIL">EMAIL</option>
-          <option value="ADDRESS">ADDRESS</option>
-          <option value="NAME">NAME</option>
-          <option value="PHONE">PHONE</option>
-          <option value="SSN">SSN</option>
-        </select>
-      </div>
-      <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
-              data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-        <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
-      </button>
-    </div>
-  </div>
-
-  <div class="p-2 d-none d-sm-block align-items-end" style="position:fixed;right:0;bottom:0;left:0;">
-    <div class="row align-items-end">
-      <div class="col">
-        <div id="chime-meeting-id" class="text-muted"></div>
-        <div id="desktop-attendee-id" class="text-muted"></div>
-      </div>
-      <div class="col">
-        <div class="btn-group" role="group" style="width: 100%;">
-          <button type="button" id="video-paginate-left" class="btn btn-secondary" style="display: none;">
-            <%= require('../../node_modules/open-iconic/svg/caret-left.svg') %>
-          </button>
-          <button type="button" id="video-paginate-right" class="btn btn-secondary" style="display: none;">
-            <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
-          </button>
-        </div>
-      </div>
-      <div class="col d-none d-lg-block">
-        <div id="video-uplink-bandwidth" class="text-muted text-end"></div>
-        <div id="video-downlink-bandwidth" class="text-muted text-end"></div>
-      </div>
-    </div>
-  </div>
-  <audio id="meeting-audio" style="display:none"></audio>
-  <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column">
-    <div class="row mb-3 mb-lg-0" style="flex: unset;">
-      <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left">
-        <div id="meeting-id" class="navbar-brand text-muted m-0 m-lg-2"></div>
-        <div id="mobile-chime-meeting-id" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
-        <div id="mobile-attendee-id" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
-        <div id="mobile-video-uplink-bandwidth" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
-        <div id="mobile-video-downlink-bandwidth" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;">
-        </div>
-      </div>
-      <div class="col-8 col-lg-6 order-2 order-lg-2 text-left text-lg-center">
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
-          <button id="button-microphone" type="button" class="btn btn-success" title="Toggle microphone">
-            <%= require('../../node_modules/open-iconic/svg/microphone.svg') %>
-          </button>
-          <button id="button-microphone-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                  aria-expanded="false" title="Select microphone"><span class="visually-hidden">Toggle Dropdown</span></button>
-          <div id="dropdown-menu-microphone" class="dropdown-menu dropdown-menu-end"
-               aria-labelledby="button-microphone-drop" x-placement="bottom-start"
-               style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a class="dropdown-item" href="#">Default microphone</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle camera">
-          <button id="button-camera" type="button" class="btn btn-success" title="Toggle camera">
-            <%= require('../../node_modules/open-iconic/svg/video.svg') %>
-          </button>
-          <button id="button-camera-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                  aria-expanded="false" title="Select camera"><span class="visually-hidden">Toggle Dropdown</span></button>
-          <div id="dropdown-menu-camera" class="dropdown-menu dropdown-menu-end">
-            <a class="dropdown-item" href="#">Default camera</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Apply filter">
-          <button id="button-video-filter" type="button" class="btn btn-success" title="Apply filter">
-            <%= require('../../node_modules/open-iconic/svg/contrast.svg') %>
-          </button>
-          <button id="button-video-filter-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
-          <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
-            <a class="dropdown-item" href="#">No filter</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle content share">
-          <button id="button-content-share" type="button" class="btn btn-success" title="Toggle content share">
-            <%= require('../../node_modules/open-iconic/svg/camera-slr.svg') %>
-          </button>
-          <button id="button-content-share-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                  title="Select content to share"></button>
-          <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-content-share-drop" x-placement="bottom-start"
-                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
-            data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content Sharing</a>
-            <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item" href="#">Pause Content Share</a>
-            <hr class="dropdown-divider">
-            <a id="dropdown-item-content-share-screen-capture" class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
-            <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option" href="#">Test Video</a>
-            <a id="dropdown-item-content-share-test-mono-audio-speech" class="dropdown-item content-share-source-option" href="#">Test Mono
-              Audio Speech</a>
-            <a id="dropdown-item-content-share-test-stereo-audio-speech" class="dropdown-item content-share-source-option" href="#">Test Stereo
-              Audio Speech</a>
-            <a id="dropdown-item-content-share-test-stereo-audio-tone" class="dropdown-item content-share-source-option" href="#">Test Stereo
-              Tone (L-500Hz R-1000Hz)</a>
-            <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option" for="content-share-item">Local file</label>
-            <input id="content-share-item" type="file">
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle speaker">
-          <button id="button-speaker" type="button" class="btn btn-success" title="Toggle speaker">
-            <%= require('../../node_modules/open-iconic/svg/volume-low.svg') %>
-          </button>
-          <button id="button-speaker-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
-          <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-speaker-drop" x-placement="bottom-start"
-                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a class="dropdown-item" href="#">Default speaker</a>
-          </div>
-        </div>
-        <button id="button-live-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Toggle live transcription display" data-bs-toggle="button" aria-pressed="false" autocomplete="off"
-                style="display: none">
-          <%= require('../../node_modules/open-iconic/svg/code.svg') %>
-        </button>
-        <button id="button-video-stats" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-          <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
-        </button>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Select destination">
-          <div class="btn-group" role="group">
-            <button id="button-video-recording-drop" type="button" class="btn btn-success dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
-              <%= require('../../node_modules/open-iconic/svg/cloud.svg') %>
-            </button>
-            <div id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
-                 aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
-              <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <svg class="svg">
-                  <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
-                </svg>
-                Capture Media to Device
-              </button>
-              <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
-                Capture Media to S3
-              </button>
-              <button id="button-live-connector" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
-                Broadcast Media to IVS
-              </button>
-            </div>
-          </div>
-        </div>
-        <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
-                autocomplete="off">
-          <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
+      <div class="join-actions">
+        <button id="authenticate" class="button button-primary button-large" type="submit">Continue</button>
+        <button type="button" id="additional-options-button" class="button button-ghost button-large button-icon" aria-label="Settings" title="Settings">
+          <span data-icon="settings"></span>
         </button>
       </div>
-      <div class="col-4 col-lg-3 order-3 order-lg-3 text-end text-lg-right">
-        <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4"
-                title="Leave meeting">
-          <%= require('../../node_modules/open-iconic/svg/account-logout.svg') %>
-        </button>
-        <button id="button-meeting-end" type="button" class="btn btn-outline-danger mx-1 mx-xl-2 my-2 px-4"
-                title="End meeting">
-          <%= require('../../node_modules/open-iconic/svg/power-standby.svg') %>
-        </button>
+      <div id="progress-authenticate" class="progress" role="progressbar" aria-label="Connecting" hidden>
+        <div class="progress-bar"></div>
       </div>
-    </div>
-    <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100" style="flex: unset;">
-      <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-5 col-md-4 col-lg-3 h-100">
-        <div id="roster-menu-container" class="justify-content-end py-2 gap-3" style="flex: 0 0 auto; border-color: transparent !important;">
-          <div id="roster-menu-instruction" class="d-flex align-items-center"></div>
-          <div class="btn-group">
-            <button class="btn btn-sm dropdown-toggle btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <%= require('../../node_modules/open-iconic/svg/ellipses.svg') %>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-start">
-              <li class="px-3 text-nowrap user-select-none">Attendee capabilities</li>
-              <li><hr class="dropdown-divider"></li>
-              <li id="roster-menu-none-seleced">
-                <div class="px-3 text-nowrap text-muted">Select one or more attendees to update.</div>
-              </li>
-              <li id="roster-menu-one-attendee" class="hidden">
-                <button
-                  class="dropdown-item"
-                  type="button"
-                  data-bs-target="#attendee-capabilities-modal"
-                  data-bs-toggle="modal"
-                  data-bs-type="one-attendee">
-                  <div class="me-2 d-inline-block" style="transform: scale(0.75);">
-                    <%= require('../../node_modules/open-iconic/svg/person.svg') %>
-                  </div>
-                  <span>Update the selected attendee</span>
-                </button>
-              </li>
-              <li id="roster-menu-all-attendees-except" class="hidden">
-                <button
-                  class="dropdown-item"
-                  type="button"
-                  data-bs-target="#attendee-capabilities-modal"
-                  data-bs-toggle="modal"
-                  data-bs-type="all-attendees-except">
-                  <div class="me-2 d-inline-block" style="transform: scale(0.75);">
-                    <%= require('../../node_modules/open-iconic/svg/people.svg') %>
-                  </div>
-                  <span id="roster-menu-all-attendees-except-label"></span>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="bs-component" style="flex: 1 1 auto; overflow-y: auto; height: 50%;">
-          <ul id="roster" class="list-group"></ul>
-        </div>
-        <div class="message d-flex flex-column pt-3" style="flex: 1 1 auto; overflow: hidden; height: 50%;">
-          <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
-            border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
-          <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
-            <textarea class="form-control shadow-none" id="send-message" rows="1"
-                      placeholder="Type a message (markdown supported)" style="display:inline-block; width:100%;
-              resize:none; border-color: rgba(0, 0, 0, 0.125); outline: none; padding-left: 1.4rem"></textarea>
-          </div>
-        </div>
-      </div>
-      <div id="tile-transcript-container"
-           class="d-flex flex-column col-12 col-sm-7 col-md-8 col-lg-9 my-4 my-sm-0 h-100" style="overflow-y: scroll">
-        <div id="tile-area" class="v-grid"></div>
-        <div id="transcript-container" class="transcript-container" style="display:none"></div>
-      </div>
-      <video id="content-share-video" playsinline crossOrigin="anonymous" style="display:none"></video>
-    </div>
-  </div>
-
-  <div id='toast-container' aria-live="polite" aria-atomic="true">
-  </div>
-</div>
-
-<!-- Content Share Configuration Modal -->
-
-<div id="content-share-configuration-modal" class="modal fade" style="display: none">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="additional-options-modal-label">Content Share Options</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <h5 class="my-2">Screen Capture</h5>
-        <label for="content-capture-frame-rate" style=" text-align: left;">Frame Rate</label>
-        <input type="number" id="content-capture-frame-rate" class="form-control" placeholder="30">
-        <div class="form-text">
-          The browser is not guaranteed to send the chosen value.
-        </div>
-        <h5 class="my-2">Media Processing</h5>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="content-enable-volume-reduction" class="form-check-input">
-          <label for="content-share-voice-focus" class="form-check-label">Reduce audio volume</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="content-enable-circular-cut" class="form-check-input">
-          <label for="content-enable-circular-cut" class="form-check-label">Circular crop video</label>
-        </div>
-        <div id="content-simulcast-config">
-          <h5 class="my-2">Simulcast Encoding</h5>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="content-enable-simulcast">
-            <label class="form-check-label" for="content-enable-simulcast">Enable Simulcast</label>
-          </div>
-          <div class="container p-0">
-            <div class="row row-cols-2 my-1">
-              <div class="col-6 text-center">Low Layer</div>
-              <div class="col-6 text-center">High Layer</div>
-            </div>
-            <div class="row row-cols-2 my-1">
-              <div class="col-6">
-                <input type="number" id="content-simulcast-low-max-bitratekbps" class="form-control"
-                  placeholder="Max bitrate (kbps)">
-              </div>
-              <div class="col-6">
-                <input type="number" id="content-simulcast-high-max-bitratekbps" class="form-control"
-                  placeholder="Max bitrate (kbps)">
-              </div>
-            </div>
-            <div class="row row-cols-2 my-1">
-              <div class="col-6">
-                <input type="number" id="content-simulcast-low-scale-factor" class="form-control"
-                  placeholder="Scale factor">
-              </div>
-              <div class="col-6">
-                <input type="number" id="content-simulcast-high-scale-factor" class="form-control"
-                  placeholder="Scale factor">
-              </div>
-            </div>
-            <div class="row row-cols-2 my-1">
-              <div class="col-6">
-                <input type="number" id="content-simulcast-low-max-framerate" class="form-control"
-                  placeholder="Max frame rate">
-              </div>
-              <div class="col-6">
-                <input type="number" id="content-simulcast-high-max-framerate" class="form-control"
-                  placeholder="Max frame rate">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="content-svc-config">
-          <h5 class="my-2">SVC Encoding</h5>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="content-enable-svc">
-            <label class="form-check-label" for="content-enable-svc">Enable SVC</label>
-          </div>
-        </div>
-      </div>
-      <button id="button-save-content-share-configs" type="button" class="btn btn-primary" data-bs-dismiss="modal"
-        aria-pressed="false" autocomplete="off">
-        Save
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Failure card if meeting cannot be joined -->
-
-<div id="flow-failed-join" class="flow">
-  <div class="container">
-    <form id="form-failed-join">
-      <div class="card border-warning mb-3" style="max-width: 20rem;">
-        <div id="failed-join" class="card-header"></div>
-        <div class="card-body">
-          <h4 class="card-title">Unable to join meeting</h4>
-          <p class="card-text">There was an issue joining that meeting. Check your connectivity and try again.</p>
-          <small id="failed-join-error" class="text-muted"></small>
-        </div>
-      </div>
-      <div class="d-grid gap-2">
-        <button class="btn btn-lg btn-outline-warning" type="submit">OK</button>
-      </div>
+      <a id="to-sip-flow" class="link small developer-only" href="#">Joining via SIP?</a>
     </form>
   </div>
-</div>
+  <div id="sdk-version" class="version-tag"></div>
+</section>
 
-<!-- Attendee capabilities modal -->
+<!-- SIP join -->
+<section id="flow-sip-authenticate" class="flow flow-centered" hidden>
+  <div class="card join-card">
+    <h1 class="card-title">Join via SIP</h1>
+    <form id="form-sip-authenticate" class="stack">
+      <label class="field">
+        <span class="field-label">Meeting title</span>
+        <input id="sip-inputMeeting" class="input" type="text" required autofocus>
+      </label>
+      <label class="field">
+        <span class="field-label">Voice Connector ID</span>
+        <input id="voiceConnectorId" class="input" type="text" required>
+      </label>
+      <button class="button button-primary button-large" type="submit">Continue</button>
+      <p class="muted small">You will need a SIP client to join the meeting.</p>
+      <a id="to-join-flow" class="link small" href="#">Back</a>
+    </form>
+  </div>
+</section>
 
-<div class="modal fade" id="attendee-capabilities-modal" tabindex="-1"
-     aria-labelledby="attendee-capabilities-modal-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="attendee-capabilities-modal-label">Attendee capabilities</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="form-floating mb-3">
-          <div id="attendee-capabilities-modal-description" class="text-wrap text-break"></div>
-        </div>
-        <div class="form-floating mb-3">
-          <select name="audioCapability" class="form-select" id="attendee-capabilities-modal-audio-select">
-            <option value="SendReceive">SendReceive</option>
-            <option value="Send">Send</option>
-            <option value="Receive">Receive</option>
-            <option value="None">None</option>
-          </select>
-          <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
-        </div>
-        <div class="form-floating mb-3">
-          <select name="videoCapability" class="form-select" id="attendee-capabilities-modal-video-select">
-            <option value="SendReceive">SendReceive</option>
-            <option value="Send">Send</option>
-            <option value="Receive">Receive</option>
-            <option value="None">None</option>
-          </select>
-          <label for="videoCapability"  style="text-align: left;">Video capability:</label>
-        </div>
-        <div class="form-floating mb-3">
-          <select name="contentCapability" class="form-select" id="attendee-capabilities-modal-content-select">
-            <option value="SendReceive">SendReceive</option>
-            <option value="Send">Send</option>
-            <option value="Receive">Receive</option>
-            <option value="None">None</option>
-          </select>
-          <label for="contentCapability"  style="text-align: left;">Content capability:</label>
-        </div>
-      </div>
-      <button type="button" class="btn btn-primary" id="attendee-capabilities-save-button">Save</button>
+<section id="flow-sip-uri" class="flow flow-centered" hidden>
+  <div class="card join-card">
+    <h1 class="card-title">SIP URI</h1>
+    <div class="stack">
+      <input id="sip-uri" class="input" readonly aria-label="SIP URI">
+      <button id="copy-sip-uri" type="button" class="button button-primary"><span data-icon="copy"></span><span>Copy</span></button>
     </div>
   </div>
-</div>
+</section>
 
+<!-- Failure and permission cards -->
+<section id="flow-failed-meeting" class="flow flow-centered" hidden>
+  <div class="card join-card">
+    <h1 class="card-title">Unable to find meeting</h1>
+    <form id="form-failed-meeting" class="stack">
+      <p id="failed-meeting" class="muted"></p>
+      <p>There was an issue finding that meeting. It may have ended, or your authorization may have expired.</p>
+      <p id="failed-meeting-error" class="small error-text"></p>
+      <button class="button button-primary" type="submit">Back to join</button>
+    </form>
+  </div>
+</section>
+
+<section id="flow-failed-join" class="flow flow-centered" hidden>
+  <div class="card join-card">
+    <h1 class="card-title">Unable to join meeting</h1>
+    <form id="form-failed-join" class="stack">
+      <p id="failed-join" class="muted"></p>
+      <p>There was an issue joining that meeting. Check your connectivity and try again.</p>
+      <p id="failed-join-error" class="small error-text"></p>
+      <button class="button button-primary" type="submit">Back to join</button>
+    </form>
+  </div>
+</section>
+
+<section id="flow-left" class="flow flow-centered" hidden>
+  <div class="card join-card">
+    <h1 id="left-title" class="card-title">You left the meeting</h1>
+    <p id="left-meeting" class="muted"></p>
+    <div class="button-row">
+      <button type="button" id="left-back" class="button button-ghost">Back to start</button>
+      <button type="button" id="left-rejoin" class="button button-primary">Rejoin</button>
+    </div>
+  </div>
+</section>
+
+<section id="flow-need-permission" class="flow flow-centered" hidden>
+  <div class="card join-card">
+    <h1 class="card-title">Allow microphone and camera</h1>
+    <p>To list your devices by name we need a quick permissions check. When the browser asks, choose
+      <b>Allow</b>.</p>
+  </div>
+</section>
+
+<!-- Shown when the permission prompt was dismissed or the site is blocked -->
+<section id="flow-permission-denied" class="flow flow-centered" hidden>
+  <div class="card join-card">
+    <h1 class="card-title">Microphone and camera are blocked</h1>
+    <p id="permission-denied-reason" class="muted"></p>
+    <p>To allow them, open the site permissions from the icon next to the address bar (the lock or
+      tune icon in Chrome and Edge, the <b>AA</b> or page icon in Safari, the shield or camera icon in
+      Firefox), set <b>Microphone</b> and <b>Camera</b> to Allow, then try again.</p>
+    <div class="button-row">
+      <button type="button" id="permission-continue" class="button button-ghost">Continue without them</button>
+      <button type="button" id="permission-retry" class="button button-primary">Try again</button>
+    </div>
+  </div>
+</section>
+
+<!-- Pre-join device setup -->
+<section id="flow-devices" class="flow flow-centered" hidden>
+  <form id="form-devices" class="prejoin">
+    <h1 class="card-title">Ready to join?</h1>
+    <!-- Under the title, so the pinned Join bar on phones never covers it. -->
+    <p class="muted prejoin-subtitle">Joining <b id="info-meeting"></b> as <b id="info-name"></b>.</p>
+    <div class="prejoin-layout">
+      <div class="prejoin-preview">
+        <div class="preview-frame">
+          <video id="video-preview" autoplay muted playsinline></video>
+          <div id="video-preview-placeholder" class="preview-placeholder"><span data-icon="videoOff"></span><span class="preview-placeholder-label">Camera is off</span></div>
+        </div>
+        <div class="prejoin-preview-controls">
+          <button type="button" id="prejoin-mic-toggle" class="dock-button" aria-pressed="true" aria-label="Microphone">
+            <span data-icon="mic"></span><span class="dock-label">Mic</span>
+          </button>
+          <button type="button" id="prejoin-camera-toggle" class="dock-button" aria-pressed="false" aria-label="Camera">
+            <span data-icon="videoOff"></span><span class="dock-label">Camera</span>
+          </button>
+        </div>
+        <div class="level" aria-hidden="true"><div id="audio-preview" class="level-bar"></div></div>
+        <p id="prejoin-device-warning" class="prejoin-warning" role="status" hidden></p>
+      </div>
+      <div class="stack">
+        <div class="field">
+          <label class="field-label" for="audio-input">Microphone</label>
+          <div class="field-inline">
+            <select id="audio-input" class="select"></select>
+            <button id="button-test-mic" type="button" class="button button-ghost" title="Record a few seconds and play them back">Test</button>
+          </div>
+        </div>
+        <div id="voice-focus-setting" class="inline-switch" hidden>
+          <label class="setting">
+            <span class="setting-label"><span>Noise suppression</span><span class="setting-help">Amazon Voice Focus</span></span>
+            <input type="checkbox" id="add-voice-focus" class="switch" autocomplete="off">
+          </label>
+          <div id="add-voice-focus-info" class="setting-help" hidden>Voice Focus is not supported on this device.</div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="audio-output">Speaker</label>
+          <div class="field-inline">
+            <select id="audio-output" class="select"></select>
+            <button id="button-test-sound" type="button" class="button button-ghost" title="Play a short tone">Test</button>
+          </div>
+        </div>
+        <label class="field">
+          <span class="field-label">Camera</span>
+          <select id="video-input" class="select"></select>
+        </label>
+        <div id="video-input-filter-container">
+          <label class="field">
+            <span class="field-label">Background effect</span>
+            <select id="video-input-filter" class="select">
+              <option value="None" selected>None</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="button-row prejoin-actions">
+      <button id="prejoin-back" type="button" class="button button-ghost">Back</button>
+      <button type="button" id="prejoin-settings" class="button button-ghost button-icon" aria-label="Settings" title="Settings">
+        <span data-icon="settings"></span>
+      </button>
+      <button id="joinButton" class="button button-primary button-large" type="submit">Join now</button>
+    </div>
+    <div id="progress-join" class="progress" role="progressbar" aria-label="Joining" hidden>
+      <div class="progress-bar"></div>
+    </div>
+  </form>
+</section>
+
+<!-- In-meeting screen -->
+<section id="flow-meeting" class="flow meeting" hidden>
+  <header class="meeting-header">
+    <div class="meeting-title">
+      <h1 id="meeting-id" class="meeting-name"></h1>
+      <button type="button" id="button-meeting-info" class="icon-button" aria-label="Meeting details">
+        <span data-icon="info"></span>
+      </button>
+    </div>
+    <div class="meeting-header-end">
+      <span id="recording-indicator" class="recording-indicator" role="status" hidden><span data-icon="circleDot"></span> <span class="recording-label">Recording</span></span>
+      <span id="connection-indicator" class="connection-indicator" role="status" hidden><span data-icon="wifiLow"></span> <span class="connection-label">Weak connection</span></span>
+      <span id="meeting-region" class="meeting-region" hidden><span data-icon="globe"></span><span id="meeting-region-name"></span></span>
+      <span id="meeting-timer" class="muted small" aria-live="off"></span>
+    </div>
+  </header>
+
+  <div class="meeting-main">
+    <div class="stage">
+      <div id="tile-area" class="v-grid"></div>
+      <div id="stage-empty" class="stage-empty" hidden>
+        <span data-icon="users"></span>
+        <p>No one is sharing video yet.</p>
+      </div>
+      <div id="sharing-bar" class="stage-banner sharing-bar" role="status" hidden>
+        <span data-icon="screenShare"></span>
+        <span>You're sharing</span>
+        <button type="button" id="sharing-bar-stop" class="button button-danger button-small">Stop sharing</button>
+      </div>
+      <div id="stage-invite" class="stage-banner stage-invite" role="status" hidden>
+        <span class="stage-invite-text"><b>You're the only one here.</b> Share the link to invite others.</span>
+        <button type="button" id="stage-invite-copy" class="button button-primary button-small"><span data-icon="copy"></span><span>Copy join link</span></button>
+        <button type="button" id="stage-invite-dismiss" class="icon-button" aria-label="Dismiss"><span data-icon="x"></span></button>
+      </div>
+      <button type="button" id="video-paginate-left" class="paginate paginate-left" aria-label="Previous page of videos" hidden>
+        <span data-icon="chevronLeft"></span>
+      </button>
+      <button type="button" id="video-paginate-right" class="paginate paginate-right" aria-label="Next page of videos" hidden>
+        <span data-icon="chevronRight"></span>
+      </button>
+      <div id="reactions-overlay" class="reactions-overlay" aria-live="polite"></div>
+      <div id="captions-bar" class="captions-bar" aria-live="polite" hidden></div>
+    </div>
+
+    <div id="side-panel" class="side-panel" role="region" aria-label="Side panel" hidden>
+      <!-- Participants and Chat open from the dock and stack; the transcript opens from the captions;
+           media metrics open from More and take the panel alone. Each section closes on its own. -->
+      <section id="panel-participants" class="panel" aria-labelledby="panel-participants-title" hidden>
+        <header class="panel-header">
+          <h2 id="panel-participants-title" class="panel-title">Participants <span id="participant-count" class="badge"></span>
+            <span id="hand-count" class="badge badge-hand" hidden></span></h2>
+          <button type="button" id="panel-participants-close" class="icon-button" aria-label="Close participants"><span data-icon="x"></span></button>
+        </header>
+        <div id="roster-menu-container" class="roster-menu" hidden>
+          <span id="roster-menu-instruction" class="muted small"></span>
+          <button type="button" id="roster-menu-button" class="button button-ghost button-small">
+            <span data-icon="ellipsis"></span><span>Capabilities</span>
+          </button>
+          <div id="roster-menu" class="menu">
+            <div class="menu-header">Attendee capabilities</div>
+            <div id="roster-menu-none-selected" class="menu-note">Select one or more attendees to update.</div>
+            <button type="button" id="roster-menu-one-attendee" class="menu-item" role="menuitem" data-capabilities-type="one-attendee" hidden>
+              <span class="menu-icon"><span data-icon="userCog"></span></span>
+              <span class="menu-label">Update the selected attendee</span>
+            </button>
+            <button type="button" id="roster-menu-all-attendees-except" class="menu-item" role="menuitem" data-capabilities-type="all-attendees-except" hidden>
+              <span class="menu-icon"><span data-icon="users"></span></span>
+              <span class="menu-label" id="roster-menu-all-attendees-except-label"></span>
+            </button>
+          </div>
+        </div>
+        <ul id="roster" class="roster"></ul>
+      </section>
+
+      <section id="panel-chat" class="panel" aria-labelledby="panel-chat-title" hidden>
+        <header class="panel-header">
+          <h2 id="panel-chat-title" class="panel-title">Chat</h2>
+          <button type="button" id="panel-chat-close" class="icon-button" aria-label="Close chat"><span data-icon="x"></span></button>
+        </header>
+        <div id="receive-message" class="messages" aria-live="polite"></div>
+        <button type="button" id="chat-new-messages" class="chat-new-messages" hidden><span data-icon="chevronDown"></span> New messages</button>
+        <form id="form-send-message" class="composer">
+          <textarea id="send-message" class="input" rows="1" placeholder="Message everyone" aria-label="Message"></textarea>
+          <button type="submit" class="icon-button" aria-label="Send" title="Send"><span data-icon="send"></span></button>
+        </form>
+      </section>
+
+      <section id="panel-captions" class="panel" aria-labelledby="panel-captions-title" hidden>
+        <header class="panel-header">
+          <h2 id="panel-captions-title" class="panel-title">Transcript</h2>
+          <button type="button" id="panel-captions-close" class="icon-button" aria-label="Close transcript"><span data-icon="x"></span></button>
+        </header>
+        <div id="transcript-container" class="transcript"></div>
+      </section>
+
+      <!-- Media metrics (developer): a page each for network, audio, video and the background
+           effect, with live charts of the last minute and the facts that go with them. -->
+      <section id="panel-stats" class="panel" aria-labelledby="panel-stats-title" hidden>
+        <header class="panel-header">
+          <h2 id="panel-stats-title" class="panel-title">Media metrics</h2>
+          <button type="button" id="panel-stats-close" class="icon-button" aria-label="Close media metrics"><span data-icon="x"></span></button>
+        </header>
+        <div class="panel-scroll stack">
+          <label class="setting" for="stats-on-tiles">
+            <span class="setting-label"><span>Show stats on video tiles</span></span>
+            <input type="checkbox" id="stats-on-tiles" class="switch">
+          </label>
+          <div id="stats-tabs" class="segmented stats-tabs" role="tablist" aria-label="Stats"></div>
+          <div id="stats-page-network" class="stack" role="tabpanel" aria-labelledby="stats-tab-network">
+            <div class="stats-charts"></div>
+            <dl class="details">
+              <dt>SDK</dt><dd id="stats-sdk-version" class="code"></dd>
+              <dt>Uplink</dt><dd id="video-uplink-bandwidth"></dd>
+              <dt>Downlink</dt><dd id="video-downlink-bandwidth"></dd>
+              <dt>Relay protocol</dt><dd id="stats-relay-protocol"></dd>
+            </dl>
+          </div>
+          <div id="stats-page-audio" class="stack" role="tabpanel" aria-labelledby="stats-tab-audio" hidden>
+            <div class="stats-charts"></div>
+            <dl class="details">
+              <dt>RED recovery</dt><dd id="stats-red-recovery"></dd>
+            </dl>
+          </div>
+          <div id="stats-page-video" class="stack" role="tabpanel" aria-labelledby="stats-tab-video" hidden>
+            <div class="stats-charts"></div>
+            <dl class="details">
+              <dt>Simulcast layers</dt><dd id="stats-simulcast-layers"></dd>
+            </dl>
+          </div>
+          <div id="stats-page-background" class="stack" role="tabpanel" aria-labelledby="stats-tab-background" hidden>
+            <p id="stats-background-idle" class="small muted">No background effect is on. Choose one from the camera menu.</p>
+            <dl class="details">
+              <dt>Effect</dt><dd id="stats-background-effect"></dd>
+              <dt>Model</dt><dd id="stats-background-model" class="code"></dd>
+              <dt>Runs on</dt><dd id="stats-background-delegate"></dd>
+              <dt>Start-up</dt><dd id="stats-background-startup"></dd>
+              <dt>Errors</dt><dd id="stats-background-errors"></dd>
+            </dl>
+            <div class="stats-charts"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- A centred row of your media (mic, camera, share), a divider and the rest, with Leave and End
+       at the right. Captions and recording are in the More menu. -->
+  <footer class="dock">
+    <div class="dock-center">
+      <div class="dock-group">
+        <div class="dock-split">
+          <button type="button" id="button-microphone" class="dock-button" aria-pressed="true" aria-label="Mute microphone">
+            <span data-icon="mic"></span><span class="dock-label">Mute</span>
+          </button>
+          <button type="button" id="button-microphone-drop" class="dock-chevron" aria-label="Audio options" title="Audio options">
+            <span data-icon="chevronDown"></span>
+          </button>
+        </div>
+        <div id="dropdown-menu-microphone"></div>
+        <div class="dock-split">
+          <button type="button" id="button-camera" class="dock-button" aria-pressed="false" aria-label="Start video">
+            <span data-icon="videoOff"></span><span class="dock-label">Start video</span>
+          </button>
+          <button type="button" id="button-camera-drop" class="dock-chevron" aria-label="Camera options" title="Camera options">
+            <span data-icon="chevronDown"></span>
+          </button>
+        </div>
+        <div id="dropdown-menu-camera"></div>
+
+        <!-- Share opens this popover while idle and stops the share while sharing. Choosing an item
+             starts sharing it; the switches apply to the next share. -->
+        <button type="button" id="button-content-share" class="dock-button dock-overflow" aria-pressed="false" aria-label="Share">
+          <span data-icon="screenShare"></span><span class="dock-label">Share</span>
+        </button>
+        <div id="dropdown-menu-content-share" class="menu menu-share">
+          <div class="menu-header">Share</div>
+          <button type="button" id="dropdown-item-content-share-screen-capture" class="menu-item" role="menuitem">
+            <span class="menu-icon"><span data-icon="screenShare"></span></span>
+            <span class="menu-label"><span>Share a screen, window or tab</span><span class="menu-description">The browser asks which one</span></span>
+          </button>
+          <button type="button" id="dropdown-item-content-share-file-item" class="menu-item" role="menuitem">
+            <span class="menu-icon"><span data-icon="fileVideo"></span></span>
+            <span class="menu-label"><span>Share a video or audio file</span></span>
+          </button>
+          <input id="content-share-item" type="file" accept="video/*,audio/*" hidden>
+          <button type="button" id="dropdown-item-content-share-screen-test-video" class="menu-item developer-only" role="menuitem">
+            <span class="menu-icon"><span data-icon="play"></span></span>
+            <span class="menu-label"><span>Share the test video</span><span class="menu-description">Big Buck Bunny, 360p</span></span>
+          </button>
+          <button type="button" id="dropdown-item-content-share-test-mono-audio-speech" class="menu-item developer-only" role="menuitem">
+            <span class="menu-icon"><span data-icon="volume2"></span></span>
+            <span class="menu-label"><span>Share test audio (mono speech)</span></span>
+          </button>
+          <button type="button" id="dropdown-item-content-share-test-stereo-audio-speech" class="menu-item developer-only stereo-only" role="menuitem">
+            <span class="menu-icon"><span data-icon="volume2"></span></span>
+            <span class="menu-label"><span>Share test audio (stereo speech)</span></span>
+          </button>
+          <button type="button" id="dropdown-item-content-share-test-stereo-audio-tone" class="menu-item developer-only stereo-only" role="menuitem">
+            <span class="menu-icon"><span data-icon="volume2"></span></span>
+            <span class="menu-label"><span>Share a test tone (L 500 Hz, R 1000 Hz)</span></span>
+          </button>
+          <div class="menu-separator" role="separator"></div>
+          <button type="button" id="content-share-include-audio" class="menu-item" role="menuitemcheckbox" aria-checked="true">
+            <span class="menu-icon"><span data-icon="volume2"></span></span>
+            <span class="menu-label"><span>Share computer sound</span></span>
+            <span class="menu-check"><span data-icon="check"></span></span>
+          </button>
+          <button type="button" id="content-share-optimize-video" class="menu-item" role="menuitemcheckbox" aria-checked="false">
+            <span class="menu-icon"><span data-icon="clapperboard"></span></span>
+            <span class="menu-label"><span>Optimize for video clip</span></span>
+            <span class="menu-check"><span data-icon="check"></span></span>
+          </button>
+          <button type="button" id="dropdown-item-content-share-configuration" class="menu-item developer-only" role="menuitem">
+            <span class="menu-icon"><span data-icon="slidersHorizontal"></span></span>
+            <span class="menu-label"><span>Change content share options</span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="dock-divider" aria-hidden="true"></div>
+
+      <div class="dock-group">
+        <button type="button" id="button-reactions" class="dock-button dock-overflow" aria-label="React">
+          <span data-icon="smile"></span><span class="dock-label">React</span>
+        </button>
+        <div id="dropdown-menu-reactions" class="menu reactions-menu"></div>
+
+        <button type="button" id="button-participants" class="dock-button" aria-pressed="false" aria-label="Participants">
+          <span data-icon="users"></span><span class="dock-label">People</span>
+          <span id="dock-participant-count" class="dock-badge"></span>
+        </button>
+        <button type="button" id="button-chat" class="dock-button" aria-pressed="false" aria-label="Chat">
+          <span data-icon="messageSquare"></span><span class="dock-label">Chat</span>
+          <span id="dock-chat-unread" class="dock-badge dock-badge-accent" hidden></span>
+        </button>
+
+        <button type="button" id="button-promote-to-primary" class="dock-button dock-overflow" aria-pressed="false" aria-label="Promote to primary meeting" hidden>
+          <span data-icon="crown"></span><span class="dock-label">Promote</span>
+        </button>
+
+        <button type="button" id="button-more" class="dock-button" aria-label="More options" title="More options">
+          <span data-icon="ellipsis"></span><span class="dock-label">More</span>
+        </button>
+        <div id="dropdown-menu-more"></div>
+      </div>
+    </div>
+
+    <div class="dock-end">
+      <button type="button" id="button-meeting-leave" class="button button-danger" aria-label="Leave meeting" title="Leave meeting">
+        <span data-icon="logOut"></span><span>Leave</span>
+      </button>
+      <button type="button" id="button-meeting-end" class="button button-ghost-danger dock-overflow" aria-label="End meeting for everyone" title="End the meeting for everyone">
+        <span data-icon="phoneOff"></span><span class="dock-label">End</span>
+      </button>
+    </div>
+  </footer>
+
+  <video id="content-share-video" playsinline crossorigin="anonymous" hidden></video>
+  <audio id="meeting-audio" hidden></audio>
+</section>
+</main>
+
+<!-- Settings (rendered from config/schema.ts) -->
+<dialog id="settings-dialog" class="dialog dialog-settings" aria-labelledby="settings-title">
+  <header class="dialog-header">
+    <h2 id="settings-title">Settings</h2>
+    <input type="search" id="settings-filter" class="input settings-filter" placeholder="Find a setting" aria-label="Find a setting" autocomplete="off">
+    <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
+  </header>
+  <div class="settings-body">
+    <nav id="settings-tabs" class="settings-tabs" role="tablist" aria-label="Settings sections"></nav>
+    <div id="settings-panels" class="settings-panels"></div>
+    <p id="settings-no-match" class="settings-no-match" role="status" hidden><span id="settings-no-match-text"></span> <button type="button" id="settings-no-match-clear" class="link">Clear</button></p>
+  </div>
+  <footer class="dialog-footer">
+    <div id="settings-footer-start" class="settings-footer-start"></div>
+    <span class="spacer"></span>
+    <button type="button" id="settings-reset" class="button button-ghost" title="Reset to defaults">Reset</button>
+    <button type="button" id="settings-rejoin" class="button button-ghost" title="Leave and join again with the options marked &quot;Applies when you next join&quot;." hidden>Rejoin</button>
+    <button type="button" class="button button-primary" data-dialog-close>Done</button>
+  </footer>
+</dialog>
+
+<!-- Join info override (developer) -->
+<dialog id="join-info-override-modal" class="dialog dialog-wide" aria-labelledby="join-info-override-modal-label">
+  <header class="dialog-header">
+    <h2 id="join-info-override-modal-label">Join info override</h2>
+    <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
+  </header>
+  <div class="dialog-body stack">
+    <p>Join a meeting created outside the serverless demo, for example from your own application or another
+      account, by pasting the API responses below:</p>
+    <ul class="small">
+      <li><code>aws chime-sdk-meetings create-attendee --meeting-id &lt;value&gt; --external-user-id &lt;value&gt; --region &lt;region&gt;</code></li>
+      <li><code>aws chime-sdk-meetings get-meeting --meeting-id &lt;value&gt; --region &lt;region&gt;</code></li>
+    </ul>
+    <label class="field">
+      <span class="field-label"><a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html" target="_blank" rel="noopener">CreateAttendee</a> response</span>
+      <textarea class="input code" id="create-attendee-override-input" rows="7" placeholder='{
+  "Attendee": {
+    "ExternalUserId": "John",
+    "AttendeeId": "18ba3ce2-9d76-722f-6b58-2c2fe0db5c94",
+    "JoinToken": "..."
+  }
+}'></textarea>
+    </label>
+    <label class="field">
+      <span class="field-label"><a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_GetMeeting.html" target="_blank" rel="noopener">GetMeeting</a> response</span>
+      <textarea class="input code" id="get-meeting-override-input" rows="12" placeholder='{
+  "Meeting": {
+    "MeetingId": "35f23a2b-c4d7-413f-a299-2b1dc3f63314",
+    "ExternalMeetingId": "f7f76d4a-08ba-4001-8900-2b3fba4b6b3f",
+    "MediaRegion": "us-east-1",
+    "MediaPlacement": { "AudioHostUrl": "...", "SignalingUrl": "...", "...": "..." }
+  }
+}'></textarea>
+    </label>
+  </div>
+  <footer class="dialog-footer">
+    <button type="button" class="button button-ghost" data-dialog-close>Cancel</button>
+    <button type="button" class="button button-primary" id="join-info-override-join-button">Join meeting</button>
+  </footer>
+</dialog>
+
+<!-- Leave / end confirmation -->
+<dialog id="leave-dialog" class="dialog dialog-small" aria-labelledby="leave-dialog-title">
+  <header class="dialog-header">
+    <h2 id="leave-dialog-title">Leave the meeting?</h2>
+    <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
+  </header>
+  <div class="dialog-body">
+    <p id="leave-dialog-body" class="muted">You can rejoin with the same link.</p>
+  </div>
+  <footer class="dialog-footer">
+    <button type="button" class="button button-ghost" data-dialog-close>Cancel</button>
+    <button type="button" id="button-confirm-end" class="button button-ghost-danger">End for everyone</button>
+    <button type="button" id="button-confirm-leave" class="button button-danger">Leave</button>
+  </footer>
+</dialog>
+
+<!-- Content share options -->
+<dialog id="content-share-configuration-modal" class="dialog" aria-labelledby="content-share-configuration-title">
+  <header class="dialog-header">
+    <h2 id="content-share-configuration-title">Content share options</h2>
+    <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
+  </header>
+  <div class="dialog-body stack">
+    <label class="field">
+      <span class="field-label">Screen capture frame rate <span class="field-help">The browser is not guaranteed to honor it.</span></span>
+      <input type="number" id="content-capture-frame-rate" class="input" placeholder="Browser default">
+    </label>
+    <label class="setting">
+      <span class="setting-label"><span>Reduce shared audio volume</span></span>
+      <input type="checkbox" id="content-enable-volume-reduction" class="switch">
+    </label>
+    <div id="content-simulcast-config" class="stack">
+      <label class="setting">
+        <span class="setting-label"><span>Simulcast for content</span></span>
+        <input type="checkbox" id="content-enable-simulcast" class="switch">
+      </label>
+      <div class="two-columns small">
+        <span class="muted">Low layer</span><span class="muted">High layer</span>
+        <input type="number" id="content-simulcast-low-max-bitratekbps" class="input" placeholder="Max bitrate (kbps)" aria-label="Low layer max bitrate (kbps)">
+        <input type="number" id="content-simulcast-high-max-bitratekbps" class="input" placeholder="Max bitrate (kbps)" aria-label="High layer max bitrate (kbps)">
+        <input type="number" id="content-simulcast-low-scale-factor" class="input" placeholder="Scale factor" aria-label="Low layer scale factor">
+        <input type="number" id="content-simulcast-high-scale-factor" class="input" placeholder="Scale factor" aria-label="High layer scale factor">
+        <input type="number" id="content-simulcast-low-max-framerate" class="input" placeholder="Max frame rate" aria-label="Low layer max frame rate">
+        <input type="number" id="content-simulcast-high-max-framerate" class="input" placeholder="Max frame rate" aria-label="High layer max frame rate">
+      </div>
+    </div>
+    <div id="content-svc-config">
+      <label class="setting">
+        <span class="setting-label"><span>SVC for content</span></span>
+        <input type="checkbox" id="content-enable-svc" class="switch">
+      </label>
+    </div>
+  </div>
+  <footer class="dialog-footer">
+    <button type="button" class="button button-ghost" data-dialog-close>Cancel</button>
+    <button type="button" id="button-save-content-share-configs" class="button button-primary">Save</button>
+  </footer>
+</dialog>
+
+<!-- Attendee capabilities -->
+<dialog id="attendee-capabilities-modal" class="dialog" aria-labelledby="attendee-capabilities-modal-label">
+  <header class="dialog-header">
+    <h2 id="attendee-capabilities-modal-label">Attendee capabilities</h2>
+    <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
+  </header>
+  <div class="dialog-body stack">
+    <div id="attendee-capabilities-modal-description"></div>
+    <label class="field">
+      <span class="field-label">Audio</span>
+      <select id="attendee-capabilities-modal-audio-select" class="select">
+        <option value="SendReceive">Send and receive</option>
+        <option value="Send">Send only</option>
+        <option value="Receive">Receive only</option>
+        <option value="None">None</option>
+      </select>
+    </label>
+    <label class="field">
+      <span class="field-label">Video</span>
+      <select id="attendee-capabilities-modal-video-select" class="select">
+        <option value="SendReceive">Send and receive</option>
+        <option value="Send">Send only</option>
+        <option value="Receive">Receive only</option>
+        <option value="None">None</option>
+      </select>
+    </label>
+    <label class="field">
+      <span class="field-label">Content</span>
+      <select id="attendee-capabilities-modal-content-select" class="select">
+        <option value="SendReceive">Send and receive</option>
+        <option value="Send">Send only</option>
+        <option value="Receive">Receive only</option>
+        <option value="None">None</option>
+      </select>
+    </label>
+  </div>
+  <footer class="dialog-footer">
+    <button type="button" class="button button-ghost" data-dialog-close>Cancel</button>
+    <button type="button" id="attendee-capabilities-save-button" class="button button-primary">Save</button>
+  </footer>
+</dialog>
+
+<!-- Meeting details -->
+<dialog id="meeting-info-dialog" class="dialog" aria-labelledby="meeting-info-title">
+  <header class="dialog-header">
+    <h2 id="meeting-info-title">Meeting details</h2>
+    <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
+  </header>
+  <div class="dialog-body stack">
+    <dl class="details">
+      <dt>Title</dt><dd id="info-meeting-title"></dd>
+      <dt>Media region</dt><dd id="info-media-region"></dd>
+      <dt class="developer-only">Meeting ID</dt><dd id="chime-meeting-id" class="code developer-only"></dd>
+      <dt class="developer-only">Your attendee ID</dt><dd id="desktop-attendee-id" class="code developer-only"></dd>
+      <dt>Join link</dt><dd id="info-join-link" class="code"></dd>
+    </dl>
+    <button type="button" id="button-copy-join-link" class="button button-primary"><span data-icon="copy"></span><span>Copy join link</span></button>
+  </div>
+</dialog>
+
+<div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>
 </body>
 </html>

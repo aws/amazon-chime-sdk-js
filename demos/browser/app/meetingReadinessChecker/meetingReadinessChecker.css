@@ -1,0 +1,47 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Meeting readiness checker: the shared tokens and components plus the results table.
+ */
+
+@import '../tokens.css';
+@import '../base.css';
+
+/* Flows start hidden; switchToFlow() shows one by setting style.display. */
+.flow {
+  display: none;
+}
+
+.results-card {
+  width: min(100%, 560px);
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  & td,
+  & th {
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+}
+
+/* integration/pages/MeetingReadinessCheckerPage.js waits on this class name while a check runs. */
+.spinner-border {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

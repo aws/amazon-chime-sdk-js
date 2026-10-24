@@ -104,9 +104,9 @@ class VideoTestUtils {
     
     let filterUIActive = false;
     try {
-      const videoFilterButton = await this.driver.findElement(By.id('button-video-filter'));
-      const classNamesString = await videoFilterButton.getAttribute('class');
-      filterUIActive = classNamesString.includes('btn-success');
+      // The camera button carries data-video-filter while an effect is on
+      const cameraButton = await this.driver.findElement(By.id('button-camera'));
+      filterUIActive = !!(await cameraButton.getAttribute('data-video-filter'));
       this.logger.pushLogs(`Video filter UI state: ${filterUIActive ? 'active' : 'inactive'}`);
     } catch (e) {
       this.logger.pushLogs(`Could not check video filter UI state: ${e.message}`, LogLevel.WARN);
