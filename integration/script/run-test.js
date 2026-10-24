@@ -78,7 +78,6 @@ const usage = () => {
   console.log(`    false: Run browser in normal mode with visible UI (default)`);
   console.log(`  --app`);
   console.log(`    meetingV2: Default meeting demo app`);
-  console.log(`    meetingReadinessChecker: Meeting readiness checker app`);
 };
 
 /**

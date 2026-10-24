@@ -14,24 +14,6 @@ let disablePrintingLogs = false;
 let chimeSDKMeetingsEndpoint = 'https://meetings-chime.us-east-1.amazonaws.com';
 let chimeMediaPipelinesServicePrincipal = 'mediapipelines.chime.amazonaws.com'
 let captureOutputPrefix = ''
-let mediaCaptureRegions = [
-    "ap-northeast-1",
-    "ap-northeast-2",
-    "ap-south-1",
-    "ap-southeast-1",
-    "ap-southeast-2",
-    "ca-central-1",
-    "eu-central-1",
-    "eu-north-1",
-    "eu-west-1",
-    "eu-west-2",
-    "eu-west-3",
-    "sa-east-1",
-    "us-east-1",
-    "us-east-2",
-    "us-west-1",
-    "us-west-2",
-];
 
 // Supported regions for the Amazon Chime SDK Meetings namespace
 // https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html
@@ -78,8 +60,8 @@ function usage() {
   console.log(`  -p, --service-principal              Service principal for media pipelines related resources, default is '${chimeMediaPipelinesServicePrincipal}'`)
   console.log(`  -t, --enable-termination-protection  Enable termination protection for the Cloudformation stack, default is false`);
   console.log(`  -l, --disable-printing-logs          Disable printing logs`);
-  console.log(`  -o, --capture-output-prefix          Prefix for S3 bucket name`);
-  console.log(`  -i, --opt-in-regions                 Comma separated list of additional opt-in regions to enable for media capture`);
+  console.log(`  -o, --capture-output-prefix          Prefix for the media capture bucket names, default 'chime-sdk-demo-<account ID>'`);
+  console.log(`  -i, --opt-in-regions                 Ignored: each media Region's capture bucket is made on first use`);
   console.log(`  -m, --chime-sdk-meetings-endpoint    AWS SDK Chime Meetings endpoint`);
   console.log(`  --chime-sdk-media-pipelines-region   Media pipelines control region, default '${mediaPipelinesControlRegion}'`);
   console.log(`  --chime-sdk-media-pipelines-endpoint AWS SDK Chime Media Pipelines endpoint, default is ${chimeSDKMediaPipelinesEndpoint}`)
@@ -145,8 +127,7 @@ function parseArgs() {
         captureOutputPrefix = getArgOrExit(++i, args);
         break;
       case '-i': case '--opt-in-regions':
-        optInRegions = getArgOrExit(++i, args);
-        mediaCaptureRegions = mediaCaptureRegions.concat(optInRegions.split(','));
+        getArgOrExit(++i, args);
         break;
       case '-m': case '--chime-sdk-meetings-endpoint':
         chimeSDKMeetingsEndpoint = getArgOrExit(++i, args)
@@ -219,56 +200,15 @@ function ensureTools() {
   spawnOrFail('npm', ['install']);
 }
 
-function createCaptureS3Buckets(bucketPrefix, regions) {
-  console.log(`Creating S3 buckets for media capture pipelines artifacts.  Bucket prefix: ${bucketPrefix} Regions:[${regions}]`);
-  const lifecycleConfiguration = JSON.stringify({
-    "Rules": [{
-      "ID": "Delete artifacts after 1 day",
-      "Expiration": {"Days": 1},
-      "Status": "Enabled",
-      "Prefix": "",
-    }]
-  });
-  fs.writeFileSync('build/lifecycle_configuration.json', lifecycleConfiguration, {encoding: 'utf8', flag: 'w'});
-  for (bucketRegion of regions) {
-    const bucketName = `${bucketPrefix}-${bucketRegion}`;
-    const bucketPolicy = JSON.stringify({
-      "Id": "Policy1625687208360",
-      "Version": "2012-10-17",
-      "Statement": [{
-        "Sid": "Stmt1625687206729",
-        "Action": [
-          "s3:PutObject",
-          "s3:PutObjectAcl"
-        ],
-        "Effect": "Allow",
-        "Resource": `arn:aws:s3:::${bucketName}/*`,
-        "Principal": {
-          "Service": [
-            chimeMediaPipelinesServicePrincipal
-          ]
-        }
-      }]
-    });
-
-    fs.writeFileSync('build/bucket_policy.json', bucketPolicy, {encoding: 'utf8', flag: 'w'});
-
-    const s3Api = spawnSync('aws', ['s3api', 'head-bucket', '--bucket', `${bucketName}`, '--region', `${bucketRegion}`]);
-    if (s3Api.status !== 0) {
-      if (bucketRegion === 'us-east-1') {
-        spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion], null, !disablePrintingLogs);
-      } else {
-        spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion, '--create-bucket-configuration', `LocationConstraint=${bucketRegion}`], null, !disablePrintingLogs);
-      }
-      spawnOrFail('aws', ['s3api', 'put-bucket-policy', '--bucket', bucketName, '--region', bucketRegion, '--policy', 'file://build/bucket_policy.json']);
-      spawnOrFail('aws', ['s3api', 'put-bucket-lifecycle-configuration', '--bucket', bucketName, '--region', bucketRegion, '--lifecycle-configuration', 'file://build/lifecycle_configuration.json']);
-    }
-  }
-}
-
 function copyAssets() {
   fs.copySync('../browser/dist/speech.mp3', 'src/speech.mp3');
   fs.copySync('../browser/dist/speech_stereo.mp3', 'src/speech_stereo.mp3');
+  // The page's Content-Security-Policy, the same one the local servers send.
+  fs.copySync('../browser/csp.js', 'src/csp.js');
+  // Makes the media capture bucket, shared with api-server.js.
+  fs.copySync('../browser/captureBucket.js', 'src/captureBucket.js');
+  // Builds the Chime SDK request bodies, shared with api-server.js.
+  fs.copySync('../browser/meetingRequests.js', 'src/meetingRequests.js');
 }
 
 function ensureRegion() {
@@ -308,7 +248,6 @@ console.log('Deploying serverless application');
 let parameterOverrides = `Region=${region} UseEventBridge=${useEventBridge} ChimeServicePrincipal=${chimeMediaPipelinesServicePrincipal} ChimeSDKMeetingsEndpoint=${chimeSDKMeetingsEndpoint} ChimeSDKMediaPipelinesEndpoint=${chimeSDKMediaPipelinesEndpoint} MediaPipelinesControlRegion=${mediaPipelinesControlRegion}`
 if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
-    createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);
 } else if (app === 'messagingSession') {
     parameterOverrides += ` UseFetchCredentialLambda=true`
 }

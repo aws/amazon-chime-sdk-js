@@ -1,0 +1,205 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Design tokens and base element styles shared by all three demo apps.
+ */
+
+:root {
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 16px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --accent: #4f8cff;
+  --accent-strong: #2563eb;
+  --accent-stronger: #1d4ed8;
+  --accent-contrast: #ffffff;
+  --danger: #e5484d;
+  --danger-strong: #d93a40;
+  --danger-stronger: #b91c1c;
+  --success: #2fbf71;
+  --warning: #f5a524;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.35);
+
+  /* Over video and other media: the same in both themes. */
+  --on-media: #ffffff;
+  --media-scrim: rgb(0 0 0 / 0.55);
+  --media-scrim-strong: rgb(0 0 0 / 0.75);
+  --fatal-bg: #5a0f12;
+
+  /* Caption and transcript speaker names, one colour per speaker. */
+  --speaker-0: #7fb3ff;
+  --speaker-1: #ffb86b;
+  --speaker-2: #8ee6a3;
+  --speaker-3: #ff8fa3;
+  --speaker-4: #d7a6ff;
+  --speaker-5: #6fe3e0;
+  --speaker-6: #ffe27a;
+  --speaker-7: #f0a1ff;
+
+  --dock-height: 72px;
+  --header-height: 36px;
+  --panel-width: 340px;
+
+  color-scheme: dark;
+  --bg: #0f1115;
+  --bg-elevated: #171a21;
+  --bg-sunken: #0a0c10;
+  --surface: #1e222b;
+  --surface-hover: #262b36;
+  --surface-active: #2f3542;
+  --border: #2b313d;
+  /* An off switch: 3:1 against the dialog and page backgrounds. */
+  --control-off: #646d80;
+  --text: #e8eaf0;
+  --text-muted: #9aa3b2;
+  --tile-bg: #11141a;
+  --tile-fg: #c7ccd6;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f4f5f8;
+  --bg-elevated: #ffffff;
+  --accent: #2563eb;
+  --bg-sunken: #e9ebf0;
+  --surface: #ffffff;
+  --surface-hover: #eef1f6;
+  --surface-active: #e2e7f0;
+  --border: #d9dee8;
+  --control-off: #848d9e;
+  --text: #171a21;
+  --text-muted: #5f6878;
+  --tile-bg: #1e222b;
+  --tile-fg: #c7ccd6;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.08);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.14);
+}
+
+@media (prefers-color-scheme: light) {
+  [data-theme='auto'] {
+    color-scheme: light;
+    --bg: #f4f5f8;
+    --bg-elevated: #ffffff;
+    --accent: #2563eb;
+    --bg-sunken: #e9ebf0;
+    --surface: #ffffff;
+    --surface-hover: #eef1f6;
+    --surface-active: #e2e7f0;
+    --border: #d9dee8;
+    --control-off: #848d9e;
+    --text: #171a21;
+    --text-muted: #5f6878;
+    --tile-bg: #1e222b;
+    --tile-fg: #c7ccd6;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.08);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.14);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+a.link {
+  color: var(--accent);
+}
+
+code,
+kbd,
+.code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+}
+
+svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+/* Icon placeholders hug their SVG; as plain inline boxes the line's descender space pushed the
+   icon above centre in buttons. */
+[data-icon] {
+  display: inline-flex;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.small {
+  font-size: 12px;
+}
+
+.error-text {
+  color: var(--danger);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.button-row {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

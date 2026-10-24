@@ -1,232 +1,324 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import cogSvg from '../../../node_modules/open-iconic/svg/cog.svg?raw';
+import { STRINGS } from '../strings';
+import { el } from '../ui/dom';
+import { iconElement } from '../ui/icons';
+import Menu from '../ui/Menu';
 
+export type TileLevel = 'low' | 'medium' | 'high' | 'max';
+export type DegradationPreference = 'balanced' | 'maintainResolution' | 'maintainFramerate';
+
+export interface TileMenuHandlers {
+  onPauseToggle?: () => void;
+  onPinToggle?: () => void;
+  onHideSelfView?: () => void;
+  onMirrorToggle?: () => void;
+  onTargetResolution?: (level: TileLevel) => void;
+  onPriority?: (level: TileLevel) => void;
+  onDegradationPreference?: (preference: DegradationPreference) => void;
+}
+
+const LEVELS: { value: TileLevel; label: string }[] = (
+  ['low', 'medium', 'high', 'max'] as TileLevel[]
+).map(value => ({ value, label: STRINGS.level[value] }));
+
+const DEGRADATION: { value: DegradationPreference; label: string }[] = (
+  ['balanced', 'maintainResolution', 'maintainFramerate'] as DegradationPreference[]
+).map(value => ({ value, label: STRINGS.degradation[value] }));
+
+/**
+ * One video tile: the `<video>`, a nameplate with mute/hand/network badges, and a per-tile menu
+ * (pin, pause, and in developer mode the remote video preference knobs of the priority downlink
+ * policy).
+ * All lookups are scoped to the element, so any number of tiles can coexist.
+ */
 export class DemoVideoTile extends HTMLElement {
-  innerHTMLToInject = `
-  <video class="video-tile-video"></video>
-  <div class="video-tile-attendee-id"></div>
-  <div class="video-tile-nameplate"></div>
-  <div class="video-tile-pause-state"></div>
-  <div class="button-video-tile-config" role="group">
-    <button type="button" class="btn btn-success dropdown-toggle button-video-tile-config-drop" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../../node_modules/open-iconic/svg/cog.svg') %></button>
-    <div class="dropdown-menu dropdown-menu-end dropdown-video-tile-config" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-      <a class="dropdown-item video-tile-pause">Pause</a>
-      <div class="dropdown-divider"></div>
-      <h6 class="dropdown-header target-resolution-header">Target Resolution</h6>
-      <form class="btn-group video-tile-config-toggle target-resolution-toggle" role="group">
-        <input type="radio" class="btn-check" name="level" value="low" id="resolution-low">
-        <label class="btn btn-secondary" id="resolution-low-label" title="low" for="low">Low</label>
-        <input type="radio" class="btn-check" name="level" value="medium" id="resolution-medium">
-        <label class="btn btn-secondary" id="resolution-medium-label" title="medium" for="medium">Medium</label>
-        <input type="radio" class="btn-check" name="level" value="high" id="resolution-high" checked>
-        <label class="btn btn-secondary" id="resolution-high-label" title="high" for="high">High</label>
-        <input type="radio" class="btn-check" name="level" value="max" id="resolution-max" checked>
-        <label class="btn btn-secondary" id="resolution-max-label" title="max" for="max">Max</label>
-      </form>
-      <h6 class="dropdown-header video-priority-header">Video Priority</h6>
-      <form class="btn-group video-tile-config-toggle video-priority-toggle">
-        <input type="radio" class="btn-check" name="level" value="low" id="priority-low">
-        <label class="btn btn-secondary" id="priority-low-label" title="low" for="low">Low</label>
-        <input type="radio" class="btn-check" name="level" value="medium" id="priority-medium" checked>
-        <label class="btn btn-secondary" id="priority-medium-label" title="medium" for="medium">Medium</label>
-        <input type="radio" class="btn-check" name="level" value="high" id="priority-high">
-        <label class="btn btn-secondary" id="priority-high-label" title="high" for="high">High</label>
-        <input type="radio" class="btn-check" name="level" value="max" id="priority-max">
-        <label class="btn btn-secondary" id="priority-max-label" title="max" for="max">Max</label>
-      </form>
-      <h6 class="dropdown-header degradation-preference-header">Video Quality Degradation Preference</h6>
-      <form class="btn-group video-tile-config-toggle degradation-preference-toggle">
-        <input type="radio" class="btn-check" name="level" value="balanced" id="degradation-preference-balanced" checked>
-        <label class="btn btn-secondary" id="degradation-preference-balanced-label" for="balanced">Balanced</label>
-        <input type="radio" class="btn-check" name="level" value="maintainResolution" id="degradation-preference-resolution">
-        <label class="btn btn-secondary" id="degradation-preference-resolution-label" for="maintainResolution">Maintain Resolution</label>
-        <input type="radio" class="btn-check" name="level" value="maintainFramerate" id="degradation-preference-framerate">
-        <label class="btn btn-secondary" id="degradation-preference-framerate-label" for="maintainFramerate">Maintain Framerate</label>
-      </form>
-    </div>
-  </div>
-`;
+  private videoEl!: HTMLVideoElement;
+  private nameplateEl!: HTMLElement;
+  private statusEl!: HTMLElement;
+  private pauseStateEl!: HTMLElement;
+  private attendeeIdEl!: HTMLElement;
+  private reactionEl!: HTMLElement;
+  private menuButton!: HTMLButtonElement;
+  private menu!: Menu;
+  private handlers: TileMenuHandlers = {};
+  private showRemotePreferences: () => boolean = () => false;
+  private _paused = false;
+  private _pinned = false;
+  private _muted: boolean | undefined;
+  private _handRaised = false;
+  private _signalStrength = 100;
+  private targetResolution: TileLevel = 'high';
+  private priority: TileLevel = 'medium';
+  private degradation: DegradationPreference = 'balanced';
+  private _attendeeId = '';
+  private _tileIndex = -1;
 
-
-  public set tileIndex(tileIndex: number) {
-    // Update IDs for integration tests which need them
-    this.querySelector('.video-tile-nameplate').id = `nameplate-${tileIndex}`;
-    this.querySelector('.video-tile-video').id = `video-${tileIndex}`;
-
-    // Bootstrap is not easy to get working with shadow DOMs, and also requires the use of IDs for radio buttons
-    // (putting the input within the label doesn't work in Bootstrap 5), so we manually update these IDs to make them
-    // unique
-    const nonUniqueInputAndLabelIdPrefixes = [
-      'priority-low', 'priority-medium', 'priority-high', 'priority-max',
-      'resolution-low', 'resolution-medium', 'resolution-high', 'resolution-max',
-      'degradation-preference-balanced', 'degradation-preference-resolution', 'degradation-preference-framerate'
-    ];
-    for (const prefix of nonUniqueInputAndLabelIdPrefixes) {
-      this.querySelector(`#${prefix}`).id = `${prefix}-${tileIndex}`;
-      this.querySelector(`#${prefix}-label`).setAttribute('for', `${prefix}-${tileIndex}`);
-      this.querySelector(`#${prefix}-label`).id = `${prefix}-label-${tileIndex}`;
+  connectedCallback(): void {
+    if (this.videoEl) {
+      return;
+    }
+    this.className = 'video-tile';
+    this.videoEl = el('video', { class: 'video-tile-video', autoplay: true, playsinline: true });
+    this.nameplateEl = el('div', { class: 'video-tile-nameplate' });
+    this.statusEl = el('span', { class: 'video-tile-status' });
+    this.pauseStateEl = el('span', { class: 'video-tile-pause-state' });
+    this.attendeeIdEl = el('div', { class: 'video-tile-attendee-id' });
+    this.reactionEl = el('div', { class: 'video-tile-reaction', 'aria-hidden': 'true' });
+    this.menuButton = el(
+      'button',
+      {
+        type: 'button',
+        class: 'icon-button video-tile-menu-button',
+        'aria-label': STRINGS.videoTileOptions,
+      },
+      iconElement('ellipsisVertical')
+    );
+    const menuEl = el('div', { class: 'menu' });
+    this.append(
+      this.videoEl,
+      el(
+        'div',
+        { class: 'video-tile-overlay' },
+        el(
+          'div',
+          { class: 'video-tile-footer' },
+          this.nameplateEl,
+          this.statusEl,
+          this.pauseStateEl
+        )
+      ),
+      this.attendeeIdEl,
+      this.reactionEl,
+      this.menuButton,
+      menuEl
+    );
+    this.menu = new Menu(menuEl, this.menuButton);
+    this.menu.onOpen(() => this.buildMenu());
+    if (this._tileIndex >= 0) {
+      this.tileIndex = this._tileIndex;
     }
   }
 
-  public set showConfigDropdown(shouldShow: boolean) {
-    const display: string = shouldShow ? 'block' : 'none';
-    (this.querySelector('.button-video-tile-config-drop') as HTMLElement).style.display = display;
-    (this.querySelector('.video-tile-pause') as HTMLElement).style.display = display;
+  /** Index used by the integration tests to find `#video-N` and `#nameplate-N`. */
+  set tileIndex(tileIndex: number) {
+    this._tileIndex = tileIndex;
+    if (this.videoEl) {
+      this.videoEl.id = `video-${tileIndex}`;
+      this.nameplateEl.id = `nameplate-${tileIndex}`;
+      this.menuButton.id = `button-video-tile-config-${tileIndex}`;
+      this.menu.element.id = `dropdown-video-tile-config-${tileIndex}`;
+      this.menuButton.setAttribute('aria-controls', this.menu.element.id);
+    }
   }
 
-  public set showRemoteVideoPreferences(shouldShow: boolean) {
-    const display: string = shouldShow ? 'block' : 'none';
-    (this.querySelector('.target-resolution-header') as HTMLElement).style.display = display;
-    (this.querySelector('.target-resolution-toggle') as HTMLElement).style.display = display;
-    (this.querySelector('.video-priority-header') as HTMLElement).style.display = display;
-    (this.querySelector('.video-priority-toggle') as HTMLElement).style.display = display;
-    (this.querySelector('.degradation-preference-header') as HTMLElement).style.display = display;
-    (this.querySelector('.degradation-preference-toggle') as HTMLElement).style.display = display;
+  setHandlers(handlers: TileMenuHandlers): void {
+    this.handlers = handlers;
   }
 
-  show(isContent: boolean) {
+  /** Asked each time the menu opens, so turning developer mode on or off applies at once. */
+  setRemoteVideoPreferencesShown(shown: () => boolean): void {
+    this.showRemotePreferences = shown;
+  }
+
+  private buildMenu(): void {
+    this.menu.clear();
+    if (this.classList.contains('local')) {
+      this.menu.addItem({
+        label: this.classList.contains('mirrored') ? STRINGS.stopMirroring : STRINGS.mirrorMyVideo,
+        icon: 'flipHorizontal',
+        onSelect: () => this.handlers.onMirrorToggle?.(),
+      });
+      this.menu.addItem({
+        label: STRINGS.hideSelfView,
+        icon: 'eyeOff',
+        onSelect: () => this.handlers.onHideSelfView?.(),
+      });
+      return;
+    }
+    this.menu.addItem({
+      label: this._pinned ? STRINGS.unpin : STRINGS.pinToStage,
+      icon: this._pinned ? 'pinOff' : 'pin',
+      onSelect: () => this.handlers.onPinToggle?.(),
+    });
+    this.menu.addItem({
+      label: this._paused ? STRINGS.resumeVideo : STRINGS.pauseVideo,
+      icon: this._paused ? 'play' : 'pause',
+      onSelect: () => this.handlers.onPauseToggle?.(),
+    });
+    if (!this.showRemotePreferences()) {
+      return;
+    }
+    this.menu.addSeparator();
+    this.menu.addHeader(STRINGS.targetResolution);
+    this.menu.addRadioGroup(LEVELS, this.targetResolution, value => {
+      this.targetResolution = value as TileLevel;
+      this.handlers.onTargetResolution?.(this.targetResolution);
+    });
+    this.menu.addHeader(STRINGS.priority);
+    this.menu.addRadioGroup(LEVELS, this.priority, value => {
+      this.priority = value as TileLevel;
+      this.handlers.onPriority?.(this.priority);
+    });
+    this.menu.addHeader(STRINGS.whenBandwidthConstrained);
+    this.menu.addRadioGroup(DEGRADATION, this.degradation, value => {
+      this.degradation = value as DegradationPreference;
+      this.handlers.onDegradationPreference?.(this.degradation);
+    });
+  }
+
+  show(isContent: boolean): void {
     this.classList.add('active');
+    this.classList.toggle('content', isContent);
     if (isContent) {
-      this.classList.add('content');
+      this.videoElement.style.objectFit = 'contain';
     }
   }
 
-  public set featured(featured: boolean) {
-    if (featured) {
-      this.classList.add('featured');
-    } else {
-      this.classList.remove('featured');
-    }
+  hide(): void {
+    this.classList.remove('active', 'featured', 'content', 'speaking', 'paused');
+    this.reaction = '';
   }
 
-  hide() {
-    this.classList.remove('active', 'featured', 'content');
+  set featured(featured: boolean) {
+    this.classList.toggle('featured', featured);
   }
 
-  showVideoStats(
-    keyStatstoShow: { [key: string]: string },
-    metricsData: { [id: string]: { [key: string]: number } },
-    streamDirection: string,
-  ): void {
-    const streams = metricsData ? Object.keys(metricsData) : [];
-    if (streams.length === 0) {
+  set speaking(speaking: boolean) {
+    this.classList.toggle('speaking', speaking);
+  }
+
+  set local(local: boolean) {
+    this.classList.toggle('local', local);
+  }
+
+  set mirrored(mirrored: boolean) {
+    this.classList.toggle('mirrored', mirrored);
+  }
+
+  set paused(paused: boolean) {
+    this._paused = paused;
+    this.classList.toggle('paused', paused);
+  }
+
+  get paused(): boolean {
+    return this._paused;
+  }
+
+  set pinned(pinned: boolean) {
+    this._pinned = pinned;
+    this.renderStatus();
+  }
+
+  get pinned(): boolean {
+    return this._pinned;
+  }
+
+  setMuted(muted: boolean): void {
+    this._muted = muted;
+    this.renderStatus();
+  }
+
+  set handRaised(raised: boolean) {
+    this._handRaised = raised;
+    this.renderStatus();
+  }
+
+  /** 0..100 (percent) from the volume indicator; below 100 shows a weak-network badge. */
+  set signalStrength(strength: number) {
+    this._signalStrength = strength;
+    this.renderStatus();
+  }
+
+  set reaction(emoji: string) {
+    this.reactionEl.textContent = emoji;
+  }
+
+  private renderStatus(): void {
+    if (!this.statusEl) {
       return;
     }
-
-    let statsInfo: HTMLDivElement = this.querySelector('#stats-info') as HTMLDivElement;
-    if (!statsInfo) {
-      statsInfo = document.createElement('div');
-      statsInfo.setAttribute('id', 'stats-info');
-      statsInfo.setAttribute('class', 'stats-info');
+    this.statusEl.replaceChildren();
+    if (this._muted) {
+      this.statusEl.append(iconElement('micOff'));
     }
-
-    let statsInfoTable = this.querySelector('#stats-table') as HTMLTableElement;
-    if (statsInfoTable) {
-      statsInfo.removeChild(statsInfoTable);
+    if (this._handRaised) {
+      this.statusEl.append(iconElement('hand'));
     }
-    statsInfoTable = document.createElement('table') as HTMLTableElement;
-    statsInfoTable.setAttribute('id', 'stats-table');
-    statsInfoTable.setAttribute('class', 'stats-table');
-    statsInfo.appendChild(statsInfoTable);
-
-    this.videoElement.insertAdjacentElement('afterend', statsInfo);
-    const header = statsInfoTable.insertRow(-1);
-    let cell = header.insertCell(-1);
-    cell.innerHTML = 'Video statistics';
-    for (let cnt = 0; cnt < streams.length; cnt++) {
-      cell = header.insertCell(-1);
-      cell.innerHTML = `${streamDirection} ${cnt + 1}`;
+    if (this._pinned) {
+      this.statusEl.append(iconElement('pin'));
     }
-
-    for (const ssrc of streams) {
-      for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
-        if (keyStatstoShow[metricName]) {
-          const row = statsInfoTable.insertRow(-1);
-          row.setAttribute('id', `${metricName}`);
-          cell = row.insertCell(-1);
-          cell.innerHTML = keyStatstoShow[metricName];
-          cell = row.insertCell(-1);
-          cell.innerHTML = `${value}`;
-        }
-      }
+    if (this._signalStrength < 100) {
+      this.statusEl.append(
+        el(
+          'span',
+          {
+            title:
+              this._signalStrength === 0 ? STRINGS.connectionLost : STRINGS.weakConnectionShort,
+          },
+          iconElement(this._signalStrength === 0 ? 'wifiOff' : 'wifiLow')
+        )
+      );
     }
-  };
-
-  collectVideoStats(
-    keyStatstoShow: { [key: string]: string },
-    metricsData: { [id: string]: { [key: string]: number } },
-    streamDirection: string,
-    stats: Map<string, number>,
-  ): void {
-    const streams = metricsData ? Object.keys(metricsData) : [];
-    if (streams.length === 0) {
-      return;
-    }
-
-    for (const ssrc of streams) {
-      for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
-        if (keyStatstoShow[metricName]) {
-          if (stats.has(metricName)) {
-            const currValue = stats.get(metricName);
-            stats.set(metricName, currValue + value);
-          } else {
-            stats.set(metricName, value);
-          }
-        }
-      }
-    }
-  };
-
-
-  public get videoElement(): HTMLVideoElement {
-    return this.querySelector('.video-tile-video');
   }
 
-  public set nameplate(nameplate: string) {
-    const nameplateElement = this.querySelector('.video-tile-nameplate') as HTMLElement;
-    console.log(`setting nameplate to ${nameplate}`);
-    nameplateElement.innerText = nameplate;
+  get videoElement(): HTMLVideoElement {
+    return this.videoEl;
   }
 
-  // Attendee ID is meant to be used as a unique identifier, hence we have a getter here as well
-  _attendeeId: string = "";
-  public set attendeeId(attendeeId: string) {
-    console.log(`setting attendeeId to ${attendeeId}`);
+  set nameplate(nameplate: string) {
+    this.nameplateEl.textContent = nameplate;
+  }
+
+  set attendeeId(attendeeId: string) {
     this._attendeeId = attendeeId;
-    const attendeeIdElement = this.querySelector('.video-tile-attendee-id') as HTMLElement;
-    attendeeIdElement.innerText = this._attendeeId ;
+    this.attendeeIdEl.textContent = attendeeId;
   }
-  public get attendeeId() {
+
+  get attendeeId(): string {
     return this._attendeeId;
   }
 
-  public set pauseState(state: string) {
-    const pauseState = this.querySelector('.video-tile-pause-state') as HTMLElement;
-    pauseState.innerText = state;
+  set pauseState(state: string) {
+    this.pauseStateEl.textContent = state;
   }
 
-  public get pauseButtonElement(): HTMLButtonElement {
-    return this.querySelector('.video-tile-pause');
+  showVideoStats(
+    keyStatsToShow: { [key: string]: string },
+    metricsData: { [id: string]: { [key: string]: number } },
+    streamDirection: string
+  ): void {
+    const streams = metricsData ? Object.keys(metricsData) : [];
+    if (streams.length === 0) {
+      return;
+    }
+    let statsInfo = this.querySelector<HTMLDivElement>('.stats-info');
+    if (!statsInfo) {
+      statsInfo = el('div', { class: 'stats-info' });
+      this.videoEl.insertAdjacentElement('afterend', statsInfo);
+    }
+    const table = el('table');
+    const header = table.insertRow(-1);
+    header.insertCell(-1).textContent = STRINGS.videoStatistics;
+    streams.forEach((_, index) => {
+      header.insertCell(-1).textContent = STRINGS.streamColumn(streamDirection, index + 1);
+    });
+    for (const ssrc of streams) {
+      for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
+        if (keyStatsToShow[metricName]) {
+          const row = table.insertRow(-1);
+          row.dataset.metric = metricName;
+          row.insertCell(-1).textContent = keyStatsToShow[metricName];
+          row.insertCell(-1).textContent = `${value}`;
+        }
+      }
+    }
+    statsInfo.replaceChildren(table);
   }
 
-  public get targetResolutionRadioElement(): HTMLFormElement {
-    return this.querySelector('.target-resolution-toggle');
-  }
-
-  public get videoPriorityRadioElement(): HTMLFormElement {
-    return this.querySelector('.video-priority-toggle');
-  }
-
-  public get videoDegradationPreferenceRadioElement(): HTMLFormElement {
-    return this.querySelector('.degradation-preference-toggle');
-  }
-
-  async connectedCallback() {
-    this.innerHTML = this.innerHTMLToInject;
-    (this.querySelector('.button-video-tile-config-drop') as HTMLElement).innerHTML = cogSvg;
-    this.className = 'video-tile';
+  clearVideoStats(): void {
+    this.querySelector('.stats-info')?.remove();
   }
 }
 
