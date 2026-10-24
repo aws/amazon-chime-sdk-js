@@ -230,7 +230,11 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     const encodingParams: RTCRtpEncodingParameters = this.calculateEncodingParameters(settings);
     if (this.shouldUpdateEndcodingParameters(encodingParams)) {
       this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, encodingParams);
-      this.transceiverController.setEncodingParameters(this.encodingParamMap);
+      try {
+        await this.transceiverController.setEncodingParameters(this.encodingParamMap);
+      } catch (error) {
+        this.logger?.warn(`Failed to set encoding parameters: ${error}`);
+      }
     }
   }
 

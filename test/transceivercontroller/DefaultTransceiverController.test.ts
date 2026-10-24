@@ -689,8 +689,8 @@ describe('DefaultTransceiverController', () => {
   });
 
   describe('setVideoSendingBitrateKbps', () => {
-    it('will not set bitrate if transceiver is not set up', () => {
-      tc.setVideoSendingBitrateKbps(100);
+    it('will not set bitrate if transceiver is not set up', async () => {
+      await tc.setVideoSendingBitrateKbps(100);
     });
 
     it('will not set bitrate if input is not positive', async () => {
@@ -710,11 +710,11 @@ describe('DefaultTransceiverController', () => {
         transactionId: '',
       } as RTCRtpSendParameters;
       await videoTransceiver.sender.setParameters(parameter);
-      tc.setVideoSendingBitrateKbps(100);
+      await tc.setVideoSendingBitrateKbps(100);
       parameter = peer.getTransceivers()[1].sender.getParameters();
       expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
 
-      tc.setVideoSendingBitrateKbps(0);
+      await tc.setVideoSendingBitrateKbps(0);
       parameter = peer.getTransceivers()[1].sender.getParameters();
       expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
     });
@@ -736,11 +736,11 @@ describe('DefaultTransceiverController', () => {
         transactionId: '',
       } as RTCRtpSendParameters;
       await videoTransceiver.sender.setParameters(parameter);
-      tc.setVideoSendingBitrateKbps(100);
+      await tc.setVideoSendingBitrateKbps(100);
       parameter = peer.getTransceivers()[1].sender.getParameters();
       expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
 
-      tc.setVideoSendingBitrateKbps(200);
+      await tc.setVideoSendingBitrateKbps(200);
       parameter = peer.getTransceivers()[1].sender.getParameters();
       expect(parameter.encodings[0].maxBitrate).to.equal(200 * 1000);
     });
@@ -788,7 +788,7 @@ describe('DefaultTransceiverController', () => {
     });
 
     it('is no-op if local transceivers are not set up', async () => {
-      tc.setEncodingParameters(
+      await tc.setEncodingParameters(
         new Map<string, RTCRtpEncodingParameters>().set('video', {
           scaleResolutionDownBy: 1,
           maxBitrate: 1_400_000,
@@ -811,7 +811,7 @@ describe('DefaultTransceiverController', () => {
       const newVideoTrack = new MediaStreamTrack();
       await tc.setVideoInput(newVideoTrack);
 
-      tc.setEncodingParameters(new Map<string, RTCRtpEncodingParameters>());
+      await tc.setEncodingParameters(new Map<string, RTCRtpEncodingParameters>());
 
       expect(getParamSpy.notCalled).to.be.true;
       expect(setParamSpy.notCalled).to.be.true;
@@ -993,6 +993,56 @@ describe('DefaultTransceiverController', () => {
       expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(2);
       expect(params.encodings[0].priority).to.be.equal('low');
       expect(params.encodings[0].networkPriority).to.be.equal('low');
+    });
+
+    it('starts a write only after the previous write to the sender completes', async () => {
+      await tc.setVideoInput(new MediaStreamTrack());
+      let completeFirstWrite: () => void;
+      setParamSpy.restore();
+      const setParamStub = sinon.stub(tc.localVideoTransceiver().sender, 'setParameters');
+      setParamSpy = setParamStub;
+      setParamStub
+        .onFirstCall()
+        .returns(new Promise<void>(resolve => (completeFirstWrite = resolve)));
+      setParamStub.onSecondCall().resolves();
+
+      const first = tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', { maxBitrate: 1_000_000 })
+      );
+      const second = tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', { maxBitrate: 1_200_000 })
+      );
+      await new Promise(resolve => setTimeout(resolve, 0));
+      expect(getParamSpy.callCount).to.equal(1);
+      expect(setParamSpy.callCount).to.equal(1);
+
+      completeFirstWrite();
+      await first;
+      await second;
+      expect(getParamSpy.callCount).to.equal(2);
+      expect(setParamSpy.callCount).to.equal(2);
+      expect(setParamSpy.secondCall.args[0].encodings[0].maxBitrate).to.equal(1_200_000);
+    });
+
+    it('applies later writes after a write is rejected', async () => {
+      await tc.setVideoInput(new MediaStreamTrack());
+      setParamSpy.restore();
+      const setParamStub = sinon.stub(tc.localVideoTransceiver().sender, 'setParameters');
+      setParamSpy = setParamStub;
+      setParamStub.onFirstCall().rejects(new Error('setParameters rejected'));
+      setParamStub.onSecondCall().resolves();
+
+      const first = tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', { maxBitrate: 1_000_000 })
+      );
+      const second = tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', { maxBitrate: 1_200_000 })
+      );
+      let firstError: Error | undefined;
+      await first.catch((error: Error) => (firstError = error));
+      await second;
+      expect(firstError.message).to.equal('setParameters rejected');
+      expect(setParamSpy.callCount).to.equal(2);
     });
   });
 

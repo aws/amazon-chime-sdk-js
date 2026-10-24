@@ -123,7 +123,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       const videoTransceiver = peer.getTransceivers()[1];
       expect(videoTransceiver.direction).to.equal('sendrecv');
       expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
-      tc.setEncodingParameters(encodingParamMap);
+      await tc.setEncodingParameters(encodingParamMap);
     });
 
     it('can update the sender parameter with no previous encodings', async () => {
@@ -163,7 +163,7 @@ describe('SimulcastContentShareTransceiverController', () => {
         encodings: null,
         headerExtensions: undefined,
       });
-      tc.setEncodingParameters(encodingParamMap);
+      await tc.setEncodingParameters(encodingParamMap);
       expect(
         isEncodingParamsEqual(
           tc.localVideoTransceiver().sender.getParameters().encodings[0],
@@ -206,7 +206,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       const videoTransceiver = peer.getTransceivers()[1];
       expect(videoTransceiver.direction).to.equal('sendrecv');
       expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
-      tc.setEncodingParameters(encodingParamMap);
+      await tc.setEncodingParameters(encodingParamMap);
       expect(
         isEncodingParamsEqual(
           tc.localVideoTransceiver().sender.getParameters().encodings[0],
