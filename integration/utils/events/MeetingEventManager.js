@@ -40,8 +40,8 @@ class MeetingEventManager {
           }
         };
         
-        // Check if eventController already exists
-        const s = window.app && window.app.meetingSession;
+        // window.app.session.meetingSession is undefined until authenticate
+        const s = window.app && window.app.session && window.app.session.meetingSession;
         const c = s && s.eventController;
         if (c) {
           c.addObserver(observer);

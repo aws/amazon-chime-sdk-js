@@ -399,7 +399,7 @@ Applications built with the Amazon Chime SDK for JavaScript can adjust video par
 
 You can use the [AudioVideoFacade.startContentShare(MediaStream)](https://aws.github.
 io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare) API to stream audio and/or video content 
-to the meetings. See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts#L1266) for an example of how to 
+to the meetings. See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meeting/features/ContentShareManager.ts) for an example of how to 
 achieve this.
 
 ### When I stream video in Chrome, other attendees see a black screen. Is this a known issue?
@@ -603,7 +603,7 @@ This applies for video input as well.
 Device labels are privileged since they add to the fingerprinting surface area of the browser session. In Chrome private tabs and in all Firefox tabs, the labels can only be read once a MediaStream is active. How to deal with this restriction depends on the desired UX. The device controller includes an injectable device label trigger which allows you to perform custom behavior in case there are no labels, such as creating a temporary audio/video stream to unlock the device names, which is the default behavior.
 
 You may want to override this behavior to provide a custom UX such as a prompt explaining why microphone and camera 
-access is being asked for by supplying your own function to setDeviceLabelTrigger(). See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts#L928) for 
+access is being asked for by supplying your own function to setDeviceLabelTrigger(). See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meeting/session/MeetingSessionController.ts) for 
 an example.
 
 ```

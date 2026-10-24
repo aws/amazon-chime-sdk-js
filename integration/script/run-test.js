@@ -33,7 +33,7 @@ let testType = 'integration-test'; // Type of test to run (integration-test or b
 let testConfig = '';          // Custom test configuration file
 let retry = undefined;        // Number of retries for failed tests
 let sessions = undefined;     // Number of browser sessions to use
-let appName = '';             // Name of the demo app to run (default: meetingV2)
+let appName = '';             // Name of the demo app to run (default: meeting)
 let logger;                   // Logger instance
 
 
@@ -52,7 +52,7 @@ const usage = () => {
   console.log(`  --test-implementation     Name of mocha test file stored in the tests folder [Optional]`);
   console.log(`  --config                  Name of custom config stored in configs folder [Optional]`);
   console.log(`  --headless                Run tests in headless mode [Optional] [default: false]`);
-  console.log(`  --app                     Demo app to run [Optional] [default: meetingV2]`);
+  console.log(`  --app                     Demo app to run [Optional] [default: meeting]`);
   console.log(`Values:`);
   console.log(`  --test-name`);
   console.log(`    AudioTest: Test name\n`);
@@ -77,8 +77,7 @@ const usage = () => {
   console.log(`    true: Run browser in headless mode (useful for CI environments)`);
   console.log(`    false: Run browser in normal mode with visible UI (default)`);
   console.log(`  --app`);
-  console.log(`    meetingV2: Default meeting demo app`);
-  console.log(`    meetingReadinessChecker: Meeting readiness checker app`);
+  console.log(`    meeting: Default meeting demo app`);
 };
 
 /**

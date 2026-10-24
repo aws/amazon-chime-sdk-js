@@ -15,6 +15,7 @@ function findAllElements() {
     attendeeNameInput: By.id('inputName'),
     authenticateButton: By.id('authenticate'),
     joinButton: By.id('joinButton'),
+    prejoinCameraToggle: By.id('prejoin-camera-toggle'),
     roster: By.id('roster'),
     participants: By.css('li'),
 
@@ -36,34 +37,25 @@ function findAllElements() {
     
     leaveButton: By.id('button-meeting-leave'),
     endMeetingButton: By.id('button-meeting-end'),
+    confirmLeaveButton: By.id('button-confirm-leave'),
+    confirmEndButton: By.id('button-confirm-end'),
     
     // Failed meeting flow
     failedMeetingFlow: By.id('flow-failed-meeting'),
 
     // Content Share
     contentShareButton: By.id('button-content-share'),
-    contentShareDropButton: By.id('button-content-share-drop'),
     contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
     contentSharePauseButton: By.id('dropdown-item-content-share-pause-resume'),
 
     // Data Message
     dataMessageInput: By.id('send-message'),
+    chatButton: By.id('button-chat'),
     dataMessageDisplay: By.id('receive-message'),
 
     // Video Filter
-    videoFilterButton: By.id('button-video-filter'),
-    videoFilterDropButton: By.id('button-video-filter-drop'),
-    noVideoFilterButton: By.id('dropdown-menu-filter-None'),
-    videoFilterBackgroundSegmentationGeneralBlueButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Blue)'),
-    videoFilterBackgroundSegmentationGeneralBlurLowButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Blur-Low)'),
-    videoFilterBackgroundSegmentationGeneralBlurMediumButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Blur-Medium)'),
-    videoFilterBackgroundSegmentationGeneralBlurHighButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Blur-High)'),
-    videoFilterBackgroundSegmentationGeneralReplacementButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Replacement)'),
-    videoFilterBackgroundSegmentationMulticlassBlueButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Blue)'),
-    videoFilterBackgroundSegmentationMulticlassBlurLowButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Blur-Low)'),
-    videoFilterBackgroundSegmentationMulticlassBlurMediumButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Blur-Medium)'),
-    videoFilterBackgroundSegmentationMulticlassBlurHighButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Blur-High)'),
-    videoFilterBackgroundSegmentationMulticlassReplacementButton: By.id('dropdown-menu-filter-BackgroundSegmentation---(Multiclass-Replacement)'),
+    // Carries data-video-filter while an effect is on.
+    videoFilterButton: By.id('button-camera'),
 
     // Voice Focus (Audio Processing)
     allowVoiceFocusCheckbox: By.id('allow-voice-focus'),
@@ -155,8 +147,14 @@ class MeetingPage {
   }
 
   async joinMeeting() {
-    this.logger.pushLogs('Clicking join button to join meeting');
     let joinButton = await this.driver.findElement(elements.joinButton);
+    // The device check keeps the camera on into the meeting; join with it off so the tests see videoInputSelected then videoInputUnselected.
+    await this.driver.wait(until.elementIsEnabled(joinButton), DEFAULT_TIMEOUT_MS * 3);
+    if ((await this.getToggleState(elements.prejoinCameraToggle)) === 'on') {
+      this.logger.pushLogs('Turning the device check camera off before joining');
+      await this.driver.findElement(elements.prejoinCameraToggle).click();
+    }
+    this.logger.pushLogs('Clicking join button to join meeting');
     // Scroll the button into view to avoid click interception
     await this.driver.executeScript('arguments[0].scrollIntoView({block: "center"});', joinButton);
     await sleep(500);
@@ -176,21 +174,25 @@ class MeetingPage {
     await microphoneButton.click();
   }
 
+  // aria-pressed: 'true' = on, 'false' = off.
+  async getToggleState(locator) {
+    let button = await this.driver.findElement(locator);
+    await this.driver.wait(until.elementIsVisible(button), DEFAULT_TIMEOUT_MS);
+    const pressed = await button.getAttribute('aria-pressed');
+    return pressed === 'true' ? 'on' : pressed === 'false' ? 'off' : 'unknown';
+  }
+
   async getMicrophoneStatus() {
-    let microphoneButton = await this.driver.findElement(elements.microphoneButton);
-    await this.driver.wait(until.elementIsVisible(microphoneButton), DEFAULT_TIMEOUT_MS);
-    let classNamesString = await microphoneButton.getAttribute('class');
-    let classNames = classNamesString.split(' ');
-    return classNames;
+    return this.getToggleState(elements.microphoneButton);
   }
 
   async muteMicrophone() {
-    let classNames = await this.getMicrophoneStatus();
+    const state = await this.getMicrophoneStatus();
 
-    if (classNames[1] === 'btn-success') {
+    if (state === 'on') {
       this.logger.pushLogs('Microphone is currently unmuted; muting the microphone');
       await this.clickMicrophoneButton();
-    } else if (classNames[1] === 'btn-outline-secondary') {
+    } else if (state === 'off') {
       this.logger.pushLogs('Microphone button is already muted; no action taken');
     } else {
       this.logger.pushLogs('Unkown microphone button state encountered!!', LogLevel.ERROR);
@@ -198,11 +200,11 @@ class MeetingPage {
   }
 
   async unmuteMicrophone() {
-    let classNames = await this.getMicrophoneStatus();
+    const state = await this.getMicrophoneStatus();
 
-    if (classNames[1] === 'btn-success') {
+    if (state === 'on') {
       this.logger.pushLogs('Microphone is already unmuted; no action taken');
-    } else if (classNames[1] === 'btn-outline-secondary') {
+    } else if (state === 'off') {
       this.logger.pushLogs('Microphone button is currently muted; unmuting the microphone');
       await this.clickMicrophoneButton();
     } else {
@@ -284,19 +286,15 @@ class MeetingPage {
   }
 
   async getVideoStatus() {
-    let videoButton = await this.driver.findElement(elements.videoButton);
-    await this.driver.wait(until.elementIsVisible(videoButton), DEFAULT_TIMEOUT_MS);
-    let classNamesString = await videoButton.getAttribute('class');
-    let classNames = classNamesString.split(' ');
-    return classNames;
+    return this.getToggleState(elements.videoButton);
   }
 
   async turnVideoOn() {
-    let classNames = await this.getVideoStatus();
+    const state = await this.getVideoStatus();
 
-    if (classNames[1] === 'btn-success') {
+    if (state === 'on') {
       this.logger.pushLogs('Video is already turned on; no action taken');
-    } else if (classNames[1] === 'btn-outline-secondary') {
+    } else if (state === 'off') {
       this.logger.pushLogs('Video is currently off; turning video on');
       await this.clickVideoButton();
     } else {
@@ -305,12 +303,12 @@ class MeetingPage {
   }
 
   async turnVideoOff() {
-    let classNames = await this.getVideoStatus();
+    const state = await this.getVideoStatus();
 
-    if (classNames[1] === 'btn-success') {
+    if (state === 'on') {
       this.logger.pushLogs('Video is currently on; turning video off');
       await this.clickVideoButton();
-    } else if (classNames[1] === 'btn-outline-secondary') {
+    } else if (state === 'off') {
       this.logger.pushLogs('Video is already turned off; no action taken');
     } else {
       this.logger.pushLogs('Unknown video button state encountered!!', LogLevel.ERROR);
@@ -332,78 +330,45 @@ class MeetingPage {
     return 'unknown';
   }
 
+  async setBackgroundOptions(options) {
+    await this.driver.executeScript(`
+      for (const [id, value] of Object.entries(arguments[0])) {
+        const control = document.getElementById(id);
+        control.value = value;
+        control.dispatchEvent(new Event('change'));
+      }
+    `, options);
+  }
+
+  async chooseBackgroundEffect(effect, model, options = {}) {
+    await this.setBackgroundOptions({
+      'background-model': model === 'multiclass' ? 'multiclass' : 'general',
+      ...options,
+      'background-effect': effect,
+    });
+    await sleep(model === 'multiclass' ? 15000 : 5000);
+  }
+
   async enableBackgroundSegmentationColorReplacement(model = 'general') {
     this.logger.pushLogs(`Enabling background segmentation color replacement (model=${model})`);
-    let videoFilterDropDownButton = await this.driver.findElement(elements.videoFilterDropButton);
-    await videoFilterDropDownButton.click();
-    let button;
-    switch (model) {
-      case 'multiclass':
-        button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassBlueButton);
-        break;
-      case 'general':
-      default:
-        button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralBlueButton);
-        break;
-    }
-    await button.click();
-    await sleep(model === 'multiclass' ? 15000 : 5000);
+    // checkBluePixelPercentage counts blue pixels.
+    await this.chooseBackgroundEffect('color', model, {
+      'background-color': '#0000ff',
+    });
     this.logger.pushLogs(`background segmentation color replacement enabled (model=${model})`, LogLevel.SUCCESS);
   }
 
   async enableBackgroundSegmentationBlur(strength = 'Low', model = 'general') {
     this.logger.pushLogs(`Enabling background segmentation blur (model=${model}, strength=${strength})`);
-    let videoFilterDropDownButton = await this.driver.findElement(elements.videoFilterDropButton);
-    await videoFilterDropDownButton.click();
-    let button;
-    if (model === 'multiclass') {
-      switch (strength) {
-        case 'Medium':
-          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassBlurMediumButton);
-          break;
-        case 'High':
-          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassBlurHighButton);
-          break;
-        case 'Low':
-        default:
-          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassBlurLowButton);
-          break;
-      }
-    } else {
-      switch (strength) {
-        case 'Medium':
-          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralBlurMediumButton);
-          break;
-        case 'High':
-          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralBlurHighButton);
-          break;
-        case 'Low':
-        default:
-          button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralBlurLowButton);
-          break;
-      }
-    }
-    await button.click();
-    await sleep(model === 'multiclass' ? 15000 : 5000);
+    await this.chooseBackgroundEffect('blur', model, {
+      'background-blur-strength': strength.toLowerCase(),
+    });
     this.logger.pushLogs(`background segmentation blur enabled (model=${model}, strength=${strength})`, LogLevel.SUCCESS);
   }
 
   async enableBackgroundSegmentationImageReplacement(model = 'general') {
     this.logger.pushLogs(`Enabling background segmentation image replacement (model=${model})`);
-    let videoFilterDropDownButton = await this.driver.findElement(elements.videoFilterDropButton);
-    await videoFilterDropDownButton.click();
-    let button;
-    switch (model) {
-      case 'multiclass':
-        button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationMulticlassReplacementButton);
-        break;
-      case 'general':
-      default:
-        button = await this.driver.findElement(elements.videoFilterBackgroundSegmentationGeneralReplacementButton);
-        break;
-    }
-    await button.click();
-    await sleep(model === 'multiclass' ? 15000 : 5000);
+    await this.chooseBackgroundEffect('image', model);
     this.logger.pushLogs(`background segmentation image replacement enabled (model=${model})`, LogLevel.SUCCESS);
   }
 
@@ -417,7 +382,8 @@ class MeetingPage {
         const nameplate = await tile.findElement(elements.videoTileNameplate);
         const nameplateText = await nameplate.getText();
 
-        if (nameplateText === attendeeId && isVisible) {
+        // Your own tile reads "<name> (you)".
+        if ((nameplateText === attendeeId || nameplateText.startsWith(`${attendeeId} `)) && isVisible) {
           videoTile = tile;
           break;
         }
@@ -632,14 +598,22 @@ class MeetingPage {
     await this.driver.wait(until.elementIsVisible(leaveButton), DEFAULT_TIMEOUT_MS);
     await leaveButton.click();
     this.logger.pushLogs('Clicked leave meeting button');
+    let confirmLeaveButton = await this.driver.findElement(elements.confirmLeaveButton);
+    await this.driver.wait(until.elementIsVisible(confirmLeaveButton), DEFAULT_TIMEOUT_MS);
+    await confirmLeaveButton.click();
+    this.logger.pushLogs('Confirmed leaving the meeting');
   }
 
   async endMeeting() {
-    this.logger.pushLogs('Ending meeting via server API');
+    this.logger.pushLogs('Ending meeting for everyone from the dock');
     let endMeetingButton = await this.driver.findElement(elements.endMeetingButton);
     await this.driver.wait(until.elementIsVisible(endMeetingButton), DEFAULT_TIMEOUT_MS);
     await endMeetingButton.click();
-    this.logger.pushLogs('Clicked end meeting button', LogLevel.SUCCESS);
+    this.logger.pushLogs('Clicked end meeting button');
+    let confirmEndButton = await this.driver.findElement(elements.confirmEndButton);
+    await this.driver.wait(until.elementIsVisible(confirmEndButton), DEFAULT_TIMEOUT_MS);
+    await confirmEndButton.click();
+    this.logger.pushLogs('Confirmed ending the meeting', LogLevel.SUCCESS);
   }
 
   async authenticateAndExpectFailure() {
@@ -688,36 +662,28 @@ class MeetingPage {
 
   async startContentShareTestVideo() {
     this.logger.pushLogs('Starting content share with test video');
-    
-    // Click content share dropdown button to open the menu
-    let contentShareDropButton = await this.driver.findElement(elements.contentShareDropButton);
-    await this.driver.wait(until.elementIsVisible(contentShareDropButton), DEFAULT_TIMEOUT_MS);
-    await contentShareDropButton.click();
-    this.logger.pushLogs('Clicked content share dropdown button');
-    
-    // Select test video option from dropdown (this just marks it as active)
+
+    let contentShareButton = await this.driver.findElement(elements.contentShareButton);
+    await this.driver.wait(until.elementIsVisible(contentShareButton), DEFAULT_TIMEOUT_MS);
+    await contentShareButton.click();
+    this.logger.pushLogs('Opened the share popover');
+
+    // Developer-only item; the suite runs with fatal=1, so developer mode is on.
     let contentShareVideoTestButton = await this.driver.findElement(elements.contentShareVideoTestButton);
     await this.driver.wait(until.elementIsVisible(contentShareVideoTestButton), DEFAULT_TIMEOUT_MS);
     await contentShareVideoTestButton.click();
-    this.logger.pushLogs('Selected test video option from content share dropdown');
-    
-    // Now click the main content share button to actually start sharing
-    let contentShareButton = await this.driver.findElement(elements.contentShareButton);
-    await this.driver.wait(until.elementIsVisible(contentShareButton), DEFAULT_TIMEOUT_MS);
-    await contentShareButton.click();    
     this.logger.pushLogs('Content share with test video started', LogLevel.SUCCESS);
   }
 
   async toggleContentSharePause() {
     this.logger.pushLogs('Toggling content share pause/resume');
-    
-    // Click content share dropdown button to open the menu
-    let contentShareDropButton = await this.driver.findElement(elements.contentShareDropButton);
-    await this.driver.wait(until.elementIsVisible(contentShareDropButton), DEFAULT_TIMEOUT_MS);
-    await contentShareDropButton.click();
-    this.logger.pushLogs('Clicked content share dropdown button');
-    
-    // Click pause/resume button
+
+    // Pause/resume is in the More menu while sharing
+    let moreButton = await this.driver.findElement(By.id('button-more'));
+    await this.driver.wait(until.elementIsVisible(moreButton), DEFAULT_TIMEOUT_MS);
+    await moreButton.click();
+    this.logger.pushLogs('Opened the More menu');
+
     let contentSharePauseButton = await this.driver.findElement(elements.contentSharePauseButton);
     await this.driver.wait(until.elementIsVisible(contentSharePauseButton), DEFAULT_TIMEOUT_MS);
     await contentSharePauseButton.click();
@@ -795,8 +761,15 @@ class MeetingPage {
     }
   }
 
+  async openChat() {
+    if ((await this.getToggleState(elements.chatButton)) !== 'on') {
+      await this.driver.findElement(elements.chatButton).click();
+    }
+  }
+
   async sendDataMessage(message) {
     this.logger.pushLogs(`Sending data message: ${message}`);
+    await this.openChat();
     
     // Find message input field
     let dataMessageInput = await this.driver.findElement(elements.dataMessageInput);
@@ -816,6 +789,7 @@ class MeetingPage {
 
   async checkDataMessageReceived(expectedMessage) {
     this.logger.pushLogs(`Checking if data message was received: ${expectedMessage}`);
+    await this.openChat();
 
     const retry = 5;
     let i = 0;
@@ -858,19 +832,7 @@ class MeetingPage {
 
   async disableVideoFilter() {
     this.logger.pushLogs('Disabling video filter');
-    
-    // Click video filter dropdown button
-    let videoFilterDropButton = await this.driver.findElement(elements.videoFilterDropButton);
-    await this.driver.wait(until.elementIsVisible(videoFilterDropButton), DEFAULT_TIMEOUT_MS);
-    await videoFilterDropButton.click();
-    this.logger.pushLogs('Clicked video filter dropdown button');
-    
-    // Select "None" option from dropdown
-    let noVideoFilterButton = await this.driver.findElement(elements.noVideoFilterButton);
-    await this.driver.wait(until.elementIsVisible(noVideoFilterButton), DEFAULT_TIMEOUT_MS);
-    await noVideoFilterButton.click();
-    this.logger.pushLogs('Selected None option from video filter dropdown');
-    
+    await this.setBackgroundOptions({ 'background-effect': 'none' });
     // Wait for the filter to be removed
     await sleep(1000);
     this.logger.pushLogs('Video filter disabled', LogLevel.SUCCESS);
@@ -885,21 +847,15 @@ class MeetingPage {
 
     while (!filterApplied && i < retry) {
       try {
-        // Find the video filter button (not the dropdown)
         let videoFilterButton = await this.driver.findElement(elements.videoFilterButton);
         await this.driver.wait(until.elementIsVisible(videoFilterButton), DEFAULT_TIMEOUT_MS);
         
-        // Check if the button has the 'btn-success' class which indicates filter is on
-        const classNamesString = await videoFilterButton.getAttribute('class');
-        const classNames = classNamesString.split(' ');
-        
-        this.logger.pushLogs(`Video filter button classes: ${classNamesString}`);
-        
-        // When a filter is applied, the button has 'btn-success' class
-        // When no filter is applied, it has 'btn-outline-secondary' class
-        if (classNames.includes('btn-success')) {
+        const activeFilter = await videoFilterButton.getAttribute('data-video-filter');
+        this.logger.pushLogs(`Camera button data-video-filter: ${activeFilter}`);
+
+        if (activeFilter) {
           filterApplied = true;
-          this.logger.pushLogs(`Video filter '${filterType}' is active (button has btn-success class)`, LogLevel.SUCCESS);
+          this.logger.pushLogs(`Video filter '${filterType}' is active (button is pressed)`, LogLevel.SUCCESS);
         } else {
           this.logger.pushLogs(`Video filter not yet applied, retrying... (${i + 1}/${retry})`);
           i++;
@@ -931,20 +887,15 @@ class MeetingPage {
 
     while (!filterDisabled && i < retry) {
       try {
-        // Find the video filter button (not the dropdown)
         let videoFilterButton = await this.driver.findElement(elements.videoFilterButton);
         await this.driver.wait(until.elementIsVisible(videoFilterButton), DEFAULT_TIMEOUT_MS);
         
-        // Check if the button has the 'btn-outline-secondary' class which indicates filter is off
-        const classNamesString = await videoFilterButton.getAttribute('class');
-        const classNames = classNamesString.split(' ');
-        
-        this.logger.pushLogs(`Video filter button classes: ${classNamesString}`);
-        
-        // When no filter is applied, the button has 'btn-outline-secondary' class
-        if (classNames.includes('btn-outline-secondary')) {
+        const activeFilter = await videoFilterButton.getAttribute('data-video-filter');
+        this.logger.pushLogs(`Camera button data-video-filter: ${activeFilter}`);
+
+        if (!activeFilter) {
           filterDisabled = true;
-          this.logger.pushLogs('Video filter is disabled (button has btn-outline-secondary class)', LogLevel.SUCCESS);
+          this.logger.pushLogs('Video filter is disabled (button is not pressed)', LogLevel.SUCCESS);
         } else {
           this.logger.pushLogs(`Video filter not yet disabled, retrying... (${i + 1}/${retry})`);
           i++;
@@ -1141,10 +1092,14 @@ class MeetingPage {
       if (!voiceFocusSetting) {
         return { supported: false, reason: 'voice-focus-setting element not found' };
       }
-      if (voiceFocusSetting.classList.contains('hidden')) {
+      if (voiceFocusSetting.hidden) {
         return { supported: false, reason: 'Voice Focus not allowed (hidden)' };
       }
-      if (voiceFocusSetting.classList.contains('add-voice-focus-not-supported')) {
+      const voiceFocusInfo = document.getElementById('add-voice-focus-info');
+      if (!voiceFocusInfo) {
+        return { supported: false, reason: 'add-voice-focus-info element not found' };
+      }
+      if (!voiceFocusInfo.hidden) {
         return { supported: false, reason: 'Voice Focus not supported on this device' };
       }
       const checkbox = voiceFocusSetting.querySelector('input');
@@ -1412,10 +1367,9 @@ class MeetingPage {
           
           const avgEdgeIntensity = pixelCount > 0 ? edgeSum / pixelCount : 0;
           
-          // Check if video filter button indicates blur is active
-          const videoFilterButton = document.getElementById('button-video-filter');
-          const filterButtonClasses = videoFilterButton ? videoFilterButton.className : '';
-          const filterActive = filterButtonClasses.includes('btn-success');
+          // The camera button carries data-video-filter while an effect is on
+          const cameraButton = document.getElementById('button-camera');
+          const filterActive = !!cameraButton && !!cameraButton.getAttribute('data-video-filter');
           
           // Verify video is actually playing (has non-zero content)
           let hasContent = false;
