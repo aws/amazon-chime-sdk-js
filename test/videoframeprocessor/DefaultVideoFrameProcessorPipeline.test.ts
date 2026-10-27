@@ -8,6 +8,7 @@ import { stub } from 'sinon';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import CanvasVideoFrameBuffer from '../../src/videoframeprocessor/CanvasVideoFrameBuffer';
 import DefaultVideoFrameProcessorPipeline from '../../src/videoframeprocessor/DefaultVideoFrameProcessorPipeline';
+import DefaultVideoFrameProcessorTimer from '../../src/videoframeprocessor/DefaultVideoFrameProcessorTimer';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
 import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from '../../src/videoframeprocessor/VideoFrameProcessor';
@@ -65,6 +66,20 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       }),
       timeoutPromise(timeout),
     ]);
+  }
+
+  function deferred<T>(): {
+    promise: Promise<T>;
+    resolve: (value: T) => void;
+    reject: (error: Error) => void;
+  } {
+    let resolve: (value: T) => void;
+    let reject: (error: Error) => void;
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
   }
 
   beforeEach(() => {
@@ -252,9 +267,16 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
   describe('processing loop', () => {
     class CountingProcessor implements VideoFrameProcessor {
       calls = 0;
+      // When set, the next call waits for it, then throws if it resolves with true.
+      hold: Promise<boolean> | undefined;
       async destroy(): Promise<void> {}
       async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
         this.calls += 1;
+        const hold = this.hold;
+        this.hold = undefined;
+        if (hold && (await hold)) {
+          throw new Error('cannot process');
+        }
         return buffers;
       }
     }
@@ -265,7 +287,19 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     beforeEach(() => {
       clock = createFakeTimers();
       counter = new CountingProcessor();
-      pipe.processors = [counter];
+      // The default timer, which uses setTimeout when it cannot create a worker. Either way, each tick calls the
+      // callback of the latest start().
+      const worker = globalThis.Worker;
+      globalThis.Worker = undefined;
+      try {
+        pipe = new DefaultVideoFrameProcessorPipeline(
+          logger,
+          [counter],
+          new DefaultVideoFrameProcessorTimer()
+        );
+      } finally {
+        globalThis.Worker = worker;
+      }
     });
 
     afterEach(() => {
@@ -326,6 +360,111 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       await setInput(newVideoStream('second-camera-track'));
       expectOneLoop(await framesInOneSecond());
     });
+
+    for (const [ending, fails] of [
+      ['resolves', false],
+      ['rejects', true],
+    ] as const) {
+      it(`starts a loop for the next input when a frame interrupted by stop() ${ending} after it is set`, async () => {
+        const obs = new MockObserver();
+        pipe.addObserver(obs);
+        const frame = deferred<boolean>();
+        counter.hold = frame.promise;
+        await setInput(mockVideoStream);
+        expect(counter.calls).to.equal(1);
+
+        pipe.stop();
+        await setInput(newVideoStream('second-camera-track'));
+        frame.resolve(fails);
+        expectOneLoop(await framesInOneSecond());
+        expect(obs.processingDidFailToStart.called).to.be.false;
+      });
+    }
+
+    it('keeps one loop when a frame interrupted by stop() ends during the first frame of the next input', async () => {
+      const firstFrame = deferred<boolean>();
+      counter.hold = firstFrame.promise;
+      await setInput(mockVideoStream);
+      const nextFrame = deferred<boolean>();
+      counter.hold = nextFrame.promise;
+      pipe.stop();
+      await setInput(newVideoStream('second-camera-track'));
+      expect(counter.calls).to.equal(2);
+
+      firstFrame.resolve(false);
+      await setInput(newVideoStream('third-camera-track'));
+      nextFrame.resolve(false);
+      expectOneLoop(await framesInOneSecond());
+    });
+
+    it('does not pass a frame interrupted by stop() to the next processor', async () => {
+      const frame = deferred<boolean>();
+      counter.hold = frame.promise;
+      const next = new CountingProcessor();
+      pipe.processors = [counter, next];
+      await setInput(mockVideoStream);
+      expect(next.calls).to.equal(0);
+
+      pipe.stop();
+      frame.resolve(false);
+      await clock.tickAsync(1000);
+      expect(next.calls).to.equal(0);
+    });
+
+    function newCanvas(): HTMLCanvasElement {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 480;
+      return canvas;
+    }
+
+    it('does not draw a frame that its processor finishes after stop', async () => {
+      const obs = new MockObserver();
+      pipe.addObserver(obs);
+      const frame = deferred<VideoFrameBuffer[]>();
+      pipe.processors = [{ destroy: async () => {}, process: () => frame.promise }];
+      await setInput(mockVideoStream);
+
+      pipe.stop();
+      frame.resolve([new CanvasVideoFrameBuffer(newCanvas())]);
+      await clock.tickAsync(1000);
+      expect(obs.processingDidStart.called).to.be.false;
+    });
+
+    for (const [ending, fails] of [
+      ['resolves', false],
+      ['rejects', true],
+    ] as const) {
+      it(`ignores a frame interrupted by stop() whose image ${ending} after the next input is set`, async () => {
+        const obs = new MockObserver();
+        pipe.addObserver(obs);
+        const image = deferred<CanvasImageSource>();
+        const firstFrame = new CanvasVideoFrameBuffer(newCanvas());
+        firstFrame.asCanvasImageSource = () => image.promise;
+        // The frames of the next session have no image yet, so they report nothing.
+        const nextFrame = new CanvasVideoFrameBuffer(newCanvas());
+        nextFrame.asCanvasImageSource = () => new Promise(() => {});
+        let frames = 0;
+        pipe.processors = [
+          {
+            destroy: async () => {},
+            process: async () => [frames++ === 0 ? firstFrame : nextFrame],
+          },
+        ];
+        await setInput(mockVideoStream);
+
+        pipe.stop();
+        await setInput(newVideoStream('second-camera-track'));
+        if (fails) {
+          image.reject(new Error('cannot draw'));
+        } else {
+          image.resolve(newCanvas());
+        }
+        await clock.tickAsync(1000);
+        expect(obs.processingDidStart.called).to.be.false;
+        expect(obs.processingDidFailToStart.called).to.be.false;
+      });
+    }
   });
 
   describe('getInputMediaStream', () => {
@@ -598,12 +737,6 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       ) as StoppableMediaStreamTrack;
       transformTrack = sinon.stub().callsFake(async () => this.output);
       stopTransformTrack = sinon.stub().resolves();
-    }
-
-    function deferred<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
-      let resolve: (value: T) => void;
-      const promise = new Promise<T>(r => (resolve = r));
-      return { promise, resolve };
     }
 
     const settle = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 5));
@@ -962,6 +1095,168 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       expect(pipe.outputMediaStream.getVideoTracks()).to.deep.equal([]);
       expect(obs.processingDidStart.called).to.be.false;
       expect(proc.stopTransformTrack.calledOnce).to.be.true;
+    });
+
+    function newCameraStream(id: string): MediaStream {
+      const stream = new MediaStream();
+      stream.addTrack(newTrack(id, 'video'));
+      return stream;
+    }
+
+    // A processor that returns a new output track for every start and ends them when it is stopped.
+    function processorWithNewOutputs(): {
+      proc: MockTrackProcessor;
+      outputs: StoppableMediaStreamTrack[];
+    } {
+      const proc = new MockTrackProcessor();
+      const outputs: StoppableMediaStreamTrack[] = [];
+      proc.transformTrack.callsFake(async () => {
+        outputs.push(newTrack(`output-${outputs.length}`, 'video'));
+        return outputs[outputs.length - 1];
+      });
+      proc.stopTransformTrack.callsFake(async () => {
+        for (const output of outputs) {
+          output.externalStop();
+        }
+      });
+      return { proc, outputs };
+    }
+
+    it('ignores a start of a stopped session that fails after the next session has started', async () => {
+      const { proc, outputs } = processorWithNewOutputs();
+      const firstStart = deferred<MediaStreamTrack>();
+      proc.transformTrack.onFirstCall().returns(firstStart.promise);
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
+      const obs = new MockObserver();
+      pipe.addObserver(obs);
+      const changed = sinon.stub();
+      pipe.outputTrackDidChange = changed;
+
+      const firstStarted = pipe.setInputMediaStream(mockVideoStream);
+      pipe.stop();
+      await pipe.setInputMediaStream(newCameraStream('new-camera'));
+      expect(outputVideoTrack()).to.equal(outputs[0]);
+
+      firstStart.reject(new Error('cannot start'));
+      await firstStarted;
+      await settle();
+      expect(outputVideoTrack()).to.equal(outputs[0]);
+      expect(outputs[0].readyState).to.equal('live');
+      expect(proc.stopTransformTrack.calledOnce).to.be.true;
+      expect(obs.processingDidFailToStart.called).to.be.false;
+
+      // The current session still falls back when its output ends.
+      outputs[0].externalStop();
+      await settle();
+      expect(outputVideoTrack()).to.equal(canvasTrack);
+      expect(changed.calledOnce).to.be.true;
+    });
+
+    it('ignores the end of the output of the previous input while the next input starts', async () => {
+      const { proc, outputs } = processorWithNewOutputs();
+      const secondStart = deferred<MediaStreamTrack>();
+      proc.transformTrack.onSecondCall().returns(secondStart.promise);
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
+      const obs = new MockObserver();
+      pipe.addObserver(obs);
+      await pipe.setInputMediaStream(mockVideoStream);
+      expect(outputVideoTrack()).to.equal(outputs[0]);
+
+      const secondStarted = pipe.setInputMediaStream(newCameraStream('new-camera'));
+      outputs[0].externalStop();
+      const secondOutput = newTrack('second-output', 'video');
+      secondStart.resolve(secondOutput);
+      await secondStarted;
+      await settle();
+
+      expect(outputVideoTrack()).to.equal(secondOutput);
+      expect(proc.stopTransformTrack.called).to.be.false;
+      expect(obs.processingDidFailToStart.called).to.be.false;
+    });
+
+    it('falls back to the canvas as soon as an output ends while a later processor starts', async () => {
+      const procs = [new MockTrackProcessor(), new MockTrackProcessor()];
+      const secondStart = deferred<MediaStreamTrack>();
+      procs[1].transformTrack.returns(secondStart.promise);
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, procs, mockTimer);
+      const obs = new MockObserver();
+      pipe.addObserver(obs);
+      const changed = sinon.stub();
+      pipe.outputTrackDidChange = changed;
+
+      const started = pipe.setInputMediaStream(mockVideoStream);
+      await settle();
+      expect(procs[1].transformTrack.calledOnceWith(procs[0].output)).to.be.true;
+      procs[0].output.externalStop();
+      await settle();
+      expect(outputVideoTrack()).to.equal(canvasTrack);
+      expect(procs[0].stopTransformTrack.calledOnce).to.be.true;
+      expect(procs[1].stopTransformTrack.calledOnce).to.be.true;
+
+      secondStart.resolve(procs[1].output);
+      await started;
+      await settle();
+      expect(outputVideoTrack()).to.equal(canvasTrack);
+      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+      expect(changed.called).to.be.false;
+    });
+
+    it('falls back once when a second fallback of the session starts while the first stops the processors', async () => {
+      const proc = new MockTrackProcessor();
+      const stopping = deferred<void>();
+      proc.stopTransformTrack.returns(stopping.promise);
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
+      const obs = new MockObserver();
+      pipe.addObserver(obs);
+      const changed = sinon.stub();
+      pipe.outputTrackDidChange = changed;
+      await pipe.setInputMediaStream(mockVideoStream);
+
+      proc.output.externalStop();
+      // @ts-ignore
+      const secondFallback = pipe.fallBackToCanvas(pipe.session, 'a second failure');
+      stopping.resolve();
+      await secondFallback;
+      await settle();
+
+      expect(proc.stopTransformTrack.calledOnce).to.be.true;
+      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+      expect(outputVideoTrack()).to.equal(canvasTrack);
+      expect(changed.calledOnce).to.be.true;
+    });
+
+    it('falls back to the canvas when a processor starts with an ended track', async () => {
+      const procs = [new MockTrackProcessor(), new MockTrackProcessor()];
+      procs[0].output.stop();
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, procs, mockTimer);
+      const obs = new MockObserver();
+      pipe.addObserver(obs);
+
+      await pipe.setInputMediaStream(mockVideoStream);
+      await settle();
+
+      expect(procs[1].transformTrack.called).to.be.false;
+      expect(outputVideoTrack()).to.equal(canvasTrack);
+      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+    });
+
+    it('keeps the output of the next session when stopped while the canvas of a failed start loads', async () => {
+      const proc = new MockTrackProcessor();
+      proc.transformTrack.onFirstCall().rejects(new Error('cannot start'));
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
+      const playing = deferred<void>();
+      // @ts-ignore
+      sinon.stub(pipe.videoInput, 'play').returns(playing.promise);
+
+      const firstStarted = pipe.setInputMediaStream(mockVideoStream);
+      await settle();
+      pipe.stop();
+      await pipe.setInputMediaStream(newCameraStream('new-camera'));
+      expect(outputVideoTrack()).to.equal(proc.output);
+
+      playing.resolve();
+      await firstStarted;
+      expect(outputVideoTrack()).to.equal(proc.output);
     });
   });
 });

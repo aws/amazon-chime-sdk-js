@@ -328,14 +328,18 @@ export default class DefaultDeviceController
   }
 
   private async chooseVideoTransformInputDevice(device: VideoTransformDevice): Promise<void> {
+    if (this.eventController && device instanceof DefaultVideoTransformDevice) {
+      device.passEventControllerToProcessors(this.eventController);
+    }
+    /* istanbul ignore next */
+    if (this.statsCollector && device instanceof DefaultVideoTransformDevice) {
+      device.setStatsCollector(this.statsCollector);
+    }
+    if (device === this.chosenVideoTransformDevice) {
+      this.logger.info('Reselecting same VideoTransformDevice');
+      return;
+    }
     if (device instanceof DefaultVideoTransformDevice) {
-      if (this.eventController) {
-        device.passEventControllerToProcessors(this.eventController);
-      }
-      /* istanbul ignore next */
-      if (this.statsCollector) {
-        device.setStatsCollector(this.statsCollector);
-      }
       device.setOutputTrackDidChangeCallback(() => {
         this.videoInputTaskQueue.add(async () => {
           if (device === this.chosenVideoTransformDevice) {
@@ -344,10 +348,6 @@ export default class DefaultDeviceController
           }
         });
       });
-    }
-    if (device === this.chosenVideoTransformDevice) {
-      this.logger.info('Reselecting same VideoTransformDevice');
-      return;
     }
 
     const prevVideoTransformDevice = this.chosenVideoTransformDevice;
