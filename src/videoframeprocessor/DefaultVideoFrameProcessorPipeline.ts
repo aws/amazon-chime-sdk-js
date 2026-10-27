@@ -4,6 +4,7 @@
 import { ModelType } from '../backgroundsegmentation/BackgroundSegmentationConstants';
 import BackgroundSegmentationVideoFrameProcessor from '../backgroundsegmentation/BackgroundSegmentationVideoFrameProcessor';
 import Logger from '../logger/Logger';
+import { withTimeout } from '../utils/Utils';
 import VideoFxProcessor from '../videofx/VideoFxProcessor';
 import CanvasVideoFrameBuffer from './CanvasVideoFrameBuffer';
 import DefaultVideoFrameProcessorTimer from './DefaultVideoFrameProcessorTimer';
@@ -14,6 +15,7 @@ import VideoFrameProcessorPipelineObserver from './VideoFrameProcessorPipelineOb
 import VideoFrameProcessorTimer from './VideoFrameProcessorTimer';
 
 const DEFAULT_FRAMERATE = 15;
+const TRANSFORM_TRACK_TIMEOUT_MS = 10000;
 
 /** @internal */
 interface HTMLCanvasElementWithCaptureStream extends HTMLCanvasElement {
@@ -25,11 +27,23 @@ interface HTMLCanvasElementWithCaptureStream extends HTMLCanvasElement {
  * [[DefaultVideoFrameProcessorPipeline]] implements {@link VideoFrameProcessorPipeline}.
  * It constructs a buffer {@link CanvasVideoFrameBuffer} as source by default and invokes processor based on `framerate`.
  * The default output type is `MediaStream`.
+ *
+ * When every processor implements {@link VideoFrameProcessor.transformTrack}, it chains them
+ * instead, until one fails to start or ends its output track; it then replaces the video track of
+ * `outputMediaStream` with the canvas output until it is stopped, and the next input tries the
+ * processors again. The metrics callback and `processingLatencyTooHigh` are only invoked for the
+ * canvas.
  */
 export default class DefaultVideoFrameProcessorPipeline implements VideoFrameProcessorPipeline {
   private fr: number = DEFAULT_FRAMERATE;
   // initialize with dummy inactive MediaStream to keep strict type
   outputMediaStream: MediaStream = new MediaStream();
+
+  /**
+   * @internal
+   * Called after the video track of `outputMediaStream` has been replaced while in use.
+   */
+  outputTrackDidChange: () => void = () => {};
 
   private videoInput: HTMLVideoElement = document.createElement('video') as HTMLVideoElement;
 
@@ -48,7 +62,13 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     new Set<VideoFrameProcessorPipelineObserver>();
 
   private hasStarted: boolean = false;
+  // True from the first process() call of a loop until a process() call ends without scheduling the next one.
+  private isProcessLoopRunning: boolean = false;
   private timer: VideoFrameProcessorTimer;
+
+  private transformTrackFailed = false;
+  private transformTrackSession = 0;
+  private transformTrackOutputs: MediaStreamTrack[] = [];
 
   // Metrics tracking
   private processorLatencies: Map<string, number[]> = new Map();
@@ -142,9 +162,15 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
   }
 
   stop(): void {
+    this.transformTrackSession++;
+    if (this.transformsTracks()) {
+      this.stopTransformTrack();
+    }
+    // A failure keeps only the current session on the canvas: the next one tries transformTrack again.
+    this.transformTrackFailed = false;
     // empty stream, stop pipeline
     // null input media stream stops the pipeline.
-    this.videoInput.removeEventListener('loadedmetadata', this.process);
+    this.videoInput.removeEventListener('loadedmetadata', this.startProcessLoop);
     this.videoInput.srcObject = null;
 
     // Clean the input stream and buffers.
@@ -207,12 +233,18 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     }
 
     this.inputVideoStream = inputMediaStream;
+    if (this.transformsTracks()) {
+      await this.transformTrack(inputMediaStream.getVideoTracks()[0]);
+      // The output stream now holds the transformed track, or the canvas track after a failed start.
+      this.cloneInputAudioTracksToOutput();
+      return;
+    }
     const settings = this.inputVideoStream.getVideoTracks()[0].getSettings();
     this.logger.info(`processing pipeline input stream settings ${JSON.stringify(settings)}`);
     this.framerate = settings.frameRate;
     this.canvasOutput.width = settings.width;
     this.canvasOutput.height = settings.height;
-    this.videoInput.addEventListener('loadedmetadata', this.process);
+    this.videoInput.addEventListener('loadedmetadata', this.startProcessLoop);
     this.videoInput.srcObject = this.inputVideoStream;
     // avoid iOS safari full screen video
     this.videoInput.setAttribute('playsinline', 'true');
@@ -228,6 +260,99 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     }
 
     this.cloneInputAudioTracksToOutput();
+  }
+
+  private transformsTracks(): boolean {
+    return (
+      !this.transformTrackFailed &&
+      this.stages?.length > 0 &&
+      this.stages.every(stage => typeof stage.transformTrack === 'function')
+    );
+  }
+
+  private async transformTrack(input: MediaStreamTrack): Promise<void> {
+    const session = ++this.transformTrackSession;
+    const outputs: MediaStreamTrack[] = [];
+    let track = input;
+    try {
+      for (const stage of this.stages) {
+        track = await withTimeout(
+          stage.transformTrack(track),
+          TRANSFORM_TRACK_TIMEOUT_MS,
+          'transformTrack'
+        );
+        outputs.push(track);
+      }
+    } catch (error) {
+      await this.fallBackToCanvas(session, `a processor failed to start: ${error}`);
+      return;
+    }
+    if (session !== this.transformTrackSession) {
+      return;
+    }
+    this.watchTransformTrackOutputs(outputs);
+    this.setOutputTrack(track);
+    if (!this.hasStarted) {
+      this.hasStarted = true;
+      this.forEachObserver(observer => observer.processingDidStart?.());
+    }
+  }
+
+  private onTransformTrackOutputEnded = async (): Promise<void> => {
+    const session = this.transformTrackSession;
+    await this.fallBackToCanvas(session, 'a processor output track ended');
+    if (session === this.transformTrackSession) {
+      this.outputTrackDidChange();
+    }
+  };
+
+  private async fallBackToCanvas(session: number, reason: string): Promise<void> {
+    this.logger.warn(`Falling back from transformTrack to the canvas: ${reason}`);
+    this.transformTrackFailed = true;
+    this.hasStarted = false;
+    await this.stopTransformTrack();
+    this.forEachObserver(observer => observer.processingDidFailToStart?.());
+    if (session === this.transformTrackSession) {
+      await this.setInputMediaStream(this.inputVideoStream);
+      this.setOutputTrack(this.canvasOutput.captureStream(this.framerate).getVideoTracks()[0]);
+    }
+  }
+
+  private async stopTransformTrack(): Promise<void> {
+    this.watchTransformTrackOutputs([]);
+    await Promise.all(
+      this.stages.map(async stage => {
+        try {
+          await withTimeout(
+            stage.stopTransformTrack(),
+            TRANSFORM_TRACK_TIMEOUT_MS,
+            'stopTransformTrack'
+          );
+        } catch (error) {
+          this.logger.warn(`${error}`);
+        }
+      })
+    );
+  }
+
+  private watchTransformTrackOutputs(tracks: MediaStreamTrack[]): void {
+    for (const track of this.transformTrackOutputs) {
+      track.removeEventListener('ended', this.onTransformTrackOutputEnded);
+    }
+    for (const track of tracks) {
+      track.addEventListener('ended', this.onTransformTrackOutputEnded);
+    }
+    this.transformTrackOutputs = tracks;
+  }
+
+  private setOutputTrack(track: MediaStreamTrack): void {
+    const [previousTrack] = this.outputMediaStream.getVideoTracks();
+    if (track !== previousTrack) {
+      this.outputMediaStream.addTrack(track);
+      if (previousTrack) {
+        this.outputMediaStream.removeTrack(previousTrack);
+      }
+    }
   }
 
   private cloneInputAudioTracksToOutput(): void {
@@ -260,9 +385,31 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     return this.stages;
   }
 
-  process = async (_event: Event): Promise<void> => {
-    if (!this.inputVideoStream) {
+  // Setting a new input stream loads metadata again. A loop that is still running picks up the new stream on its next
+  // frame, so a second loop would only process the same frames concurrently.
+  private startProcessLoop = async (event: Event): Promise<void> => {
+    if (this.isProcessLoopRunning) {
       return;
+    }
+    await this.process(event);
+  };
+
+  process = async (_event: Event): Promise<void> => {
+    this.isProcessLoopRunning = true;
+    let scheduledNextFrame = false;
+    try {
+      scheduledNextFrame = await this.processFrame();
+    } finally {
+      if (!scheduledNextFrame) {
+        this.isProcessLoopRunning = false;
+      }
+    }
+  };
+
+  private processFrame = async (): Promise<boolean> => {
+    // A loop that outlives stop() ends here if the next session transforms tracks: it has no source buffer.
+    if (!this.inputVideoStream || this.sourceBuffers.length === 0) {
+      return false;
     }
 
     const processVideoStart = performance.now();
@@ -302,7 +449,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
           obs.processingDidFailToStart();
         }
       });
-      return;
+      return false;
     }
 
     this.destBuffers = buffers;
@@ -319,7 +466,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
           }
         });
       }
-      return;
+      return false;
     }
 
     // finally draws the image
@@ -367,6 +514,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     }
 
     await this.timer.start(nextFrameDelay, this.process.bind(this));
+    return true;
   };
 
   /* istanbul ignore next */

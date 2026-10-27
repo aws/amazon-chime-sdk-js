@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added the optional `VideoFrameProcessor.transformTrack`, which `DefaultVideoTransformDevice` uses instead of the canvas when every processor implements it, falling back to the canvas until the pipeline is stopped if processing fails. The output stream keeps the input's audio tracks on either path. `BackgroundSegmentationVideoFrameProcessor` implements it when its CDN processor does.
 - Added the `VIDEO_RECEIVED_RETRANSMIT_BITRATE` client metric, reporting the RTX bitrate received on video streams from the `retransmittedBytesReceived` WebRTC stat.
 
 ### Removed
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `DefaultDeviceController.stopAudioInput()` now resets the local audio mute state. Previously, when a device controller was reused across meeting sessions, leaving a meeting while muted caused an audio transform device (such as Amazon Voice Focus) chosen in the next meeting to start muted, so noise suppression stayed bypassed until the user muted and unmuted.
 - `DefaultMeetingSession.destroy()` now unbinds the `EventController` it destroyed from the `deviceController`, preventing a stale binding when the device controller is reused ([#3264](https://github.com/aws/amazon-chime-sdk-js/issues/3264)).
+- Fixed `DefaultVideoFrameProcessorPipeline` starting another processing loop each time its input stream was replaced, for example on a camera switch through `DefaultVideoTransformDevice.transformStream`. The loops processed the same frames concurrently, so a processor that skips a frame while the previous one is in flight, such as the background segmentation CDN processor, returned it unprocessed and the pipeline drew the unprocessed camera frame to the output.
 - Fixed a `TypeError: Cannot read properties of undefined (reading 'credentials')` thrown by `DefaultEventController.getAttributes` when an event is published after `destroy()` (for example, a terminal `meetingEnded` event during teardown). Meeting identity is now read through optional chaining, so a late publish degrades to undefined identity fields instead of throwing.
 - Fixed a Chrome `[Violation] Permissions policy violation: compute-pressure is not allowed in this document.` console message by skipping CPU pressure observation when the `compute-pressure` Permissions Policy feature is not allowed (e.g. in cross-origin iframes such as embedded CCP).
 - Fixed an unhandled `InvalidStateError: Failed to execute 'createEncodedStreams' on 'RTCRtpReceiver': Encoded streams already created` on Chromium builds without `RTCRtpScriptTransform` (Chrome M140 and earlier). A repeat `track` event for a transceiver that re-enters a receiving direction reapplied the encoded transform to a receiver whose encoded streams already existed.

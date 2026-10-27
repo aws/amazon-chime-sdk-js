@@ -11,6 +11,7 @@ import {
   SuppressedError,
   toLowerCasePropertyNames,
   wait,
+  withTimeout,
 } from '../../src/utils/Utils';
 import { createFakeTimers } from './fakeTimerHelper';
 
@@ -38,6 +39,48 @@ describe('Utils', () => {
       await clock.tickAsync(delay);
       await waitPromise;
       expect(resolved).to.be.true;
+    });
+  });
+
+  describe('withTimeout', () => {
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it('resolves with the promise when it settles in time, clearing its timer', async () => {
+      clock = createFakeTimers();
+      const result = withTimeout(Promise.resolve('done'), 1000, 'operation');
+      await clock.tickAsync(1);
+      expect(await result).to.equal('done');
+      // The timer was cleared, so nothing is pending to reject later.
+      await clock.tickAsync(0);
+      expect(clock.countTimers()).to.equal(0);
+    });
+
+    it('rejects with the promise rejection when it settles in time', async () => {
+      clock = createFakeTimers();
+      const result = withTimeout(Promise.reject(new Error('inner failure')), 1000, 'operation');
+      await clock.tickAsync(1);
+      let error: Error | undefined;
+      try {
+        await result;
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).to.equal('inner failure');
+    });
+
+    it('rejects with a timeout error naming the operation when the promise does not settle', async () => {
+      clock = createFakeTimers();
+      const result = withTimeout(new Promise<void>(() => {}), 1000, 'operation');
+      await clock.tickAsync(1001);
+      let error: Error | undefined;
+      try {
+        await result;
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).to.equal('operation timed out after 1000 ms');
     });
   });
 

@@ -1584,6 +1584,34 @@ describe('DefaultDeviceController', () => {
 
       await device.stop();
     });
+
+    it('republishes the output of the chosen video transform device when its track changes', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      setupMockCaptureStream();
+      const device = new DefaultVideoTransformDevice(logger, 'test-device', [
+        new NoOpVideoFrameProcessor(),
+      ]);
+      let videoStreamPromise = addVideoStreamObserver();
+      await deviceController.startVideoInput(device);
+      await tick(clock, 0);
+      await videoStreamPromise;
+
+      videoStreamPromise = addVideoStreamObserver();
+      // @ts-ignore
+      device.pipe.outputTrackDidChange();
+      await tick(clock, 0);
+      expect(await videoStreamPromise).to.equal(device.outputMediaStream);
+
+      await deviceController.startVideoInput('test');
+      await tick(clock, 0);
+      const observer = { videoInputDidChange: sinon.stub() };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      // @ts-ignore
+      device.pipe.outputTrackDidChange();
+      await tick(clock, 0);
+      expect(observer.videoInputDidChange.called).to.be.false;
+      await device.stop();
+    });
   });
 
   describe('handleGetUserMediaError', () => {

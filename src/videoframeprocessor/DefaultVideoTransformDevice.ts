@@ -75,6 +75,15 @@ export default class DefaultVideoTransformDevice
   }
 
   /**
+   * @internal
+   * Sets the function called when the video track of `outputMediaStream` has been replaced while in
+   * use, which happens when processing falls back to the canvas.
+   */
+  setOutputTrackDidChangeCallback(callback: () => void): void {
+    this.pipe.outputTrackDidChange = callback;
+  }
+
+  /**
    * `chooseNewInnerDevice` preserves the inner pipeline and processing state and switches
    * the inner device. Since the pipeline and processors are shared with the new transform device
    * only one transform device can be used.

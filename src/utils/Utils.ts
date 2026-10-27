@@ -8,6 +8,21 @@ export function wait(waitTimeMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, waitTimeMs));
 }
 
+/**
+ * Resolves or rejects with `promise`, or rejects with a timeout error naming `what` when the
+ * promise does not settle within `timeoutMs`.
+ */
+export function withTimeout<T>(promise: Promise<T>, timeoutMs: number, what: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`${what} timed out after ${timeoutMs} ms`)),
+      timeoutMs
+    );
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 // This is impossible to adequately test in Node, so Istanbul ignore.
 /* istanbul ignore next */
 export function isIFramed(): boolean {

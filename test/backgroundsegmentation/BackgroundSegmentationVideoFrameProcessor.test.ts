@@ -19,6 +19,7 @@ import {
 import BackgroundSegmentationVideoFrameProcessor from '../../src/backgroundsegmentation/BackgroundSegmentationVideoFrameProcessor';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
+import VideoFrameProcessor from '../../src/videoframeprocessor/VideoFrameProcessor';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -794,6 +795,123 @@ describe('BackgroundSegmentationVideoFrameProcessor', () => {
         eventController as any
       );
       expect(processor).to.not.be.undefined;
+    });
+  });
+
+  describe('transformTrack', () => {
+    // Returned as the interface: the optional methods exist on the subclass, not on the base class.
+    async function createWith(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cdnProcessor: any
+    ): Promise<VideoFrameProcessor> {
+      sandbox.stub(BackgroundSegmentationCompatibilityChecker, 'checkCompatibility').returns({
+        isCompatible: true,
+        missingFeatures: [],
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (document as any).head.appendChild.callsFake((script: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).BackgroundSegmentationProcessor = {
+          create: sandbox.stub().resolves(cdnProcessor),
+        };
+        script.onload();
+      });
+      return BackgroundSegmentationVideoFrameProcessor.create(logger, {
+        type: ProcessorEffect.BLUR,
+      });
+    }
+
+    function baseCdnProcessor(): Record<string, sinon.SinonStub> {
+      return {
+        process: sandbox.stub().resolves([]),
+        destroy: sandbox.stub().resolves(),
+        getConfig: sandbox.stub().returns({ type: ProcessorEffect.BLUR }),
+        getModelType: sandbox.stub().returns(ModelType.SELFIE_GENERAL),
+      };
+    }
+
+    function trackCdnProcessor(output: MediaStreamTrack): Record<string, sinon.SinonStub> {
+      return {
+        ...baseCdnProcessor(),
+        transformTrack: sandbox.stub().resolves(output),
+        stopTransformTrack: sandbox.stub().resolves(),
+      };
+    }
+
+    it('forwards transformTrack and stopTransformTrack to the CDN processor', async () => {
+      const input = {} as MediaStreamTrack;
+      const output = {} as MediaStreamTrack;
+      const cdnProcessor = trackCdnProcessor(output);
+      const processor = await createWith(cdnProcessor);
+
+      expect(await processor.transformTrack(input)).to.equal(output);
+      await processor.stopTransformTrack();
+
+      expect(cdnProcessor.transformTrack.calledOnceWithExactly(input)).to.be.true;
+      expect(cdnProcessor.stopTransformTrack.calledOnce).to.be.true;
+    });
+
+    it('propagates a CDN processor failure to start', async () => {
+      const cdnProcessor = {
+        ...baseCdnProcessor(),
+        transformTrack: sandbox.stub().rejects(new Error('WebGL2 is not available')),
+      };
+      const processor = await createWith(cdnProcessor);
+      let error: Error | undefined;
+      try {
+        await processor.transformTrack({} as MediaStreamTrack);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).to.equal('WebGL2 is not available');
+    });
+
+    it('rejects transformTrack and ignores stopTransformTrack after destroy', async () => {
+      const cdnProcessor = trackCdnProcessor({} as MediaStreamTrack);
+      const processor = await createWith(cdnProcessor);
+      await processor.destroy();
+
+      let error: Error | undefined;
+      try {
+        await processor.transformTrack({} as MediaStreamTrack);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).to.contain('destroyed');
+      await processor.stopTransformTrack();
+      expect(cdnProcessor.transformTrack.called).to.be.false;
+      expect(cdnProcessor.stopTransformTrack.called).to.be.false;
+    });
+
+    it('does not offer transformTrack when the CDN processor lacks it, and logs why', async () => {
+      const info = sandbox.spy(logger, 'info');
+      const processor = await createWith(baseCdnProcessor());
+      expect(processor.transformTrack).to.equal(undefined);
+      expect(processor.stopTransformTrack).to.equal(undefined);
+      expect(info.calledWithMatch(sinon.match(/does not implement transformTrack/))).to.be.true;
+    });
+
+    it('offers transformTrack when the CDN processor implements it', async () => {
+      const info = sandbox.spy(logger, 'info');
+      const processor = await createWith(trackCdnProcessor({} as MediaStreamTrack));
+      expect(typeof processor.transformTrack).to.equal('function');
+      expect(typeof processor.stopTransformTrack).to.equal('function');
+      expect(processor).to.be.instanceOf(BackgroundSegmentationVideoFrameProcessor);
+      expect(info.calledWithMatch(sinon.match(/does not implement transformTrack/))).to.be.false;
+    });
+
+    it('does not offer transformTrack for the no-op fallback', async () => {
+      sandbox.stub(BackgroundSegmentationCompatibilityChecker, 'checkCompatibility').returns({
+        isCompatible: false,
+        missingFeatures: ['webgl2'],
+      });
+      const processor: VideoFrameProcessor = await BackgroundSegmentationVideoFrameProcessor.create(
+        logger,
+        {
+          type: ProcessorEffect.BLUR,
+        }
+      );
+      expect(processor.transformTrack).to.equal(undefined);
     });
   });
 });
