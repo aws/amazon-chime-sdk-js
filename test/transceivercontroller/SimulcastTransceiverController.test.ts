@@ -718,7 +718,7 @@ describe('SimulcastTransceiverController', () => {
       const videoTransceiver = peer.getTransceivers()[1];
       expect(videoTransceiver.direction).to.equal('sendrecv');
       expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
-      tc.setEncodingParameters(encodingParamMap);
+      await tc.setEncodingParameters(encodingParamMap);
     });
 
     it('can update the sender parameter with no previous encodings', async () => {
@@ -757,7 +757,7 @@ describe('SimulcastTransceiverController', () => {
         encodings: null,
         headerExtensions: undefined,
       });
-      tc.setEncodingParameters(encodingParamMap);
+      await tc.setEncodingParameters(encodingParamMap);
       expect(tc.localVideoTransceiver().sender.getParameters().encodings[1].maxBitrate).to.equal(
         888
       );
@@ -790,7 +790,7 @@ describe('SimulcastTransceiverController', () => {
       const videoTransceiver = peer.getTransceivers()[1];
       expect(videoTransceiver.direction).to.equal('sendrecv');
       expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
-      tc.setEncodingParameters(encodingParamMap);
+      await tc.setEncodingParameters(encodingParamMap);
 
       expect(tc.localVideoTransceiver().sender.getParameters().encodings[1].maxBitrate).to.equal(
         888

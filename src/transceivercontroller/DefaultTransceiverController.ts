@@ -23,6 +23,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   protected peer: RTCPeerConnection | null = null;
   protected streamIdToTransceiver: Map<number, RTCRtpTransceiver> = new Map();
   protected groupIdToTransceiver: Map<number, RTCRtpTransceiver> = new Map();
+  private senderParametersUpdate: Promise<void> = Promise.resolve();
 
   constructor(
     protected logger: Logger,
@@ -31,7 +32,13 @@ export default class DefaultTransceiverController implements TransceiverControll
     protected encodedTransformWorkerManager?: EncodedTransformWorkerManager
   ) {}
 
-  async setEncodingParameters(
+  setEncodingParameters(encodingParamMap: Map<string, RTCRtpEncodingParameters>): Promise<void> {
+    return this.serializeSenderParametersUpdate(() =>
+      this.applyEncodingParameters(encodingParamMap)
+    );
+  }
+
+  protected async applyEncodingParameters(
     encodingParamMap: Map<string, RTCRtpEncodingParameters>
   ): Promise<void> {
     if (!this._localCameraTransceiver || this._localCameraTransceiver.direction !== 'sendrecv') {
@@ -92,7 +99,24 @@ export default class DefaultTransceiverController implements TransceiverControll
     return this._localCameraTransceiver;
   }
 
-  async setVideoSendingBitrateKbps(bitrateKbps: number): Promise<void> {
+  setVideoSendingBitrateKbps(bitrateKbps: number): Promise<void> {
+    return this.serializeSenderParametersUpdate(() =>
+      this.applyVideoSendingBitrateKbps(bitrateKbps)
+    );
+  }
+
+  /**
+   * Chromium rejects `setParameters()` when an earlier `setParameters()` on the same sender
+   * completes between its `getParameters()` and `setParameters()`, so writes to the local video
+   * sender are applied one at a time.
+   */
+  protected serializeSenderParametersUpdate(update: () => Promise<void>): Promise<void> {
+    const result = this.senderParametersUpdate.then(update);
+    this.senderParametersUpdate = result.catch(() => {});
+    return result;
+  }
+
+  private async applyVideoSendingBitrateKbps(bitrateKbps: number): Promise<void> {
     if (!this._localCameraTransceiver || this._localCameraTransceiver.direction !== 'sendrecv') {
       return;
     }

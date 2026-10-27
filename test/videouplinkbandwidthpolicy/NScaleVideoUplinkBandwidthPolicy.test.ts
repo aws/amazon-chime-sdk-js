@@ -882,6 +882,52 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       expect(spy.notCalled).to.be.true;
       spy.restore();
     });
+    it('logs a warning instead of rejecting when setEncodingParameters rejects', async () => {
+      const policyLogger = new NoOpLogger();
+      const warnSpy = sinon.spy(policyLogger, 'warn');
+      policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId, true, policyLogger);
+      policy.setIdealMaxBandwidthKbps(IDEAL_MAX_BANDWIDTH_KBPS);
+      transceiverController.localVideoTransceiver().sender.setParameters({
+        transactionId: undefined,
+        codecs: [],
+        rtcp: undefined,
+        encodings: [{ maxBitrate: IDEAL_MAX_BANDWIDTH_KBPS * 1000 + 1 }],
+        headerExtensions: undefined,
+      });
+      policy.setTransceiverController(transceiverController);
+      const stub = sinon
+        .stub(transceiverController, 'setEncodingParameters')
+        .rejects(new Error('setParameters rejected'));
+
+      await policy.updateTransceiverController();
+
+      expect(stub.calledOnce).to.be.true;
+      expect(
+        warnSpy.calledOnceWith('Failed to set encoding parameters: Error: setParameters rejected')
+      ).to.be.true;
+      stub.restore();
+    });
+
+    it('resolves when setEncodingParameters rejects and there is no logger', async () => {
+      policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId);
+      policy.setIdealMaxBandwidthKbps(IDEAL_MAX_BANDWIDTH_KBPS);
+      transceiverController.localVideoTransceiver().sender.setParameters({
+        transactionId: undefined,
+        codecs: [],
+        rtcp: undefined,
+        encodings: [{ maxBitrate: IDEAL_MAX_BANDWIDTH_KBPS * 1000 + 1 }],
+        headerExtensions: undefined,
+      });
+      policy.setTransceiverController(transceiverController);
+      const stub = sinon
+        .stub(transceiverController, 'setEncodingParameters')
+        .rejects(new Error('setParameters rejected'));
+
+      await policy.updateTransceiverController();
+
+      expect(stub.calledOnce).to.be.true;
+      stub.restore();
+    });
   });
 
   describe('SVC', () => {
