@@ -74,6 +74,10 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
 
   private transformTrackFailed = false;
   private transformTrackOutputs: { track: MediaStreamTrack; onEnded: () => void }[] = [];
+  // While a stopTransformTrack() call is pending, settles when all calls so far have. It never rejects.
+  private transformTrackStopping: Promise<void> | undefined;
+  // The video tracks the pipeline captured from its output canvas.
+  private canvasOutputTracks = new WeakSet<MediaStreamTrack>();
 
   // Metrics tracking
   private processorLatencies: Map<string, number[]> = new Map();
@@ -168,7 +172,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
 
   stop(): void {
     this.session++;
-    if (this.transformsTracks()) {
+    if (this.usesTransformTrack()) {
       this.stopTransformTrack();
     }
     // A failure keeps only the current session on the canvas: the next one tries transformTrack again.
@@ -217,9 +221,17 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
       return this.outputMediaStream;
     }
 
-    this.outputMediaStream = this.canvasOutput.captureStream(this.framerate);
+    this.outputMediaStream = this.captureCanvasOutput();
     this.cloneInputAudioTracksToOutput();
     return this.outputMediaStream;
+  }
+
+  private captureCanvasOutput(): MediaStream {
+    const stream = this.canvasOutput.captureStream(this.framerate);
+    for (const track of stream?.getVideoTracks() ?? []) {
+      this.canvasOutputTracks.add(track);
+    }
+    return stream;
   }
 
   /**
@@ -238,7 +250,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     }
 
     this.inputVideoStream = inputMediaStream;
-    if (this.transformsTracks()) {
+    if (this.usesTransformTrack()) {
       await this.transformTrack(inputMediaStream.getVideoTracks()[0]);
       // The output stream now holds the transformed track, or the canvas track after a failed start.
       this.cloneInputAudioTracksToOutput();
@@ -267,7 +279,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     this.cloneInputAudioTracksToOutput();
   }
 
-  private transformsTracks(): boolean {
+  private usesTransformTrack(): boolean {
     return (
       !this.transformTrackFailed &&
       this.stages?.length > 0 &&
@@ -278,14 +290,20 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
   private async transformTrack(input: MediaStreamTrack): Promise<void> {
     const session = ++this.session;
     this.unwatchTransformTrackOutputs();
-    // Each output is watched as soon as its stage resolves, as it can end while a later stage starts. Its end fails the
-    // start until the last stage has resolved, and falls back to the canvas after that.
+    // A processor gets transformTrack only once it has stopped transforming the track of an earlier session.
+    if (this.transformTrackStopping) {
+      await this.transformTrackStopping;
+      if (session !== this.session) {
+        return;
+      }
+    }
+    // Each output is watched as soon as its stage resolves, as it can end while a later stage starts. Its end aborts
+    // the start until the last stage has resolved, and falls back to the canvas after that.
     let started = false;
-    let failToStart: (error: Error) => void;
-    const startFailed = new Promise<never>((_resolve, reject) => (failToStart = reject));
+    const startAborted = new AbortController();
     const onOutputEnded = async (): Promise<void> => {
       if (!started) {
-        failToStart(new Error('an output track ended'));
+        startAborted.abort();
         return;
       }
       if (await this.fallBackToCanvas(session, 'a processor output track ended')) {
@@ -295,10 +313,12 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     let track = input;
     try {
       for (const stage of this.stages) {
-        track = await Promise.race([
-          withTimeout(stage.transformTrack(track), TRANSFORM_TRACK_TIMEOUT_MS, 'transformTrack'),
-          startFailed,
-        ]);
+        track = await withTimeout(
+          stage.transformTrack(track),
+          TRANSFORM_TRACK_TIMEOUT_MS,
+          'transformTrack',
+          startAborted.signal
+        );
         if (session !== this.session) {
           return;
         }
@@ -328,11 +348,10 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     if (session !== this.session || this.transformTrackFailed) {
       return false;
     }
+    // Observers are not told: video keeps flowing, so processing has neither failed nor started again.
     this.logger.warn(`Falling back from transformTrack to the canvas: ${reason}`);
     this.transformTrackFailed = true;
-    this.hasStarted = false;
     await this.stopTransformTrack();
-    this.forEachObserver(observer => observer.processingDidFailToStart?.());
     if (session !== this.session) {
       return false;
     }
@@ -340,14 +359,15 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     if (session !== this.session) {
       return false;
     }
-    this.setOutputTrack(this.canvasOutput.captureStream(this.framerate).getVideoTracks()[0]);
+    this.setOutputTrack(this.captureCanvasOutput().getVideoTracks()[0]);
     return true;
   }
 
-  private async stopTransformTrack(): Promise<void> {
+  private stopTransformTrack(): Promise<void> {
     this.unwatchTransformTrackOutputs();
-    await Promise.all(
-      this.stages.map(async stage => {
+    const stopping = Promise.all([
+      this.transformTrackStopping,
+      ...this.stages.map(async stage => {
         try {
           await withTimeout(
             stage.stopTransformTrack(),
@@ -357,8 +377,14 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
         } catch (error) {
           this.logger.warn(`${error}`);
         }
-      })
-    );
+      }),
+    ]).then(() => {
+      if (this.transformTrackStopping === stopping) {
+        this.transformTrackStopping = undefined;
+      }
+    });
+    this.transformTrackStopping = stopping;
+    return stopping;
   }
 
   private unwatchTransformTrackOutputs(): void {
@@ -374,6 +400,11 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
       this.outputMediaStream.addTrack(track);
       if (previousTrack) {
         this.outputMediaStream.removeTrack(previousTrack);
+        // A replaced canvas track would keep capturing. A processor's output track is the processor's to stop: it can
+        // return the same track for the next input.
+        if (this.canvasOutputTracks.has(previousTrack)) {
+          previousTrack.stop();
+        }
       }
     }
   }

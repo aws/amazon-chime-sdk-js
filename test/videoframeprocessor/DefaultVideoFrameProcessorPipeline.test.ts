@@ -842,7 +842,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
 
       expect(procs[0].stopTransformTrack.calledOnce).to.be.true;
       expect(procs[1].stopTransformTrack.calledOnce).to.be.true;
-      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+      expect(obs.processingDidFailToStart.called).to.be.false;
       expect(outputVideoTrack()).to.equal(canvasTrack);
       expect(outputTrackDidChange.called).to.be.false;
 
@@ -878,7 +878,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       expect(outputVideoTrack()).to.equal(proc.output);
       // stop() after the fallback does not stop the processors a second time.
       expect(proc.stopTransformTrack.calledOnce).to.be.true;
-      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+      expect(obs.processingDidFailToStart.called).to.be.false;
     });
 
     it('ends the canvas loop of a failed session when the next one transforms tracks', async () => {
@@ -908,7 +908,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
         processFrame.resetHistory();
         await clock.tickAsync(1000);
         expect(processFrame.called).to.be.false;
-        expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+        expect(obs.processingDidFailToStart.called).to.be.false;
       } finally {
         clock.restore();
       }
@@ -1006,16 +1006,27 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       await settle();
       expect(obs.processingDidStart.calledOnce).to.be.true;
 
-      const canvasStarted = called(obs.processingDidStart);
+      let canvasDrew: () => void;
+      const canvasFrame = new Promise<void>(resolve => (canvasDrew = resolve));
+      sinon.stub(procs[0], 'process').callsFake(async buffers => {
+        canvasDrew();
+        return buffers;
+      });
       procs[0].output.externalStop();
       procs[1].output.externalStop();
-      await canvasStarted;
+      await canvasFrame;
+      await settle();
 
       expect(procs[0].stopTransformTrack.calledOnce).to.be.true;
-      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
       expect(pipe.outputMediaStream).to.equal(outputStream);
       expect(outputStream.getVideoTracks()).to.deep.equal([canvasTrack]);
       expect(changed.calledOnce).to.be.true;
+      // The canvas takes over without telling observers that processing failed or started again.
+      expect(obs.processingDidFailToStart.called).to.be.false;
+      expect(obs.processingDidStart.calledOnce).to.be.true;
+      pipe.stop();
+      await settle();
+      expect(obs.processingDidStop.calledOnce).to.be.true;
     });
 
     it('falls back without a registered output track callback', async () => {
@@ -1197,7 +1208,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       await started;
       await settle();
       expect(outputVideoTrack()).to.equal(canvasTrack);
-      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+      expect(obs.processingDidFailToStart.called).to.be.false;
       expect(changed.called).to.be.false;
     });
 
@@ -1220,9 +1231,84 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       await settle();
 
       expect(proc.stopTransformTrack.calledOnce).to.be.true;
-      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+      expect(obs.processingDidFailToStart.called).to.be.false;
       expect(outputVideoTrack()).to.equal(canvasTrack);
       expect(changed.calledOnce).to.be.true;
+    });
+
+    it('starts the processors for the next session once they have stopped', async () => {
+      const { proc, outputs } = processorWithNewOutputs();
+      const stopping = deferred<void>();
+      proc.stopTransformTrack.returns(stopping.promise);
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
+      await pipe.setInputMediaStream(mockVideoStream);
+
+      pipe.stop();
+      const next = newCameraStream('new-camera');
+      const restarted = pipe.setInputMediaStream(next);
+      await settle();
+      expect(proc.transformTrack.calledOnce).to.be.true;
+
+      stopping.resolve();
+      await restarted;
+      expect(proc.transformTrack.calledTwice).to.be.true;
+      expect(proc.transformTrack.secondCall.calledWith(next.getVideoTracks()[0])).to.be.true;
+      expect(outputVideoTrack()).to.equal(outputs[1]);
+    });
+
+    it('does not start the processors for a session stopped while they were stopping', async () => {
+      const { proc, outputs } = processorWithNewOutputs();
+      const stopping = deferred<void>();
+      // Only the first stop takes time: the next session waits for it although the second has finished.
+      proc.stopTransformTrack.onFirstCall().returns(stopping.promise);
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
+      await pipe.setInputMediaStream(mockVideoStream);
+
+      pipe.stop();
+      const stoppedStart = pipe.setInputMediaStream(newCameraStream('second-camera'));
+      pipe.stop();
+      const third = newCameraStream('third-camera');
+      const started = pipe.setInputMediaStream(third);
+      await settle();
+      expect(proc.transformTrack.calledOnce).to.be.true;
+
+      stopping.resolve();
+      await stoppedStart;
+      await started;
+
+      expect(proc.stopTransformTrack.calledTwice).to.be.true;
+      expect(proc.transformTrack.calledTwice).to.be.true;
+      expect(proc.transformTrack.secondCall.calledWith(third.getVideoTracks()[0])).to.be.true;
+      expect(outputVideoTrack()).to.equal(outputs[1]);
+    });
+
+    it('stops a canvas track of the output stream that a processor track replaces', async () => {
+      const proc = new MockTrackProcessor();
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
+      const output = pipe.getActiveOutputMediaStream();
+      expect(output.getVideoTracks()).to.deep.equal([canvasTrack]);
+
+      await pipe.setInputMediaStream(mockVideoStream);
+      expect(output.getVideoTracks()).to.deep.equal([proc.output]);
+      expect(canvasTrack.readyState).to.equal('ended');
+    });
+
+    it('does not stop the processor output tracks that it replaces', async () => {
+      const proc = new MockTrackProcessor();
+      const outputs: StoppableMediaStreamTrack[] = [];
+      proc.transformTrack.callsFake(async () => {
+        outputs.push(newTrack(`output-${outputs.length}`, 'video'));
+        return outputs[outputs.length - 1];
+      });
+      proc.transformTrack.onThirdCall().rejects(new Error('cannot start'));
+      pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
+
+      await pipe.setInputMediaStream(mockVideoStream);
+      await pipe.setInputMediaStream(newCameraStream('second-camera'));
+      expect(outputVideoTrack()).to.equal(outputs[1]);
+      await pipe.setInputMediaStream(newCameraStream('third-camera'));
+      expect(outputVideoTrack()).to.equal(canvasTrack);
+      expect(outputs.map(output => output.readyState)).to.deep.equal(['live', 'live']);
     });
 
     it('falls back to the canvas when a processor starts with an ended track', async () => {
@@ -1237,7 +1323,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
 
       expect(procs[1].transformTrack.called).to.be.false;
       expect(outputVideoTrack()).to.equal(canvasTrack);
-      expect(obs.processingDidFailToStart.calledOnce).to.be.true;
+      expect(obs.processingDidFailToStart.called).to.be.false;
     });
 
     it('keeps the output of the next session when stopped while the canvas of a failed start loads', async () => {

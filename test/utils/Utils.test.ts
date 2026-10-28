@@ -82,6 +82,49 @@ describe('Utils', () => {
       }
       expect(error.message).to.equal('operation timed out after 1000 ms');
     });
+
+    async function rejection(promise: Promise<unknown>): Promise<Error | undefined> {
+      try {
+        await promise;
+      } catch (e) {
+        return e;
+      }
+      return undefined;
+    }
+
+    it('rejects at once when its signal is already aborted, clearing its timer', async () => {
+      clock = createFakeTimers();
+      const controller = new AbortController();
+      controller.abort();
+      const result = withTimeout(new Promise<void>(() => {}), 1000, 'operation', controller.signal);
+      await clock.tickAsync(0);
+      expect((await rejection(result)).message).to.equal('operation was aborted');
+      expect(clock.countTimers()).to.equal(0);
+    });
+
+    it('rejects when its signal is aborted before the promise settles', async () => {
+      clock = createFakeTimers();
+      const controller = new AbortController();
+      const result = withTimeout(new Promise<void>(() => {}), 1000, 'operation', controller.signal);
+      await clock.tickAsync(500);
+      controller.abort();
+      expect((await rejection(result)).message).to.equal('operation was aborted');
+      expect(clock.countTimers()).to.equal(0);
+    });
+
+    it('removes its abort listener once the promise settles', async () => {
+      clock = createFakeTimers();
+      const controller = new AbortController();
+      const addEventListener = sinon.spy(controller.signal, 'addEventListener');
+      const removeEventListener = sinon.spy(controller.signal, 'removeEventListener');
+      const result = withTimeout(Promise.resolve('done'), 1000, 'operation', controller.signal);
+      await clock.tickAsync(1);
+      expect(await result).to.equal('done');
+
+      const listener = addEventListener.firstCall.args[1];
+      expect(removeEventListener.calledOnceWith('abort', listener)).to.be.true;
+      controller.abort();
+    });
   });
 
   describe('toLowerCasePropertyNames', () => {
