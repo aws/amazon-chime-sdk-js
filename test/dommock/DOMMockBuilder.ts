@@ -1691,6 +1691,10 @@ export default class DOMMockBuilder {
         if (stream === null) {
           this.clearAttribute();
         }
+        // A new source loads its metadata again.
+        if (stream !== this.refSrcObject) {
+          this.fired = false;
+        }
         this.refSrcObject = stream;
       }
 

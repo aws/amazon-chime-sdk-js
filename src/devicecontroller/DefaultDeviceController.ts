@@ -339,6 +339,16 @@ export default class DefaultDeviceController
       this.logger.info('Reselecting same VideoTransformDevice');
       return;
     }
+    if (device instanceof DefaultVideoTransformDevice) {
+      device.setOutputTrackDidChangeCallback(() => {
+        this.videoInputTaskQueue.add(async () => {
+          if (device === this.chosenVideoTransformDevice) {
+            this.logger.info('Video transform device output track changed');
+            this.publishVideoInputDidChangeEvent(device.outputMediaStream);
+          }
+        });
+      });
+    }
 
     const prevVideoTransformDevice = this.chosenVideoTransformDevice;
     if (prevVideoTransformDevice) {

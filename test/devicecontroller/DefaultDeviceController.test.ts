@@ -1584,6 +1584,57 @@ describe('DefaultDeviceController', () => {
 
       await device.stop();
     });
+
+    it('republishes the output of the chosen video transform device when its track changes', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      setupMockCaptureStream();
+      const device = new DefaultVideoTransformDevice(logger, 'test-device', [
+        new NoOpVideoFrameProcessor(),
+      ]);
+      let videoStreamPromise = addVideoStreamObserver();
+      await deviceController.startVideoInput(device);
+      await tick(clock, 0);
+      await videoStreamPromise;
+
+      videoStreamPromise = addVideoStreamObserver();
+      // @ts-ignore
+      device.pipe.outputTrackDidChange();
+      await tick(clock, 0);
+      expect(await videoStreamPromise).to.equal(device.outputMediaStream);
+
+      await deviceController.startVideoInput('test');
+      await tick(clock, 0);
+      const observer = { videoInputDidChange: sinon.stub() };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      // @ts-ignore
+      device.pipe.outputTrackDidChange();
+      await tick(clock, 0);
+      expect(observer.videoInputDidChange.called).to.be.false;
+      await device.stop();
+    });
+
+    it('sets the output track callback of a video transform device when it is chosen, not when it is reselected', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      setupMockCaptureStream();
+      const device = new DefaultVideoTransformDevice(logger, 'test-device', [
+        new NoOpVideoFrameProcessor(),
+      ]);
+      const passEventController = sinon.spy(device, 'passEventControllerToProcessors');
+      const setCallback = sinon.spy(device, 'setOutputTrackDidChangeCallback');
+      await deviceController.startVideoInput(device);
+      await tick(clock, 0);
+      await deviceController.startVideoInput(device);
+      await tick(clock, 0);
+
+      expect(passEventController.calledTwice).to.be.true;
+      expect(setCallback.calledOnce).to.be.true;
+      const videoStreamPromise = addVideoStreamObserver();
+      // @ts-ignore
+      device.pipe.outputTrackDidChange();
+      await tick(clock, 0);
+      expect(await videoStreamPromise).to.equal(device.outputMediaStream);
+      await device.stop();
+    });
   });
 
   describe('handleGetUserMediaError', () => {

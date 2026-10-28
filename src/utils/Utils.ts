@@ -8,6 +8,35 @@ export function wait(waitTimeMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, waitTimeMs));
 }
 
+/**
+ * Resolves or rejects with `promise`, or rejects with an error naming `what` when the promise does
+ * not settle within `timeoutMs` or when `signal` is aborted first.
+ */
+export function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  what: string,
+  signal?: AbortSignal
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  let onAbort: () => void;
+  const cancelled = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`${what} timed out after ${timeoutMs} ms`)),
+      timeoutMs
+    );
+    onAbort = () => reject(new Error(`${what} was aborted`));
+    if (signal?.aborted) {
+      onAbort();
+    }
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
+  return Promise.race([promise, cancelled]).finally(() => {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', onAbort);
+  });
+}
+
 // This is impossible to adequately test in Node, so Istanbul ignore.
 /* istanbul ignore next */
 export function isIFramed(): boolean {

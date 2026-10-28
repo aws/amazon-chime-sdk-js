@@ -26,4 +26,24 @@ export default interface VideoFrameProcessor extends Destroyable {
    * @param eventController
    */
   setEventController?(eventController: EventController): void;
+
+  /**
+   * Optional. Processes the frames of `input` and resolves with the processed video track.
+   * {@link DefaultVideoTransformDevice} calls it instead of {@link process} when every processor
+   * implements it.
+   *
+   * - Rejects if processing cannot start.
+   * - Calling it again with a new input, before {@link stopTransformTrack}, resolves with the same
+   *   output track.
+   * - Does not stop `input`, and processes the black frames of a disabled `input` like any other.
+   * - When processing fails for good, end the output track (so that it fires `ended`); the device
+   *   then calls {@link stopTransformTrack} and continues with {@link process}.
+   */
+  transformTrack?(input: MediaStreamTrack): Promise<MediaStreamTrack>;
+
+  /**
+   * Optional companion of {@link transformTrack}: stops processing and ends the output track.
+   * {@link process} works again once the returned promise resolves.
+   */
+  stopTransformTrack?(): Promise<void>;
 }

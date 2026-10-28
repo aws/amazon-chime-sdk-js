@@ -117,7 +117,7 @@ To receive notifications of lifecycle events, a `DefaultVideoTransformDeviceObse
 | `processingDidStart`       | Called when video processing starts. |
 | `processingDidFailToStart` | Called when video processing could not start due to runtime errors. In this case, developers are expected to call `startVideoInput` again with a valid `VideoInputDevice` to continue video sending. |
 | `processingDidStop`        | Called when video processing is stopped **expectedly**. |
-| `processingDidFailToStart` | Called when the execution of processors slows the frame rate down by at least half.|
+| `processingLatencyTooHigh` | Called when the execution of processors slows the frame rate down by at least half.|
 
 ### VideoFrameBuffer
 
@@ -126,6 +126,14 @@ To receive notifications of lifecycle events, a `DefaultVideoTransformDeviceObse
 ### VideoFrameProcessor
 
 `VideoFrameProcessor` represents a processing stage. Internally,  processors are executed in a completely serial manner. Each pass will finish before the next pass begins. The input `VideoFrameBuffer`s are the video sources. Changing the property of buffers such as resizing will likely modify properties of the video sources and should be performed with care.
+
+#### Processing a track with `transformTrack`
+
+By default, the pipeline draws every frame onto a canvas on the main thread and passes it to each processor's `process` method, so a busy main thread lowers the frame rate of the processed video. A processor can instead implement the optional `transformTrack(input)` and `stopTransformTrack()` methods, documented on `VideoFrameProcessor`: it processes the frames of the input `MediaStreamTrack` itself (for example in a worker) and resolves with its output track. When every processor implements `transformTrack`, the pipeline chains them and does not call `process`.
+
+If a processor fails to start, or ends its output track, `DefaultVideoTransformDevice` continues with `process` on the canvas until it is stopped, for example by `stopVideoInput` or by choosing another camera; the next start tries `transformTrack` again. It replaces the video track of the same `outputMediaStream`, and the device controller passes the new track on to the local video tile and the video sender. Observers are not notified of this fallback, since video keeps flowing: `processingDidStart` is called once, by whichever path starts first, and `processingDidFailToStart` only if the canvas fails as well. While processors transform tracks, `processingDidStart` is called once they have all started, and neither `processingLatencyTooHigh` nor the video processor metrics are reported, since frames do not pass through the pipeline; processors can report their own metrics.
+
+`BackgroundSegmentationVideoFrameProcessor` implements `transformTrack` when the processor it loads from the CDN does, which is up to the deployed CDN processor and the browser.
 
 ### Building a simple processor
 
