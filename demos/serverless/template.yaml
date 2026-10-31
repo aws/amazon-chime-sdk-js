@@ -13,14 +13,14 @@ Parameters:
     Type: String
   ChimeServicePrincipal:
     Description: "The principal that will capture to the S3 bucket"
-    Default: "chime.amazonaws.com"
+    Default: "mediapipelines.chime.amazonaws.com"
     Type: String
   ChimeSDKMeetingsEndpoint:
     Description: The AWS Chime SDK Meetings endpoint
     Default: ""
     Type: String
   ChimeMediaCaptureS3BucketPrefix:
-    Description: Prefix of S3 bucket to write capture artifacts.  The bucket name will be suffixed with the region.
+    Description: Prefix of the S3 buckets for capture artifacts, suffixed with the media Region. Default is chime-sdk-demo-<account ID>.
     Default: ""
     Type: String
   UseFetchCredentialLambda:
@@ -41,6 +41,7 @@ Parameters:
 Conditions:
   ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
   ShouldDeployFetchCredentialLambda: !Equals [true, !Ref UseFetchCredentialLambda]
+  HasCaptureBucketPrefix: !Not [!Equals ["", !Ref ChimeMediaCaptureS3BucketPrefix]]
 Globals:
   Function:
     Runtime: nodejs20.x
@@ -97,7 +98,6 @@ Resources:
       Roles:
         - Ref: ChimeSdkJoinLambdaRole
         - Ref: ChimeSdkEndLambdaRole
-        - Ref: ChimeSdkDeleteAttendeeLambdaRole
         - Ref: ChimeSdkStartTranscriptionLambdaRole
         - Ref: ChimeSdkStopTranscriptionLambdaRole
         - Ref: ChimeSdkStartCaptureLambdaRole
@@ -107,6 +107,7 @@ Resources:
         - Ref: ChimeSdkUpdateAttendeeCapabilitiesLambdaRole
         - Ref: ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaRole
         - Ref: ChimeSdkGetAttendeeLambdaRole        
+        - Ref: ChimeSdkMeetingLookupLambdaRole
   ChimeMessagingAccessPolicy:
     Type: AWS::IAM::Policy
     Condition: ShouldDeployFetchCredentialLambda
@@ -249,20 +250,6 @@ Resources:
           Properties:
             Path: /join
             Method: POST
-  ChimeSdkDeleteAttendeeLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers.deleteAttendee
-      CodeUri: src/
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Meetings
-      Events:
-        Api1:
-          Type: Api
-          Properties:
-            Path: /deleteAttendee
-            Method: POST
   ChimeSdkEndLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -277,6 +264,20 @@ Resources:
           Properties:
             Path: /end
             Method: POST
+  ChimeSdkMeetingLookupLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.meeting
+      CodeUri: src/
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /meeting
+            Method: GET
   ChimeSdkStartCaptureLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -285,9 +286,26 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Meetings
+        # Makes the media Region's capture bucket on first use (captureBucket.js).
+        - Statement:
+            - Effect: Allow
+              Action:
+                - 's3:CreateBucket'
+                - 's3:ListBucket'
+                - 's3:GetBucketTagging'
+                - 's3:PutBucketTagging'
+                - 's3:PutBucketPublicAccessBlock'
+                - 's3:PutBucketPolicy'
+                - 's3:PutLifecycleConfiguration'
+              Resource: !If
+                - HasCaptureBucketPrefix
+                - !Sub "arn:aws:s3:::${ChimeMediaCaptureS3BucketPrefix}-*"
+                - !Sub "arn:aws:s3:::chime-sdk-demo-${AWS::AccountId}-*"
       Environment:
         Variables:
           USE_EVENT_BRIDGE: !Ref UseEventBridge
+          CAPTURE_SERVICE_PRINCIPAL: !Ref ChimeServicePrincipal
+          STACK_NAME: !Ref AWS::StackName
       Events:
         Api1:
           Type: Api

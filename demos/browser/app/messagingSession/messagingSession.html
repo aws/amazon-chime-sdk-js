@@ -10,58 +10,50 @@
 
 <body>
 <script type="module" src="./messagingSession.ts"></script>
-<div id="demo" class="text-center p-2">
-  <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
-  <div id="flow-connect" class="flow text-center p-2">
-    <div class="container">
-      <form>
-        <h1 class="h3 mb-3 font-weight-normal">Messaging Session</h1>
-        <div class="row mt-3">
-          <label for="userArn" class="visually-hidden">UserArn:</label>
-          <input type="text" id="userArn" name="userArn" class="form-control" placeholder="userArn" required>
-        </div>
-        <div class="row mt-3">
-          <label for="sessionId" class="visually-hidden">SessionId(optional):</label>
-          <input type="text" id="sessionId" name="sessionId" class="form-control" placeholder="SessionId">
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="radio" id="prefetchOff" name="prefetchSettings" value="off" checked>
-          <label for="prefetchOff">prefetch off</label><br>
-          <input type="radio" id="prefetchSortByUnread" name="prefetchSettings" value="unread">
-          <label for="prefetchSortByUnread">prefetch sorted by unread</label><br>
-          <input type="radio" id="prefetchSortByLastMessageTimestamp" name="prefetchSettings" value="last-message-timestamp">
-          <label for="prefetchSortByLastMessageTimestamp">prefetch sorted by last message timestamp</label><br>
-        </div>
-        <div class="row mt-3">
-          <div class="d-grid gap-2">
-            <button id="connect" type="button" class="btn btn-lg btn-primary">
-              Connect
-            </button>
-          </div>
-        </div>
-      </form>
+<div id="demo">
+  <div id="sdk-version" class="version-tag"></div>
+  <div id="flow-connect" class="flow">
+    <div class="flow-centered">
+      <div class="card join-card">
+        <h1 class="card-title">Messaging Session</h1>
+        <form class="stack">
+          <label class="field">
+            <span class="field-label">UserArn</span>
+            <input type="text" id="userArn" name="userArn" class="input" placeholder="userArn" required>
+          </label>
+          <label class="field">
+            <span class="field-label">SessionId (optional)</span>
+            <input type="text" id="sessionId" name="sessionId" class="input" placeholder="SessionId">
+          </label>
+          <fieldset class="radio-group stack">
+            <label class="radio">
+              <input type="radio" id="prefetchOff" name="prefetchSettings" value="off" checked>prefetch off
+            </label>
+            <label class="radio">
+              <input type="radio" id="prefetchSortByUnread" name="prefetchSettings" value="unread">prefetch sorted by unread
+            </label>
+            <label class="radio">
+              <input type="radio" id="prefetchSortByLastMessageTimestamp" name="prefetchSettings" value="last-message-timestamp">prefetch sorted by last message timestamp
+            </label>
+          </fieldset>
+          <button id="connect" type="button" class="button button-primary button-large">
+            Connect
+          </button>
+        </form>
+      </div>
     </div>
   </div>
-  <div id="flow-message" class="flow text-center p-2">
-    <div class="container">
-      <form>
-        <div class="row mt-3">
-          <div id="messages" class="text-left" style="min-width: 500px; height: 400px; overflow-y: scroll;
-            border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
-        </div>
-        <div class="row mt-3 justify-content-center">
-          <div class="btn-toolbar" role="toolbar">
-            <div class="btn-group mr-2" role="group">
-              <button id="clear" type="button" class="btn btn-sm btn-secondary">
-                Clear
-              </button>
-            </div>
-            <div class="btn-group mr-2" role="group">
-              <button id="disconnect" type="button" class="btn btn-sm btn-secondary">
-                Disconnect
-              </button>
-            </div>
-          </div>
+  <div id="flow-message" class="flow">
+    <div class="flow-centered">
+      <form class="stack">
+        <div id="messages" class="messages-log"></div>
+        <div class="button-row" role="toolbar">
+          <button id="clear" type="button" class="button button-small">
+            Clear
+          </button>
+          <button id="disconnect" type="button" class="button button-small">
+            Disconnect
+          </button>
         </div>
       </form>
     </div>

@@ -6,31 +6,30 @@ export default class PaginationManager<Type> {
 
   private all = new Array<Type>();
 
-  constructor(private pageSize: number) {}
+  constructor(private readonly pageSize: number) {}
 
   currentPage(): Array<Type> {
     return this.all.slice(this.currentPageStart, this.currentPageStart + this.pageSize);
   }
 
-  add(toAdd: Type) {
+  add(toAdd: Type): void {
     if (this.all.includes(toAdd)) {
       return;
     }
     this.all.push(toAdd);
   }
 
-  remove(toRemove: Type) {
-    if (this.all.includes(toRemove)) {
-      this.all.splice(this.all.indexOf(toRemove), 1);
-    }
+  remove(toRemove: Type): void {
+    this.removeIf(value => value === toRemove);
   }
 
-  removeIf(toRemoveFn: (value: Type) => boolean) {
-    const index = this.all.findIndex(toRemoveFn);
-    if (index === -1) {
-      return;
+  /** Removes every matching item (two attendees leaving in one update used to drop only one). */
+  removeIf(toRemoveFn: (value: Type) => boolean): void {
+    this.all = this.all.filter(value => !toRemoveFn(value));
+    // Never leave the view on a page that no longer has anything on it.
+    while (this.currentPageStart > 0 && this.currentPageStart >= this.all.length) {
+      this.currentPageStart -= this.pageSize;
     }
-    this.all.splice(index, 1);
   }
 
   hasNextPage(): boolean {

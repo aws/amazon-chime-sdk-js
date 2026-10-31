@@ -29,16 +29,9 @@ npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
 #### Media Capture
-You can use the live connector feature to broadcast the captured artifacts. The default layout is vertical layout and FHD resolution. You can use the playback url that showed up in any M3U8 player, such as `https://www.hlsplayer.net/`.
-If you want to try differnt layout configuration, please check our [ public document](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_media-pipelines-chime_CreateMediaLiveConnectorPipeline.html).
-```
-cd demos/serverless
-npm install
-npm run deploy -- -r us-east-1 -b <deploy-bucekt> -i af-south-1,eu-south-1 -s <my-stack-name> -a meeting
-```
+Recording to the cloud and broadcasting work without extra options. The first recording in a media Region creates the bucket `chime-sdk-demo-<account ID>-<region>` (private, writable by the media pipelines service for this account only, recordings deleted after a day), and every stack in the account reuses it, each writing under `<stack name>/<meeting ID>/`. Each broadcast creates an Amazon IVS channel, deleted when the broadcast or the meeting ends. The default layout is vertical layout and FHD resolution. The playback URL plays in any M3U8 player, such as `https://www.hlsplayer.net/`. To try a different layout, see the [public document](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_media-pipelines-chime_CreateMediaLiveConnectorPipeline.html).
 
-If you want to also use media capture in the same meeting, an S3 bucket needs to be created for each region.
-The S3 bucket will be created with a prefix specified with the -o option.
+To use your own bucket names, pass a prefix with `-o`: the stack then records to `<prefix>-<region>` and may create buckets with that prefix only. An existing bucket of that name is used as is, so give it a policy that lets `mediapipelines.chime.amazonaws.com` write to it.
 
 ```
 cd demos/serverless
@@ -46,19 +39,9 @@ npm install
 npm run deploy -- -r us-east-1 -b <deploy-bucket> -o <capture-bucket-prefix> -s <my-stack-name> -a meeting
 ```
 
-When the bucket prefix is provided, an S3 bucket will be created in each AWS region that
-a meeting can be hosted in except for those that require opt-in. If you wish to use
-media capture in one of these regions, you can list them with the -i option, for example
+Meetings in Regions that require opt-in (for example af-south-1 or eu-south-1) need the Region enabled in the account; see [Managing AWS Regions](https://docs.aws.amazon.com/general/latest/gr/rande-manage.html). The `-i` option is no longer needed and is ignored.
 
-```
-cd demos/serverless
-npm install
-npm run deploy -- -r us-east-1 -b <deploy-bucekt> -o <capture-bucket-prefix> -i af-south-1,eu-south-1 -s <my-stack-name> -a meeting
-```
-
-Note that you need to enable these regions if you plan to use media capture. For more information, see [Managing AWS Regions](https://docs.aws.amazon.com/general/latest/gr/rande-manage.html).
-
-
+The capture buckets stay after the stack is deleted, because other stacks share them. To delete one: `aws s3 rb s3://chime-sdk-demo-<account ID>-<region> --force`.
 
 ##### ChimeSDKMediaPipelines Namespace vs Chime Namespace
 The `AWS.Chime` and the `AWS.ChimeSDKMediaPipelines` are both Amazon Chime's AWS clients to help builders create Amazon Chime SDK media pipelines. `AWS.ChimeSDKMediaPipelines` is intended to replace the previous `AWS.Chime` client.

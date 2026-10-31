@@ -2,76 +2,74 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+  AllHighestVideoBandwidthPolicy,
+  Attendee,
   Logger,
   TargetDisplaySize,
   VideoPreference,
   VideoPreferences,
-  VideoQualityAdaptationPreference,
   VideoPriorityBasedPolicy,
+  VideoQualityAdaptationPreference,
   VideoSource,
-  AllHighestVideoBandwidthPolicy,
-  Attendee
 } from 'amazon-chime-sdk-js';
 
 export default class RemoteVideoManager {
   static readonly DefaultVideoTilePriority: number = 5;
-  static readonly DefaultVideoTileTargetDisplaySize: TargetDisplaySize = TargetDisplaySize.Maximum;
 
   private attendeeIdToVideoPreference = new Map<string, VideoPreference>();
 
   _visibleAttendees = new Array<string>();
-  public set visibleAttendees(value: Array<string>) {
-      this._visibleAttendees = value;
-      this.updateDownlinkPreference();
+  set visibleAttendees(value: Array<string>) {
+    this._visibleAttendees = value;
+    this.updateDownlinkPreference();
   }
 
-  constructor(private logger: Logger, private downlinkPolicy: VideoPriorityBasedPolicy | AllHighestVideoBandwidthPolicy) {
+  constructor(
+    private logger: Logger,
+    private downlinkPolicy: VideoPriorityBasedPolicy | AllHighestVideoBandwidthPolicy
+  ) {
     if (this.downlinkPolicy instanceof AllHighestVideoBandwidthPolicy) {
-        this.downlinkPolicy.chooseRemoteVideoSources([]);
+      this.downlinkPolicy.chooseRemoteVideoSources([]);
     }
   }
 
   ensureDefaultPreferences(videoSources: VideoSource[]): void {
     this.logger.info(`Available remote video sources changed: ${JSON.stringify(videoSources)}`);
     for (const source of videoSources) {
-        if (!this.attendeeIdToVideoPreference.has(source.attendee.attendeeId)) {
-          this.attendeeIdToVideoPreference.set(
-            source.attendee.attendeeId, 
-            new VideoPreference(source.attendee.attendeeId, RemoteVideoManager.DefaultVideoTilePriority, RemoteVideoManager.DefaultVideoTileTargetDisplaySize))
-        }
+      this.preferenceFor(source.attendee.attendeeId);
     }
   }
 
-  setAttendeeTargetDisplaySize(attendeeId: string, targetDisplaySize: TargetDisplaySize) {
-    if (this.attendeeIdToVideoPreference.has(attendeeId)) {
-      this.attendeeIdToVideoPreference.get(attendeeId).targetSize = targetDisplaySize;
-    } else {
-      this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(attendeeId, RemoteVideoManager.DefaultVideoTilePriority, targetDisplaySize));
-    }
+  setAttendeeTargetDisplaySize(attendeeId: string, targetDisplaySize: TargetDisplaySize): void {
+    this.preferenceFor(attendeeId).targetSize = targetDisplaySize;
     this.updateDownlinkPreference();
   }
 
-  setAttendeePriority(attendeeId: string, priority: number) {
-    if (this.attendeeIdToVideoPreference.has(attendeeId)) {
-      this.attendeeIdToVideoPreference.get(attendeeId).priority = priority
-    } else {
-      this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(attendeeId, priority, RemoteVideoManager.DefaultVideoTileTargetDisplaySize));
-    }
+  setAttendeePriority(attendeeId: string, priority: number): void {
+    this.preferenceFor(attendeeId).priority = priority;
     this.updateDownlinkPreference();
   }
 
-  setAttendeeDegradationPreference(attendeeId: string, preference: VideoQualityAdaptationPreference) {
-    if (this.attendeeIdToVideoPreference.has(attendeeId)) {
-      this.attendeeIdToVideoPreference.get(attendeeId).degradationPreference = preference
-    } else {
-      this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(
-        attendeeId, RemoteVideoManager.DefaultVideoTilePriority, RemoteVideoManager.DefaultVideoTileTargetDisplaySize, preference));
-    }
+  setAttendeeDegradationPreference(
+    attendeeId: string,
+    preference: VideoQualityAdaptationPreference
+  ): void {
+    this.preferenceFor(attendeeId).degradationPreference = preference;
     this.updateDownlinkPreference();
+  }
+
+  /** New preferences take the SDK defaults: Maximum target size, Balanced degradation. */
+  private preferenceFor(attendeeId: string): VideoPreference {
+    let preference = this.attendeeIdToVideoPreference.get(attendeeId);
+    if (!preference) {
+      preference = new VideoPreference(attendeeId, RemoteVideoManager.DefaultVideoTilePriority);
+      this.attendeeIdToVideoPreference.set(attendeeId, preference);
+    }
+    return preference;
   }
 
   supportsRemoteVideoPreferences(): boolean {
-    return (this.downlinkPolicy instanceof VideoPriorityBasedPolicy);
+    return this.downlinkPolicy instanceof VideoPriorityBasedPolicy;
   }
 
   private updateDownlinkPreference(): void {
@@ -82,28 +80,28 @@ export default class RemoteVideoManager {
     }
 
     if (this.downlinkPolicy instanceof VideoPriorityBasedPolicy) {
-        const videoPreferences = VideoPreferences.prepare();
-        for (const [attendeeId, preference] of this.attendeeIdToVideoPreference.entries()) {
-            if (this._visibleAttendees.includes(attendeeId)) {
-                videoPreferences.add(preference);
-            }
+      const videoPreferences = VideoPreferences.prepare();
+      for (const [attendeeId, preference] of this.attendeeIdToVideoPreference.entries()) {
+        if (this._visibleAttendees.includes(attendeeId)) {
+          videoPreferences.add(preference);
         }
-        this.downlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
-    } else if (this.downlinkPolicy?.chooseRemoteVideoSources){
-        // Just convert this list to  the simpler 'VideoSource' class used by all highest policy
-        let videoSources: VideoSource[] = [];
-        for (const attendeeId of this.attendeeIdToVideoPreference.keys()) {
-            if (!this._visibleAttendees.includes(attendeeId)) {
-                continue;
-            }
+      }
+      this.downlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
+    } else if (this.downlinkPolicy?.chooseRemoteVideoSources) {
+      // Just convert this list to  the simpler 'VideoSource' class used by all highest policy
+      const videoSources: VideoSource[] = [];
+      for (const attendeeId of this.attendeeIdToVideoPreference.keys()) {
+        if (!this._visibleAttendees.includes(attendeeId)) {
+          continue;
+        }
 
-            let videoSource = new VideoSource();
-            let attendee = new Attendee();
-            attendee.attendeeId = attendeeId;
-            videoSource.attendee = attendee;
-            videoSources.push(videoSource);
-        }
-        this.downlinkPolicy.chooseRemoteVideoSources(videoSources);
+        const videoSource = new VideoSource();
+        const attendee = new Attendee();
+        attendee.attendeeId = attendeeId;
+        videoSource.attendee = attendee;
+        videoSources.push(videoSource);
+      }
+      this.downlinkPolicy.chooseRemoteVideoSources(videoSources);
     }
   }
 }

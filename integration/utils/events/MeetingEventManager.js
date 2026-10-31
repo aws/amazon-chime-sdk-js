@@ -40,8 +40,9 @@ class MeetingEventManager {
           }
         };
         
-        // Check if eventController already exists
-        const s = window.app && window.app.meetingSession;
+        // Check if eventController already exists (window.app is DemoMeetingApp; its
+        // MeetingSessionController keeps the SDK MeetingSession, undefined until authenticate)
+        const s = window.app && window.app.session && window.app.session.meetingSession;
         const c = s && s.eventController;
         if (c) {
           c.addObserver(observer);

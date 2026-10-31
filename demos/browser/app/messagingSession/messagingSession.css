@@ -1,0 +1,28 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Messaging session demo: the shared tokens and components plus the message log.
+ */
+
+@import '../tokens.css';
+@import '../base.css';
+
+/* Flows start hidden; switchToFlow() shows one by setting style.display. */
+.flow {
+  display: none;
+}
+
+.messages-log {
+  min-width: 500px;
+  height: 400px;
+  overflow-y: scroll;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--bg-sunken);
+}
+
+.message-type {
+  font-weight: 600;
+}
