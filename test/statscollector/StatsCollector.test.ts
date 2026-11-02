@@ -1430,8 +1430,19 @@ describe('StatsCollector', () => {
   });
 
   describe('When it has encoded transform media metrics', () => {
+    class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+      streamIdForSSRC(_ssrcId: number): number {
+        return 1;
+      }
+    }
+
     it('adds transform metrics to stats report', done => {
-      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        { type: 'outbound-rtp', kind: 'audio', ssrc: 1001 },
+        { type: 'inbound-rtp', kind: 'audio', ssrc: 2001 },
+        { type: 'outbound-rtp', kind: 'video', ssrc: 3001 },
+        { type: 'inbound-rtp', kind: 'video', ssrc: 4001 },
+      ];
 
       class TestObserver implements AudioVideoObserver {
         metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
@@ -1482,7 +1493,7 @@ describe('StatsCollector', () => {
         videoSendMetrics: { 3001: { ssrc: 3001, packetCount: 300, timestamp: 1000 } },
         videoReceiveMetrics: { 4001: { ssrc: 4001, packetCount: 400, timestamp: 1000 } },
       });
-      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
     });
 
     it('does not add transform metrics if no metrics received', done => {
@@ -1509,7 +1520,10 @@ describe('StatsCollector', () => {
     });
 
     it('handles multiple streams per media type', done => {
-      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        { type: 'outbound-rtp', kind: 'audio', ssrc: 1001 },
+        { type: 'outbound-rtp', kind: 'audio', ssrc: 1002 },
+      ];
 
       class TestObserver implements AudioVideoObserver {
         metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
@@ -1535,6 +1549,104 @@ describe('StatsCollector', () => {
           1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 },
           1002: { ssrc: 1002, packetCount: 150, timestamp: 1000 },
         },
+        audioReceiveMetrics: {},
+        videoSendMetrics: {},
+        videoReceiveMetrics: {},
+      });
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+    });
+
+    it('does not add transform metrics for streams missing from the WebRTC stats', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        { type: 'outbound-rtp', kind: 'audio', ssrc: 1001 },
+        { type: 'inbound-rtp', kind: 'audio', ssrc: 2001 },
+        { type: 'outbound-rtp', kind: 'video', ssrc: 3001 },
+        { type: 'inbound-rtp', kind: 'video', ssrc: 4001 },
+      ];
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          statsCollector.stop();
+          const transformSsrcs = _clientMetricReport.customStatsReports
+            .filter(
+              // @ts-ignore
+              report =>
+                report.type === 'outbound-rtp-transform' || report.type === 'inbound-rtp-transform'
+            )
+            .map((report: { ssrc: number }) => report.ssrc)
+            .sort();
+          expect(transformSsrcs).to.deep.equal([1001, 2001, 3001, 4001]);
+          expect(Object.keys(_clientMetricReport.streamMetricReports).sort()).to.deep.equal([
+            '1001',
+            '2001',
+            '3001',
+            '4001',
+          ]);
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.encodedTransformMediaMetricsDidReceive({
+        audioSendMetrics: {
+          1000: { ssrc: 1000, packetCount: 100, timestamp: 1000 },
+          1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 },
+        },
+        audioReceiveMetrics: {
+          2000: { ssrc: 2000, packetCount: 200, timestamp: 1000 },
+          2001: { ssrc: 2001, packetCount: 200, timestamp: 1000 },
+        },
+        videoSendMetrics: {
+          3000: { ssrc: 3000, packetCount: 300, timestamp: 1000 },
+          3001: { ssrc: 3001, packetCount: 300, timestamp: 1000 },
+        },
+        videoReceiveMetrics: {
+          4000: { ssrc: 4000, packetCount: 400, timestamp: 1000 },
+          4001: { ssrc: 4001, packetCount: 400, timestamp: 1000 },
+        },
+      });
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+    });
+
+    it('reports the new audio sender after a reconnection replaces one that had stopped sending', done => {
+      // SSRC 100 stops sending, then a reconnection replaces it with SSRC 900. The worker keeps
+      // reporting SSRC 100, and SSRC 100 is the first upstream audio stream in key order.
+      const oldSender = { type: 'outbound-rtp', kind: 'audio', ssrc: 100, packetsSent: 500 };
+      const newSender = { type: 'outbound-rtp', kind: 'audio', ssrc: 900, packetsSent: 0 };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [oldSender];
+      let tick = 0;
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          tick += 1;
+          newSender.packetsSent += 50;
+          if (tick === 2) {
+            domMockBehavior.rtcPeerConnectionGetStatsReports = [newSender];
+            statsCollector.encodedTransformMediaMetricsDidReceive({
+              audioSendMetrics: {
+                100: { ssrc: 100, packetCount: 500, timestamp: 1000 },
+                900: { ssrc: 900, packetCount: 50, timestamp: 2000 },
+              },
+              audioReceiveMetrics: {},
+              videoSendMetrics: {},
+              videoReceiveMetrics: {},
+            });
+          }
+          if (tick < 4) {
+            return;
+          }
+          statsCollector.stop();
+          expect(Object.keys(_clientMetricReport.streamMetricReports)).to.deep.equal(['900']);
+          expect(_clientMetricReport.getObservableMetrics().audioPacketsSent).to.be.above(0);
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.encodedTransformMediaMetricsDidReceive({
+        audioSendMetrics: { 100: { ssrc: 100, packetCount: 500, timestamp: 1000 } },
         audioReceiveMetrics: {},
         videoSendMetrics: {},
         videoReceiveMetrics: {},
