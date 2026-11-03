@@ -220,10 +220,16 @@ export default class DefaultAudioVideoController
       const isContentShare = new DefaultModality(
         this.configuration.credentials.attendeeId
       ).hasModality(DefaultModality.MODALITY_CONTENT);
-      if (isContentShare && new DefaultBrowserBehavior().hasChromiumWebRTC()) {
+      const browserBehavior = new DefaultBrowserBehavior();
+      if (
+        isContentShare &&
+        (browserBehavior.hasChromiumWebRTC() || browserBehavior.hasFirefoxWebRTC())
+      ) {
         this.videoSendCodecPreferences = [
           VideoCodecCapability.av1Main(),
-          VideoCodecCapability.vp9Profile0(),
+          ...(browserBehavior.requiresDisablingVP9ContentShare()
+            ? []
+            : [VideoCodecCapability.vp9Profile0()]),
           VideoCodecCapability.h264ConstrainedBaselineProfile(),
           VideoCodecCapability.vp8(),
         ];
