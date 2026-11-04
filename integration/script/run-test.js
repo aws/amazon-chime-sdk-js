@@ -314,6 +314,7 @@ const runTest = async (test, clients) => {
   let retryCount = 0;
   let testResult;
   let testSuiteResult = 0;
+  const failedClients = [];
 
   for(let idx = 0; idx < clients.length; idx++)  {
     if(retryCount > 0)  {
@@ -343,19 +344,21 @@ const runTest = async (test, clients) => {
         retryCount++;
         continue;
       }
-      if(retryCount === maxRetries) {
-        logger.log(`Test has retried on the same client ${retryCount} times`, LogLevel.WARN);
-        logger.log(`Setting test suite result to 1`, LogLevel.ERROR);
-        logger.log('Test will continue to run on other browser and OS combinations');
-        testSuiteResult = 1;
-        break;
-      }
+      logger.log(`Test has retried on the same client ${retryCount} times`, LogLevel.WARN);
+      logger.log(`Setting test suite result to 1`, LogLevel.ERROR);
+      logger.log('Test will continue to run on other browser and OS combinations');
+      testSuiteResult = 1;
+      failedClients.push(`${client.browserName} ${client.browserVersion} on ${client.platform}`);
     }
+
+    // Each client gets its own retry budget.
+    retryCount = 0;
   }
 
   // TODO: Any Cloudwatch metrics can be sent at this point, if the test fails after retrying 4 times than it should be logged as a failure.
   // If a failure occurs and the consecutive retry runs successfully then only a success data point will be recorded.
   if (testSuiteResult === 1) {
+    logger.log(`${test.name} failed on ${failedClients.length} of ${clients.length} clients: ${failedClients.join('; ')}`, LogLevel.ERROR);
     logger.log(`${test.name} suite failed :(`, LogLevel.ERROR);
   }
   if (testSuiteResult === 0)  {
