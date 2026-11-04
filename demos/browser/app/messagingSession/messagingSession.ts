@@ -3,9 +3,9 @@
 
 // @ts-nocheck
 
-import '../../style.scss';
-import 'bootstrap';
+import './messagingSession.css';
 
+import { ChimeSDKMessagingClient } from '@aws-sdk/client-chime-sdk-messaging';
 import {
   ConsoleLogger,
   DefaultMessagingSession,
@@ -19,8 +19,6 @@ import {
   PrefetchSortBy,
   Versioning,
 } from 'amazon-chime-sdk-js';
-
-import { ChimeSDKMessagingClient } from '@aws-sdk/client-chime-sdk-messaging';
 
 export class DemoMessagingSessionApp implements MessagingSessionObserver {
   static readonly BASE_URL: string = [
@@ -39,7 +37,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (global as any).app = this;
+    (window as any).app = this;
     (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
       'amazon-chime-sdk-js@' + Versioning.sdkVersion;
     (document.getElementById('userArn') as HTMLInputElement).focus();
@@ -59,15 +57,24 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         const chime = new ChimeSDKMessagingClient({ region: 'us-east-1', credentials: response });
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-        this.prefetchSortByUnread = (document.getElementById('prefetchSortByUnread') as HTMLInputElement).checked;
-        this.prefetchSortByLastMessageTimestamp = (document.getElementById('prefetchSortByLastMessageTimestamp') as HTMLInputElement).checked;
-        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime);
+        this.prefetchSortByUnread = (
+          document.getElementById('prefetchSortByUnread') as HTMLInputElement
+        ).checked;
+        this.prefetchSortByLastMessageTimestamp = (
+          document.getElementById('prefetchSortByLastMessageTimestamp') as HTMLInputElement
+        ).checked;
+        this.configuration = new MessagingSessionConfiguration(
+          this.userArn,
+          this.sessionId,
+          undefined,
+          chime
+        );
         if (this.prefetchSortByUnread) {
           this.configuration.prefetchOn = PrefetchOn.Connect;
-          this.configuration.prefetchSortBy = PrefetchSortBy.Unread
+          this.configuration.prefetchSortBy = PrefetchSortBy.Unread;
         } else if (this.prefetchSortByLastMessageTimestamp) {
           this.configuration.prefetchOn = PrefetchOn.Connect;
-          this.configuration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp
+          this.configuration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp;
         }
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
@@ -109,7 +116,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
   messagingSessionDidReceiveMessage(message: Message): void {
     const messagesDiv = document.getElementById('messages') as HTMLDivElement;
     const messageTypeDiv = document.createElement('div') as HTMLDivElement;
-    messageTypeDiv.classList.add('font-weight-bold');
+    messageTypeDiv.classList.add('message-type');
     messageTypeDiv.innerText = message.type;
     messagesDiv.appendChild(messageTypeDiv);
     if (message.headers) {
@@ -147,12 +154,9 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
 
   // eslint-disable-next-line
   async fetchCredentials(): Promise<any> {
-    const response = await fetch(
-      `${DemoMessagingSessionApp.BASE_URL}fetch_credentials`,
-      {
-        method: 'GET',
-      }
-    );
+    const response = await fetch(`${DemoMessagingSessionApp.BASE_URL}fetch_credentials`, {
+      method: 'GET',
+    });
     const json = await response.json();
     if (json.error) {
       throw new Error(`Server error: ${json.error}`);
@@ -160,7 +164,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
     return json;
   }
 
-  updateProperty(obj: any, key: string, value: string) {
+  updateProperty(obj: Record<string, string>, key: string, value: string): void {
     if (value !== undefined && obj[key] !== value) {
       obj[key] = value;
     }

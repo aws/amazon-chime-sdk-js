@@ -9,18 +9,18 @@ let elements;
 
 function findAllElements() {
   elements = {
-    // Authentication flow
+    // Join screen of the meeting demo, which opens Test your setup
     authenticationFlow: By.id('flow-authenticate'),
-    authenticateButton: By.id('authenticate'),
+    openReadinessCheck: By.id('button-readiness-check'),
     inputRegion: By.id('inputRegion'),
-    
-    // Device selection
-    audioInputSelect: By.id('audio-input'),
-    audioOutputSelect: By.id('audio-output'),
-    videoInputSelect: By.id('video-input'),
-    
-    // Readiness test flow
-    readinessTestFlow: By.id('flow-readinesstest'),
+
+    // Test your setup dialog
+    readinessDialog: By.id('readiness-dialog'),
+    startButton: By.id('readiness-start'),
+    audioInputSelect: By.id('readiness-audio-input'),
+    audioOutputSelect: By.id('readiness-audio-output'),
+    videoInputSelect: By.id('readiness-video-input'),
+    readinessTestFlow: By.id('readiness-results'),
     readinessHeader: By.id('readiness-header'),
     
     // Speaker test
@@ -53,7 +53,7 @@ class MeetingReadinessCheckerPage {
   }
 
   async open(url) {
-    this.logger.pushLogs(`Opening meeting readiness checker at url: ${url}`);
+    this.logger.pushLogs(`Opening the meeting demo for Test your setup at url: ${url}`);
     await this.driver.get(url);
     await this.waitForPageToLoad();
   }
@@ -63,18 +63,23 @@ class MeetingReadinessCheckerPage {
       until.elementIsVisible(this.driver.findElement(elements.authenticationFlow)),
       DEFAULT_TIMEOUT_MS
     );
-    this.logger.pushLogs('Meeting readiness checker page loaded');
+    this.logger.pushLogs('Meeting demo join screen loaded');
   }
 
   async authenticate() {
-    this.logger.pushLogs('Starting authentication for readiness checker');
-    
-    // Click authenticate button to start the readiness tests
-    let authenticateButton = await this.driver.findElement(elements.authenticateButton);
-    await this.driver.wait(until.elementIsEnabled(authenticateButton), DEFAULT_TIMEOUT_MS);
-    await authenticateButton.click();
-    
-    // Wait for readiness test flow to appear
+    this.logger.pushLogs('Opening Test your setup and starting the checks');
+
+    // The join screen link opens the dialog; Start is enabled once the devices are listed.
+    await this.driver.findElement(elements.openReadinessCheck).click();
+    await this.driver.wait(
+      until.elementIsVisible(this.driver.findElement(elements.readinessDialog)),
+      DEFAULT_TIMEOUT_MS
+    );
+    let startButton = await this.driver.findElement(elements.startButton);
+    await this.driver.wait(until.elementIsEnabled(startButton), DEFAULT_TIMEOUT_MS);
+    await startButton.click();
+
+    // The results show once the test meeting is joined
     await this.driver.wait(
       until.elementIsVisible(this.driver.findElement(elements.readinessTestFlow)),
       DEFAULT_TIMEOUT_MS * 2
@@ -97,6 +102,7 @@ class MeetingReadinessCheckerPage {
     // Click "Yes" to indicate we can hear the audio (automated test assumes audio works)
     try {
       let speakerYes = await this.driver.findElement(elements.speakerYes);
+      await this.driver.wait(until.elementIsVisible(speakerYes), DEFAULT_TIMEOUT_MS);
       await speakerYes.click();
       this.logger.pushLogs('Clicked "Yes" for speaker feedback');
     } catch (error) {
@@ -156,20 +162,14 @@ class MeetingReadinessCheckerPage {
     
     while (Date.now() - startTime < timeoutMs) {
       try {
+        // data-state is idle, running, passed or failed; data-result holds the SDK's feedback
+        // value (Succeeded, AudioNotReceived, ...), which the page shows as Passed or the value.
         const element = await this.driver.findElement(elementLocator);
-        const text = await element.getText();
-        const className = await element.getAttribute('class');
-        
-        // Check if test is still running (spinner)
-        if (className && className.includes('spinner-border')) {
-          await sleep(500);
-          continue;
+        const state = await element.getAttribute('data-state');
+        if (state === 'passed' || state === 'failed') {
+          return await element.getAttribute('data-result');
         }
-        
-        // Check if we have a result
-        if (text && text.length > 0 && !text.includes('spinner')) {
-          return text;
-        }
+        await sleep(500);
       } catch (error) {
         // Element not found yet, wait and retry
         await sleep(500);

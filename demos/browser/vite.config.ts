@@ -1,49 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { defineConfig, type Plugin } from 'vite';
-import { resolve } from 'path';
 import { watch } from 'chokidar';
+import { resolve } from 'path';
+import { defineConfig, type Plugin } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
-import ejsSvgPlugin from './plugins/vite-plugin-ejs-svg';
+
+// CommonJS so that api-server.js, which serves the built page, sends the same policy.
+const cspString: string = require('./csp.js');
 
 const app = process.env.APP || 'meetingV2';
 const watchSdk = process.env.SDK_AUTOREFRESH === 'true';
-
-/**
- * This is exactly what we document in the CSP guide.
- */
-const cspDirectives: Record<string, string> = {
-  'connect-src': "'self' data: https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com",
-  'script-src': "'self' 'unsafe-eval' blob: 'wasm-unsafe-eval'",
-  'script-src-elem': "'self' 'unsafe-inline' blob:",
-  'worker-src': "'self' blob:",
-  'child-src': "'self' blob:",
-};
-
-// Access to assets in all stages for testing and canaries.
-for (const stage of ['a', 'b', 'g', '']) {
-  const host = ` https://*.sdkassets.${stage}chime.aws`;
-  const media = ` wss://*.${stage}chime.aws`;
-  cspDirectives['connect-src'] += host + media;
-  cspDirectives['script-src'] += host;
-  cspDirectives['script-src-elem'] += host;
-}
-
-// Access to googleapis for the Segmentation filter.
-cspDirectives['connect-src'] += ' https://storage.googleapis.com';
-
-// Access to jsdelivr for TensorFlow for background blur.
-cspDirectives['connect-src'] += ' https://cdn.jsdelivr.net';
-cspDirectives['script-src'] += ' https://cdn.jsdelivr.net';
-cspDirectives['script-src-elem'] += ' https://cdn.jsdelivr.net';
-
-// Access to event ingestion gamma endpoint for testing and canaries.
-cspDirectives['connect-src'] += ' https://*.ingest.gchime.aws';
-
-const cspString = Object.entries(cspDirectives)
-  .map(([key, value]) => `${key} ${value}`)
-  .join('; ');
+const sdkBuildDir = resolve(__dirname, '../../build');
 
 const apiProxy = {
   target: 'http://127.0.0.1:8081',
@@ -71,8 +39,7 @@ function rewriteRootPlugin(): Plugin {
 
 /**
  * Full-reload on any source change since the app doesn't use HMR accept boundaries.
- * When WATCH_SDK=true, also watches the SDK build output and restarts the server
- * (clearing the dep cache) so that `npm run tsc:watch` changes are picked up.
+ * When SDK_AUTOREFRESH=true, also reloads when the SDK build output changes (`npm run tsc:watch`).
  */
 function fullReloadPlugin(): Plugin {
   return {
@@ -82,7 +49,6 @@ function fullReloadPlugin(): Plugin {
     },
     configureServer(server) {
       if (watchSdk) {
-        const sdkBuildDir = resolve(__dirname, '../../build');
         const sdkWatcher = watch(sdkBuildDir, { ignoreInitial: true, depth: 2 });
         let debounce: ReturnType<typeof setTimeout> | null = null;
         sdkWatcher.on('change', () => {
@@ -103,12 +69,7 @@ function fullReloadPlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [
-    ejsSvgPlugin(),
-    rewriteRootPlugin(),
-    fullReloadPlugin(),
-    viteSingleFile(),
-  ],
+  plugins: [rewriteRootPlugin(), fullReloadPlugin(), viteSingleFile()],
   root: resolve(__dirname, `app/${app}`),
   publicDir: resolve(__dirname, 'public'),
   resolve: {
@@ -120,15 +81,9 @@ export default defineConfig({
   },
   define: {
     global: 'globalThis',
-    'process.env.IS_LOCAL': JSON.stringify(process.env.npm_config_is_local === 'true' ? 'true' : 'false'),
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        silenceDeprecations: ['legacy-js-api'] as never,
-        loadPaths: [resolve(__dirname)],
-      },
-    },
+    'process.env.IS_LOCAL': JSON.stringify(
+      process.env.npm_config_is_local === 'true' ? 'true' : 'false'
+    ),
   },
   build: {
     outDir: resolve(__dirname, 'dist'),
@@ -143,7 +98,8 @@ export default defineConfig({
       },
     },
     commonjsOptions: {
-      include: [/amazon-chime-sdk-js/, /node_modules/],
+      // The SDK by path, so a checkout under any directory name bundles it.
+      include: [`${sdkBuildDir}/**`, `${resolve(__dirname, '../../libs')}/**`, /node_modules/],
     },
     rollupOptions: {
       input: resolve(__dirname, `app/${app}/${app}.html`),
@@ -165,7 +121,8 @@ export default defineConfig({
     },
     proxy: {
       '/join': apiProxy,
-      '/deleteAttendee': apiProxy,
+      // Anchored: a plain '/meeting' prefix would also catch the app page /meetingV2.html.
+      '^/meeting(\\?|$)': apiProxy,
       '/end': apiProxy,
       '/fetch_credentials': apiProxy,
       '/audio_file': apiProxy,
