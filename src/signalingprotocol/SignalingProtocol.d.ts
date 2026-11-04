@@ -578,6 +578,9 @@ export interface ISdkJoinFrame {
 
     /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender */
     disablePeriodicKeyframeRequestOnContentSender?: (boolean|null);
+
+    /** SdkJoinFrame useAbsCaptureTimeHeaderExtension */
+    useAbsCaptureTimeHeaderExtension?: (boolean|null);
 }
 
 /** Represents a SdkJoinFrame. */
@@ -618,6 +621,9 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
     /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender. */
     public disablePeriodicKeyframeRequestOnContentSender: boolean;
+
+    /** SdkJoinFrame useAbsCaptureTimeHeaderExtension. */
+    public useAbsCaptureTimeHeaderExtension: boolean;
 
     /**
      * Creates a new SdkJoinFrame instance using the specified properties.

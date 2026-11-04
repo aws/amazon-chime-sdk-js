@@ -57,6 +57,7 @@ const VideoDownstreamMetricsKeyStats: { [key: string]: string } = {
   videoDownstreamPacketLossPercent: 'Packet Loss (%)',
   videoDownstreamPacketsReceived: 'Packet Received',
   videoDownstreamFramesDecodedPerSecond: 'Frame Rate',
+  videoDownstreamEndToEndDelayMs: 'End-to-End Delay (ms)',
 };
 
 class TileOrganizer {

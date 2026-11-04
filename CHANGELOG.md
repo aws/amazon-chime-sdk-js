@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added the optional `VideoFrameProcessor.transformTrack`, which `DefaultVideoTransformDevice` uses instead of the canvas when every processor implements it, falling back to the canvas until the pipeline is stopped if processing fails. The output stream keeps the input's audio tracks on either path. `BackgroundSegmentationVideoFrameProcessor` implements it when its CDN processor does.
 - Added the `VIDEO_RECEIVED_RETRANSMIT_BITRATE` client metric, reporting the RTX bitrate received on video streams from the `retransmittedBytesReceived` WebRTC stat.
+- Added the `videoDownstreamEndToEndDelayMs` metric to `ClientMetricReport.getObservableVideoMetrics`: the delay from capture on a remote attendee's device to delivery of the decoded frame on this one. The SDK now negotiates the abs-capture-time RTP header extension with the media backend for video to calculate it. It requires `RTCRtpTransceiver.setHeaderExtensionsToNegotiate` and `RTCRtpSynchronizationSource.captureTimestamp`, which currently only Chromium-based browsers support. The browser demo shows it in the video tile stats.
 
 ### Removed
 

@@ -100,6 +100,7 @@ message SdkJoinFrame {
     repeated SdkServerSideNetworkAdaption supported_server_side_network_adaptions = 11;
     optional bool wants_all_temporal_layers_in_index = 12;
     optional bool disable_periodic_keyframe_request_on_content_sender = 13;
+    optional bool use_abs_capture_time_header_extension = 15;
 }
 
 message SdkJoinAckFrame {

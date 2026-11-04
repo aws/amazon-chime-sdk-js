@@ -14,6 +14,7 @@ const videoLayersAllocationUrl =
   'http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00';
 const dependencyDescriptorUrl =
   'https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension';
+const absoluteCaptureTimeUrl = 'http://www.webrtc.org/experiments/rtp-hdrext/abs-capture-time';
 
 export default class DefaultTransceiverController implements TransceiverController {
   protected _localCameraTransceiver: RTCRtpTransceiver | null = null;
@@ -245,10 +246,6 @@ export default class DefaultTransceiverController implements TransceiverControll
   }
 
   protected configureLocalCameraHeaderExtensions(): void {
-    if (!DefaultTransceiverController.canUseHeaderExtensionApi(this.peer)) {
-      return;
-    }
-
     const policy = this.meetingSessionContext
       ? this.meetingSessionContext.videoUplinkBandwidthPolicy
       : undefined;
@@ -256,17 +253,25 @@ export default class DefaultTransceiverController implements TransceiverControll
       policy?.wantsVideoDependencyDescriptorRtpHeaderExtension !== undefined &&
       policy.wantsVideoDependencyDescriptorRtpHeaderExtension();
 
+    const uris = [videoLayersAllocationUrl, absoluteCaptureTimeUrl];
+    if (wantsDependencyDescriptor) {
+      uris.push(dependencyDescriptorUrl);
+    }
+    this.enableHeaderExtensions(this._localCameraTransceiver, uris);
+  }
+
+  private enableHeaderExtensions(transceiver: RTCRtpTransceiver, uris: string[]): void {
+    if (!DefaultTransceiverController.canUseHeaderExtensionApi(this.peer)) {
+      return;
+    }
+
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const t = this._localCameraTransceiver as any;
+      const t = transceiver as any;
       const extensions = t.getHeaderExtensionsToNegotiate();
       let modified = false;
       for (const extension of extensions) {
-        if (
-          extension.direction === 'stopped' &&
-          (extension.uri === videoLayersAllocationUrl ||
-            (wantsDependencyDescriptor && extension.uri === dependencyDescriptorUrl))
-        ) {
+        if (extension.direction === 'stopped' && uris.includes(extension.uri)) {
           extension.direction = 'sendrecv';
           modified = true;
         }
@@ -342,6 +347,7 @@ export default class DefaultTransceiverController implements TransceiverControll
         direction: 'recvonly',
         streams: [new MediaStream()],
       });
+      this.enableHeaderExtensions(transceiver, [absoluteCaptureTimeUrl]);
       this.streamIdToTransceiver.set(index, transceiver);
       this.groupIdToTransceiver.set(videoStreamIndex.groupIdForStreamId(index), transceiver);
       this.videoSubscriptions.push(index);

@@ -8,7 +8,9 @@ import { RedundantAudioRecoveryMetricReport } from '../../src';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import { BackgroundSegmentationInitializationStatus } from '../../src/backgroundsegmentation/BackgroundSegmentationMetrics';
-import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
+import ClientMetricReport, {
+  CustomStatsReport,
+} from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
@@ -1259,6 +1261,159 @@ describe('StatsCollector', () => {
       statsCollector.videoCodecDegradationHighEncodeCpuDidReceive();
       statsCollector.videoCodecDegradationEncodeFailureDidReceive();
       statsCollector.videoCodecDegradationEncodeFailureDidReceive();
+    });
+  });
+
+  describe('video end-to-end delay', () => {
+    const NTP_EPOCH_TO_UNIX_EPOCH_MS = 2208988800000;
+
+    class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+      streamIdForSSRC(ssrc: number): number {
+        return ssrc === 4005 ? 0 : 1;
+      }
+    }
+
+    function videoReceiver(
+      sources: Partial<
+        RTCRtpSynchronizationSource & { captureTimestamp: number; senderCaptureTimeOffset: number }
+      >[],
+      kind: string = 'video'
+    ): RTCRtpReceiver {
+      // @ts-ignore
+      return { track: kind ? { kind } : null, getSynchronizationSources: () => sources };
+    }
+
+    function setReceivers(receivers: RTCRtpReceiver[]): sinon.SinonStub {
+      const stub = sinon.stub().returns(receivers);
+      // @ts-ignore
+      (audioVideoController as TestAudioVideoController).testPeer.getReceivers = stub;
+      return stub;
+    }
+
+    const delayedSource = {
+      source: 4001,
+      timestamp: 1_000_000_150,
+      captureTimestamp: 999_995_020 + NTP_EPOCH_TO_UNIX_EPOCH_MS,
+      senderCaptureTimeOffset: 5000,
+    };
+
+    function statsReports(withRoundTripTime: boolean): object[] {
+      const reports: object[] = [
+        { type: 'inbound-rtp', kind: 'video', ssrc: 4001, id: 'IN4001' },
+        {
+          type: 'remote-outbound-rtp',
+          kind: 'video',
+          ssrc: 4001,
+          id: 'RO4001',
+          timestamp: 1_000_000_110,
+          remoteTimestamp: 1_000_000_000,
+        },
+        {
+          type: 'remote-outbound-rtp',
+          kind: 'video',
+          ssrc: 4005,
+          id: 'RO4005',
+          timestamp: 1,
+          remoteTimestamp: 1,
+        },
+        {
+          type: 'remote-outbound-rtp',
+          kind: 'audio',
+          ssrc: 4006,
+          id: 'RO4006',
+          timestamp: 1,
+          remoteTimestamp: 1,
+        },
+        { type: 'transport', id: 'T0' },
+      ];
+      if (withRoundTripTime) {
+        reports.push(
+          { type: 'transport', id: 'T1', selectedCandidatePairId: 'CP1' },
+          { type: 'candidate-pair', id: 'CP1', state: 'succeeded', currentRoundTripTime: 0.02 }
+        );
+      }
+      return reports;
+    }
+
+    function delayReports(clientMetricReport: ClientMetricReport): CustomStatsReport[] {
+      return clientMetricReport.customStatsReports.filter(
+        // @ts-ignore
+        report => report.type === 'inbound-rtp-end-to-end-delay'
+      );
+    }
+
+    it('adds the delay from capture to frame delivery for remote videos with capture timestamps', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = statsReports(true);
+      setReceivers([
+        videoReceiver([delayedSource]),
+        videoReceiver([{ source: 4002, timestamp: 1 }]),
+        videoReceiver([{ ...delayedSource, source: 4003, senderCaptureTimeOffset: undefined }]),
+        videoReceiver([{ ...delayedSource, source: 4004 }]),
+        videoReceiver([{ ...delayedSource, source: 4005 }]),
+        videoReceiver([{ ...delayedSource, source: 4006 }], 'audio'),
+        videoReceiver([{ ...delayedSource, source: 4007 }], null),
+      ]);
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(clientMetricReport: ClientMetricReport): void {
+          statsCollector.stop();
+          const reports = delayReports(clientMetricReport);
+          expect(reports.length).to.equal(1);
+          expect(reports[0].ssrc).to.equal(4001);
+          expect(reports[0].videoEndToEndDelayMs).to.equal(30);
+          expect(
+            clientMetricReport.getObservableVideoMetricValue('videoDownstreamEndToEndDelayMs', 4001)
+          ).to.equal(30);
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+    });
+
+    it('drops the delay of a video whose source stops carrying capture timestamps', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = statsReports(true);
+      const getReceivers = setReceivers([videoReceiver([delayedSource])]);
+      getReceivers.onSecondCall().returns([videoReceiver([{ source: 4001, timestamp: 1 }])]);
+
+      let firstDelay: number;
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(clientMetricReport: ClientMetricReport): void {
+          const delay = clientMetricReport.getObservableVideoMetricValue(
+            'videoDownstreamEndToEndDelayMs',
+            4001
+          );
+          if (firstDelay === undefined) {
+            firstDelay = delay;
+            return;
+          }
+          statsCollector.stop();
+          expect(firstDelay).to.equal(30);
+          expect(delay).to.be.NaN;
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+    });
+
+    it('does not add the delay without a round trip time', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = statsReports(false);
+      const getReceivers = setReceivers([videoReceiver([delayedSource])]);
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(clientMetricReport: ClientMetricReport): void {
+          statsCollector.stop();
+          expect(delayReports(clientMetricReport).length).to.equal(0);
+          expect(getReceivers.called).to.be.false;
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
     });
   });
 

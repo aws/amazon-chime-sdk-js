@@ -313,6 +313,9 @@ describe('DefaultSignalingClient', () => {
               expect(frame.join.serverSideNetworkAdaption).to.eq(
                 SdkServerSideNetworkAdaption.DEFAULT
               );
+              expect(frame.join.useAbsCaptureTimeHeaderExtension).to.be.true;
+              // Field 15 as a varint set to true. The join frame's last field is the end of the buffer.
+              expect(Array.from(buffer.slice(-2))).to.deep.equal([0x78, 0x01]);
               done();
             });
             event.client.join(new SignalingClientJoin());
