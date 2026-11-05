@@ -1335,6 +1335,14 @@ describe('StatsCollector', () => {
       return reports;
     }
 
+    function sentDelays(sendSpy: sinon.SinonSpy): number[] {
+      const frame: SdkClientMetricFrame = sendSpy.lastCall.args[0];
+      return frame.streamMetricFrames
+        .flatMap(streamMetricFrame => streamMetricFrame.metrics)
+        .filter(metric => metric.type === SdkMetric.Type.VIDEO_END_TO_END_DELAY_MS)
+        .map(metric => metric.value);
+    }
+
     function delayReports(clientMetricReport: ClientMetricReport): CustomStatsReport[] {
       return clientMetricReport.customStatsReports.filter(
         // @ts-ignore
@@ -1353,6 +1361,7 @@ describe('StatsCollector', () => {
         videoReceiver([{ ...delayedSource, source: 4006 }], 'audio'),
         videoReceiver([{ ...delayedSource, source: 4007 }], null),
       ]);
+      const sendSpy = sinon.spy(signalingClient, 'sendClientMetrics');
 
       class TestObserver implements AudioVideoObserver {
         metricsDidReceive(clientMetricReport: ClientMetricReport): void {
@@ -1364,6 +1373,7 @@ describe('StatsCollector', () => {
           expect(
             clientMetricReport.getObservableVideoMetricValue('videoDownstreamEndToEndDelayMs', 4001)
           ).to.equal(30);
+          expect(sentDelays(sendSpy)).to.deep.equal([30]);
           done();
         }
       }
@@ -1376,6 +1386,7 @@ describe('StatsCollector', () => {
       domMockBehavior.rtcPeerConnectionGetStatsReports = statsReports(true);
       const getReceivers = setReceivers([videoReceiver([delayedSource])]);
       getReceivers.onSecondCall().returns([videoReceiver([{ source: 4001, timestamp: 1 }])]);
+      const sendSpy = sinon.spy(signalingClient, 'sendClientMetrics');
 
       let firstDelay: number;
       class TestObserver implements AudioVideoObserver {
@@ -1391,6 +1402,7 @@ describe('StatsCollector', () => {
           statsCollector.stop();
           expect(firstDelay).to.equal(30);
           expect(delay).to.be.NaN;
+          expect(sentDelays(sendSpy)).to.deep.equal([]);
           done();
         }
       }

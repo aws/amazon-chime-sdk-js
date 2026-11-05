@@ -8438,6 +8438,7 @@ $root.SdkMetric = (function() {
             case 127:
             case 128:
             case 129:
+            case 134:
                 break;
             }
         if (message.value != null && Object.hasOwnProperty.call(message, "value"))
@@ -8871,6 +8872,10 @@ $root.SdkMetric = (function() {
         case 129:
             message.type = 129;
             break;
+        case "VIDEO_END_TO_END_DELAY_MS":
+        case 134:
+            message.type = 134;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -9035,6 +9040,7 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE=127 VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE value
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE=128 VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE value
      * @property {number} VIDEO_RECEIVED_RETRANSMIT_BITRATE=129 VIDEO_RECEIVED_RETRANSMIT_BITRATE value
+     * @property {number} VIDEO_END_TO_END_DELAY_MS=134 VIDEO_END_TO_END_DELAY_MS value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -9138,6 +9144,7 @@ $root.SdkMetric = (function() {
         values[valuesById[127] = "VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE"] = 127;
         values[valuesById[128] = "VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE"] = 128;
         values[valuesById[129] = "VIDEO_RECEIVED_RETRANSMIT_BITRATE"] = 129;
+        values[valuesById[134] = "VIDEO_END_TO_END_DELAY_MS"] = 134;
         return values;
     })();
 

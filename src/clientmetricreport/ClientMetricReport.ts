@@ -563,6 +563,7 @@ export default class ClientMetricReport {
     },
     videoEndToEndDelayMs: {
       transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_END_TO_END_DELAY_MS,
     },
   };
 
