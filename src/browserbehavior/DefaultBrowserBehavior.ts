@@ -293,6 +293,12 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     );
   }
 
+  // Firefox 154 and later's VP9 encoder sends no frames when the input has an odd width or height,
+  // which screen and tab captures often do. See https://bugzilla.mozilla.org/show_bug.cgi?id=2073405.
+  requiresDisablingVP9ContentShare(): boolean {
+    return this.hasFirefoxWebRTC() && this.majorVersion() >= 154;
+  }
+
   // In Safari, a hidden video element can show a black screen.
   // See https://bugs.webkit.org/show_bug.cgi?id=241152 for more information.
   requiresVideoPlayWorkaround(): boolean {
