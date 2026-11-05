@@ -444,7 +444,10 @@ videoDownstreamPacketsReceived,
 videoDownstreamFramesDecodedPerSecond,
 videoDownstreamFrameHeight,
 videoDownstreamFrameWidth,
+videoDownstreamEndToEndDelayMs,
 ```
+
+`videoDownstreamEndToEndDelayMs` is the delay in milliseconds from capture on the remote attendee's device to delivery of the decoded frame on this one. It is only reported in Chromium-based browsers, and only while the remote video carries capture timestamps. It can jump for about a second after a remote video starts or switches source, for example when the first frame shown is a keyframe the media server cached earlier.
 
 See this [guide](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html) for more information. 
 

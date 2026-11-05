@@ -142,6 +142,7 @@ export default class DefaultSignalingClient implements SignalingClient {
         convertServerSideNetworkAdaptionEnumToSignaled
       );
     joinFrame.wantsAllTemporalLayersInIndex = settings.wantsAllTemporalLayersInIndex;
+    joinFrame.useAbsCaptureTimeHeaderExtension = true;
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
     message.join = joinFrame;

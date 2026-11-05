@@ -585,6 +585,15 @@ describe('ClientMetricReport', () => {
       ).to.equal(SdkMetric.Type.VIDEO_RECEIVED_RETRANSMIT_BITRATE);
     });
 
+    it('videoDownstreamMetricMap reports videoEndToEndDelayMs to the backend', () => {
+      expect(
+        clientMetricReport.videoDownstreamMetricMap['videoEndToEndDelayMs'].transform
+      ).to.equal(clientMetricReport.identityValue);
+      expect(clientMetricReport.videoDownstreamMetricMap['videoEndToEndDelayMs'].type).to.equal(
+        SdkMetric.Type.VIDEO_END_TO_END_DELAY_MS
+      );
+    });
+
     it('returns countPerSecond for audioSentTransformPps', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();

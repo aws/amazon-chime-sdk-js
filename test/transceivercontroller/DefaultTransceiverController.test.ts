@@ -1549,4 +1549,47 @@ describe('DefaultTransceiverController', () => {
       expect(tc.localVideoTransceiver()).to.not.be.null;
     });
   });
+
+  describe('abs-capture-time header extension', () => {
+    const absCaptureTimeUrl = 'http://www.webrtc.org/experiments/rtp-hdrext/abs-capture-time';
+
+    function absCaptureTimeDirection(transceiver: RTCRtpTransceiver): string {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (transceiver as any)
+        .getHeaderExtensionsToNegotiate()
+        .find((e: { uri: string; direction: string }) => e.uri === absCaptureTimeUrl).direction;
+    }
+
+    it('is negotiated on the camera and remote video transceivers', () => {
+      domMockBehavior.supportsHeaderExtensionApi = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const controller = new DefaultTransceiverController(logger, new DefaultBrowserBehavior());
+      const peer = new RTCPeerConnection();
+      controller.setPeer(peer);
+      controller.setupLocalTransceivers();
+      const index = new DefaultVideoStreamIndex(logger);
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          atCapacity: false,
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 7,
+              groupId: 7,
+              maxBitrateKbps: 100,
+              mediaType: SdkStreamMediaType.VIDEO,
+              attendeeId: 'attendee-7',
+            }),
+          ],
+        })
+      );
+      const videosToReceive = new DefaultVideoStreamIdSet();
+      videosToReceive.add(7);
+      controller.updateVideoTransceivers(index, videosToReceive);
+
+      const transceivers = peer.getTransceivers();
+      expect(transceivers.length).to.equal(3);
+      expect(absCaptureTimeDirection(controller.localVideoTransceiver())).to.equal('sendrecv');
+      expect(absCaptureTimeDirection(transceivers[2])).to.equal('sendrecv');
+    });
+  });
 });

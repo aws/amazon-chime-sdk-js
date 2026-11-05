@@ -100,6 +100,7 @@ message SdkJoinFrame {
     repeated SdkServerSideNetworkAdaption supported_server_side_network_adaptions = 11;
     optional bool wants_all_temporal_layers_in_index = 12;
     optional bool disable_periodic_keyframe_request_on_content_sender = 13;
+    optional bool use_abs_capture_time_header_extension = 15;
 }
 
 message SdkJoinAckFrame {
@@ -339,6 +340,7 @@ message SdkMetric {
         VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE = 127;
         VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE = 128;
         VIDEO_RECEIVED_RETRANSMIT_BITRATE = 129;
+        VIDEO_END_TO_END_DELAY_MS = 134;
     }
     optional Type type = 1;
     optional double value = 2;

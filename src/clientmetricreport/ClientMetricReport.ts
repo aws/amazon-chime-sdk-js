@@ -561,6 +561,10 @@ export default class ClientMetricReport {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_REMOTE_RENDER_FPS,
     },
+    videoEndToEndDelayMs: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_END_TO_END_DELAY_MS,
+    },
   };
 
   getMetricMap(
@@ -720,6 +724,11 @@ export default class ClientMetricReport {
     },
     videoDownstreamDelayMs: {
       source: 'jitterBufferMs',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoDownstreamEndToEndDelayMs: {
+      source: 'videoEndToEndDelayMs',
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },

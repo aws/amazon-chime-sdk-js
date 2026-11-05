@@ -578,6 +578,9 @@ export interface ISdkJoinFrame {
 
     /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender */
     disablePeriodicKeyframeRequestOnContentSender?: (boolean|null);
+
+    /** SdkJoinFrame useAbsCaptureTimeHeaderExtension */
+    useAbsCaptureTimeHeaderExtension?: (boolean|null);
 }
 
 /** Represents a SdkJoinFrame. */
@@ -618,6 +621,9 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
     /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender. */
     public disablePeriodicKeyframeRequestOnContentSender: boolean;
+
+    /** SdkJoinFrame useAbsCaptureTimeHeaderExtension. */
+    public useAbsCaptureTimeHeaderExtension: boolean;
 
     /**
      * Creates a new SdkJoinFrame instance using the specified properties.
@@ -3017,7 +3023,8 @@ export namespace SdkMetric {
         VIDEO_BACKGROUND_SEGMENTATION_ASSET_LOADING_TIME_MS = 126,
         VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE = 127,
         VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE = 128,
-        VIDEO_RECEIVED_RETRANSMIT_BITRATE = 129
+        VIDEO_RECEIVED_RETRANSMIT_BITRATE = 129,
+        VIDEO_END_TO_END_DELAY_MS = 134
     }
 }
 
