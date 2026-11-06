@@ -716,7 +716,7 @@ export default class StatsCollector
     // Add custom stats for reporting.
     const customStatsReports: CustomStatsReport[] = [];
     this.maybeAddRedRecoveryMetrics(customStatsReports);
-    this.maybeAddTransformMetrics(customStatsReports);
+    this.maybeAddTransformMetrics(customStatsReports, filteredRawMetricReports);
     this.addVideoEndToEndDelayMetrics(rawMetricReports, customStatsReports);
     // We cannot use 'this.clientMetricsReport.getVideoUpstreamSsrc()' because the value
     // is dependent on the call to 'this.processRawMetricReports()' below, i.e. it depends on
@@ -884,7 +884,10 @@ export default class StatsCollector
   /**
    * Adds transform metrics (PPS) to the raw webrtc stats report.
    */
-  private maybeAddTransformMetrics(customStatsReports: CustomStatsReport[]): void {
+  private maybeAddTransformMetrics(
+    customStatsReports: CustomStatsReport[],
+    rawMetricReports: RawMetricReport[]
+  ): void {
     if (!this.encodedTransformMediaMetrics) {
       return;
     }
@@ -892,40 +895,56 @@ export default class StatsCollector
     const timestamp = this.encodedTransformMediaMetricsTimestamp;
     const metrics = this.encodedTransformMediaMetrics;
 
+    // The worker keeps reporting every SSRC it has seen, including the streams of a peer connection
+    // replaced by a reconnection, so only add the streams that WebRTC still reports.
+    const currentStreams = new Set(
+      rawMetricReports
+        .filter(report => report.type === 'inbound-rtp' || report.type === 'outbound-rtp')
+        .map(report => `${report.type} ${report.kind} ${report.ssrc}`)
+    );
+
     const configs: Array<{
       source: Record<number, EncodedTransformMediaStreamMetrics>;
       kind: 'audio' | 'video';
+      rtpType: 'inbound-rtp' | 'outbound-rtp';
       type: string;
       metricKey: string;
     }> = [
       {
         source: metrics.audioSendMetrics,
         kind: 'audio',
+        rtpType: 'outbound-rtp',
         type: 'outbound-rtp-transform',
         metricKey: 'audioSentTransformPps',
       },
       {
         source: metrics.audioReceiveMetrics,
         kind: 'audio',
+        rtpType: 'inbound-rtp',
         type: 'inbound-rtp-transform',
         metricKey: 'audioReceivedTransformPps',
       },
       {
         source: metrics.videoSendMetrics,
         kind: 'video',
+        rtpType: 'outbound-rtp',
         type: 'outbound-rtp-transform',
         metricKey: 'videoSentTransformPps',
       },
       {
         source: metrics.videoReceiveMetrics,
         kind: 'video',
+        rtpType: 'inbound-rtp',
         type: 'inbound-rtp-transform',
         metricKey: 'videoReceivedTransformPps',
       },
     ];
 
-    for (const { source, kind, type, metricKey } of configs) {
+    for (const { source, kind, rtpType, type, metricKey } of configs) {
       for (const streamMetrics of Object.values(source)) {
+        if (!currentStreams.has(`${rtpType} ${kind} ${streamMetrics.ssrc}`)) {
+          continue;
+        }
         customStatsReports.push({
           kind,
           type,
