@@ -178,6 +178,25 @@ describe('DefaultEventController', () => {
       assert(spy.calledOnce);
     });
 
+    it('reports signalingDropped with a boolean signalingCloseWasClean', async () => {
+      const eventReporter = new NoOpEventReporter();
+      eventController = new DefaultEventController(emptyConfiguration, logger, eventReporter);
+      const spy = sinon.spy(eventReporter, 'reportEvent');
+      const attributes = {
+        retryCount: 0,
+        signalingCloseCode: 1006,
+        signalingCloseReason: 'Abnormal closure',
+        signalingCloseWasClean: false,
+      };
+      await eventController.publishEvent('signalingDropped', attributes);
+      sinon.assert.calledOnceWithExactly(spy, sinon.match.number, 'signalingDropped', {
+        retryCount: 0,
+        signalingCloseCode: 1006,
+        signalingCloseReason: 'Abnormal closure',
+        signalingCloseWasClean: 'false',
+      });
+    });
+
     it('does not throw when publishing after destroy and omits meeting identity', async () => {
       // destroy() clears configuration, yet the stop sequence can still publish a terminal event
       // afterward. getAttributes must degrade to undefined identity rather than throw.
