@@ -21,6 +21,8 @@ const flattenEventAttributes = (
       continue;
     } else if (typeof value === 'number' || typeof value === 'string') {
       flattenedAttributes[key] = value;
+    } else if (typeof value === 'boolean') {
+      flattenedAttributes[key] = String(value);
     } else {
       throw new TypeError('Unhandled type received while flattening attributes.');
     }
