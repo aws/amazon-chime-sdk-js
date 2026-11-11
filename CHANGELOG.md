@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the optional `VideoFrameProcessor.transformTrack`, which `DefaultVideoTransformDevice` uses instead of the canvas when every processor implements it, falling back to the canvas until the pipeline is stopped if processing fails. The output stream keeps the input's audio tracks on either path. `BackgroundSegmentationVideoFrameProcessor` implements it when its CDN processor does.
 - Added the `VIDEO_RECEIVED_RETRANSMIT_BITRATE` client metric, reporting the RTX bitrate received on video streams from the `retransmittedBytesReceived` WebRTC stat.
 - Added the `videoDownstreamEndToEndDelayMs` metric to `ClientMetricReport.getObservableVideoMetrics`: the delay from capture on a remote attendee's device to delivery of the decoded frame on this one.
+- Added the `VIDEO_QUALITY_REASON` client metric, reporting the `qualityLimitationReason` of each sent video stream as 0 none, 1 CPU, 2 bandwidth or 3 other, the codes the native SDKs send.
+- Added the `VIDEO_TARGET_DELAY_MS` client metric, reporting the average jitter buffer target delay per emitted frame of each received video stream from the `jitterBufferTargetDelay` WebRTC stat.
 
 ### Removed
 

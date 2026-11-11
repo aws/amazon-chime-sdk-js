@@ -77,22 +77,28 @@ export default class ClientMetricReport {
     return (lost * 100) / total;
   };
 
-  jitterBufferMs = (metricName?: string, ssrc?: number): number => {
+  jitterBufferMs = (metricName?: string, ssrc?: number): number =>
+    this.averageMsPerJitterBufferEmission('jitterBufferDelay', ssrc);
+
+  jitterBufferTargetDelayMs = (metricName?: string, ssrc?: number): number =>
+    this.averageMsPerJitterBufferEmission('jitterBufferTargetDelay', ssrc);
+
+  private averageMsPerJitterBufferEmission(delayMetricName: string, ssrc: number): number {
     const metricReport = this.streamMetricReports[ssrc];
-    const jitterBufferDelay =
-      metricReport.currentMetrics['jitterBufferDelay'] -
-      (metricReport.previousMetrics['jitterBufferDelay'] || 0);
+    const delay =
+      metricReport.currentMetrics[delayMetricName] -
+      (metricReport.previousMetrics[delayMetricName] || 0);
     const jitterBufferEmittedCount =
       metricReport.currentMetrics['jitterBufferEmittedCount'] -
       (metricReport.previousMetrics['jitterBufferEmittedCount'] || 0);
-    if (jitterBufferDelay <= 0) {
+    if (delay <= 0) {
       return 0;
     }
     if (jitterBufferEmittedCount <= 0) {
       return 0;
     }
-    return (jitterBufferDelay / jitterBufferEmittedCount) * 1000;
-  };
+    return (delay / jitterBufferEmittedCount) * 1000;
+  }
 
   countPerSecond = (metricName?: string, ssrc?: number): number => {
     const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
@@ -203,6 +209,22 @@ export default class ClientMetricReport {
       implName.includes('DecodeAccelerator');
     const isFallback = implName.includes('fallback from');
     return hasHwName && !isFallback ? 1 : 0;
+  };
+
+  qualityLimitationReasonCode = (metricName?: string, ssrc?: number): number => {
+    const metricReport = this.streamMetricReports[ssrc];
+    switch (metricReport.currentStringMetrics[metricName]) {
+      case undefined:
+        return NaN;
+      case 'none':
+        return 0;
+      case 'cpu':
+        return 1;
+      case 'bandwidth':
+        return 2;
+      default:
+        return 3;
+    }
   };
 
   /**
@@ -377,6 +399,10 @@ export default class ClientMetricReport {
       transform: this.averageCpuQualityLimitationDurationPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_QUALITY_LIMITATION_DURATION_CPU,
     },
+    qualityLimitationReason: {
+      transform: this.qualityLimitationReasonCode,
+      type: SdkMetric.Type.VIDEO_QUALITY_REASON,
+    },
     videoCodecDegradationHighEncodeCpu: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU,
@@ -510,6 +536,10 @@ export default class ClientMetricReport {
     jitterBufferMs: {
       transform: this.jitterBufferMs,
       type: SdkMetric.Type.VIDEO_JITTER_BUFFER_MS,
+    },
+    jitterBufferTargetDelay: {
+      transform: this.jitterBufferTargetDelayMs,
+      type: SdkMetric.Type.VIDEO_TARGET_DELAY_MS,
     },
     qpSum: {
       transform: this.countPerSecond,

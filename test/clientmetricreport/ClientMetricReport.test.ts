@@ -274,6 +274,35 @@ describe('ClientMetricReport', () => {
     });
   });
 
+  describe('jitterBufferTargetDelayMs', () => {
+    it('returns the target delay per emitted frame in ms since the previous report', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.previousMetrics['jitterBufferTargetDelay'] = 1.5;
+      report.currentMetrics['jitterBufferTargetDelay'] = 4.5;
+      report.previousMetrics['jitterBufferEmittedCount'] = 10;
+      report.currentMetrics['jitterBufferEmittedCount'] = 40;
+      report.currentMetrics['jitterBufferDelay'] = 9;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(
+        clientMetricReport.jitterBufferTargetDelayMs('jitterBufferTargetDelay', ssrc)
+      ).to.equal(100);
+    });
+
+    it('returns 0 if no frame was emitted since the previous report', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.previousMetrics['jitterBufferTargetDelay'] = 1.5;
+      report.currentMetrics['jitterBufferTargetDelay'] = 4.5;
+      report.previousMetrics['jitterBufferEmittedCount'] = 40;
+      report.currentMetrics['jitterBufferEmittedCount'] = 40;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(
+        clientMetricReport.jitterBufferTargetDelayMs('jitterBufferTargetDelay', ssrc)
+      ).to.equal(0);
+    });
+  });
+
   describe('averageTimeSpentPerSecondInMilliseconds', () => {
     const metricName = 'metric-name';
 
@@ -374,6 +403,34 @@ describe('ClientMetricReport', () => {
         'FFmpeg (fallback from: ExternalDecoder (VDAVideoDecoder)';
       clientMetricReport.streamMetricReports[ssrc] = report;
       expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+  });
+
+  describe('qualityLimitationReasonCode', () => {
+    const metricName = 'qualityLimitationReason';
+
+    it('returns NaN if the stream has no quality limitation reason', () => {
+      const ssrc = 1;
+      clientMetricReport.streamMetricReports[ssrc] = new StreamMetricReport();
+      expect(clientMetricReport.qualityLimitationReasonCode(metricName, ssrc)).to.be.NaN;
+    });
+
+    it('returns the code the native client sends for each reason', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      const codes: [string, number][] = [
+        ['none', 0],
+        ['cpu', 1],
+        ['bandwidth', 2],
+        ['other', 3],
+      ];
+      for (const [reason, code] of codes) {
+        report.currentStringMetrics[metricName] = reason;
+        expect(clientMetricReport.qualityLimitationReasonCode(metricName, ssrc), reason).to.equal(
+          code
+        );
+      }
     });
   });
 
@@ -583,6 +640,24 @@ describe('ClientMetricReport', () => {
       expect(
         clientMetricReport.videoDownstreamMetricMap['retransmittedBytesReceived'].type
       ).to.equal(SdkMetric.Type.VIDEO_RECEIVED_RETRANSMIT_BITRATE);
+    });
+
+    it('videoDownstreamMetricMap reports jitterBufferTargetDelay to the backend', () => {
+      expect(
+        clientMetricReport.videoDownstreamMetricMap['jitterBufferTargetDelay'].transform
+      ).to.equal(clientMetricReport.jitterBufferTargetDelayMs);
+      expect(clientMetricReport.videoDownstreamMetricMap['jitterBufferTargetDelay'].type).to.equal(
+        SdkMetric.Type.VIDEO_TARGET_DELAY_MS
+      );
+    });
+
+    it('videoUpstreamMetricMap reports qualityLimitationReason to the backend', () => {
+      expect(
+        clientMetricReport.videoUpstreamMetricMap['qualityLimitationReason'].transform
+      ).to.equal(clientMetricReport.qualityLimitationReasonCode);
+      expect(clientMetricReport.videoUpstreamMetricMap['qualityLimitationReason'].type).to.equal(
+        SdkMetric.Type.VIDEO_QUALITY_REASON
+      );
     });
 
     it('videoDownstreamMetricMap reports videoEndToEndDelayMs to the backend', () => {
