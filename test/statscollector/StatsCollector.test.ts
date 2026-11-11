@@ -350,6 +350,11 @@ describe('StatsCollector', () => {
         ).to.be.true;
         expect(
           statsCollector.isValidStandardRawMetric({
+            type: 'media-playout',
+          })
+        ).to.be.true;
+        expect(
+          statsCollector.isValidStandardRawMetric({
             type: 'remote-inbound-rtp',
           })
         ).to.be.true;

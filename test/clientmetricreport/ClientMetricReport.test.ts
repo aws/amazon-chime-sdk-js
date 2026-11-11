@@ -315,6 +315,111 @@ describe('ClientMetricReport', () => {
     });
   });
 
+  describe('inter-frame delay', () => {
+    const reportWith = (
+      current: { [name: string]: number },
+      previous: { [name: string]: number } = {}
+    ): void => {
+      const report = new StreamMetricReport();
+      Object.assign(report.currentMetrics, current);
+      Object.assign(report.previousMetrics, previous);
+      clientMetricReport.streamMetricReports[1] = report;
+    };
+
+    it('returns the mean and standard deviation of the inter-frame delay in ms since the previous report', () => {
+      // 15 frames 20 ms apart and 15 frames 46 ms apart
+      reportWith(
+        { framesDecoded: 130, totalInterFrameDelay: 10.99, totalSquaredInterFrameDelay: 1.03774 },
+        { framesDecoded: 100, totalInterFrameDelay: 10, totalSquaredInterFrameDelay: 1 }
+      );
+      expect(clientMetricReport.interFrameDelayMs('totalInterFrameDelay', 1)).to.be.closeTo(
+        33,
+        1e-6
+      );
+      expect(
+        clientMetricReport.interFrameDelayStandardDeviationMs('totalSquaredInterFrameDelay', 1)
+      ).to.be.closeTo(13, 1e-6);
+    });
+
+    it('returns 0 without decoded frames, and no negative variance', () => {
+      reportWith(
+        { framesDecoded: 100, totalInterFrameDelay: 1, totalSquaredInterFrameDelay: 1 },
+        { framesDecoded: 100 }
+      );
+      expect(
+        clientMetricReport.interFrameDelayStandardDeviationMs('totalSquaredInterFrameDelay', 1)
+      ).to.equal(0);
+      reportWith({ framesDecoded: 10, totalInterFrameDelay: 1, totalSquaredInterFrameDelay: 0.01 });
+      expect(
+        clientMetricReport.interFrameDelayStandardDeviationMs('totalSquaredInterFrameDelay', 1)
+      ).to.equal(0);
+    });
+  });
+
+  describe('audio concealment and playout', () => {
+    const reportWith = (
+      current: { [name: string]: number },
+      previous: { [name: string]: number } = {}
+    ): void => {
+      const report = new StreamMetricReport();
+      Object.assign(report.currentMetrics, current);
+      Object.assign(report.previousMetrics, previous);
+      clientMetricReport.streamMetricReports[1] = report;
+    };
+
+    it('returns the audible concealed samples as a percent of the samples received', () => {
+      reportWith(
+        { totalSamplesReceived: 96000, concealedSamples: 1960, silentConcealedSamples: 1480 },
+        { totalSamplesReceived: 48000, concealedSamples: 1000, silentConcealedSamples: 1000 }
+      );
+      expect(clientMetricReport.audibleConcealmentPercent('silentConcealedSamples', 1)).to.equal(1);
+    });
+
+    it('keeps the audible concealed percent between 0 and 100', () => {
+      reportWith({ totalSamplesReceived: 0, concealedSamples: 10 });
+      expect(clientMetricReport.audibleConcealmentPercent('silentConcealedSamples', 1)).to.equal(0);
+      reportWith({ totalSamplesReceived: 480, concealedSamples: 100, silentConcealedSamples: 200 });
+      expect(clientMetricReport.audibleConcealmentPercent('silentConcealedSamples', 1)).to.equal(0);
+      reportWith({ totalSamplesReceived: 480, concealedSamples: 960, silentConcealedSamples: 0 });
+      expect(clientMetricReport.audibleConcealmentPercent('silentConcealedSamples', 1)).to.equal(
+        100
+      );
+    });
+
+    it('returns time-stretched samples as a percent of the samples received', () => {
+      reportWith(
+        { totalSamplesReceived: 96000, removedSamplesForAcceleration: 340 },
+        { totalSamplesReceived: 48000, removedSamplesForAcceleration: 100 }
+      );
+      expect(
+        clientMetricReport.percentOfSamplesReceived('removedSamplesForAcceleration', 1)
+      ).to.equal(0.5);
+      reportWith({ totalSamplesReceived: 0, insertedSamplesForDeceleration: 10 });
+      expect(
+        clientMetricReport.percentOfSamplesReceived('insertedSamplesForDeceleration', 1)
+      ).to.equal(0);
+    });
+
+    it('returns the average playout delay per sample in ms', () => {
+      clientMetricReport.globalMetricReport.previousMetrics['totalPlayoutDelay'] = 100;
+      clientMetricReport.globalMetricReport.currentMetrics['totalPlayoutDelay'] = 2500;
+      clientMetricReport.globalMetricReport.previousMetrics['totalSamplesCount'] = 48000;
+      clientMetricReport.globalMetricReport.currentMetrics['totalSamplesCount'] = 96000;
+      expect(clientMetricReport.playoutDelayMs('totalPlayoutDelay')).to.be.closeTo(50, 1e-9);
+      clientMetricReport.globalMetricReport.currentMetrics['totalSamplesCount'] = 48000;
+      expect(clientMetricReport.playoutDelayMs('totalPlayoutDelay')).to.equal(0);
+    });
+
+    it('starts the playout delay from the first report and returns 0 without delay', () => {
+      clientMetricReport.globalMetricReport.currentMetrics['totalPlayoutDelay'] = 2400;
+      clientMetricReport.globalMetricReport.currentMetrics['totalSamplesCount'] = 48000;
+      expect(clientMetricReport.playoutDelayMs('totalPlayoutDelay')).to.be.closeTo(50, 1e-9);
+      clientMetricReport.globalMetricReport.previousMetrics['totalPlayoutDelay'] = 2400;
+      clientMetricReport.globalMetricReport.previousMetrics['totalSamplesCount'] = 0;
+      expect(clientMetricReport.playoutDelayMs('totalPlayoutDelay')).to.equal(0);
+    });
+  });
+
   describe('jitterBufferTargetDelayMs', () => {
     it('returns the target delay per emitted frame in ms since the previous report', () => {
       const ssrc = 1;
@@ -709,6 +814,59 @@ describe('ClientMetricReport', () => {
       ]) {
         expect(clientMetricReport.globalMetricMap[name], name).to.be.undefined;
       }
+    });
+
+    it('reports inter-frame delay, NetEq concealment and audio playout to the backend', () => {
+      const video = clientMetricReport.videoDownstreamMetricMap;
+      expect(video['totalInterFrameDelay'].transform).to.equal(
+        clientMetricReport.interFrameDelayMs
+      );
+      expect(video['totalInterFrameDelay'].type).to.equal(
+        SdkMetric.Type.VIDEO_INTER_FRAME_DELAY_MS
+      );
+      expect(video['totalSquaredInterFrameDelay'].transform).to.equal(
+        clientMetricReport.interFrameDelayStandardDeviationMs
+      );
+      expect(video['totalSquaredInterFrameDelay'].type).to.equal(
+        SdkMetric.Type.VIDEO_INTER_FRAME_DELAY_STDDEV_MS
+      );
+      const audio = clientMetricReport.audioDownstreamMetricMap;
+      expect(audio['concealmentEvents'].transform).to.equal(clientMetricReport.countPerSecond);
+      expect(audio['concealmentEvents'].type).to.equal(SdkMetric.Type.RTC_SPK_CONCEALMENT_EVENTS);
+      expect(audio['silentConcealedSamples'].transform).to.equal(
+        clientMetricReport.audibleConcealmentPercent
+      );
+      expect(audio['silentConcealedSamples'].type).to.equal(
+        SdkMetric.Type.RTC_SPK_AUDIBLE_CONCEALMENT_PERCENT
+      );
+      expect(audio['removedSamplesForAcceleration'].transform).to.equal(
+        clientMetricReport.percentOfSamplesReceived
+      );
+      expect(audio['removedSamplesForAcceleration'].type).to.equal(
+        SdkMetric.Type.RTC_SPK_ACCELERATE_PERCENT
+      );
+      expect(audio['insertedSamplesForDeceleration'].transform).to.equal(
+        clientMetricReport.percentOfSamplesReceived
+      );
+      expect(audio['insertedSamplesForDeceleration'].type).to.equal(
+        SdkMetric.Type.RTC_SPK_DECELERATE_PERCENT
+      );
+      const global = clientMetricReport.globalMetricMap;
+      expect(global['synthesizedSamplesDuration'].transform).to.equal(
+        clientMetricReport.averageTimeSpentPerSecondInMilliseconds
+      );
+      expect(global['synthesizedSamplesDuration'].type).to.equal(
+        SdkMetric.Type.AUDIO_PLAYOUT_SYNTHESIZED_MS
+      );
+      expect(global['synthesizedSamplesEvents'].transform).to.equal(
+        clientMetricReport.countPerSecond
+      );
+      expect(global['synthesizedSamplesEvents'].type).to.equal(
+        SdkMetric.Type.AUDIO_PLAYOUT_SYNTHESIZED_EVENTS
+      );
+      expect(global['totalSamplesCount'].type).to.be.undefined;
+      expect(global['totalPlayoutDelay'].transform).to.equal(clientMetricReport.playoutDelayMs);
+      expect(global['totalPlayoutDelay'].type).to.equal(SdkMetric.Type.AUDIO_PLAYOUT_DELAY_MS);
     });
 
     it('videoDownstreamMetricMap reports jitterBufferTargetDelay to the backend', () => {

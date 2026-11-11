@@ -85,6 +85,60 @@ export default class ClientMetricReport {
   packetSendDelayMs = (metricName?: string, ssrc?: number): number =>
     this.averageMsPerCount('totalPacketSendDelay', 'packetsSent', ssrc);
 
+  interFrameDelayMs = (metricName?: string, ssrc?: number): number =>
+    this.averageMsPerCount('totalInterFrameDelay', 'framesDecoded', ssrc);
+
+  interFrameDelayStandardDeviationMs = (metricName?: string, ssrc?: number): number => {
+    const frames = this.streamMetricDelta('framesDecoded', ssrc);
+    if (frames <= 0) {
+      return 0;
+    }
+    const mean = this.streamMetricDelta('totalInterFrameDelay', ssrc) / frames;
+    const variance =
+      this.streamMetricDelta('totalSquaredInterFrameDelay', ssrc) / frames - mean * mean;
+    return Math.sqrt(Math.max(variance, 0)) * 1000;
+  };
+
+  audibleConcealmentPercent = (metricName?: string, ssrc?: number): number => {
+    const samples = this.streamMetricDelta('totalSamplesReceived', ssrc);
+    if (samples <= 0) {
+      return 0;
+    }
+    const audible =
+      this.streamMetricDelta('concealedSamples', ssrc) -
+      this.streamMetricDelta('silentConcealedSamples', ssrc);
+    return (Math.min(Math.max(audible, 0), samples) / samples) * 100;
+  };
+
+  percentOfSamplesReceived = (metricName?: string, ssrc?: number): number => {
+    const samples = this.streamMetricDelta('totalSamplesReceived', ssrc);
+    if (samples <= 0) {
+      return 0;
+    }
+    return (Math.max(this.streamMetricDelta(metricName, ssrc), 0) / samples) * 100;
+  };
+
+  playoutDelayMs = (_metricName?: string, _ssrc?: number): number => {
+    const report = this.globalMetricReport;
+    const delay =
+      report.currentMetrics['totalPlayoutDelay'] -
+      (report.previousMetrics['totalPlayoutDelay'] || 0);
+    const samples =
+      report.currentMetrics['totalSamplesCount'] -
+      (report.previousMetrics['totalSamplesCount'] || 0);
+    if (delay <= 0 || samples <= 0) {
+      return 0;
+    }
+    return (delay / samples) * 1000;
+  };
+
+  private streamMetricDelta(metricName: string, ssrc: number): number {
+    const metricReport = this.streamMetricReports[ssrc];
+    return (
+      metricReport.currentMetrics[metricName] - (metricReport.previousMetrics[metricName] || 0)
+    );
+  }
+
   private averageMsPerCount(
     durationMetricName: string,
     countMetricName: string,
@@ -269,6 +323,22 @@ export default class ClientMetricReport {
       type: SdkMetric.Type.RTC_MIC_AUDIO_LEVEL,
       source: 'audioLevel',
     },
+    // Audio playout, collected through RTCAudioPlayoutStats, which also has no ssrc.
+    synthesizedSamplesDuration: {
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
+      type: SdkMetric.Type.AUDIO_PLAYOUT_SYNTHESIZED_MS,
+    },
+    synthesizedSamplesEvents: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.AUDIO_PLAYOUT_SYNTHESIZED_EVENTS,
+    },
+    totalSamplesCount: {
+      transform: this.countPerSecond,
+    },
+    totalPlayoutDelay: {
+      transform: this.playoutDelayMs,
+      type: SdkMetric.Type.AUDIO_PLAYOUT_DELAY_MS,
+    },
   };
 
   readonly audioUpstreamMetricMap: {
@@ -348,6 +418,22 @@ export default class ClientMetricReport {
     audioReceivedTransformPps: {
       transform: this.countPerSecond,
       type: SdkMetric.Type.AUDIO_RECEIVED_TRANSFORM_PPS,
+    },
+    concealmentEvents: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.RTC_SPK_CONCEALMENT_EVENTS,
+    },
+    silentConcealedSamples: {
+      transform: this.audibleConcealmentPercent,
+      type: SdkMetric.Type.RTC_SPK_AUDIBLE_CONCEALMENT_PERCENT,
+    },
+    removedSamplesForAcceleration: {
+      transform: this.percentOfSamplesReceived,
+      type: SdkMetric.Type.RTC_SPK_ACCELERATE_PERCENT,
+    },
+    insertedSamplesForDeceleration: {
+      transform: this.percentOfSamplesReceived,
+      type: SdkMetric.Type.RTC_SPK_DECELERATE_PERCENT,
     },
   };
 
@@ -608,6 +694,14 @@ export default class ClientMetricReport {
     totalProcessingDelay: {
       transform: this.processingDelayMs,
       type: SdkMetric.Type.VIDEO_PROCESSING_TIME,
+    },
+    totalInterFrameDelay: {
+      transform: this.interFrameDelayMs,
+      type: SdkMetric.Type.VIDEO_INTER_FRAME_DELAY_MS,
+    },
+    totalSquaredInterFrameDelay: {
+      transform: this.interFrameDelayStandardDeviationMs,
+      type: SdkMetric.Type.VIDEO_INTER_FRAME_DELAY_STDDEV_MS,
     },
   };
 
