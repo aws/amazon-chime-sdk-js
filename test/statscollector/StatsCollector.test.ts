@@ -1123,6 +1123,41 @@ describe('StatsCollector', () => {
     });
   });
 
+  describe('video source frame rate', () => {
+    const startWithUplinkVideo = (): StreamMetricReport => {
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+      const report = new StreamMetricReport();
+      report.mediaType = ClientMetricReportMediaType.VIDEO;
+      report.direction = ClientMetricReportDirection.UPSTREAM;
+      // @ts-ignore
+      statsCollector.clientMetricReport.streamMetricReports[1] = report;
+      return report;
+    };
+
+    afterEach(() => {
+      statsCollector.stop();
+    });
+
+    it('reports the media-source frame rate as the uplink input frame rate', () => {
+      const report = startWithUplinkVideo();
+      // @ts-ignore
+      statsCollector.updateVideoSourceMetrics([
+        { type: 'media-source', kind: 'video', width: 1280, height: 720, framesPerSecond: 24 },
+      ]);
+      expect(report.currentMetrics['videoInputFramesPerSecond']).to.equal(24);
+      expect(report.currentMetrics['videoInputWidth']).to.equal(1280);
+    });
+
+    it('leaves the input frame rate out when the media-source has none', () => {
+      const report = startWithUplinkVideo();
+      // @ts-ignore
+      statsCollector.updateVideoSourceMetrics([
+        { type: 'media-source', kind: 'video', width: 1280, height: 720 },
+      ]);
+      expect(report.currentMetrics).to.not.have.property('videoInputFramesPerSecond');
+    });
+  });
+
   describe('stop', () => {
     it('stops without an error even if it has not started', done => {
       const spy = sinon.spy(audioVideoController.rtcPeerConnection, 'getStats');

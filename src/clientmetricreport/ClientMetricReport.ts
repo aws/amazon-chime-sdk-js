@@ -55,11 +55,7 @@ export default class ClientMetricReport {
     if (totalSamplesReceived <= 0) {
       return 0;
     }
-    const decoderAbnormal = totalSamplesReceived - concealedSamples;
-    if (decoderAbnormal <= 0) {
-      return 0;
-    }
-    return (concealedSamples / totalSamplesReceived) * 100;
+    return (Math.min(concealedSamples, totalSamplesReceived) / totalSamplesReceived) * 100;
   };
 
   packetLossPercent = (sourceMetricName?: string, ssrc?: number): number => {
@@ -77,22 +73,38 @@ export default class ClientMetricReport {
     return (lost * 100) / total;
   };
 
-  jitterBufferMs = (metricName?: string, ssrc?: number): number => {
+  jitterBufferMs = (metricName?: string, ssrc?: number): number =>
+    this.averageMsPerCount('jitterBufferDelay', 'jitterBufferEmittedCount', ssrc);
+
+  jitterBufferTargetDelayMs = (metricName?: string, ssrc?: number): number =>
+    this.averageMsPerCount('jitterBufferTargetDelay', 'jitterBufferEmittedCount', ssrc);
+
+  processingDelayMs = (metricName?: string, ssrc?: number): number =>
+    this.averageMsPerCount('totalProcessingDelay', 'framesDecoded', ssrc);
+
+  packetSendDelayMs = (metricName?: string, ssrc?: number): number =>
+    this.averageMsPerCount('totalPacketSendDelay', 'packetsSent', ssrc);
+
+  private averageMsPerCount(
+    durationMetricName: string,
+    countMetricName: string,
+    ssrc: number
+  ): number {
     const metricReport = this.streamMetricReports[ssrc];
-    const jitterBufferDelay =
-      metricReport.currentMetrics['jitterBufferDelay'] -
-      (metricReport.previousMetrics['jitterBufferDelay'] || 0);
-    const jitterBufferEmittedCount =
-      metricReport.currentMetrics['jitterBufferEmittedCount'] -
-      (metricReport.previousMetrics['jitterBufferEmittedCount'] || 0);
-    if (jitterBufferDelay <= 0) {
+    const duration =
+      metricReport.currentMetrics[durationMetricName] -
+      (metricReport.previousMetrics[durationMetricName] || 0);
+    const count =
+      metricReport.currentMetrics[countMetricName] -
+      (metricReport.previousMetrics[countMetricName] || 0);
+    if (duration <= 0) {
       return 0;
     }
-    if (jitterBufferEmittedCount <= 0) {
+    if (count <= 0) {
       return 0;
     }
-    return (jitterBufferDelay / jitterBufferEmittedCount) * 1000;
-  };
+    return (duration / count) * 1000;
+  }
 
   countPerSecond = (metricName?: string, ssrc?: number): number => {
     const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
@@ -205,6 +217,22 @@ export default class ClientMetricReport {
     return hasHwName && !isFallback ? 1 : 0;
   };
 
+  qualityLimitationReasonCode = (metricName?: string, ssrc?: number): number => {
+    const metricReport = this.streamMetricReports[ssrc];
+    switch (metricReport.currentStringMetrics[metricName]) {
+      case undefined:
+        return NaN;
+      case 'none':
+        return 0;
+      case 'cpu':
+        return 1;
+      case 'bandwidth':
+        return 2;
+      default:
+        return 3;
+    }
+  };
+
   /**
    *  Canonical and derived metric maps
    */
@@ -216,18 +244,6 @@ export default class ClientMetricReport {
       source?: string;
     };
   } = {
-    retransmittedBytesSent: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_RETRANSMIT_BITRATE,
-    },
-    totalEncodedBytesTarget: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_TARGET_ENCODER_BITRATE,
-    },
-    totalPacketSendDelay: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_BUCKET_DELAY_MS,
-    },
     packetsDiscardedOnSend: {
       transform: this.countPerSecond,
       type: SdkMetric.Type.SOCKET_DISCARDED_PPS,
@@ -349,7 +365,7 @@ export default class ClientMetricReport {
     nackCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_NACKS_RECEIVED },
     pliCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PLIS_RECEIVED },
     firCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FIRS_RECEIVED },
-    framesPerSecond: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_INPUT_FPS },
+    framesPerSecond: { transform: this.identityValue },
     framesEncoded: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_ENCODE_FPS },
     packetsSent: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_SENT_PPS },
     packetsLost: {
@@ -376,6 +392,10 @@ export default class ClientMetricReport {
     qualityLimitationDurations: {
       transform: this.averageCpuQualityLimitationDurationPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_QUALITY_LIMITATION_DURATION_CPU,
+    },
+    qualityLimitationReason: {
+      transform: this.qualityLimitationReasonCode,
+      type: SdkMetric.Type.VIDEO_QUALITY_REASON,
     },
     videoCodecDegradationHighEncodeCpu: {
       transform: this.identityValue,
@@ -469,6 +489,22 @@ export default class ClientMetricReport {
       transform: this.identityValue,
       type: undefined,
     },
+    videoInputFramesPerSecond: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_INPUT_FPS,
+    },
+    targetBitrate: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_TARGET_ENCODER_BITRATE,
+    },
+    totalPacketSendDelay: {
+      transform: this.packetSendDelayMs,
+      type: SdkMetric.Type.VIDEO_BUCKET_DELAY_MS,
+    },
+    retransmittedBytesSent: {
+      transform: this.bitsPerSecond,
+      type: SdkMetric.Type.VIDEO_RETRANSMIT_BITRATE,
+    },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -485,7 +521,7 @@ export default class ClientMetricReport {
       source: 'packetsReceived',
     },
     framesReceived: {
-      transform: this.identityValue,
+      transform: this.countPerSecond,
       type: SdkMetric.Type.VIDEO_RECEIVED_FPS,
     },
     framesDecoded: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_DECODE_FPS },
@@ -510,6 +546,10 @@ export default class ClientMetricReport {
     jitterBufferMs: {
       transform: this.jitterBufferMs,
       type: SdkMetric.Type.VIDEO_JITTER_BUFFER_MS,
+    },
+    jitterBufferTargetDelay: {
+      transform: this.jitterBufferTargetDelayMs,
+      type: SdkMetric.Type.VIDEO_TARGET_DELAY_MS,
     },
     qpSum: {
       transform: this.countPerSecond,
@@ -564,6 +604,10 @@ export default class ClientMetricReport {
     videoEndToEndDelayMs: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_END_TO_END_DELAY_MS,
+    },
+    totalProcessingDelay: {
+      transform: this.processingDelayMs,
+      type: SdkMetric.Type.VIDEO_PROCESSING_TIME,
     },
   };
 
