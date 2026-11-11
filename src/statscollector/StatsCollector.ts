@@ -1139,6 +1139,11 @@ export default class StatsCollector
             rawMetricReport['width'];
           this.clientMetricReport.streamMetricReports[ssrc].currentMetrics['videoInputHeight'] =
             rawMetricReport['height'];
+          if (typeof rawMetricReport['framesPerSecond'] === 'number') {
+            this.clientMetricReport.streamMetricReports[ssrc].currentMetrics[
+              'videoInputFramesPerSecond'
+            ] = rawMetricReport['framesPerSecond'];
+          }
         }
       }
     }

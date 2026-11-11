@@ -14,16 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the `videoDownstreamEndToEndDelayMs` metric to `ClientMetricReport.getObservableVideoMetrics`: the delay from capture on a remote attendee's device to delivery of the decoded frame on this one.
 - Added the `VIDEO_QUALITY_REASON` client metric, reporting the `qualityLimitationReason` of each sent video stream as 0 none, 1 CPU, 2 bandwidth or 3 other, the codes the native SDKs send.
 - Added the `VIDEO_TARGET_DELAY_MS` client metric, reporting the average jitter buffer target delay per emitted frame of each received video stream from the `jitterBufferTargetDelay` WebRTC stat.
+- Added the `VIDEO_PROCESSING_TIME` client metric, reporting the average processing delay per decoded frame of each received video stream from the `totalProcessingDelay` WebRTC stat.
 
 ### Removed
 
 ### Changed
 
+- The `VIDEO_RECEIVED_FPS` client metric is now the frames received per second instead of the running total of `framesReceived`, and `VIDEO_INPUT_FPS` is now the camera frame rate from the video `media-source` stats instead of the `outbound-rtp` frame rate. `ClientMetricReport.getObservableMetrics().videoUpstreamFramesInputPerSecond` is unchanged.
+- The `RTC_SPK_FRACTION_DECODER_LOSS_PERCENT` client metric now reports 100 for an interval in which every received audio sample was concealed. It reported 0.
 - Content share with simulcast enabled will now automatically use SVC instead when the preferred content share codec is AV1 (the default on Chromium-based browsers since 3.28) or VP9, since Chromium only supports simulcast for H.264 and VP8 and the high simulcast layer would silently never transmit. To keep using simulcast for content share, set an H.264 or VP8 preference via `setContentShareVideoCodecPreferences`.
 - Documented content share codec restrictions for simulcast and SVC in the simulcast guide and in `ContentShareControllerFacade`.
 
 ### Fixed
 
+- Fixed the `VIDEO_TARGET_ENCODER_BITRATE`, `VIDEO_BUCKET_DELAY_MS` and `VIDEO_RETRANSMIT_BITRATE` client metrics never being sent: their `outbound-rtp` stats were in the global metric map, which reads only candidate-pair and media-source stats. They now report `targetBitrate`, the average `totalPacketSendDelay` per sent packet in ms, and `retransmittedBytesSent` as bits per second for each sent video stream.
 - Content share in Firefox now defaults to AV1, then VP9, H.264 Constrained Baseline and VP8. Firefox 154 and later leave VP9 out: their VP9 encoder sends no frames when the captured frame has an odd width or height ([Bugzilla 2073405](https://bugzilla.mozilla.org/show_bug.cgi?id=2073405)), which tab and window captures often do, so remote attendees saw a blank content share. Added `DefaultBrowserBehavior.requiresDisablingVP9ContentShare` for this check.
 - `DefaultDeviceController.stopAudioInput()` now resets the local audio mute state. Previously, when a device controller was reused across meeting sessions, leaving a meeting while muted caused an audio transform device (such as Amazon Voice Focus) chosen in the next meeting to start muted, so noise suppression stayed bypassed until the user muted and unmuted.
 - `DefaultMeetingSession.destroy()` now unbinds the `EventController` it destroyed from the `deviceController`, preventing a stale binding when the device controller is reused ([#3264](https://github.com/aws/amazon-chime-sdk-js/issues/3264)).

@@ -88,13 +88,22 @@ describe('ClientMetricReport', () => {
       expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal(0);
     });
 
-    it('returns 0 if decoder abnormal is 0', () => {
+    it('returns 100 if every sample was concealed', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.currentMetrics['concealedSamples'] = 1;
       report.currentMetrics['totalSamplesReceived'] = 1;
       clientMetricReport.streamMetricReports[ssrc] = report;
-      expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal(0);
+      expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal(100);
+    });
+
+    it('returns at most 100 if more samples were concealed than received', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentMetrics['concealedSamples'] = 960;
+      report.currentMetrics['totalSamplesReceived'] = 480;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal(100);
     });
 
     it('returns the loss percent', () => {
@@ -271,6 +280,38 @@ describe('ClientMetricReport', () => {
       report.currentMetrics['jitterBufferEmittedCount'] = 2;
       clientMetricReport.streamMetricReports[ssrc] = report;
       expect(clientMetricReport.jitterBufferMs(metricName, ssrc)).to.equal((1 / 2) * 1000);
+    });
+  });
+
+  describe('processingDelayMs', () => {
+    it('returns the processing delay per decoded frame in ms since the previous report', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.previousMetrics['totalProcessingDelay'] = 1.0;
+      report.currentMetrics['totalProcessingDelay'] = 1.6;
+      report.previousMetrics['framesDecoded'] = 100;
+      report.currentMetrics['framesDecoded'] = 130;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.processingDelayMs('totalProcessingDelay', ssrc)).to.be.closeTo(
+        20,
+        1e-9
+      );
+    });
+  });
+
+  describe('packetSendDelayMs', () => {
+    it('returns the pacer delay per sent packet in ms since the previous report', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.previousMetrics['totalPacketSendDelay'] = 0.2;
+      report.currentMetrics['totalPacketSendDelay'] = 0.5;
+      report.previousMetrics['packetsSent'] = 1000;
+      report.currentMetrics['packetsSent'] = 1600;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.packetSendDelayMs('totalPacketSendDelay', ssrc)).to.be.closeTo(
+        0.5,
+        1e-9
+      );
     });
   });
 
@@ -640,6 +681,34 @@ describe('ClientMetricReport', () => {
       expect(
         clientMetricReport.videoDownstreamMetricMap['retransmittedBytesReceived'].type
       ).to.equal(SdkMetric.Type.VIDEO_RECEIVED_RETRANSMIT_BITRATE);
+    });
+
+    it('videoDownstreamMetricMap reports totalProcessingDelay and framesReceived per second', () => {
+      const map = clientMetricReport.videoDownstreamMetricMap;
+      expect(map['totalProcessingDelay'].transform).to.equal(clientMetricReport.processingDelayMs);
+      expect(map['totalProcessingDelay'].type).to.equal(SdkMetric.Type.VIDEO_PROCESSING_TIME);
+      expect(map['framesReceived'].transform).to.equal(clientMetricReport.countPerSecond);
+      expect(map['framesReceived'].type).to.equal(SdkMetric.Type.VIDEO_RECEIVED_FPS);
+    });
+
+    it('videoUpstreamMetricMap reports the capture frame rate and the outbound-rtp encoder, pacer and retransmission stats', () => {
+      const map = clientMetricReport.videoUpstreamMetricMap;
+      expect(map['videoInputFramesPerSecond'].transform).to.equal(clientMetricReport.identityValue);
+      expect(map['videoInputFramesPerSecond'].type).to.equal(SdkMetric.Type.VIDEO_INPUT_FPS);
+      expect(map['framesPerSecond'].type).to.be.undefined;
+      expect(map['targetBitrate'].transform).to.equal(clientMetricReport.identityValue);
+      expect(map['targetBitrate'].type).to.equal(SdkMetric.Type.VIDEO_TARGET_ENCODER_BITRATE);
+      expect(map['totalPacketSendDelay'].transform).to.equal(clientMetricReport.packetSendDelayMs);
+      expect(map['totalPacketSendDelay'].type).to.equal(SdkMetric.Type.VIDEO_BUCKET_DELAY_MS);
+      expect(map['retransmittedBytesSent'].transform).to.equal(clientMetricReport.bitsPerSecond);
+      expect(map['retransmittedBytesSent'].type).to.equal(SdkMetric.Type.VIDEO_RETRANSMIT_BITRATE);
+      for (const name of [
+        'retransmittedBytesSent',
+        'totalEncodedBytesTarget',
+        'totalPacketSendDelay',
+      ]) {
+        expect(clientMetricReport.globalMetricMap[name], name).to.be.undefined;
+      }
     });
 
     it('videoDownstreamMetricMap reports jitterBufferTargetDelay to the backend', () => {
