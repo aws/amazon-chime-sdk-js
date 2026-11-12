@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   deploy_chime_sdk_demo:
-    name: Deploy Meeting and Meeting Readiness Checker Demos - Media Prod
+    name: Deploy Meeting Demo - Media Prod
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1
@@ -36,7 +36,7 @@ jobs:
         run: script/deploy-canary-demo
 
   deploy_chime_sdk_demo_gamma:
-    name: Deploy Meeting and Meeting Readiness Checker Demos - Media Gamma
+    name: Deploy Meeting Demo - Media Gamma
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1

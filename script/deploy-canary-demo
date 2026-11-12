@@ -12,19 +12,16 @@ case $NAME in
 DEMO)
     echo "Deploying to sdk-dev for demo use"
     npm run deploy -- -b chime-sdk-demo-canary$canarySuffix -s chime-sdk-demo-canary$canarySuffix -o chime-sdk-demo-canary$canarySuffix -i eu-south-1 -t -l
-    npm run deploy -- -b chime-sdk-meeting-readiness-checker-dev-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-dev-canary$canarySuffix -a meetingReadinessChecker -t -l
     ;;
 
 GAMMA)
     echo "Deploying to sdk-dev running with media gamma stage"
     npm run deploy -- -b chime-sdk-demo-media-gamma$canarySuffix -s chime-sdk-demo-media-gamma$canarySuffix -o chime-sdk-demo-media-gamma$canarySuffix -i eu-south-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -m $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
-    npm run deploy -- -b chime-sdk-meeting-readiness-checker-media-gamma$canarySuffix -s chime-sdk-meeting-readiness-checker-media-gamma$canarySuffix -a meetingReadinessChecker -m $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
     ;;
 
 PROD)
     echo "Deploying to canary-prod with latest NPM release"
     npm run deploy -- -b chime-sdk-demo-prod-canary$canarySuffix -o chime-sdk-demo-prod-canary$canarySuffix -s chime-sdk-demo-prod-canary$canarySuffix -i eu-south-1 -t -l -p chime.amazonaws.com
-    npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-prod-canary$canarySuffix -a meetingReadinessChecker -t -l
     ;;
 
 esac
