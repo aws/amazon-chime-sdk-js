@@ -1113,6 +1113,10 @@ export default class DOMMockBuilder {
           uri: 'https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension',
           direction: 'stopped',
         },
+        {
+          uri: 'http://www.webrtc.org/experiments/rtp-hdrext/abs-capture-time',
+          direction: 'stopped',
+        },
       ];
       const origConstructor = GlobalAny.RTCRtpTransceiver;
       GlobalAny.RTCRtpTransceiver = class extends origConstructor {
@@ -1690,6 +1694,10 @@ export default class DOMMockBuilder {
       set srcObject(stream: MediaStream | null) {
         if (stream === null) {
           this.clearAttribute();
+        }
+        // A new source loads its metadata again.
+        if (stream !== this.refSrcObject) {
+          this.fired = false;
         }
         this.refSrcObject = stream;
       }

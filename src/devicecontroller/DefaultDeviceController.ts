@@ -272,6 +272,10 @@ export default class DefaultDeviceController
       }
       this.stopTracksAndRemoveCallbacks('audio');
     } finally {
+      // The muted flag mirrors the enabled state of the audio input track. That track is now
+      // stopped, and the next `startAudioInput` produces a new, enabled track, so the flag must
+      // not carry over (for example, into a new meeting session that reuses this controller).
+      this.muted = false;
       this.watchForDeviceChangesIfNecessary();
       this.publishAudioInputDidChangeEvent(undefined);
     }
@@ -334,6 +338,16 @@ export default class DefaultDeviceController
     if (device === this.chosenVideoTransformDevice) {
       this.logger.info('Reselecting same VideoTransformDevice');
       return;
+    }
+    if (device instanceof DefaultVideoTransformDevice) {
+      device.setOutputTrackDidChangeCallback(() => {
+        this.videoInputTaskQueue.add(async () => {
+          if (device === this.chosenVideoTransformDevice) {
+            this.logger.info('Video transform device output track changed');
+            this.publishVideoInputDidChangeEvent(device.outputMediaStream);
+          }
+        });
+      });
     }
 
     const prevVideoTransformDevice = this.chosenVideoTransformDevice;

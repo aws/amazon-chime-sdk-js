@@ -49,6 +49,10 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15';
   const CHROME_116_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36';
+  const FIREFOX_153_MAC_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:153.0) Gecko/20100101 Firefox/153.0';
+  const FIREFOX_154_MAC_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:154.0) Gecko/20100101 Firefox/154.0';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -390,6 +394,23 @@ describe('DefaultBrowserBehavior', () => {
     it('Supports audio redundancy for Safari', () => {
       setUserAgent(SAFARI_USER_AGENT);
       expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.true;
+    });
+  });
+
+  describe('requiresDisablingVP9ContentShare', () => {
+    it('is false for Firefox before 154', () => {
+      setUserAgent(FIREFOX_153_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresDisablingVP9ContentShare()).to.be.false;
+    });
+
+    it('is true for Firefox 154 and later', () => {
+      setUserAgent(FIREFOX_154_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresDisablingVP9ContentShare()).to.be.true;
+    });
+
+    it('is false for Chrome', () => {
+      setUserAgent(CHROME_116_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresDisablingVP9ContentShare()).to.be.false;
     });
   });
 

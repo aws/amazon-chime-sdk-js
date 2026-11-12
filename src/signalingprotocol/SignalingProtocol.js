@@ -1859,6 +1859,7 @@ $root.SdkJoinFrame = (function() {
      * @property {Array.<SdkServerSideNetworkAdaption>|null} [supportedServerSideNetworkAdaptions] SdkJoinFrame supportedServerSideNetworkAdaptions
      * @property {boolean|null} [wantsAllTemporalLayersInIndex] SdkJoinFrame wantsAllTemporalLayersInIndex
      * @property {boolean|null} [disablePeriodicKeyframeRequestOnContentSender] SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender
+     * @property {boolean|null} [useAbsCaptureTimeHeaderExtension] SdkJoinFrame useAbsCaptureTimeHeaderExtension
      */
 
     /**
@@ -1958,6 +1959,14 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.prototype.disablePeriodicKeyframeRequestOnContentSender = false;
 
     /**
+     * SdkJoinFrame useAbsCaptureTimeHeaderExtension.
+     * @member {boolean} useAbsCaptureTimeHeaderExtension
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.useAbsCaptureTimeHeaderExtension = false;
+
+    /**
      * Creates a new SdkJoinFrame instance using the specified properties.
      * @function create
      * @memberof SdkJoinFrame
@@ -2006,6 +2015,8 @@ $root.SdkJoinFrame = (function() {
             writer.uint32(/* id 12, wireType 0 =*/96).bool(message.wantsAllTemporalLayersInIndex);
         if (message.disablePeriodicKeyframeRequestOnContentSender != null && Object.hasOwnProperty.call(message, "disablePeriodicKeyframeRequestOnContentSender"))
             writer.uint32(/* id 13, wireType 0 =*/104).bool(message.disablePeriodicKeyframeRequestOnContentSender);
+        if (message.useAbsCaptureTimeHeaderExtension != null && Object.hasOwnProperty.call(message, "useAbsCaptureTimeHeaderExtension"))
+            writer.uint32(/* id 15, wireType 0 =*/120).bool(message.useAbsCaptureTimeHeaderExtension);
         return writer;
     };
 
@@ -2091,6 +2102,10 @@ $root.SdkJoinFrame = (function() {
                 }
             case 13: {
                     message.disablePeriodicKeyframeRequestOnContentSender = reader.bool();
+                    break;
+                }
+            case 15: {
+                    message.useAbsCaptureTimeHeaderExtension = reader.bool();
                     break;
                 }
             default:
@@ -2182,6 +2197,9 @@ $root.SdkJoinFrame = (function() {
         if (message.disablePeriodicKeyframeRequestOnContentSender != null && Object.hasOwnProperty.call(message, "disablePeriodicKeyframeRequestOnContentSender"))
             if (typeof message.disablePeriodicKeyframeRequestOnContentSender !== "boolean")
                 return "disablePeriodicKeyframeRequestOnContentSender: boolean expected";
+        if (message.useAbsCaptureTimeHeaderExtension != null && Object.hasOwnProperty.call(message, "useAbsCaptureTimeHeaderExtension"))
+            if (typeof message.useAbsCaptureTimeHeaderExtension !== "boolean")
+                return "useAbsCaptureTimeHeaderExtension: boolean expected";
         return null;
     };
 
@@ -2282,6 +2300,8 @@ $root.SdkJoinFrame = (function() {
             message.wantsAllTemporalLayersInIndex = Boolean(object.wantsAllTemporalLayersInIndex);
         if (object.disablePeriodicKeyframeRequestOnContentSender != null)
             message.disablePeriodicKeyframeRequestOnContentSender = Boolean(object.disablePeriodicKeyframeRequestOnContentSender);
+        if (object.useAbsCaptureTimeHeaderExtension != null)
+            message.useAbsCaptureTimeHeaderExtension = Boolean(object.useAbsCaptureTimeHeaderExtension);
         return message;
     };
 
@@ -2318,6 +2338,7 @@ $root.SdkJoinFrame = (function() {
             object.serverSideNetworkAdaption = options.enums === String ? "DEFAULT" : 1;
             object.wantsAllTemporalLayersInIndex = false;
             object.disablePeriodicKeyframeRequestOnContentSender = false;
+            object.useAbsCaptureTimeHeaderExtension = false;
         }
         if (message.protocolVersion != null && Object.hasOwnProperty.call(message, "protocolVersion"))
             object.protocolVersion = message.protocolVersion;
@@ -2347,6 +2368,8 @@ $root.SdkJoinFrame = (function() {
             object.wantsAllTemporalLayersInIndex = message.wantsAllTemporalLayersInIndex;
         if (message.disablePeriodicKeyframeRequestOnContentSender != null && Object.hasOwnProperty.call(message, "disablePeriodicKeyframeRequestOnContentSender"))
             object.disablePeriodicKeyframeRequestOnContentSender = message.disablePeriodicKeyframeRequestOnContentSender;
+        if (message.useAbsCaptureTimeHeaderExtension != null && Object.hasOwnProperty.call(message, "useAbsCaptureTimeHeaderExtension"))
+            object.useAbsCaptureTimeHeaderExtension = message.useAbsCaptureTimeHeaderExtension;
         return object;
     };
 
@@ -8415,6 +8438,7 @@ $root.SdkMetric = (function() {
             case 127:
             case 128:
             case 129:
+            case 134:
                 break;
             }
         if (message.value != null && Object.hasOwnProperty.call(message, "value"))
@@ -8848,6 +8872,10 @@ $root.SdkMetric = (function() {
         case 129:
             message.type = 129;
             break;
+        case "VIDEO_END_TO_END_DELAY_MS":
+        case 134:
+            message.type = 134;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -9012,6 +9040,7 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE=127 VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE value
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE=128 VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE value
      * @property {number} VIDEO_RECEIVED_RETRANSMIT_BITRATE=129 VIDEO_RECEIVED_RETRANSMIT_BITRATE value
+     * @property {number} VIDEO_END_TO_END_DELAY_MS=134 VIDEO_END_TO_END_DELAY_MS value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -9115,6 +9144,7 @@ $root.SdkMetric = (function() {
         values[valuesById[127] = "VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE"] = 127;
         values[valuesById[128] = "VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE"] = 128;
         values[valuesById[129] = "VIDEO_RECEIVED_RETRANSMIT_BITRATE"] = 129;
+        values[valuesById[134] = "VIDEO_END_TO_END_DELAY_MS"] = 134;
         return values;
     })();
 

@@ -1,0 +1,160 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+// Inlined from lucide-static (ISC) via Vite `?raw` so the single-file bundle stays self-contained.
+import activity from 'lucide-static/icons/activity.svg?raw';
+import audioLines from 'lucide-static/icons/audio-lines.svg?raw';
+import cable from 'lucide-static/icons/cable.svg?raw';
+import captions from 'lucide-static/icons/captions.svg?raw';
+import captionsOff from 'lucide-static/icons/captions-off.svg?raw';
+import check from 'lucide-static/icons/check.svg?raw';
+import chevronDown from 'lucide-static/icons/chevron-down.svg?raw';
+import chevronLeft from 'lucide-static/icons/chevron-left.svg?raw';
+import chevronRight from 'lucide-static/icons/chevron-right.svg?raw';
+import circleCheck from 'lucide-static/icons/circle-check.svg?raw';
+import circleDot from 'lucide-static/icons/circle-dot.svg?raw';
+import clapperboard from 'lucide-static/icons/clapperboard.svg?raw';
+import code from 'lucide-static/icons/code.svg?raw';
+import copy from 'lucide-static/icons/copy.svg?raw';
+import crown from 'lucide-static/icons/crown.svg?raw';
+import ellipsis from 'lucide-static/icons/ellipsis.svg?raw';
+import ellipsisVertical from 'lucide-static/icons/ellipsis-vertical.svg?raw';
+import eye from 'lucide-static/icons/eye.svg?raw';
+import eyeOff from 'lucide-static/icons/eye-off.svg?raw';
+import fileVideo from 'lucide-static/icons/file-video.svg?raw';
+import flipHorizontal from 'lucide-static/icons/flip-horizontal.svg?raw';
+import focus from 'lucide-static/icons/focus.svg?raw';
+import globe from 'lucide-static/icons/globe.svg?raw';
+import hand from 'lucide-static/icons/hand.svg?raw';
+import info from 'lucide-static/icons/info.svg?raw';
+import layoutGrid from 'lucide-static/icons/layout-grid.svg?raw';
+import layoutPanelTop from 'lucide-static/icons/layout-panel-top.svg?raw';
+import logOut from 'lucide-static/icons/log-out.svg?raw';
+import messageSquare from 'lucide-static/icons/message-square.svg?raw';
+import mic from 'lucide-static/icons/mic.svg?raw';
+import micOff from 'lucide-static/icons/mic-off.svg?raw';
+import network from 'lucide-static/icons/network.svg?raw';
+import pause from 'lucide-static/icons/pause.svg?raw';
+import phoneOff from 'lucide-static/icons/phone-off.svg?raw';
+import pin from 'lucide-static/icons/pin.svg?raw';
+import pinOff from 'lucide-static/icons/pin-off.svg?raw';
+import play from 'lucide-static/icons/play.svg?raw';
+import radio from 'lucide-static/icons/radio.svg?raw';
+import rotateCcw from 'lucide-static/icons/rotate-ccw.svg?raw';
+import screenShare from 'lucide-static/icons/screen-share.svg?raw';
+import screenShareOff from 'lucide-static/icons/screen-share-off.svg?raw';
+import send from 'lucide-static/icons/send.svg?raw';
+import settings from 'lucide-static/icons/settings.svg?raw';
+import slidersHorizontal from 'lucide-static/icons/sliders-horizontal.svg?raw';
+import smile from 'lucide-static/icons/smile.svg?raw';
+import sparkles from 'lucide-static/icons/sparkles.svg?raw';
+import stethoscope from 'lucide-static/icons/stethoscope.svg?raw';
+import triangleAlert from 'lucide-static/icons/triangle-alert.svg?raw';
+import userCog from 'lucide-static/icons/user-cog.svg?raw';
+import users from 'lucide-static/icons/users.svg?raw';
+import video from 'lucide-static/icons/video.svg?raw';
+import videoOff from 'lucide-static/icons/video-off.svg?raw';
+import volume2 from 'lucide-static/icons/volume-2.svg?raw';
+import volumeX from 'lucide-static/icons/volume-x.svg?raw';
+import wifiLow from 'lucide-static/icons/wifi-low.svg?raw';
+import wifiOff from 'lucide-static/icons/wifi-off.svg?raw';
+import x from 'lucide-static/icons/x.svg?raw';
+
+const ICONS = {
+  activity,
+  audioLines,
+  cable,
+  captions,
+  captionsOff,
+  check,
+  chevronDown,
+  chevronLeft,
+  chevronRight,
+  circleCheck,
+  circleDot,
+  clapperboard,
+  code,
+  copy,
+  crown,
+  ellipsis,
+  ellipsisVertical,
+  eye,
+  eyeOff,
+  fileVideo,
+  flipHorizontal,
+  focus,
+  globe,
+  hand,
+  info,
+  layoutGrid,
+  layoutPanelTop,
+  logOut,
+  messageSquare,
+  mic,
+  // The capsule fills from the bottom with --mic-level (0 to 1).
+  micLevel: mic.replace(
+    '<rect',
+    '<rect class="mic-level" x="9" y="2" width="6" height="13" rx="3" />\n  <rect'
+  ),
+  micOff,
+  network,
+  pause,
+  phoneOff,
+  pin,
+  pinOff,
+  play,
+  radio,
+  rotateCcw,
+  screenShare,
+  screenShareOff,
+  send,
+  settings,
+  slidersHorizontal,
+  smile,
+  sparkles,
+  stethoscope,
+  triangleAlert,
+  userCog,
+  users,
+  video,
+  videoOff,
+  volume2,
+  volumeX,
+  wifiLow,
+  wifiOff,
+  x,
+};
+
+export type IconName = keyof typeof ICONS;
+
+function iconSvg(name: IconName): string {
+  return ICONS[name]
+    .replace(/<!--[\s\S]*?-->/, '')
+    .replace('<svg', '<svg aria-hidden="true" focusable="false"')
+    .trim();
+}
+
+export function iconElement(name: IconName): SVGElement {
+  const template = document.createElement('template');
+  template.innerHTML = iconSvg(name);
+  return template.content.firstElementChild as SVGElement;
+}
+
+export function setButtonIcon(button: HTMLElement, name: IconName): void {
+  const existing = button.querySelector('svg');
+  const next = iconElement(name);
+  if (existing) {
+    existing.replaceWith(next);
+  } else {
+    button.prepend(next);
+  }
+}
+
+export function hydrateIcons(root: ParentNode = document): void {
+  root.querySelectorAll<HTMLElement>('[data-icon]').forEach(placeholder => {
+    const name = placeholder.dataset.icon as IconName;
+    if (name in ICONS) {
+      placeholder.replaceChildren(iconElement(name));
+    }
+  });
+}

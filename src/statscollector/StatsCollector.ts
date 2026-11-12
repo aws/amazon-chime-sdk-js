@@ -48,6 +48,13 @@ import {
 } from '../encodedtransformmanager/MediaMetricsEncodedTransformManager';
 import { EncodedTransformMediaStreamMetrics } from '../encodedtransformworker/MediaMetricsEncodedTransform';
 
+// `captureTimestamp` and `senderCaptureTimeOffset` are from https://w3c.github.io/webrtc-extensions/
+// and are not in the TypeScript DOM library.
+interface RTCRtpSynchronizationSourceWithCaptureTime extends RTCRtpSynchronizationSource {
+  captureTimestamp?: number;
+  senderCaptureTimeOffset?: number;
+}
+
 /**
  * [[StatsCollector]] gathers statistics and sends metrics.
  */
@@ -60,6 +67,7 @@ export default class StatsCollector
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
   private static readonly MAX_BUFFERED_BG_SEG_METRICS = 50;
+  private static readonly NTP_EPOCH_TO_UNIX_EPOCH_MS = 2208988800000;
 
   // Encodes the Compute Pressure API state into the SdkMetric.CPU_PRESSURE_STATE
   // wire value (see SignalingProtocol.proto).
@@ -616,6 +624,7 @@ export default class StatsCollector
         'inbound-rtp',
         'inbound-rtp-red',
         'inbound-rtp-transform',
+        'inbound-rtp-end-to-end-delay',
         'outbound-rtp',
         'outbound-rtp-transform',
         'remote-inbound-rtp',
@@ -639,7 +648,8 @@ export default class StatsCollector
     return type === 'inbound-rtp' ||
       type === 'remote-outbound-rtp' ||
       type === 'inbound-rtp-red' ||
-      type === 'inbound-rtp-transform'
+      type === 'inbound-rtp-transform' ||
+      type === 'inbound-rtp-end-to-end-delay'
       ? Direction.DOWNSTREAM
       : Direction.UPSTREAM;
   }
@@ -706,7 +716,8 @@ export default class StatsCollector
     // Add custom stats for reporting.
     const customStatsReports: CustomStatsReport[] = [];
     this.maybeAddRedRecoveryMetrics(customStatsReports);
-    this.maybeAddTransformMetrics(customStatsReports);
+    this.maybeAddTransformMetrics(customStatsReports, filteredRawMetricReports);
+    this.addVideoEndToEndDelayMetrics(rawMetricReports, customStatsReports);
     // We cannot use 'this.clientMetricsReport.getVideoUpstreamSsrc()' because the value
     // is dependent on the call to 'this.processRawMetricReports()' below, i.e. it depends on
     // the previous handling of raw metrics reports. This would lead to the addition of custom metrics
@@ -804,9 +815,79 @@ export default class StatsCollector
   }
 
   /**
+   * Adds the delay from capture on the remote device to delivery of the decoded frame here, per
+   * https://w3c.github.io/webrtc-extensions/#rtcrtpcontributingsource-extensions. The round trip
+   * time comes from the selected candidate pair, as remote-outbound-rtp only reports one when RTCP
+   * extended reports are negotiated.
+   */
+  private addVideoEndToEndDelayMetrics(
+    rawMetricReports: RawMetricReport[],
+    customStatsReports: CustomStatsReport[]
+  ): void {
+    // A video stops getting a delay when its source stops carrying capture timestamps.
+    for (const streamMetricReport of Object.values(this.clientMetricReport.streamMetricReports)) {
+      delete streamMetricReport.currentMetrics.videoEndToEndDelayMs;
+    }
+
+    const remoteOutboundReports = new Map<number, RawMetricReport>();
+    const candidatePairs = new Map<string, RawMetricReport>();
+    let selectedCandidatePairId: string | undefined;
+    for (const report of rawMetricReports) {
+      if (report.type === 'remote-outbound-rtp' && report.kind === 'video') {
+        remoteOutboundReports.set(Number(report.ssrc), report);
+      } else if (report.type === 'candidate-pair') {
+        candidatePairs.set(report.id, report);
+      } else if (report.type === 'transport' && report.selectedCandidatePairId) {
+        selectedCandidatePairId = report.selectedCandidatePairId;
+      }
+    }
+    const roundTripTimeSeconds = candidatePairs.get(selectedCandidatePairId)?.currentRoundTripTime;
+    if (roundTripTimeSeconds === undefined) {
+      return;
+    }
+
+    for (const receiver of this.audioVideoController.rtcPeerConnection.getReceivers()) {
+      if (receiver.track?.kind !== 'video') {
+        continue;
+      }
+      for (const source of receiver.getSynchronizationSources() as RTCRtpSynchronizationSourceWithCaptureTime[]) {
+        const remoteOutbound = remoteOutboundReports.get(source.source);
+        if (
+          source.captureTimestamp === undefined ||
+          source.senderCaptureTimeOffset === undefined ||
+          remoteOutbound === undefined
+        ) {
+          continue;
+        }
+        const senderReceiverTimeOffset =
+          remoteOutbound.timestamp -
+          (remoteOutbound.remoteTimestamp + (roundTripTimeSeconds * 1000) / 2);
+        const receiverCaptureTimestamp =
+          source.captureTimestamp -
+          StatsCollector.NTP_EPOCH_TO_UNIX_EPOCH_MS +
+          source.senderCaptureTimeOffset +
+          senderReceiverTimeOffset;
+        const report = {
+          kind: 'video',
+          type: 'inbound-rtp-end-to-end-delay',
+          ssrc: source.source,
+          timestamp: source.timestamp,
+          videoEndToEndDelayMs: source.timestamp - receiverCaptureTimestamp,
+        };
+        if (this.isValidSsrc(report)) {
+          customStatsReports.push(report);
+        }
+      }
+    }
+  }
+
+  /**
    * Adds transform metrics (PPS) to the raw webrtc stats report.
    */
-  private maybeAddTransformMetrics(customStatsReports: CustomStatsReport[]): void {
+  private maybeAddTransformMetrics(
+    customStatsReports: CustomStatsReport[],
+    rawMetricReports: RawMetricReport[]
+  ): void {
     if (!this.encodedTransformMediaMetrics) {
       return;
     }
@@ -814,40 +895,56 @@ export default class StatsCollector
     const timestamp = this.encodedTransformMediaMetricsTimestamp;
     const metrics = this.encodedTransformMediaMetrics;
 
+    // The worker keeps reporting every SSRC it has seen, including the streams of a peer connection
+    // replaced by a reconnection, so only add the streams that WebRTC still reports.
+    const currentStreams = new Set(
+      rawMetricReports
+        .filter(report => report.type === 'inbound-rtp' || report.type === 'outbound-rtp')
+        .map(report => `${report.type} ${report.kind} ${report.ssrc}`)
+    );
+
     const configs: Array<{
       source: Record<number, EncodedTransformMediaStreamMetrics>;
       kind: 'audio' | 'video';
+      rtpType: 'inbound-rtp' | 'outbound-rtp';
       type: string;
       metricKey: string;
     }> = [
       {
         source: metrics.audioSendMetrics,
         kind: 'audio',
+        rtpType: 'outbound-rtp',
         type: 'outbound-rtp-transform',
         metricKey: 'audioSentTransformPps',
       },
       {
         source: metrics.audioReceiveMetrics,
         kind: 'audio',
+        rtpType: 'inbound-rtp',
         type: 'inbound-rtp-transform',
         metricKey: 'audioReceivedTransformPps',
       },
       {
         source: metrics.videoSendMetrics,
         kind: 'video',
+        rtpType: 'outbound-rtp',
         type: 'outbound-rtp-transform',
         metricKey: 'videoSentTransformPps',
       },
       {
         source: metrics.videoReceiveMetrics,
         kind: 'video',
+        rtpType: 'inbound-rtp',
         type: 'inbound-rtp-transform',
         metricKey: 'videoReceivedTransformPps',
       },
     ];
 
-    for (const { source, kind, type, metricKey } of configs) {
+    for (const { source, kind, rtpType, type, metricKey } of configs) {
       for (const streamMetrics of Object.values(source)) {
+        if (!currentStreams.has(`${rtpType} ${kind} ${streamMetrics.ssrc}`)) {
+          continue;
+        }
         customStatsReports.push({
           kind,
           type,
@@ -1042,6 +1139,11 @@ export default class StatsCollector
             rawMetricReport['width'];
           this.clientMetricReport.streamMetricReports[ssrc].currentMetrics['videoInputHeight'] =
             rawMetricReport['height'];
+          if (typeof rawMetricReport['framesPerSecond'] === 'number') {
+            this.clientMetricReport.streamMetricReports[ssrc].currentMetrics[
+              'videoInputFramesPerSecond'
+            ] = rawMetricReport['framesPerSecond'];
+          }
         }
       }
     }

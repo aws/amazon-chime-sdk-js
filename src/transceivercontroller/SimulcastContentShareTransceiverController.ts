@@ -35,7 +35,7 @@ export default class SimulcastContentShareTransceiverController extends Simulcas
   }
 
   // Note: `scaleResolutionDownBy` has only been tested with values 1, 2, and 4.
-  async setEncodingParameters(
+  protected async applyEncodingParameters(
     encodingParamMap: Map<string, RTCRtpEncodingParameters>
   ): Promise<void> {
     if (!this._localCameraTransceiver || this._localCameraTransceiver.direction !== 'sendrecv') {

@@ -37,6 +37,19 @@ describe('flattenEventAttributes', () => {
     expect(result).to.deep.eq(expectedResult);
   });
 
+  it('converts boolean attributes to strings', () => {
+    const attributes = {
+      retryCount: 0,
+      signalingCloseCode: 1000,
+      signalingCloseWasClean: true,
+    };
+    expect(flattenEventAttributes(attributes)).to.deep.eq({
+      retryCount: 0,
+      signalingCloseCode: 1000,
+      signalingCloseWasClean: 'true',
+    });
+  });
+
   it('throws an error if array type is encountered in attributes', () => {
     const attributes = {
       audioInputErrorMessage: 'Something went wrong',

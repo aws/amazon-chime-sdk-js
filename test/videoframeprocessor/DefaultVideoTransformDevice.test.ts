@@ -241,6 +241,21 @@ describe('DefaultVideoTransformDevice', () => {
     });
   });
 
+  describe('setOutputTrackDidChangeCallback', () => {
+    it('is called when the pipeline replaces the output track, also after a new inner device', async () => {
+      const device = new DefaultVideoTransformDevice(logger, 'test', [
+        new NoOpVideoFrameProcessor(),
+      ]);
+      const newDevice = device.chooseNewInnerDevice('newDevice');
+      const callback = sinon.stub();
+      newDevice.setOutputTrackDidChangeCallback(callback);
+
+      // @ts-ignore
+      device.pipe.outputTrackDidChange();
+      expect(callback.calledOnce).to.be.true;
+    });
+  });
+
   describe('onOutputStreamDisconnect', () => {
     let transformDevice: VideoTransformDevice;
     const processor = new NoOpVideoFrameProcessor();

@@ -28,10 +28,10 @@ import BackgroundSegmentationMetrics, {
  * returns frames unmodified.
  */
 export default class BackgroundSegmentationVideoFrameProcessor implements VideoFrameProcessor {
-  private constructor(
+  protected constructor(
     private logger: Logger,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private cdnProcessor: any | null,
+    protected cdnProcessor: any | null,
     private metrics: BackgroundSegmentationMetrics,
     private eventController?: EventController
   ) {}
@@ -131,12 +131,27 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
         `[BackgroundSegmentationVideoFrameProcessor] ✓ Successfully created BackgroundSegmentationProcessor from CDN`
       );
 
-      const processor = new BackgroundSegmentationVideoFrameProcessor(
-        logger,
-        cdnProcessor,
-        metrics,
-        eventController
-      );
+      // The subclass declares the optional transformTrack, so `typeof processor.transformTrack`
+      // reflects the loaded CDN processor.
+      const transformsTracks = typeof cdnProcessor.transformTrack === 'function';
+      if (!transformsTracks) {
+        logger.info(
+          '[BackgroundSegmentationVideoFrameProcessor] CDN processor does not implement transformTrack; frames will be processed by the canvas pipeline'
+        );
+      }
+      const processor = transformsTracks
+        ? new TrackTransformingBackgroundSegmentationVideoFrameProcessor(
+            logger,
+            cdnProcessor,
+            metrics,
+            eventController
+          )
+        : new BackgroundSegmentationVideoFrameProcessor(
+            logger,
+            cdnProcessor,
+            metrics,
+            eventController
+          );
 
       // Subscribe to periodic processor metrics from CDN processor
       processor.subscribeToProcessorMetrics();
@@ -326,5 +341,23 @@ export default class BackgroundSegmentationVideoFrameProcessor implements VideoF
       backgroundFilterErrorType: errorType,
       backgroundFilterErrorMessage: errorMessage,
     } as VideoFXEventAttributes);
+  }
+}
+
+/**
+ * @internal
+ * Returned by {@link BackgroundSegmentationVideoFrameProcessor.create} when the CDN processor
+ * implements `transformTrack`.
+ */
+class TrackTransformingBackgroundSegmentationVideoFrameProcessor extends BackgroundSegmentationVideoFrameProcessor {
+  async transformTrack(input: MediaStreamTrack): Promise<MediaStreamTrack> {
+    if (!this.cdnProcessor) {
+      throw new Error('The background segmentation processor has been destroyed');
+    }
+    return this.cdnProcessor.transformTrack(input);
+  }
+
+  async stopTransformTrack(): Promise<void> {
+    await this.cdnProcessor?.stopTransformTrack();
   }
 }

@@ -113,6 +113,12 @@ describe('DefaultAudioVideoController', () => {
   const CHROME_116_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36';
 
+  const FIREFOX_153_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:153.0) Gecko/20100101 Firefox/153.0';
+
+  const FIREFOX_154_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:154.0) Gecko/20100101 Firefox/154.0';
+
   let audioVideoController: DefaultAudioVideoController;
   let webSocketAdapter: DefaultWebSocketAdapter;
   let configuration: MeetingSessionConfiguration;
@@ -4903,6 +4909,84 @@ describe('DefaultAudioVideoController', () => {
       const spy = sinon.spy(audioVideoController, 'update');
       audioVideoController.setVideoCodecSendPreferences([VideoCodecCapability.vp8()]);
       expect(spy.callCount).to.equal(0);
+    });
+
+    it('defaults content share in Firefox 154 and later to AV1 first and no VP9', () => {
+      setUserAgent(FIREFOX_154_USER_AGENT);
+      configuration.credentials.attendeeId = defaultAttendeeId + ContentShareConstants.Modality;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+
+      // @ts-ignore
+      expect(audioVideoController.videoSendCodecPreferences).to.deep.equal([
+        VideoCodecCapability.av1Main(),
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+        VideoCodecCapability.vp8(),
+      ]);
+    });
+
+    it('defaults content share in Firefox before 154 to AV1 then VP9', () => {
+      setUserAgent(FIREFOX_153_USER_AGENT);
+      configuration.credentials.attendeeId = defaultAttendeeId + ContentShareConstants.Modality;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+
+      // @ts-ignore
+      expect(audioVideoController.videoSendCodecPreferences).to.deep.equal([
+        VideoCodecCapability.av1Main(),
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+        VideoCodecCapability.vp8(),
+      ]);
+    });
+
+    it('defaults camera video in Firefox to VP9 first', () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+
+      // @ts-ignore
+      expect(audioVideoController.videoSendCodecPreferences).to.deep.equal([
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+        VideoCodecCapability.vp8(),
+      ]);
+    });
+
+    it('defaults content share in Chrome to AV1 first', () => {
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      setUserAgent(CHROME_116_USER_AGENT);
+      configuration.credentials.attendeeId = defaultAttendeeId + ContentShareConstants.Modality;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+
+      // @ts-ignore
+      expect(audioVideoController.videoSendCodecPreferences).to.deep.equal([
+        VideoCodecCapability.av1Main(),
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+        VideoCodecCapability.vp8(),
+      ]);
     });
   });
 

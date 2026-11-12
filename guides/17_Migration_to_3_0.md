@@ -142,7 +142,7 @@ meetingSession.audioVideo.setVideoMaxBandwidthKbps(1000);
 ### Removing synthesize video API
 
 In v3, we've removed `synthesizeVideoDevice` and `createEmptyVideoDevice` APIs. 
-They are now available in our [meeting demo](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/video/SyntheticVideoDeviceFactory.ts).
+They are now available in our [meeting demo](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meeting/media/SyntheticVideoDeviceFactory.ts).
 
 ## Messaging
 
