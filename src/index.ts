@@ -302,8 +302,10 @@ import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/Vid
 import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
+import VideoElementDisplay from './videotile/VideoElementDisplay';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoElementFrameMonitor from './videotile/VideoElementFrameMonitor';
+import VideoElementObjectFit from './videotile/VideoElementObjectFit';
 import VideoElementResolutionMonitor from './videotile/VideoElementResolutionMonitor';
 import VideoEncodingConcurrentSendersHealthPolicy from './connectionhealthpolicy/VideoEncodingConcurrentSendersHealthPolicy';
 import VideoEncodingConnectionHealthPolicyName from './connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
@@ -337,6 +339,7 @@ import VideoStreamIndex from './videostreamindex/VideoStreamIndex';
 import VideoTile from './videotile/VideoTile';
 import VideoTileController from './videotilecontroller/VideoTileController';
 import VideoTileControllerFacade from './videotilecontroller/VideoTileControllerFacade';
+import VideoTileDisplay from './videotilecontroller/VideoTileDisplay';
 import VideoTileFactory from './videotilefactory/VideoTileFactory';
 import VideoTileState from './videotile/VideoTileState';
 import VideoTransformDevice from './devicecontroller/VideoTransformDevice';
@@ -696,8 +699,10 @@ export {
   VideoCodecCapability,
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
+  VideoElementDisplay,
   VideoElementFactory,
   VideoElementFrameMonitor,
+  VideoElementObjectFit,
   VideoElementResolutionMonitor,
   VideoEncodingConcurrentSendersHealthPolicy,
   VideoEncodingConnectionHealthPolicyName,
@@ -731,6 +736,7 @@ export {
   VideoTile,
   VideoTileController,
   VideoTileControllerFacade,
+  VideoTileDisplay,
   VideoTileFactory,
   VideoTileState,
   VideoTransformDevice,

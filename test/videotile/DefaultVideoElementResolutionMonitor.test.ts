@@ -6,6 +6,8 @@ import * as sinon from 'sinon';
 
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoElementResolutionMonitor from '../../src/videotile/DefaultVideoElementResolutionMonitor';
+import VideoElementDisplay from '../../src/videotile/VideoElementDisplay';
+import VideoElementObjectFit from '../../src/videotile/VideoElementObjectFit';
 import { VideoElementResolutionObserver } from '../../src/videotile/VideoElementResolutionMonitor';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -370,6 +372,257 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       resizeListeners[0]?.();
       clock.tick(2000);
       expect(metricsCount).to.equal(0);
+    });
+  });
+
+  describe('display', () => {
+    let intersectionCallback: (entries: IntersectionObserverEntry[]) => void;
+    let intersectionThresholds: number[];
+    let intersectionTargets: Element[];
+    let objectFit: string;
+    let displays: VideoElementDisplay[];
+
+    interface DisplayVideoElement extends MockVideoElement {
+      rendered: boolean;
+      bounding: { width: number; height: number };
+    }
+    type Layout = Omit<VideoElementDisplay, 'isRendered'>;
+
+    const intersect = (intersectionRatio: number, width = 640, height = 360): void =>
+      intersectionCallback([
+        { intersectionRatio, boundingClientRect: { width, height } } as IntersectionObserverEntry,
+      ]);
+    const resize = (width: number, height: number): void =>
+      resizeCallback([{ contentRect: { width, height } } as ResizeObserverEntry]);
+    const displayVideoElement = (videoWidth = 1280, videoHeight = 720): DisplayVideoElement => {
+      const element = createVideoElement() as DisplayVideoElement;
+      Object.defineProperty(element, 'isConnected', { value: true, configurable: true });
+      Object.defineProperty(element, 'videoWidth', { value: videoWidth, configurable: true });
+      Object.defineProperty(element, 'videoHeight', { value: videoHeight, configurable: true });
+      element.rendered = true;
+      element.bounding = { width: 640, height: 360 };
+      element.checkVisibility = (): boolean => element.rendered;
+      element.getBoundingClientRect = (): DOMRect => element.bounding as DOMRect;
+      return element;
+    };
+    const bindAndLayOut = (
+      element: DisplayVideoElement = displayVideoElement()
+    ): DisplayVideoElement => {
+      monitor.bindVideoElement(element);
+      resize(640, 360);
+      return element;
+    };
+    const layouts = (): Layout[] =>
+      displays.map(d => ({
+        boundingWidth: d.boundingWidth,
+        boundingHeight: d.boundingHeight,
+        intersectionPercent: d.intersectionPercent,
+        objectFit: d.objectFit,
+        intrinsicLayout: d.intrinsicLayout,
+      }));
+    const layout = (
+      intersectionPercent: number,
+      boundingWidth = 640,
+      boundingHeight = 360,
+      fit = VideoElementObjectFit.Contain,
+      intrinsicLayout = false
+    ): Layout => ({
+      boundingWidth,
+      boundingHeight,
+      intersectionPercent,
+      objectFit: fit,
+      intrinsicLayout,
+    });
+
+    beforeEach(() => {
+      intersectionTargets = [];
+      objectFit = 'contain';
+      displays = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).IntersectionObserver = class MockIntersectionObserver {
+        constructor(
+          callback: (entries: IntersectionObserverEntry[]) => void,
+          options: IntersectionObserverInit
+        ) {
+          intersectionCallback = callback;
+          intersectionThresholds = options.threshold as number[];
+        }
+        observe(target: Element): void {
+          intersectionTargets.push(target);
+        }
+        unobserve(target: Element): void {
+          intersectionTargets = intersectionTargets.filter(t => t !== target);
+        }
+        disconnect(): void {}
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).getComputedStyle = (): { objectFit: string } => ({ objectFit });
+      monitor = new DefaultVideoElementResolutionMonitor();
+      monitor.registerObserver({
+        videoElementResolutionChanged: (): void => {},
+        videoElementDisplayDidChange: (d: VideoElementDisplay): void => {
+          displays.push(d);
+        },
+      });
+    });
+
+    afterEach(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (globalThis as any).IntersectionObserver;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (globalThis as any).getComputedStyle;
+    });
+
+    it('observes the bound element in steps of 5 percent and reports each change once', () => {
+      monitor.registerObserver({ videoElementResolutionChanged: (): void => {} });
+      const element = bindAndLayOut();
+      expect(intersectionTargets).to.deep.equal([element]);
+      expect(intersectionThresholds.length).to.equal(21);
+      expect(intersectionThresholds[1]).to.equal(0.05);
+      intersect(0.5);
+      intersect(0.5);
+      intersect(0.333);
+      expect(layouts()).to.deep.equal([layout(50), layout(33)]);
+    });
+
+    it('reports only after both the first resize and the first intersection', () => {
+      monitor.bindVideoElement(displayVideoElement());
+      objectFit = 'cover';
+      intersect(1);
+      expect(displays).to.deep.equal([]);
+      resize(640, 360);
+      expect(layouts()).to.deep.equal([layout(100, 640, 360, VideoElementObjectFit.Cover)]);
+      displays = [];
+      monitor.bindVideoElement(displayVideoElement());
+      resize(640, 360);
+      expect(displays).to.deep.equal([]);
+      intersect(0.5);
+      expect(layouts()).to.deep.equal([layout(50, 640, 360, VideoElementObjectFit.Cover)]);
+    });
+
+    it('reports 0 percent without intersection or when not connected', () => {
+      const element = bindAndLayOut();
+      intersect(0);
+      intersect(1);
+      Object.defineProperty(element, 'isConnected', { value: false, configurable: true });
+      intersect(0.85);
+      expect(layouts().map(d => d.intersectionPercent)).to.deep.equal([0, 100, 0]);
+    });
+
+    it('checks visibility and opacity when asked, without a resize or intersection callback', () => {
+      const element = bindAndLayOut();
+      intersect(1);
+      const isRendered = displays[0].isRendered;
+      expect(isRendered()).to.be.true;
+      element.rendered = false;
+      expect(isRendered()).to.be.false;
+      element.rendered = true;
+      expect(isRendered()).to.be.true;
+      expect(displays.length).to.equal(1);
+      monitor.bindVideoElement(null);
+      expect(isRendered()).to.be.false;
+    });
+
+    it('treats an element without checkVisibility as rendered', () => {
+      const element = displayVideoElement();
+      delete (element as { checkVisibility?: unknown }).checkVisibility;
+      bindAndLayOut(element);
+      intersect(0.75);
+      expect(displays[0].isRendered()).to.be.true;
+    });
+
+    it('reports an empty box as 0 percent with no size', () => {
+      const element = bindAndLayOut();
+      intersect(1);
+      element.bounding = { width: 0, height: 0 };
+      resize(0, 0);
+      element.bounding = { width: 640, height: 360 };
+      resize(640, 360);
+      intersect(1, 0, 360);
+      intersect(1, 640, 0);
+      expect(layouts()).to.deep.equal([layout(100), layout(0, 0, 0), layout(100), layout(0, 0, 0)]);
+    });
+
+    it('reports the on-screen size from getBoundingClientRect, which includes transforms', () => {
+      const element = displayVideoElement();
+      monitor.bindVideoElement(element);
+      element.bounding = { width: 320, height: 180 };
+      resize(1280, 720);
+      intersect(1, 320, 180);
+      expect(layouts()).to.deep.equal([layout(100, 320, 180, VideoElementObjectFit.Contain, true)]);
+    });
+
+    it('reports intrinsic layout when the content box equals the video size within 1 pixel', () => {
+      const element = bindAndLayOut(displayVideoElement(1280, 720));
+      intersect(1);
+      resize(1281, 719);
+      resize(1282, 720);
+      resize(1280, 721.5);
+      Object.defineProperty(element, 'videoWidth', { value: 0, configurable: true });
+      resize(0.5, 0.5);
+      Object.defineProperty(element, 'videoWidth', { value: 1, configurable: true });
+      Object.defineProperty(element, 'videoHeight', { value: 0, configurable: true });
+      resize(1, 0.5);
+      expect(layouts().map(d => d.intrinsicLayout)).to.deep.equal([false, true, false]);
+    });
+
+    it('reads object-fit on resize only', () => {
+      bindAndLayOut();
+      intersect(1);
+      objectFit = 'cover';
+      intersect(0.5);
+      resize(640, 360);
+      objectFit = 'none';
+      resize(640, 360);
+      objectFit = 'scale-down';
+      resize(640, 360);
+      objectFit = 'fill';
+      resize(640, 360);
+      objectFit = 'unexpected';
+      resize(641, 360);
+      expect(layouts().map(d => d.objectFit)).to.deep.equal([
+        VideoElementObjectFit.Contain,
+        VideoElementObjectFit.Contain,
+        VideoElementObjectFit.Cover,
+        VideoElementObjectFit.None,
+        VideoElementObjectFit.ScaleDown,
+        VideoElementObjectFit.Fill,
+      ]);
+    });
+
+    it('stops observing an unbound element and reports again for the next one', () => {
+      bindAndLayOut();
+      intersect(1);
+      monitor.bindVideoElement(null);
+      expect(intersectionTargets).to.deep.equal([]);
+      intersect(1);
+      resize(320, 180);
+      bindAndLayOut();
+      intersect(1);
+      expect(layouts()).to.deep.equal([layout(100), layout(100)]);
+    });
+
+    it('reports no display without IntersectionObserver', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (globalThis as any).IntersectionObserver;
+      monitor = new DefaultVideoElementResolutionMonitor();
+      monitor.registerObserver({
+        videoElementResolutionChanged: (): void => {},
+        videoElementDisplayDidChange: (d: VideoElementDisplay): void => {
+          displays.push(d);
+        },
+      });
+      bindAndLayOut();
+      monitor.bindVideoElement(null);
+      expect(displays).to.deep.equal([]);
+    });
+
+    it('keeps object-fit fill without getComputedStyle', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (globalThis as any).getComputedStyle;
+      bindAndLayOut();
+      intersect(0.25);
+      expect(layouts()).to.deep.equal([layout(25, 640, 360, VideoElementObjectFit.Fill)]);
     });
   });
 });

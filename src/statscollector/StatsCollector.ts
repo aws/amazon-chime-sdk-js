@@ -27,6 +27,7 @@ import { Maybe } from '../utils/Types';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import { VideoTileResolutionObserver } from '../videotilecontroller/VideoTileController';
+import VideoTileDisplay from '../videotilecontroller/VideoTileDisplay';
 import AudioLogEvent from './AudioLogEvent';
 import ComputePressureMonitor, { PressureState } from './ComputePressureMonitor';
 import VideoLogEvent from './VideoLogEvent';
@@ -94,6 +95,7 @@ export default class StatsCollector
   private backgroundSegmentationProcessorMetric: BackgroundSegmentationProcessorMetrics | null =
     null;
   private resolutionMap = new Map<string, { width: number; height: number }>();
+  private displayMap = new Map<string, VideoTileDisplay>();
   private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
@@ -293,11 +295,21 @@ export default class StatsCollector
   }
 
   videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void {
+    // An empty box (for example the 0x0 callback for a detached or `display: none` element) has no render size.
+    if (newWidth === 0 || newHeight === 0) {
+      this.resolutionMap.delete(attendeeId);
+      return;
+    }
     this.resolutionMap.set(attendeeId, { width: newWidth, height: newHeight });
+  }
+
+  videoTileDisplayDidChange(attendeeId: string, display: VideoTileDisplay): void {
+    this.displayMap.set(attendeeId, display);
   }
 
   videoTileUnbound(attendeeId: string, groupId?: number): void {
     this.resolutionMap.delete(attendeeId);
+    this.displayMap.delete(attendeeId);
     if (groupId !== undefined) {
       this.remoteRenderFpsMap.delete(groupId);
     }
@@ -1120,6 +1132,23 @@ export default class StatsCollector
     if (this.resolutionMap.has(attendeeId)) {
       metricReport.currentMetrics['videoRenderWidth'] = this.resolutionMap.get(attendeeId).width;
       metricReport.currentMetrics['videoRenderHeight'] = this.resolutionMap.get(attendeeId).height;
+    }
+    const display = this.displayMap.get(attendeeId);
+    if (display) {
+      if (display.boundingWidth > 0 && display.boundingHeight > 0) {
+        metricReport.currentMetrics['videoRenderPhysicalWidth'] = Math.round(
+          display.boundingWidth * display.devicePixelRatio
+        );
+        metricReport.currentMetrics['videoRenderPhysicalHeight'] = Math.round(
+          display.boundingHeight * display.devicePixelRatio
+        );
+      }
+      // checkVisibility is re-read every report: opacity and visibility change without a callback.
+      metricReport.currentMetrics['videoRenderVisiblePercent'] = display.isRendered()
+        ? display.intersectionPercent
+        : 0;
+      metricReport.currentMetrics['videoRenderObjectFit'] = display.objectFit;
+      metricReport.currentMetrics['videoRenderIntrinsicLayout'] = display.intrinsicLayout ? 1 : 0;
     }
     const groupId = metricReport.groupId;
     if (groupId !== undefined && this.remoteRenderFpsMap.has(groupId)) {

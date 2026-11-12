@@ -9,10 +9,13 @@ import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAud
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
+import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
+import VideoElementObjectFit from '../../src/videotile/VideoElementObjectFit';
 import VideoTileState from '../../src/videotile/VideoTileState';
 import VideoTileController, {
   VideoTileResolutionObserver,
 } from '../../src/videotilecontroller/VideoTileController';
+import VideoTileDisplay from '../../src/videotilecontroller/VideoTileDisplay';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import { createFakeTimers } from '../utils/fakeTimerHelper';
 
@@ -599,6 +602,184 @@ describe('DefaultVideoTileController', () => {
       await clock.tickAsync(1100);
       expect(firedGroupId).to.equal(5);
       tileController.removeVideoTileResolutionObserver(obs);
+    });
+  });
+
+  describe('videoTileDisplayDidChange', () => {
+    let intersectionCallback: (entries: IntersectionObserverEntry[]) => void;
+    let displays: Array<[string, VideoTileDisplay]>;
+    const displayObserver: VideoTileResolutionObserver = {
+      videoTileResolutionDidChange: () => {},
+      videoTileUnbound: () => {},
+      videoTileDisplayDidChange: (attendeeId: string, display: VideoTileDisplay) => {
+        displays.push([attendeeId, display]);
+      },
+    };
+    const intersect = (intersectionRatio: number): void =>
+      intersectionCallback([
+        {
+          intersectionRatio,
+          boundingClientRect: { width: 640, height: 360 },
+        } as IntersectionObserverEntry,
+      ]);
+    const boundAndLaidOut = (tileId: number): HTMLVideoElement => {
+      const videoElement = document.createElement('video');
+      Object.defineProperty(videoElement, 'isConnected', { value: true, configurable: true });
+      videoElement.getBoundingClientRect = (): DOMRect => ({ width: 640, height: 360 }) as DOMRect;
+      tileController.bindVideoElement(tileId, videoElement);
+      resizeCallback([{ contentRect: { width: 640, height: 360 } } as ResizeObserverEntry]);
+      return videoElement;
+    };
+    const reported = (): Array<[string, Omit<VideoTileDisplay, 'isRendered'>]> =>
+      displays.map(([attendeeId, { isRendered: _isRendered, ...display }]) => [
+        attendeeId,
+        display,
+      ]);
+
+    beforeEach(() => {
+      displays = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).IntersectionObserver = class MockIntersectionObserver {
+        constructor(callback: (entries: IntersectionObserverEntry[]) => void) {
+          intersectionCallback = callback;
+        }
+        observe(_target: Element): void {}
+        unobserve(_target: Element): void {}
+        disconnect(): void {}
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).getComputedStyle = (): { objectFit: string } => ({ objectFit: 'cover' });
+      tileController.registerVideoTileResolutionObserver(displayObserver);
+    });
+
+    afterEach(() => {
+      tileController.removeVideoTileResolutionObserver(displayObserver);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (globalThis as any).IntersectionObserver;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (globalThis as any).getComputedStyle;
+    });
+
+    it('reports the display of a remote tile with its device pixel ratio, and again when the ratio changes', () => {
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      boundAndLaidOut(tile.id());
+      const devicePixelRatio = tile.state().devicePixelRatio;
+      intersect(0.4);
+      (tile as DefaultVideoTile).devicePixelRatioChanged(2);
+      const display = {
+        boundingWidth: 640,
+        boundingHeight: 360,
+        intersectionPercent: 40,
+        objectFit: VideoElementObjectFit.Cover,
+        intrinsicLayout: false,
+      };
+      expect(reported()).to.deep.equal([
+        ['attendee', { devicePixelRatio, ...display }],
+        ['attendee', { devicePixelRatio: 2, ...display }],
+      ]);
+      expect(displays[1][1].isRendered()).to.be.true;
+    });
+
+    it('reports nothing for a local tile or a tile without a bound attendee', () => {
+      tileController.startLocalVideoTile();
+      const local = tileController.getLocalVideoTile();
+      local.bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1, 'ext');
+      boundAndLaidOut(local.id());
+      intersect(1);
+      const unbound = tileController.addVideoTile();
+      boundAndLaidOut(unbound.id());
+      intersect(1);
+      expect(displays).to.deep.equal([]);
+    });
+
+    it('stops reporting a tile once its element is unbound or the tile is removed', () => {
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      boundAndLaidOut(tile.id());
+      intersect(1);
+      tileController.unbindVideoElement(tile.id(), false);
+      (tile as DefaultVideoTile).devicePixelRatioChanged(3);
+      const other = tileController.addVideoTile();
+      other.bindVideoStream('other', false, mockMediaStream, 1, 1, 1, 'ext', 6);
+      boundAndLaidOut(other.id());
+      intersect(1);
+      tileController.removeVideoTile(other.id());
+      // @ts-ignore
+      tileController.handleVideoElementDisplayChanged(other.id(), displays[0][1]);
+      expect(displays.map(d => d[0])).to.deep.equal(['attendee', 'other']);
+    });
+  });
+
+  describe('removeVideoTile', () => {
+    it('notifies videoTileUnbound for a tile with a bound video element, so render state is dropped', () => {
+      const unbound: Array<[string, number | undefined]> = [];
+      const unboundObserver: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: (attendeeId: string, groupId?: number) => {
+          unbound.push([attendeeId, groupId]);
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(unboundObserver);
+      const bound = tileController.addVideoTile();
+      bound.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+      tileController.bindVideoElement(bound.id(), document.createElement('video'));
+      const withoutElement = tileController.addVideoTile();
+      withoutElement.bindVideoStream('other', false, mockMediaStream, 1, 1, 1, 'ext', 6);
+      tileController.removeVideoTile(bound.id());
+      tileController.removeVideoTile(withoutElement.id());
+      expect(unbound).to.deep.equal([['attendee', 5]]);
+      tileController.removeVideoTileResolutionObserver(unboundObserver);
+    });
+
+    it('ignores first-frame and frame-metric callbacks for a tile that no longer exists', () => {
+      let called = false;
+      const frameObserver: VideoTileResolutionObserver = {
+        videoTileResolutionDidChange: () => {},
+        videoTileUnbound: () => {},
+        videoTileFirstFrameDidRender: () => {
+          called = true;
+        },
+        videoTileRenderMetricsDidReceive: () => {
+          called = true;
+        },
+      };
+      tileController.registerVideoTileResolutionObserver(frameObserver);
+      // @ts-ignore
+      tileController.handleVideoFirstFrameDidRender(999);
+      // @ts-ignore
+      tileController.handleVideoElementFrameMetrics(999, { fps: 30, timestampMs: 0 });
+      expect(called).to.be.false;
+      tileController.removeVideoTileResolutionObserver(frameObserver);
+    });
+
+    it('stops the resize and intersection observers of the removed tile', () => {
+      const observed = { resize: [] as Element[], intersection: [] as Element[] };
+      const observerClass = (targets: Element[]): unknown =>
+        class {
+          observe(target: Element): void {
+            targets.push(target);
+          }
+          unobserve(target: Element): void {
+            targets.splice(targets.indexOf(target), 1);
+          }
+          disconnect(): void {}
+        };
+      global.ResizeObserver = observerClass(observed.resize) as typeof ResizeObserver;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).IntersectionObserver = observerClass(observed.intersection);
+      try {
+        const tile = tileController.addVideoTile();
+        tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
+        const videoElement = document.createElement('video');
+        tileController.bindVideoElement(tile.id(), videoElement);
+        expect(observed).to.deep.equal({ resize: [videoElement], intersection: [videoElement] });
+        tileController.removeVideoTile(tile.id());
+        expect(observed).to.deep.equal({ resize: [], intersection: [] });
+      } finally {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (globalThis as any).IntersectionObserver;
+      }
     });
   });
 

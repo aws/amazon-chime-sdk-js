@@ -816,6 +816,20 @@ describe('ClientMetricReport', () => {
       }
     });
 
+    it('reports the tile physical size, visible percent, object-fit and intrinsic layout to the backend', () => {
+      const video = clientMetricReport.videoDownstreamMetricMap;
+      for (const [name, type] of [
+        ['videoRenderPhysicalWidth', SdkMetric.Type.VIDEO_RENDER_PHYSICAL_WIDTH],
+        ['videoRenderPhysicalHeight', SdkMetric.Type.VIDEO_RENDER_PHYSICAL_HEIGHT],
+        ['videoRenderVisiblePercent', SdkMetric.Type.VIDEO_RENDER_VISIBLE_PERCENT],
+        ['videoRenderObjectFit', SdkMetric.Type.VIDEO_RENDER_OBJECT_FIT],
+        ['videoRenderIntrinsicLayout', SdkMetric.Type.VIDEO_RENDER_INTRINSIC_LAYOUT],
+      ] as Array<[string, SdkMetric.Type]>) {
+        expect(video[name].transform, name).to.equal(clientMetricReport.identityValue);
+        expect(video[name].type, name).to.equal(type);
+      }
+    });
+
     it('reports inter-frame delay, NetEq concealment and audio playout to the backend', () => {
       const video = clientMetricReport.videoDownstreamMetricMap;
       expect(video['totalInterFrameDelay'].transform).to.equal(

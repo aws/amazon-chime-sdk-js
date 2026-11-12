@@ -4,6 +4,7 @@
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
+import VideoTileDisplay from './VideoTileDisplay';
 
 /**
  * Observer for video tile events including resolution changes, unbinding, first-frame detection,
@@ -54,6 +55,15 @@ export interface VideoTileResolutionObserver {
    * @param metrics The collected metrics
    */
   videoTileRenderMetricsDidReceive?(groupId: number, metrics: VideoElementFrameMetrics): void;
+
+  /**
+   * Called when the device pixel ratio, the visible percent or the computed `object-fit` of a remote
+   * video tile's element changes.
+   *
+   * @param attendeeId The attendee whose video the tile shows
+   * @param display How the tile's video element is displayed
+   */
+  videoTileDisplayDidChange?(attendeeId: string, display: VideoTileDisplay): void;
 }
 
 /**

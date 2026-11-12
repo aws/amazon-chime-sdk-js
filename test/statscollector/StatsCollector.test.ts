@@ -28,6 +28,7 @@ import StatsCollector from '../../src/statscollector/StatsCollector';
 import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import VideoElementObjectFit from '../../src/videotile/VideoElementObjectFit';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -1125,6 +1126,111 @@ describe('StatsCollector', () => {
       statsCollector.videoTileUnbound('attendee-1', 5);
       // After unbind, the fps entry should be removed (no way to directly check the map,
       // but we verify it doesn't crash and the entry is cleaned)
+    });
+  });
+
+  describe('videoTileDisplayDidChange', () => {
+    class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+      streamIdForSSRC(_ssrcId: number): number {
+        return 1;
+      }
+
+      attendeeIdForStreamId(_streamId: number): string {
+        return 'attendee-1';
+      }
+    }
+
+    const downstreamMetrics = (): { [id: string]: number } => {
+      const report = new StreamMetricReport();
+      // @ts-ignore
+      statsCollector.addRenderResolutionToVideoDownstreamMetrics(report, 1);
+      return report.currentMetrics;
+    };
+
+    it('adds the physical size, visible percent, object-fit and intrinsic layout of the bound tile', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      try {
+        expect(downstreamMetrics()).to.not.have.property('videoRenderVisiblePercent');
+        statsCollector.videoTileDisplayDidChange('attendee-1', {
+          devicePixelRatio: 1.25,
+          boundingWidth: 640,
+          boundingHeight: 360.4,
+          intersectionPercent: 35,
+          objectFit: VideoElementObjectFit.Cover,
+          intrinsicLayout: true,
+          isRendered: () => true,
+        });
+        expect(downstreamMetrics()).to.deep.include({
+          videoRenderPhysicalWidth: 800,
+          videoRenderPhysicalHeight: 451,
+          videoRenderVisiblePercent: 35,
+          videoRenderObjectFit: 2,
+          videoRenderIntrinsicLayout: 1,
+        });
+        statsCollector.videoTileDisplayDidChange('attendee-1', {
+          devicePixelRatio: 2,
+          boundingWidth: 0,
+          boundingHeight: 0,
+          intersectionPercent: 0,
+          objectFit: VideoElementObjectFit.Fill,
+          intrinsicLayout: false,
+          isRendered: () => true,
+        });
+        const empty = downstreamMetrics();
+        expect(empty).to.not.have.property('videoRenderPhysicalWidth');
+        expect(empty).to.deep.include({
+          videoRenderVisiblePercent: 0,
+          videoRenderObjectFit: 0,
+          videoRenderIntrinsicLayout: 0,
+        });
+        statsCollector.videoTileUnbound('attendee-1');
+        expect(downstreamMetrics()).to.not.have.property('videoRenderVisiblePercent');
+      } finally {
+        statsCollector.stop();
+      }
+    });
+
+    it('re-reads visibility and opacity every report, without a new display', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      try {
+        let rendered = true;
+        statsCollector.videoTileDisplayDidChange('attendee-1', {
+          devicePixelRatio: 1,
+          boundingWidth: 640,
+          boundingHeight: 360,
+          intersectionPercent: 100,
+          objectFit: VideoElementObjectFit.Contain,
+          intrinsicLayout: false,
+          isRendered: () => rendered,
+        });
+        expect(downstreamMetrics()['videoRenderVisiblePercent']).to.equal(100);
+        rendered = false;
+        expect(downstreamMetrics()['videoRenderVisiblePercent']).to.equal(0);
+        rendered = true;
+        expect(downstreamMetrics()['videoRenderVisiblePercent']).to.equal(100);
+      } finally {
+        statsCollector.stop();
+      }
+    });
+
+    it('reports no render size for an empty box', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      try {
+        statsCollector.videoTileResolutionDidChange('attendee-1', 1280, 720);
+        expect(downstreamMetrics()).to.deep.include({
+          videoRenderWidth: 1280,
+          videoRenderHeight: 720,
+        });
+        statsCollector.videoTileResolutionDidChange('attendee-1', 0, 0);
+        expect(downstreamMetrics()).to.not.have.property('videoRenderWidth');
+        statsCollector.videoTileResolutionDidChange('attendee-1', 640, 0);
+        expect(downstreamMetrics()).to.not.have.property('videoRenderHeight');
+      } finally {
+        statsCollector.stop();
+      }
     });
   });
 
