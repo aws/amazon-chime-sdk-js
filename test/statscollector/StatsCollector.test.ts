@@ -1147,7 +1147,7 @@ describe('StatsCollector', () => {
       return report.currentMetrics;
     };
 
-    it('adds the physical size, visible percent, object-fit and intrinsic layout of the bound tile', () => {
+    it('adds the size in device pixels, visible percent, object-fit and intrinsic layout of the bound tile', () => {
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
       try {
@@ -1162,8 +1162,8 @@ describe('StatsCollector', () => {
           isRendered: () => true,
         });
         expect(downstreamMetrics()).to.deep.include({
-          videoRenderPhysicalWidth: 800,
-          videoRenderPhysicalHeight: 451,
+          videoRenderDevicePixelWidth: 800,
+          videoRenderDevicePixelHeight: 451,
           videoRenderVisiblePercent: 35,
           videoRenderObjectFit: 2,
           videoRenderIntrinsicLayout: 1,
@@ -1178,7 +1178,7 @@ describe('StatsCollector', () => {
           isRendered: () => true,
         });
         const empty = downstreamMetrics();
-        expect(empty).to.not.have.property('videoRenderPhysicalWidth');
+        expect(empty).to.not.have.property('videoRenderDevicePixelWidth');
         expect(empty).to.deep.include({
           videoRenderVisiblePercent: 0,
           videoRenderObjectFit: 0,
@@ -1206,13 +1206,13 @@ describe('StatsCollector', () => {
           devicePixelRatio: () => ratio,
         });
         expect(downstreamMetrics()).to.deep.include({
-          videoRenderPhysicalWidth: 640,
-          videoRenderPhysicalHeight: 360,
+          videoRenderDevicePixelWidth: 640,
+          videoRenderDevicePixelHeight: 360,
         });
         ratio = 2;
         expect(downstreamMetrics()).to.deep.include({
-          videoRenderPhysicalWidth: 1280,
-          videoRenderPhysicalHeight: 720,
+          videoRenderDevicePixelWidth: 1280,
+          videoRenderDevicePixelHeight: 720,
         });
       } finally {
         statsCollector.stop();

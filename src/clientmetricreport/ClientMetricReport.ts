@@ -679,13 +679,13 @@ export default class ClientMetricReport {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_RENDER_HEIGHT,
     },
-    videoRenderPhysicalWidth: {
+    videoRenderDevicePixelWidth: {
       transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_RENDER_PHYSICAL_WIDTH,
+      type: SdkMetric.Type.VIDEO_RENDER_DEVICE_PIXEL_WIDTH,
     },
-    videoRenderPhysicalHeight: {
+    videoRenderDevicePixelHeight: {
       transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_RENDER_PHYSICAL_HEIGHT,
+      type: SdkMetric.Type.VIDEO_RENDER_DEVICE_PIXEL_HEIGHT,
     },
     videoRenderVisiblePercent: {
       transform: this.identityValue,

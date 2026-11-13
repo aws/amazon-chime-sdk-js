@@ -1138,10 +1138,10 @@ export default class StatsCollector
       if (display.boundingWidth > 0 && display.boundingHeight > 0) {
         // The ratio is read every report: it changes without a resize.
         const devicePixelRatio = display.devicePixelRatio();
-        metricReport.currentMetrics['videoRenderPhysicalWidth'] = Math.round(
+        metricReport.currentMetrics['videoRenderDevicePixelWidth'] = Math.round(
           display.boundingWidth * devicePixelRatio
         );
-        metricReport.currentMetrics['videoRenderPhysicalHeight'] = Math.round(
+        metricReport.currentMetrics['videoRenderDevicePixelHeight'] = Math.round(
           display.boundingHeight * devicePixelRatio
         );
       }

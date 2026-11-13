@@ -9,7 +9,7 @@ import VideoElementObjectFit from './VideoElementObjectFit';
 export default interface VideoElementDisplay {
   /**
    * The width of the element on screen in CSS pixels, from `getBoundingClientRect`, which includes CSS transforms.
-   * Multiply by `devicePixelRatio()` for physical pixels.
+   * Multiply by `devicePixelRatio()` for device pixels.
    */
   boundingWidth: number;
 

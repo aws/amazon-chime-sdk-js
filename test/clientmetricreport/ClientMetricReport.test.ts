@@ -816,11 +816,11 @@ describe('ClientMetricReport', () => {
       }
     });
 
-    it('reports the tile physical size, visible percent, object-fit and intrinsic layout to the backend', () => {
+    it('reports the tile size in device pixels, visible percent, object-fit and intrinsic layout to the backend', () => {
       const video = clientMetricReport.videoDownstreamMetricMap;
       for (const [name, type] of [
-        ['videoRenderPhysicalWidth', SdkMetric.Type.VIDEO_RENDER_PHYSICAL_WIDTH],
-        ['videoRenderPhysicalHeight', SdkMetric.Type.VIDEO_RENDER_PHYSICAL_HEIGHT],
+        ['videoRenderDevicePixelWidth', SdkMetric.Type.VIDEO_RENDER_DEVICE_PIXEL_WIDTH],
+        ['videoRenderDevicePixelHeight', SdkMetric.Type.VIDEO_RENDER_DEVICE_PIXEL_HEIGHT],
         ['videoRenderVisiblePercent', SdkMetric.Type.VIDEO_RENDER_VISIBLE_PERCENT],
         ['videoRenderObjectFit', SdkMetric.Type.VIDEO_RENDER_OBJECT_FIT],
         ['videoRenderIntrinsicLayout', SdkMetric.Type.VIDEO_RENDER_INTRINSIC_LAYOUT],
