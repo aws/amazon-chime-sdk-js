@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Deprecate `VideoElementResolutionObserver.videoElementResolutionChanged` and `VideoTileResolutionObserver.videoTileResolutionDidChange` in favor of `videoElementDisplayDidChange` and `videoTileDisplayDidChange`, whose `VideoElementDisplay` carries the content size as `contentWidth` and `contentHeight`. Both deprecated callbacks still fire.
 - The `VIDEO_RECEIVED_FPS` client metric is now the frames received per second instead of the running total of `framesReceived`, and `VIDEO_INPUT_FPS` is now the camera frame rate from the video `media-source` stats instead of the `outbound-rtp` frame rate. `ClientMetricReport.getObservableMetrics().videoUpstreamFramesInputPerSecond` is unchanged.
 - The `RTC_SPK_FRACTION_DECODER_LOSS_PERCENT` client metric now reports 100 for an interval in which every received audio sample was concealed. It reported 0.
 - Content share with simulcast enabled will now automatically use SVC instead when the preferred content share codec is AV1 (the default on Chromium-based browsers since 3.28) or VP9, since Chromium only supports simulcast for H.264 and VP8 and the high simulcast layer would silently never transmit. To keep using simulcast for content share, set an H.264 or VP8 preference via `setContentShareVideoCodecPreferences`.

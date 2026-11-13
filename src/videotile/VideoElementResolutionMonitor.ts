@@ -15,6 +15,8 @@ export interface VideoElementResolutionObserver {
    * Called when the resolution of the video element changes.
    * @param newWidth The new width of the video element.
    * @param newHeight The new height of the video element.
+   * @deprecated Use `videoElementDisplayDidChange`, whose `VideoElementDisplay` carries the content size as
+   * `contentWidth` and `contentHeight`. This callback still fires.
    */
   videoElementResolutionChanged(newWidth: number, newHeight: number): void;
 

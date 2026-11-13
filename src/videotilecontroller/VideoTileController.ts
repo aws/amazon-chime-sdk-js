@@ -19,6 +19,8 @@ export interface VideoTileResolutionObserver {
    * @param attendeeId The unique identifier for the attendee whose video tile resolution has changed.
    * @param newWidth The new width of the video element associated with the attendee's video tile, in pixels.
    * @param newHeight The new height of the video element associated with the attendee's video tile, in pixels.
+   * @deprecated Use `videoTileDisplayDidChange`, whose `VideoElementDisplay` carries the content size as
+   * `contentWidth` and `contentHeight`. This callback still fires.
    */
   videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void;
 

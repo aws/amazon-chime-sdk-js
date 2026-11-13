@@ -212,7 +212,6 @@ export default class DefaultVideoTileController implements VideoTileController {
     if (this.currentLocalTile === tile) {
       this.currentLocalTile = null;
     }
-    // Removing a tile also ends its binding, as unbindVideoElement does, so observers can drop its render state.
     if (tile.stateRef().boundVideoElement) {
       for (const observer of this.resolutionObservers) {
         observer.videoTileUnbound(tile.state().boundAttendeeId, tile.state().groupId);
