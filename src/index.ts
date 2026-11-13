@@ -163,6 +163,7 @@ import Logger from './logger/Logger';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
 import MediaMetricsEncodedTransformManager from './encodedtransformmanager/MediaMetricsEncodedTransformManager';
+import MediaStrategy from './strategies/MediaStrategy';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
 import MediaStreamBrokerObserver from './mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingEventsClientConfiguration from './eventsclientconfiguration/MeetingEventsClientConfiguration';
@@ -272,6 +273,7 @@ import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplin
 import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
 import SingleNodeAudioTransformDevice from './devicecontroller/SingleNodeAudioTransformDevice';
+import StandardStrategy from './strategies/StandardStrategy';
 import StartEncodedTransformWorkerTask from './task/StartEncodedTransformWorkerTask';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
 import SubscribeAndReceiveSubscribeAckTask from './task/SubscribeAndReceiveSubscribeAckTask';
@@ -545,6 +547,7 @@ export {
   MediaDeviceFactory,
   MediaDeviceProxyHandler,
   MediaMetricsEncodedTransformManager,
+  MediaStrategy,
   MediaStreamBroker,
   MediaStreamBrokerObserver,
   MeetingEventsClientConfiguration,
@@ -666,6 +669,7 @@ export {
   SimulcastVideoStreamIndex,
   SingleNodeAudioTransformDevice,
   Some,
+  StandardStrategy,
   StartEncodedTransformWorkerTask,
   StreamMetricReport,
   SubscribeAndReceiveSubscribeAckTask,

@@ -11,6 +11,7 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
 import MeetingSessionTimingManager from '../../src/meetingsessiontiming/MeetingSessionTimingManager';
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
@@ -26,6 +27,7 @@ import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTile
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 import SDPMock from '../sdp/SDPMock';
+import MockMediaStrategy from '../strategies/MockMediaStrategy';
 import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('CreatePeerConnectionTask', () => {
@@ -1083,6 +1085,25 @@ describe('CreatePeerConnectionTask', () => {
       expect(logSpy.calledWith('reusing peer connection')).to.be.true;
 
       logSpy.restore();
+    });
+  });
+  describe('media strategy', () => {
+    it('creates the peer connection through the strategy', async () => {
+      const strategy = new MockMediaStrategy();
+      context.meetingSessionConfiguration = new MeetingSessionConfiguration();
+      context.meetingSessionConfiguration.strategy = strategy;
+
+      await new CreatePeerConnectionTask(context).run();
+
+      expect(strategy.createPeerConnectionCalls).to.equal(1);
+    });
+
+    it('uses StandardStrategy when none is supplied', async () => {
+      context.meetingSessionConfiguration = undefined;
+
+      await new CreatePeerConnectionTask(context).run();
+
+      expect(context.peer).to.be.instanceOf(RTCPeerConnection);
     });
   });
 });

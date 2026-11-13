@@ -42,6 +42,7 @@ export default class DefaultContentShareController
       configuration.credentials.joinToken + ContentShareConstants.Modality;
     contentShareConfiguration.meetingFeatures = configuration.meetingFeatures.clone();
     contentShareConfiguration.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
+    contentShareConfiguration.strategy = configuration.strategy;
     return contentShareConfiguration;
   }
 

@@ -12,6 +12,8 @@ import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceC
 import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import StatsCollector from '../statscollector/StatsCollector';
+import MediaStrategy from '../strategies/MediaStrategy';
+import StandardStrategy from '../strategies/StandardStrategy';
 import PromiseQueue from '../utils/PromiseQueue';
 import { Maybe } from '../utils/Types';
 import DefaultVideoTransformDevice from '../videoframeprocessor/DefaultVideoTransformDevice';
@@ -62,7 +64,7 @@ export default class DefaultDeviceController
   private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> =
     new Set<MediaStreamBrokerObserver>();
   private deviceLabelTrigger = (): Promise<MediaStream> => {
-    return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    return this.strategy.getUserMedia({ audio: true, video: true });
   };
   private audioInputDestinationNode: MediaStreamAudioDestinationNode | null = null;
   private audioInputSourceNode: MediaStreamAudioSourceNode | null = null;
@@ -94,16 +96,28 @@ export default class DefaultDeviceController
     }
   };
 
+  private strategy: MediaStrategy;
+
   constructor(
     private logger: Logger,
-    options?: { enableWebAudio?: boolean; useMediaConstraintsFallback?: boolean },
+    options?: {
+      enableWebAudio?: boolean;
+      useMediaConstraintsFallback?: boolean;
+      /** Defaults to [[StandardStrategy]]. */
+      strategy?: MediaStrategy;
+    },
     private browserBehavior: ExtendedBrowserBehavior = new DefaultBrowserBehavior(),
     public eventController?: EventController,
     private statsCollector?: StatsCollector
   ) {
-    const { enableWebAudio = false, useMediaConstraintsFallback = true } = options || {};
+    const {
+      enableWebAudio = false,
+      useMediaConstraintsFallback = true,
+      strategy = new StandardStrategy(),
+    } = options || {};
     this.useWebAudio = enableWebAudio;
     this.useMediaConstraintsFallback = useMediaConstraintsFallback;
+    this.strategy = strategy;
 
     this.videoInputQualitySettings = new VideoQualitySettings(
       DefaultDeviceController.defaultVideoWidth,
@@ -842,7 +856,7 @@ export default class DefaultDeviceController
       this.deviceInfoCache = [];
       return;
     }
-    let devices = await navigator.mediaDevices.enumerateDevices();
+    let devices = await this.strategy.enumerateDevices();
     let hasDeviceLabels = true;
     for (const device of devices) {
       if (!device.label) {
@@ -854,7 +868,7 @@ export default class DefaultDeviceController
       try {
         this.logger.info('attempting to trigger media device labels since they are hidden');
         const triggerStream = await this.deviceLabelTrigger();
-        devices = await navigator.mediaDevices.enumerateDevices();
+        devices = await this.strategy.enumerateDevices();
         for (const track of triggerStream.getTracks()) {
           track.stop();
         }
@@ -1145,7 +1159,7 @@ export default class DefaultDeviceController
         newDevice.stream = stream;
         newDevice.constraints = proposedConstraints;
       } else {
-        newDevice.stream = await navigator.mediaDevices.getUserMedia(proposedConstraints);
+        newDevice.stream = await this.strategy.getUserMedia(proposedConstraints);
         newDevice.constraints = proposedConstraints;
       }
       await this.handleNewInputDevice(kind, newDevice);
@@ -1181,7 +1195,7 @@ export default class DefaultDeviceController
               `retry requesting new ${kind} device with minimal constraint ${fallbackConstraintsJSON}`
             );
             try {
-              newDevice.stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+              newDevice.stream = await this.strategy.getUserMedia(fallbackConstraints);
               newDevice.constraints = fallbackConstraints;
               await this.handleNewInputDevice(kind, newDevice);
               hasError = false;
