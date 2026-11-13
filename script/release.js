@@ -11,9 +11,6 @@ const deployDemo = (version) => {
   const meetingDemoNameRegional = `chime-sdk-demo-${formattedVersion}-regional`;
   logger.log(`Deploying ${meetingDemoNameRegional} ...`);
   spawnOrFail('npm', [`run deploy -- -b ${meetingDemoNameRegional} -s ${meetingDemoNameRegional} -o chime-sdk-demo-regional`], { printErr: true });
-  const readinessCheckerDemoName = `chime-sdk-meeting-readiness-checker-${formattedVersion}`;
-  logger.log(`Deploying ${readinessCheckerDemoName} ...`);
-  spawnOrFail('npm', [`run deploy -- -b ${readinessCheckerDemoName} -s ${readinessCheckerDemoName} -a meetingReadinessChecker`], { printErr: true });
 };
 
 const getCurrentRemoteBranch = () => {

@@ -77,8 +77,8 @@ The Amazon Chime SDK for JavaScript produces several kinds of events on the [Aud
 >
 > You can also use this event to get the raw [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport) through `clientMetricReport.getRTCStatsReport()`
 >
-> You can check the implementation in the [demo app](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts) to build your own custom widget
-> (look for `getObservableVideoMetrics` method in the demo). This video stats widget is built using the [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics) and the [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive) APIs. Through the information provided in these stats, the application can monitor key attributes and take action. For instance if the bitrate or resolution falls below a certain threshold, the user could be notified in some manner, or diagnostic reporting could take place.
+> You can check the implementation in the [demo app](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meeting/features/StatsPanel.ts) to build your own custom widget
+> (look for `getObservableVideoMetrics` in the demo). This video stats widget is built using the [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics) and the [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive) APIs. Through the information provided in these stats, the application can monitor key attributes and take action. For instance if the bitrate or resolution falls below a certain threshold, the user could be notified in some manner, or diagnostic reporting could take place.
 
 
 ### Events for monitoring currently active simulast layers

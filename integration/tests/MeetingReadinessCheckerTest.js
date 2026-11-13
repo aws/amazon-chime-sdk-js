@@ -6,9 +6,9 @@ const { MeetingReadinessCheckerPage } = require('../pages/MeetingReadinessChecke
 const setupTestEnvironment = require('./TestSetup');
 
 /*
- * MeetingReadinessCheckerTest - Tests the Meeting Readiness Checker functionality
- * 
- * Run with: npm run test -- --test-name MeetingReadinessCheckerTest --host local --test-type integration-test --retry 0 --headless true --app meetingReadinessChecker
+ * MeetingReadinessCheckerTest - Tests the Test your setup dialog, which runs the meeting readiness checker in a meeting of its own
+ *
+ * Run with: npm run test -- --test-name MeetingReadinessCheckerTest --host local --test-type integration-test --retry 0 --headless true
  * 
  * Verifies that the meeting readiness checker can:
  * 1. Initialize and authenticate
