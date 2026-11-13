@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the `VIDEO_INTER_FRAME_DELAY_MS` and `VIDEO_INTER_FRAME_DELAY_STDDEV_MS` client metrics, reporting the mean and standard deviation of the inter-frame delay of each received video stream from `totalInterFrameDelay` and `totalSquaredInterFrameDelay`.
 - Added the `RTC_SPK_CONCEALMENT_EVENTS`, `RTC_SPK_AUDIBLE_CONCEALMENT_PERCENT`, `RTC_SPK_ACCELERATE_PERCENT` and `RTC_SPK_DECELERATE_PERCENT` client metrics, reporting concealment events per second, non-silent concealed samples, and samples removed or inserted to speed up or slow down playout, as a percent of the received audio samples.
 - Added the `AUDIO_PLAYOUT_SYNTHESIZED_MS`, `AUDIO_PLAYOUT_SYNTHESIZED_EVENTS` and `AUDIO_PLAYOUT_DELAY_MS` client metrics from the `media-playout` WebRTC stats, where the browser provides them: synthesized playout samples in ms per second, synthesized sample events per second, and the average playout delay.
+- Added `MediaStrategy`, which supplies the peer connection, `getUserMedia` and `enumerateDevices` calls the SDK makes. `StandardStrategy` calls the browser and is the default, so behaviour is unchanged unless an application supplies another. Supply a strategy through `MeetingSessionConfiguration.strategy` and the `strategy` option of `DefaultDeviceController`. See the Media Strategies guide.
 
 ### Removed
 

@@ -3,6 +3,8 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import RemovableObserver from '../removableobserver/RemovableObserver';
+import MediaStrategy from '../strategies/MediaStrategy';
+import StandardStrategy from '../strategies/StandardStrategy';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
@@ -100,8 +102,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       this.context.logger.info('reusing peer connection');
     } else {
       this.context.logger.info('creating new peer connection');
-      // @ts-ignore
-      this.context.peer = new RTCPeerConnection(configuration);
+      this.context.peer = this.strategy().createPeerConnection(configuration);
       this.addPeerConnectionEventLogger();
     }
 
@@ -112,6 +113,10 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       this.removeTrackAddedEventListener = null;
     };
     this.context.peer.addEventListener('track', this.trackAddedHandler);
+  }
+
+  private strategy(): MediaStrategy {
+    return this.context.meetingSessionConfiguration?.strategy ?? new StandardStrategy();
   }
 
   private trackAddedHandler = (event: RTCTrackEvent): void => {

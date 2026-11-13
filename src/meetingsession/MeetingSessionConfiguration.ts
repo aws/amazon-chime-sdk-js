@@ -4,6 +4,8 @@
 import ApplicationMetadata from '../applicationmetadata/ApplicationMetadata';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
+import MediaStrategy from '../strategies/MediaStrategy';
+import StandardStrategy from '../strategies/StandardStrategy';
 import { toLowerCasePropertyNames } from '../utils/Utils';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
@@ -124,6 +126,9 @@ export default class MeetingSessionConfiguration {
    * Additional features in the meeting
    */
   meetingFeatures: MeetingFeatures = new MeetingFeatures();
+
+  /** The platform primitives the SDK builds media on. Defaults to [[StandardStrategy]]. */
+  strategy: MediaStrategy = new StandardStrategy();
 
   /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and

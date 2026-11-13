@@ -24,6 +24,7 @@ import { Maybe } from '../../src/utils/Types';
 import DefaultSimulcastUplinkPolicyForContentShare from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
+import MockMediaStrategy from '../strategies/MockMediaStrategy';
 import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultContentShareController', () => {
@@ -134,6 +135,17 @@ describe('DefaultContentShareController', () => {
     expect(contentShareMeetingSessionConfigure.credentials.joinToken).to.equal(
       meetingSessionConfigure.credentials.joinToken + ContentShareConstants.Modality
     );
+  });
+
+  it('carries the media strategy onto the content share configuration', () => {
+    const meetingSessionConfigure = makeSessionConfiguration();
+    const strategy = new MockMediaStrategy();
+    meetingSessionConfigure.strategy = strategy;
+    const contentShareMeetingSessionConfigure =
+      DefaultContentShareController.createContentShareMeetingSessionConfigure(
+        meetingSessionConfigure
+      );
+    expect(contentShareMeetingSessionConfigure.strategy).to.equal(strategy);
   });
 
   describe('content share APIs', () => {
