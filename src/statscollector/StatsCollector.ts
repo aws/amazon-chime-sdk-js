@@ -25,6 +25,7 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import { Maybe } from '../utils/Types';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import VideoElementDisplay from '../videotile/VideoElementDisplay';
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import { VideoTileResolutionObserver } from '../videotilecontroller/VideoTileController';
 import AudioLogEvent from './AudioLogEvent';
@@ -93,7 +94,7 @@ export default class StatsCollector
   private backgroundSegmentationMetrics: Array<BackgroundSegmentationInitializationMetrics> = [];
   private backgroundSegmentationProcessorMetric: BackgroundSegmentationProcessorMetrics | null =
     null;
-  private resolutionMap = new Map<string, { width: number; height: number }>();
+  private videoElementDisplayMap = new Map<string, VideoElementDisplay>();
   private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
@@ -292,12 +293,15 @@ export default class StatsCollector
     }
   }
 
-  videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void {
-    this.resolutionMap.set(attendeeId, { width: newWidth, height: newHeight });
+  // The render size comes from videoTileDisplayDidChange.
+  videoTileResolutionDidChange(_attendeeId: string, _newWidth: number, _newHeight: number): void {}
+
+  videoTileDisplayDidChange(attendeeId: string, display: VideoElementDisplay): void {
+    this.videoElementDisplayMap.set(attendeeId, display);
   }
 
   videoTileUnbound(attendeeId: string, groupId?: number): void {
-    this.resolutionMap.delete(attendeeId);
+    this.videoElementDisplayMap.delete(attendeeId);
     if (groupId !== undefined) {
       this.remoteRenderFpsMap.delete(groupId);
     }
@@ -550,6 +554,7 @@ export default class StatsCollector
       isSpecialMetricAndHasDependencies ||
       metricName in streamMetricReport.currentMetrics ||
       metricName in streamMetricReport.currentStringMetrics ||
+      metricName in streamMetricReport.currentBooleanMetrics ||
       metricName in streamMetricReport.currentObjectMetrics
     );
   }
@@ -1117,13 +1122,36 @@ export default class StatsCollector
       this.logger.warn(`No attendee found for ssrc ${ssrc}`);
       return;
     }
-    if (this.resolutionMap.has(attendeeId)) {
-      metricReport.currentMetrics['videoRenderWidth'] = this.resolutionMap.get(attendeeId).width;
-      metricReport.currentMetrics['videoRenderHeight'] = this.resolutionMap.get(attendeeId).height;
-    }
+    const display = this.videoElementDisplayMap.get(attendeeId);
+    const metrics = metricReport.currentMetrics;
+    this.addOrDeleteMetric(metrics, 'videoRenderWidth', display?.contentWidth);
+    this.addOrDeleteMetric(metrics, 'videoRenderHeight', display?.contentHeight);
+    this.addOrDeleteMetric(metrics, 'videoRenderDevicePixelWidth', display?.devicePixelWidth());
+    this.addOrDeleteMetric(metrics, 'videoRenderDevicePixelHeight', display?.devicePixelHeight());
+    this.addOrDeleteMetric(metrics, 'videoRenderVisiblePercent', display?.visiblePercent());
+    this.addOrDeleteMetric(metrics, 'videoRenderObjectFit', display?.objectFit);
+    this.addOrDeleteMetric(
+      metricReport.currentBooleanMetrics,
+      'videoRenderIntrinsicLayout',
+      display?.intrinsicLayout
+    );
     const groupId = metricReport.groupId;
     if (groupId !== undefined && this.remoteRenderFpsMap.has(groupId)) {
       metricReport.currentMetrics['videoRemoteRenderFps'] = this.remoteRenderFpsMap.get(groupId);
+    }
+  }
+
+  // The report persists across intervals, so a value the tile no longer has is removed. Only undefined deletes:
+  // false and 0 are written.
+  private addOrDeleteMetric<T>(
+    store: { [name: string]: T },
+    metricName: string,
+    value: T | undefined
+  ): void {
+    if (value === undefined) {
+      delete store[metricName];
+    } else {
+      store[metricName] = value;
     }
   }
 

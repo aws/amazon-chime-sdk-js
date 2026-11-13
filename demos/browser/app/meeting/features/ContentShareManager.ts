@@ -9,6 +9,7 @@ import {
   FileMediaStreamProvider,
   ScreenShareMediaStreamProvider,
   SynthesizedStereoMediaStreamProvider,
+  TestPatternMediaStreamProvider,
 } from '../media/DemoMediaStreamProviders';
 import MediaStreamProvider from '../media/MediaStreamProvider';
 import { STRINGS } from '../strings';
@@ -37,9 +38,6 @@ export interface ContentShareElements {
 }
 
 export default class ContentShareManager implements ContentShareObserver {
-  static TestVideo =
-    'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
-
   static SourceOptionElementIds: SourceId[] = [
     'dropdown-item-content-share-screen-capture',
     'dropdown-item-content-share-screen-test-video',
@@ -164,7 +162,7 @@ export default class ContentShareManager implements ContentShareObserver {
         break;
       }
       case 'dropdown-item-content-share-screen-test-video':
-        this.streamProvider = new FileMediaStreamProvider(ContentShareManager.TestVideo);
+        this.streamProvider = new TestPatternMediaStreamProvider();
         break;
       case 'dropdown-item-content-share-test-mono-audio-speech':
         this.streamProvider = new AudioBufferMediaStreamProvider('audio_file', true);

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import VideoElementDisplay from '../videotile/VideoElementDisplay';
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
@@ -18,6 +19,8 @@ export interface VideoTileResolutionObserver {
    * @param attendeeId The unique identifier for the attendee whose video tile resolution has changed.
    * @param newWidth The new width of the video element associated with the attendee's video tile, in pixels.
    * @param newHeight The new height of the video element associated with the attendee's video tile, in pixels.
+   * @deprecated Use `videoTileDisplayDidChange`, whose `VideoElementDisplay` carries the content size as
+   * `contentWidth` and `contentHeight`. This callback still fires.
    */
   videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void;
 
@@ -54,6 +57,15 @@ export interface VideoTileResolutionObserver {
    * @param metrics The collected metrics
    */
   videoTileRenderMetricsDidReceive?(groupId: number, metrics: VideoElementFrameMetrics): void;
+
+  /**
+   * Called when how a remote video tile's element is displayed changes: its on-screen size, intersection with
+   * the viewport, computed `object-fit` or intrinsic layout. `isRendered` and `devicePixelRatio` are read when used.
+   *
+   * @param attendeeId The attendee whose video the tile shows
+   * @param display How the tile's video element is displayed
+   */
+  videoTileDisplayDidChange?(attendeeId: string, display: VideoElementDisplay): void;
 }
 
 /**

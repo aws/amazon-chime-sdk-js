@@ -8448,6 +8448,11 @@ $root.SdkMetric = (function() {
             case 141:
             case 142:
             case 143:
+            case 144:
+            case 145:
+            case 146:
+            case 147:
+            case 148:
                 break;
             }
         if (message.value != null && Object.hasOwnProperty.call(message, "value"))
@@ -8921,6 +8926,26 @@ $root.SdkMetric = (function() {
         case 143:
             message.type = 143;
             break;
+        case "VIDEO_RENDER_DEVICE_PIXEL_WIDTH":
+        case 144:
+            message.type = 144;
+            break;
+        case "VIDEO_RENDER_DEVICE_PIXEL_HEIGHT":
+        case 145:
+            message.type = 145;
+            break;
+        case "VIDEO_RENDER_VISIBLE_PERCENT":
+        case 146:
+            message.type = 146;
+            break;
+        case "VIDEO_RENDER_OBJECT_FIT":
+        case 147:
+            message.type = 147;
+            break;
+        case "VIDEO_RENDER_INTRINSIC_LAYOUT":
+        case 148:
+            message.type = 148;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -9095,6 +9120,11 @@ $root.SdkMetric = (function() {
      * @property {number} AUDIO_PLAYOUT_SYNTHESIZED_MS=141 AUDIO_PLAYOUT_SYNTHESIZED_MS value
      * @property {number} AUDIO_PLAYOUT_SYNTHESIZED_EVENTS=142 AUDIO_PLAYOUT_SYNTHESIZED_EVENTS value
      * @property {number} AUDIO_PLAYOUT_DELAY_MS=143 AUDIO_PLAYOUT_DELAY_MS value
+     * @property {number} VIDEO_RENDER_DEVICE_PIXEL_WIDTH=144 VIDEO_RENDER_DEVICE_PIXEL_WIDTH value
+     * @property {number} VIDEO_RENDER_DEVICE_PIXEL_HEIGHT=145 VIDEO_RENDER_DEVICE_PIXEL_HEIGHT value
+     * @property {number} VIDEO_RENDER_VISIBLE_PERCENT=146 VIDEO_RENDER_VISIBLE_PERCENT value
+     * @property {number} VIDEO_RENDER_OBJECT_FIT=147 VIDEO_RENDER_OBJECT_FIT value
+     * @property {number} VIDEO_RENDER_INTRINSIC_LAYOUT=148 VIDEO_RENDER_INTRINSIC_LAYOUT value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -9208,6 +9238,11 @@ $root.SdkMetric = (function() {
         values[valuesById[141] = "AUDIO_PLAYOUT_SYNTHESIZED_MS"] = 141;
         values[valuesById[142] = "AUDIO_PLAYOUT_SYNTHESIZED_EVENTS"] = 142;
         values[valuesById[143] = "AUDIO_PLAYOUT_DELAY_MS"] = 143;
+        values[valuesById[144] = "VIDEO_RENDER_DEVICE_PIXEL_WIDTH"] = 144;
+        values[valuesById[145] = "VIDEO_RENDER_DEVICE_PIXEL_HEIGHT"] = 145;
+        values[valuesById[146] = "VIDEO_RENDER_VISIBLE_PERCENT"] = 146;
+        values[valuesById[147] = "VIDEO_RENDER_OBJECT_FIT"] = 147;
+        values[valuesById[148] = "VIDEO_RENDER_INTRINSIC_LAYOUT"] = 148;
         return values;
     })();
 

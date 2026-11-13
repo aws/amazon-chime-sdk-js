@@ -302,8 +302,10 @@ import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/Vid
 import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
+import VideoElementDisplay from './videotile/VideoElementDisplay';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoElementFrameMonitor from './videotile/VideoElementFrameMonitor';
+import VideoElementObjectFit from './videotile/VideoElementObjectFit';
 import VideoElementResolutionMonitor from './videotile/VideoElementResolutionMonitor';
 import VideoEncodingConcurrentSendersHealthPolicy from './connectionhealthpolicy/VideoEncodingConcurrentSendersHealthPolicy';
 import VideoEncodingConnectionHealthPolicyName from './connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
@@ -696,8 +698,10 @@ export {
   VideoCodecCapability,
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
+  VideoElementDisplay,
   VideoElementFactory,
   VideoElementFrameMonitor,
+  VideoElementObjectFit,
   VideoElementResolutionMonitor,
   VideoEncodingConcurrentSendersHealthPolicy,
   VideoEncodingConnectionHealthPolicyName,

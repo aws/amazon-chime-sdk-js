@@ -816,6 +816,50 @@ describe('ClientMetricReport', () => {
       }
     });
 
+    it('reports the tile size in device pixels, visible percent, object-fit and intrinsic layout to the backend', () => {
+      const video = clientMetricReport.videoDownstreamMetricMap;
+      for (const [name, transform, type] of [
+        [
+          'videoRenderDevicePixelWidth',
+          clientMetricReport.identityValue,
+          SdkMetric.Type.VIDEO_RENDER_DEVICE_PIXEL_WIDTH,
+        ],
+        [
+          'videoRenderDevicePixelHeight',
+          clientMetricReport.identityValue,
+          SdkMetric.Type.VIDEO_RENDER_DEVICE_PIXEL_HEIGHT,
+        ],
+        [
+          'videoRenderVisiblePercent',
+          clientMetricReport.identityValue,
+          SdkMetric.Type.VIDEO_RENDER_VISIBLE_PERCENT,
+        ],
+        [
+          'videoRenderObjectFit',
+          clientMetricReport.identityValue,
+          SdkMetric.Type.VIDEO_RENDER_OBJECT_FIT,
+        ],
+        [
+          'videoRenderIntrinsicLayout',
+          clientMetricReport.booleanValue,
+          SdkMetric.Type.VIDEO_RENDER_INTRINSIC_LAYOUT,
+        ],
+      ] as Array<[string, (metricName?: string, ssrc?: number) => number, SdkMetric.Type]>) {
+        expect(video[name].transform, name).to.equal(transform);
+        expect(video[name].type, name).to.equal(type);
+      }
+    });
+
+    it('encodes a boolean metric as 1 or 0', () => {
+      const report = new StreamMetricReport();
+      report.currentBooleanMetrics['flag'] = true;
+      report.currentBooleanMetrics['off'] = false;
+      clientMetricReport.streamMetricReports[1] = report;
+      expect(clientMetricReport.booleanValue('flag', 1)).to.equal(1);
+      expect(clientMetricReport.booleanValue('off', 1)).to.equal(0);
+      expect(clientMetricReport.booleanValue('missing', 1)).to.equal(0);
+    });
+
     it('reports inter-frame delay, NetEq concealment and audio playout to the backend', () => {
       const video = clientMetricReport.videoDownstreamMetricMap;
       expect(video['totalInterFrameDelay'].transform).to.equal(

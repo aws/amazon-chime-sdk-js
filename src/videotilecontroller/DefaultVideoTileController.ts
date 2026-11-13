@@ -10,6 +10,7 @@ import Logger from '../logger/Logger';
 import { Maybe } from '../utils/Types';
 import DefaultVideoElementResolutionMonitor from '../videotile/DefaultVideoElementResolutionMonitor';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
+import VideoElementDisplay from '../videotile/VideoElementDisplay';
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import VideoElementResolutionMonitor, {
   VideoElementResolutionObserver,
@@ -26,6 +27,7 @@ export default class DefaultVideoTileController implements VideoTileController {
   private devicePixelRatioMonitor: undefined | DefaultDevicePixelRatioMonitor;
   private currentPausedTilesByIds: Set<number> = new Set<number>();
   private resolutionObservers = new Set<VideoTileResolutionObserver>();
+  private devicePixelRatioSource = new DevicePixelRatioWindowSource();
   keepLastFrameWhenPaused: boolean | undefined = false;
 
   constructor(
@@ -41,7 +43,7 @@ export default class DefaultVideoTileController implements VideoTileController {
       return;
     }
     this.devicePixelRatioMonitor = new DefaultDevicePixelRatioMonitor(
-      new DevicePixelRatioWindowSource(),
+      this.devicePixelRatioSource,
       this.logger
     );
   }
@@ -210,6 +212,11 @@ export default class DefaultVideoTileController implements VideoTileController {
     if (this.currentLocalTile === tile) {
       this.currentLocalTile = null;
     }
+    if (tile.stateRef().boundVideoElement) {
+      for (const observer of this.resolutionObservers) {
+        observer.videoTileUnbound(tile.state().boundAttendeeId, tile.state().groupId);
+      }
+    }
     tile.destroy();
     this.tileMap.delete(tileId);
     this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
@@ -300,9 +307,13 @@ export default class DefaultVideoTileController implements VideoTileController {
       videoElementMetricsDidReceive(metrics: VideoElementFrameMetrics): void {
         this.controller.handleVideoElementFrameMetrics(this.tileId, metrics);
       }
+
+      videoElementDisplayDidChange(display: VideoElementDisplay): void {
+        this.controller.handleVideoElementDisplayChanged(this.tileId, display);
+      }
     })(this, tileId);
 
-    const resolutionMonitor = new DefaultVideoElementResolutionMonitor();
+    const resolutionMonitor = new DefaultVideoElementResolutionMonitor(this.devicePixelRatioSource);
     resolutionMonitor.registerObserver(observer);
     return resolutionMonitor;
   }
@@ -332,6 +343,16 @@ export default class DefaultVideoTileController implements VideoTileController {
     if (groupId === null) return;
     for (const observer of this.resolutionObservers) {
       observer.videoTileFirstFrameDidRender?.(groupId, metadata);
+    }
+  }
+
+  private handleVideoElementDisplayChanged(tileId: number, display: VideoElementDisplay): void {
+    const tile = this.getVideoTile(tileId);
+    if (!tile) return;
+    const tileState = tile.state();
+    if (tileState.localTile || !tileState.boundAttendeeId) return;
+    for (const observer of this.resolutionObservers) {
+      observer.videoTileDisplayDidChange?.(tileState.boundAttendeeId, display);
     }
   }
 

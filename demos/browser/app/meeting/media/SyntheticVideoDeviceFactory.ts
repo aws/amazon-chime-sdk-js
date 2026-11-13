@@ -3,7 +3,7 @@
 
 import { IntervalScheduler } from 'amazon-chime-sdk-js';
 
-function fillSMPTEColorBars(canvas: HTMLCanvasElement, xShift: number): void {
+export function fillSMPTEColorBars(canvas: HTMLCanvasElement, xShift: number): void {
   const w = canvas.width;
   const h = canvas.height;
   const h1 = (h * 2) / 3;

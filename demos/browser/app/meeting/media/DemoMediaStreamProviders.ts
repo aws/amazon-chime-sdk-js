@@ -1,9 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { DefaultBrowserBehavior, DefaultDeviceController } from 'amazon-chime-sdk-js';
+import {
+  DefaultBrowserBehavior,
+  DefaultDeviceController,
+  IntervalScheduler,
+} from 'amazon-chime-sdk-js';
 
 import MediaStreamProvider from './MediaStreamProvider';
+import { fillSMPTEColorBars } from './SyntheticVideoDeviceFactory';
 
 /**
  * [[AudioBufferMediaStreamProvider]] creates a `MediaStream` from a parsed
@@ -291,5 +296,62 @@ export class MergedMediaStreamProvider implements MediaStreamProvider {
   resume(): void {
     this.audioStream.resume();
     this.videoStream.resume();
+  }
+}
+
+/**
+ * [[TestPatternMediaStreamProvider]] draws colour bars with a marker that sweeps across the
+ * bottom, so content share has moving video to send without a screen, a file or a download.
+ */
+export class TestPatternMediaStreamProvider implements MediaStreamProvider {
+  private static readonly FrameRate = 15;
+  private static readonly SweepMs = 4000;
+
+  private readonly canvas = document.createElement('canvas');
+  private readonly scheduler = new IntervalScheduler(
+    1000 / TestPatternMediaStreamProvider.FrameRate
+  );
+  private stream: MediaStream | undefined;
+
+  constructor() {
+    this.canvas.width = 640;
+    this.canvas.height = 360;
+  }
+
+  async getMediaStream(): Promise<MediaStream> {
+    if (!this.stream) {
+      this.stream = this.canvas.captureStream(TestPatternMediaStreamProvider.FrameRate);
+      this.stream
+        .getVideoTracks()[0]
+        .addEventListener('ended', () => this.scheduler.stop(), { once: true });
+      this.resume();
+    }
+    return this.stream;
+  }
+
+  pause(): void {
+    this.scheduler.stop();
+  }
+
+  resume(): void {
+    this.scheduler.start(() => this.draw());
+  }
+
+  /**
+   * The marker follows the clock rather than a frame count, so each frame differs from the last
+   * however often the page can draw: a background tab throttles the scheduler to once a second.
+   */
+  private draw(): void {
+    const context = this.canvas.getContext('2d');
+    if (!context) {
+      return;
+    }
+    fillSMPTEColorBars(this.canvas, 0);
+    const markerHeight = this.canvas.height / 10;
+    const swept =
+      (Date.now() % TestPatternMediaStreamProvider.SweepMs) /
+      TestPatternMediaStreamProvider.SweepMs;
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, this.canvas.height - markerHeight, this.canvas.width * swept, markerHeight);
   }
 }

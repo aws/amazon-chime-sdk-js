@@ -28,6 +28,8 @@ import StatsCollector from '../../src/statscollector/StatsCollector';
 import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import VideoElementDisplay from '../../src/videotile/VideoElementDisplay';
+import VideoElementObjectFit from '../../src/videotile/VideoElementObjectFit';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -1125,6 +1127,121 @@ describe('StatsCollector', () => {
       statsCollector.videoTileUnbound('attendee-1', 5);
       // After unbind, the fps entry should be removed (no way to directly check the map,
       // but we verify it doesn't crash and the entry is cleaned)
+    });
+  });
+
+  describe('videoTileDisplayDidChange', () => {
+    class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+      streamIdForSSRC(_ssrcId: number): number {
+        return 1;
+      }
+
+      attendeeIdForStreamId(_streamId: number): string {
+        return 'attendee-1';
+      }
+    }
+
+    // One report for the whole test, as StatsCollector keeps a stream's report across intervals.
+    let report: StreamMetricReport;
+    const reportOnce = (): StreamMetricReport => {
+      // @ts-ignore
+      statsCollector.addRenderResolutionToVideoDownstreamMetrics(report, 1);
+      return report;
+    };
+    const tileDisplay = (
+      overrides: Partial<ConstructorParameters<typeof VideoElementDisplay>[0]> = {}
+    ): VideoElementDisplay =>
+      new VideoElementDisplay({
+        contentWidth: 1280,
+        contentHeight: 720,
+        boundingWidth: 640,
+        boundingHeight: 360.4,
+        intersectionPercent: 35,
+        objectFit: VideoElementObjectFit.Cover,
+        intrinsicLayout: true,
+        isRendered: () => true,
+        devicePixelRatio: () => 1.25,
+        ...overrides,
+      });
+
+    beforeEach(() => {
+      report = new StreamMetricReport();
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+    });
+
+    afterEach(() => {
+      statsCollector.stop();
+    });
+
+    it('copies the render size, size in device pixels, visible percent, object-fit and intrinsic layout of the bound tile', () => {
+      expect(reportOnce().currentMetrics).to.deep.equal({});
+      statsCollector.videoTileDisplayDidChange('attendee-1', tileDisplay());
+      expect(reportOnce().currentMetrics).to.deep.equal({
+        videoRenderWidth: 1280,
+        videoRenderHeight: 720,
+        videoRenderDevicePixelWidth: 800,
+        videoRenderDevicePixelHeight: 451,
+        videoRenderVisiblePercent: 35,
+        videoRenderObjectFit: 2,
+      });
+      expect(report.currentBooleanMetrics).to.deep.equal({ videoRenderIntrinsicLayout: true });
+    });
+
+    it('stops reporting the values a tile no longer has, on the same report', () => {
+      statsCollector.videoTileDisplayDidChange('attendee-1', tileDisplay());
+      reportOnce();
+      statsCollector.videoTileDisplayDidChange(
+        'attendee-1',
+        tileDisplay({
+          contentWidth: undefined,
+          contentHeight: undefined,
+          boundingWidth: 0,
+          boundingHeight: 0,
+          intersectionPercent: 0,
+          intrinsicLayout: false,
+        })
+      );
+      expect(reportOnce().currentMetrics).to.deep.equal({
+        videoRenderVisiblePercent: 0,
+        videoRenderObjectFit: 2,
+      });
+      expect(report.currentBooleanMetrics).to.deep.equal({ videoRenderIntrinsicLayout: false });
+      statsCollector.videoTileUnbound('attendee-1');
+      expect(reportOnce().currentMetrics).to.deep.equal({});
+      expect(report.currentBooleanMetrics).to.deep.equal({});
+    });
+
+    it('re-reads the device pixel ratio and visibility every report, without a new display', () => {
+      let ratio = 1;
+      let rendered = true;
+      statsCollector.videoTileDisplayDidChange(
+        'attendee-1',
+        tileDisplay({
+          boundingWidth: 640,
+          boundingHeight: 360,
+          intersectionPercent: 100,
+          isRendered: () => rendered,
+          devicePixelRatio: () => ratio,
+        })
+      );
+      expect(reportOnce().currentMetrics).to.deep.include({
+        videoRenderDevicePixelWidth: 640,
+        videoRenderDevicePixelHeight: 360,
+        videoRenderVisiblePercent: 100,
+      });
+      ratio = 2;
+      rendered = false;
+      expect(reportOnce().currentMetrics).to.deep.include({
+        videoRenderDevicePixelWidth: 1280,
+        videoRenderDevicePixelHeight: 720,
+        videoRenderVisiblePercent: 0,
+      });
+    });
+
+    it('ignores the resolution callback, which apps still receive', () => {
+      statsCollector.videoTileResolutionDidChange('attendee-1', 1280, 720);
+      expect(reportOnce().currentMetrics).to.deep.equal({});
     });
   });
 

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import VideoElementDisplay from './VideoElementDisplay';
 import { VideoElementFrameMetrics } from './VideoElementFrameMonitor';
 
 /**
@@ -14,6 +15,8 @@ export interface VideoElementResolutionObserver {
    * Called when the resolution of the video element changes.
    * @param newWidth The new width of the video element.
    * @param newHeight The new height of the video element.
+   * @deprecated Use `videoElementDisplayDidChange`, whose `VideoElementDisplay` carries the content size as
+   * `contentWidth` and `contentHeight`. This callback still fires.
    */
   videoElementResolutionChanged(newWidth: number, newHeight: number): void;
 
@@ -29,6 +32,13 @@ export interface VideoElementResolutionObserver {
    * @param metrics The collected metrics
    */
   videoElementMetricsDidReceive?(metrics: VideoElementFrameMetrics): void;
+
+  /**
+   * Called when how the video element is displayed changes. The visible percent is updated on intersection
+   * changes, and the size, `object-fit` and intrinsic layout when the element is bound or resized.
+   * @param display How the element is displayed
+   */
+  videoElementDisplayDidChange?(display: VideoElementDisplay): void;
 }
 
 /**
