@@ -94,8 +94,7 @@ export default class StatsCollector
   private backgroundSegmentationMetrics: Array<BackgroundSegmentationInitializationMetrics> = [];
   private backgroundSegmentationProcessorMetric: BackgroundSegmentationProcessorMetrics | null =
     null;
-  private resolutionMap = new Map<string, { width: number; height: number }>();
-  private displayMap = new Map<string, VideoElementDisplay>();
+  private videoElementDisplayMap = new Map<string, VideoElementDisplay>();
   private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
@@ -294,22 +293,15 @@ export default class StatsCollector
     }
   }
 
-  videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void {
-    // An empty box (for example the 0x0 callback for a detached or `display: none` element) has no render size.
-    if (newWidth === 0 || newHeight === 0) {
-      this.resolutionMap.delete(attendeeId);
-      return;
-    }
-    this.resolutionMap.set(attendeeId, { width: newWidth, height: newHeight });
-  }
+  // The render size comes from videoTileDisplayDidChange.
+  videoTileResolutionDidChange(_attendeeId: string, _newWidth: number, _newHeight: number): void {}
 
   videoTileDisplayDidChange(attendeeId: string, display: VideoElementDisplay): void {
-    this.displayMap.set(attendeeId, display);
+    this.videoElementDisplayMap.set(attendeeId, display);
   }
 
   videoTileUnbound(attendeeId: string, groupId?: number): void {
-    this.resolutionMap.delete(attendeeId);
-    this.displayMap.delete(attendeeId);
+    this.videoElementDisplayMap.delete(attendeeId);
     if (groupId !== undefined) {
       this.remoteRenderFpsMap.delete(groupId);
     }
@@ -562,6 +554,7 @@ export default class StatsCollector
       isSpecialMetricAndHasDependencies ||
       metricName in streamMetricReport.currentMetrics ||
       metricName in streamMetricReport.currentStringMetrics ||
+      metricName in streamMetricReport.currentBooleanMetrics ||
       metricName in streamMetricReport.currentObjectMetrics
     );
   }
@@ -1129,28 +1122,25 @@ export default class StatsCollector
       this.logger.warn(`No attendee found for ssrc ${ssrc}`);
       return;
     }
-    if (this.resolutionMap.has(attendeeId)) {
-      metricReport.currentMetrics['videoRenderWidth'] = this.resolutionMap.get(attendeeId).width;
-      metricReport.currentMetrics['videoRenderHeight'] = this.resolutionMap.get(attendeeId).height;
-    }
-    const display = this.displayMap.get(attendeeId);
-    if (display) {
-      if (display.boundingWidth > 0 && display.boundingHeight > 0) {
-        // The ratio is read every report: it changes without a resize.
-        const devicePixelRatio = display.devicePixelRatio();
-        metricReport.currentMetrics['videoRenderDevicePixelWidth'] = Math.round(
-          display.boundingWidth * devicePixelRatio
-        );
-        metricReport.currentMetrics['videoRenderDevicePixelHeight'] = Math.round(
-          display.boundingHeight * devicePixelRatio
-        );
+    const display = this.videoElementDisplayMap.get(attendeeId);
+    // The report persists across intervals, so a value the tile no longer has is removed.
+    const copy = (metricName: string, value: number | undefined): void => {
+      if (value === undefined) {
+        delete metricReport.currentMetrics[metricName];
+      } else {
+        metricReport.currentMetrics[metricName] = value;
       }
-      // checkVisibility is re-read every report: opacity and visibility change without a callback.
-      metricReport.currentMetrics['videoRenderVisiblePercent'] = display.isRendered()
-        ? display.intersectionPercent
-        : 0;
-      metricReport.currentMetrics['videoRenderObjectFit'] = display.objectFit;
-      metricReport.currentMetrics['videoRenderIntrinsicLayout'] = display.intrinsicLayout ? 1 : 0;
+    };
+    copy('videoRenderWidth', display?.contentWidth);
+    copy('videoRenderHeight', display?.contentHeight);
+    copy('videoRenderDevicePixelWidth', display?.devicePixelWidth());
+    copy('videoRenderDevicePixelHeight', display?.devicePixelHeight());
+    copy('videoRenderVisiblePercent', display?.visiblePercent());
+    copy('videoRenderObjectFit', display?.objectFit);
+    if (display) {
+      metricReport.currentBooleanMetrics['videoRenderIntrinsicLayout'] = display.intrinsicLayout;
+    } else {
+      delete metricReport.currentBooleanMetrics['videoRenderIntrinsicLayout'];
     }
     const groupId = metricReport.groupId;
     if (groupId !== undefined && this.remoteRenderFpsMap.has(groupId)) {

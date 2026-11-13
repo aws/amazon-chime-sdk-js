@@ -44,6 +44,10 @@ export default class ClientMetricReport {
     return Number(metricReport.currentMetrics[metricName]);
   };
 
+  booleanValue = (metricName?: string, ssrc?: number): number => {
+    return this.streamMetricReports[ssrc].currentBooleanMetrics[metricName] ? 1 : 0;
+  };
+
   decoderLossPercent = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
     const concealedSamples =
@@ -696,7 +700,7 @@ export default class ClientMetricReport {
       type: SdkMetric.Type.VIDEO_RENDER_OBJECT_FIT,
     },
     videoRenderIntrinsicLayout: {
-      transform: this.identityValue,
+      transform: this.booleanValue,
       type: SdkMetric.Type.VIDEO_RENDER_INTRINSIC_LAYOUT,
     },
     videoReceivedTransformPps: {

@@ -386,7 +386,16 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       rendered: boolean;
       bounding: { width: number; height: number };
     }
-    type Layout = Omit<VideoElementDisplay, 'isRendered' | 'devicePixelRatio'>;
+    type Layout = Pick<
+      VideoElementDisplay,
+      | 'contentWidth'
+      | 'contentHeight'
+      | 'boundingWidth'
+      | 'boundingHeight'
+      | 'intersectionPercent'
+      | 'objectFit'
+      | 'intrinsicLayout'
+    >;
 
     const intersect = (intersectionRatio: number, width = 640, height = 360): void =>
       intersectionCallback([
@@ -414,6 +423,8 @@ describe('DefaultVideoElementResolutionMonitor', () => {
     };
     const layouts = (): Layout[] =>
       displays.map(d => ({
+        contentWidth: d.contentWidth,
+        contentHeight: d.contentHeight,
         boundingWidth: d.boundingWidth,
         boundingHeight: d.boundingHeight,
         intersectionPercent: d.intersectionPercent,
@@ -425,8 +436,11 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       boundingWidth = 640,
       boundingHeight = 360,
       fit = VideoElementObjectFit.Contain,
-      intrinsicLayout = false
+      intrinsicLayout = false,
+      [contentWidth, contentHeight]: Array<number | undefined> = [640, 360]
     ): Layout => ({
+      contentWidth,
+      contentHeight,
       boundingWidth,
       boundingHeight,
       intersectionPercent,
@@ -557,7 +571,12 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       resize(640, 360);
       intersect(1, 0, 360);
       intersect(1, 640, 0);
-      expect(layouts()).to.deep.equal([layout(100), layout(0, 0, 0), layout(100), layout(0, 0, 0)]);
+      expect(layouts()).to.deep.equal([
+        layout(100),
+        layout(0, 0, 0, VideoElementObjectFit.Contain, false, [undefined, undefined]),
+        layout(100),
+        layout(0, 0, 0),
+      ]);
     });
 
     it('reports the on-screen size from getBoundingClientRect, which includes transforms', () => {
@@ -566,7 +585,9 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       element.bounding = { width: 320, height: 180 };
       resize(1280, 720);
       intersect(1, 320, 180);
-      expect(layouts()).to.deep.equal([layout(100, 320, 180, VideoElementObjectFit.Contain, true)]);
+      expect(layouts()).to.deep.equal([
+        layout(100, 320, 180, VideoElementObjectFit.Contain, true, [1280, 720]),
+      ]);
     });
 
     it('reports intrinsic layout when the content box equals the video size within 1 pixel', () => {
@@ -580,7 +601,15 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       Object.defineProperty(element, 'videoWidth', { value: 1, configurable: true });
       Object.defineProperty(element, 'videoHeight', { value: 0, configurable: true });
       resize(1, 0.5);
-      expect(layouts().map(d => d.intrinsicLayout)).to.deep.equal([false, true, false]);
+      // Each resize changes the content size, so each one is reported.
+      expect(layouts().map(d => d.intrinsicLayout)).to.deep.equal([
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+      ]);
     });
 
     it('reads object-fit on resize only', () => {
@@ -593,15 +622,19 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       resize(640, 360);
       objectFit = 'scale-down';
       resize(640, 360);
+      objectFit = 'unexpected';
+      resize(640, 360);
+      objectFit = 'scale-down';
+      resize(640, 360);
       objectFit = 'fill';
       resize(640, 360);
-      objectFit = 'unexpected';
-      resize(641, 360);
       expect(layouts().map(d => d.objectFit)).to.deep.equal([
         VideoElementObjectFit.Contain,
         VideoElementObjectFit.Contain,
         VideoElementObjectFit.Cover,
         VideoElementObjectFit.None,
+        VideoElementObjectFit.ScaleDown,
+        VideoElementObjectFit.Fill,
         VideoElementObjectFit.ScaleDown,
         VideoElementObjectFit.Fill,
       ]);

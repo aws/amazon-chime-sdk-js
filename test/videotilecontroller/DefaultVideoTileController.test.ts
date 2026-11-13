@@ -630,11 +630,22 @@ describe('DefaultVideoTileController', () => {
       resizeCallback([{ contentRect: { width: 640, height: 360 } } as ResizeObserverEntry]);
       return videoElement;
     };
-    type Reported = Omit<VideoElementDisplay, 'isRendered' | 'devicePixelRatio'>;
+    type Reported = Pick<
+      VideoElementDisplay,
+      | 'contentWidth'
+      | 'contentHeight'
+      | 'boundingWidth'
+      | 'boundingHeight'
+      | 'intersectionPercent'
+      | 'objectFit'
+      | 'intrinsicLayout'
+    >;
     const reported = (): Array<[string, Reported]> =>
       displays.map(([attendeeId, d]) => [
         attendeeId,
         {
+          contentWidth: d.contentWidth,
+          contentHeight: d.contentHeight,
           boundingWidth: d.boundingWidth,
           boundingHeight: d.boundingHeight,
           intersectionPercent: d.intersectionPercent,
@@ -677,6 +688,8 @@ describe('DefaultVideoTileController', () => {
         [
           'attendee',
           {
+            contentWidth: 640,
+            contentHeight: 360,
             boundingWidth: 640,
             boundingHeight: 360,
             intersectionPercent: 40,

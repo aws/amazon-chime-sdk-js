@@ -29,6 +29,8 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
   private frameMonitor: VideoElementFrameMonitor = new VideoElementFrameMonitor();
   // Null until the IntersectionObserver reports the bound element, so no display is reported before.
   private intersectionRatio: number | null = null;
+  private contentWidth = 0;
+  private contentHeight = 0;
   private hasEmptyContentBox = false;
   private boundingWidth = 0;
   private boundingHeight = 0;
@@ -101,6 +103,8 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
     }
     this.element = newElement;
     this.intersectionRatio = null;
+    this.contentWidth = 0;
+    this.contentHeight = 0;
     this.hasEmptyContentBox = false;
     this.boundingWidth = 0;
     this.boundingHeight = 0;
@@ -132,6 +136,8 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
       return;
     }
     this.hasLayout = true;
+    this.contentWidth = contentWidth;
+    this.contentHeight = contentHeight;
     this.hasEmptyContentBox = contentWidth === 0 || contentHeight === 0;
     const { width, height } = this.element.getBoundingClientRect();
     this.boundingWidth = width;
@@ -155,7 +161,9 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
     const emptyBox =
       this.hasEmptyContentBox || this.boundingWidth === 0 || this.boundingHeight === 0;
     const intersecting = this.element.isConnected && !emptyBox;
-    const display: VideoElementDisplay = {
+    const display = new VideoElementDisplay({
+      contentWidth: this.hasEmptyContentBox ? undefined : this.contentWidth,
+      contentHeight: this.hasEmptyContentBox ? undefined : this.contentHeight,
       boundingWidth: emptyBox ? 0 : this.boundingWidth,
       boundingHeight: emptyBox ? 0 : this.boundingHeight,
       intersectionPercent: intersecting ? Math.round(this.intersectionRatio * 100) : 0,
@@ -163,7 +171,7 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
       intrinsicLayout: this.intrinsicLayout,
       isRendered: this.isRendered,
       devicePixelRatio: this.devicePixelRatio,
-    };
+    });
     const key = JSON.stringify(display);
     if (key === this.reportedDisplay) {
       return;
