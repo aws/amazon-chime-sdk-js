@@ -1123,28 +1123,35 @@ export default class StatsCollector
       return;
     }
     const display = this.videoElementDisplayMap.get(attendeeId);
-    // The report persists across intervals, so a value the tile no longer has is removed.
-    const copy = (metricName: string, value: number | undefined): void => {
-      if (value === undefined) {
-        delete metricReport.currentMetrics[metricName];
-      } else {
-        metricReport.currentMetrics[metricName] = value;
-      }
-    };
-    copy('videoRenderWidth', display?.contentWidth);
-    copy('videoRenderHeight', display?.contentHeight);
-    copy('videoRenderDevicePixelWidth', display?.devicePixelWidth());
-    copy('videoRenderDevicePixelHeight', display?.devicePixelHeight());
-    copy('videoRenderVisiblePercent', display?.visiblePercent());
-    copy('videoRenderObjectFit', display?.objectFit);
-    if (display) {
-      metricReport.currentBooleanMetrics['videoRenderIntrinsicLayout'] = display.intrinsicLayout;
-    } else {
-      delete metricReport.currentBooleanMetrics['videoRenderIntrinsicLayout'];
-    }
+    const metrics = metricReport.currentMetrics;
+    this.addOrDeleteMetric(metrics, 'videoRenderWidth', display?.contentWidth);
+    this.addOrDeleteMetric(metrics, 'videoRenderHeight', display?.contentHeight);
+    this.addOrDeleteMetric(metrics, 'videoRenderDevicePixelWidth', display?.devicePixelWidth());
+    this.addOrDeleteMetric(metrics, 'videoRenderDevicePixelHeight', display?.devicePixelHeight());
+    this.addOrDeleteMetric(metrics, 'videoRenderVisiblePercent', display?.visiblePercent());
+    this.addOrDeleteMetric(metrics, 'videoRenderObjectFit', display?.objectFit);
+    this.addOrDeleteMetric(
+      metricReport.currentBooleanMetrics,
+      'videoRenderIntrinsicLayout',
+      display?.intrinsicLayout
+    );
     const groupId = metricReport.groupId;
     if (groupId !== undefined && this.remoteRenderFpsMap.has(groupId)) {
       metricReport.currentMetrics['videoRemoteRenderFps'] = this.remoteRenderFpsMap.get(groupId);
+    }
+  }
+
+  // The report persists across intervals, so a value the tile no longer has is removed. Only undefined deletes:
+  // false and 0 are written.
+  private addOrDeleteMetric<T>(
+    store: { [name: string]: T },
+    metricName: string,
+    value: T | undefined
+  ): void {
+    if (value === undefined) {
+      delete store[metricName];
+    } else {
+      store[metricName] = value;
     }
   }
 
