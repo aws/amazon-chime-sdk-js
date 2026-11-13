@@ -8439,6 +8439,15 @@ $root.SdkMetric = (function() {
             case 128:
             case 129:
             case 134:
+            case 135:
+            case 136:
+            case 137:
+            case 138:
+            case 139:
+            case 140:
+            case 141:
+            case 142:
+            case 143:
                 break;
             }
         if (message.value != null && Object.hasOwnProperty.call(message, "value"))
@@ -8876,6 +8885,42 @@ $root.SdkMetric = (function() {
         case 134:
             message.type = 134;
             break;
+        case "VIDEO_INTER_FRAME_DELAY_MS":
+        case 135:
+            message.type = 135;
+            break;
+        case "VIDEO_INTER_FRAME_DELAY_STDDEV_MS":
+        case 136:
+            message.type = 136;
+            break;
+        case "RTC_SPK_CONCEALMENT_EVENTS":
+        case 137:
+            message.type = 137;
+            break;
+        case "RTC_SPK_AUDIBLE_CONCEALMENT_PERCENT":
+        case 138:
+            message.type = 138;
+            break;
+        case "RTC_SPK_ACCELERATE_PERCENT":
+        case 139:
+            message.type = 139;
+            break;
+        case "RTC_SPK_DECELERATE_PERCENT":
+        case 140:
+            message.type = 140;
+            break;
+        case "AUDIO_PLAYOUT_SYNTHESIZED_MS":
+        case 141:
+            message.type = 141;
+            break;
+        case "AUDIO_PLAYOUT_SYNTHESIZED_EVENTS":
+        case 142:
+            message.type = 142;
+            break;
+        case "AUDIO_PLAYOUT_DELAY_MS":
+        case 143:
+            message.type = 143;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -9041,6 +9086,15 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE=128 VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE value
      * @property {number} VIDEO_RECEIVED_RETRANSMIT_BITRATE=129 VIDEO_RECEIVED_RETRANSMIT_BITRATE value
      * @property {number} VIDEO_END_TO_END_DELAY_MS=134 VIDEO_END_TO_END_DELAY_MS value
+     * @property {number} VIDEO_INTER_FRAME_DELAY_MS=135 VIDEO_INTER_FRAME_DELAY_MS value
+     * @property {number} VIDEO_INTER_FRAME_DELAY_STDDEV_MS=136 VIDEO_INTER_FRAME_DELAY_STDDEV_MS value
+     * @property {number} RTC_SPK_CONCEALMENT_EVENTS=137 RTC_SPK_CONCEALMENT_EVENTS value
+     * @property {number} RTC_SPK_AUDIBLE_CONCEALMENT_PERCENT=138 RTC_SPK_AUDIBLE_CONCEALMENT_PERCENT value
+     * @property {number} RTC_SPK_ACCELERATE_PERCENT=139 RTC_SPK_ACCELERATE_PERCENT value
+     * @property {number} RTC_SPK_DECELERATE_PERCENT=140 RTC_SPK_DECELERATE_PERCENT value
+     * @property {number} AUDIO_PLAYOUT_SYNTHESIZED_MS=141 AUDIO_PLAYOUT_SYNTHESIZED_MS value
+     * @property {number} AUDIO_PLAYOUT_SYNTHESIZED_EVENTS=142 AUDIO_PLAYOUT_SYNTHESIZED_EVENTS value
+     * @property {number} AUDIO_PLAYOUT_DELAY_MS=143 AUDIO_PLAYOUT_DELAY_MS value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -9145,6 +9199,15 @@ $root.SdkMetric = (function() {
         values[valuesById[128] = "VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE"] = 128;
         values[valuesById[129] = "VIDEO_RECEIVED_RETRANSMIT_BITRATE"] = 129;
         values[valuesById[134] = "VIDEO_END_TO_END_DELAY_MS"] = 134;
+        values[valuesById[135] = "VIDEO_INTER_FRAME_DELAY_MS"] = 135;
+        values[valuesById[136] = "VIDEO_INTER_FRAME_DELAY_STDDEV_MS"] = 136;
+        values[valuesById[137] = "RTC_SPK_CONCEALMENT_EVENTS"] = 137;
+        values[valuesById[138] = "RTC_SPK_AUDIBLE_CONCEALMENT_PERCENT"] = 138;
+        values[valuesById[139] = "RTC_SPK_ACCELERATE_PERCENT"] = 139;
+        values[valuesById[140] = "RTC_SPK_DECELERATE_PERCENT"] = 140;
+        values[valuesById[141] = "AUDIO_PLAYOUT_SYNTHESIZED_MS"] = 141;
+        values[valuesById[142] = "AUDIO_PLAYOUT_SYNTHESIZED_EVENTS"] = 142;
+        values[valuesById[143] = "AUDIO_PLAYOUT_DELAY_MS"] = 143;
         return values;
     })();
 
