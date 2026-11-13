@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the `VIDEO_QUALITY_REASON` client metric, reporting the `qualityLimitationReason` of each sent video stream as 0 none, 1 CPU, 2 bandwidth or 3 other, the codes the native SDKs send.
 - Added the `VIDEO_TARGET_DELAY_MS` client metric, reporting the average jitter buffer target delay per emitted frame of each received video stream from the `jitterBufferTargetDelay` WebRTC stat.
 - Added the `VIDEO_PROCESSING_TIME` client metric, reporting the average processing delay per decoded frame of each received video stream from the `totalProcessingDelay` WebRTC stat.
+- Added the `VIDEO_INTER_FRAME_DELAY_MS` and `VIDEO_INTER_FRAME_DELAY_STDDEV_MS` client metrics, reporting the mean and standard deviation of the inter-frame delay of each received video stream from `totalInterFrameDelay` and `totalSquaredInterFrameDelay`.
+- Added the `RTC_SPK_CONCEALMENT_EVENTS`, `RTC_SPK_AUDIBLE_CONCEALMENT_PERCENT`, `RTC_SPK_ACCELERATE_PERCENT` and `RTC_SPK_DECELERATE_PERCENT` client metrics, reporting concealment events per second, non-silent concealed samples, and samples removed or inserted to speed up or slow down playout, as a percent of the received audio samples.
+- Added the `AUDIO_PLAYOUT_SYNTHESIZED_MS`, `AUDIO_PLAYOUT_SYNTHESIZED_EVENTS` and `AUDIO_PLAYOUT_DELAY_MS` client metrics from the `media-playout` WebRTC stats, where the browser provides them: synthesized playout samples in ms per second, synthesized sample events per second, and the average playout delay.
 
 ### Removed
 
