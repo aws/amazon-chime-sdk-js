@@ -1153,7 +1153,7 @@ describe('StatsCollector', () => {
       try {
         expect(downstreamMetrics()).to.not.have.property('videoRenderVisiblePercent');
         statsCollector.videoTileDisplayDidChange('attendee-1', {
-          devicePixelRatio: 1.25,
+          devicePixelRatio: () => 1.25,
           boundingWidth: 640,
           boundingHeight: 360.4,
           intersectionPercent: 35,
@@ -1169,7 +1169,7 @@ describe('StatsCollector', () => {
           videoRenderIntrinsicLayout: 1,
         });
         statsCollector.videoTileDisplayDidChange('attendee-1', {
-          devicePixelRatio: 2,
+          devicePixelRatio: () => 2,
           boundingWidth: 0,
           boundingHeight: 0,
           intersectionPercent: 0,
@@ -1191,13 +1191,41 @@ describe('StatsCollector', () => {
       }
     });
 
+    it('re-reads the device pixel ratio every report, so a ratio change without a resize shows up', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      try {
+        let ratio = 1;
+        statsCollector.videoTileDisplayDidChange('attendee-1', {
+          boundingWidth: 640,
+          boundingHeight: 360,
+          intersectionPercent: 100,
+          objectFit: VideoElementObjectFit.Contain,
+          intrinsicLayout: false,
+          isRendered: () => true,
+          devicePixelRatio: () => ratio,
+        });
+        expect(downstreamMetrics()).to.deep.include({
+          videoRenderPhysicalWidth: 640,
+          videoRenderPhysicalHeight: 360,
+        });
+        ratio = 2;
+        expect(downstreamMetrics()).to.deep.include({
+          videoRenderPhysicalWidth: 1280,
+          videoRenderPhysicalHeight: 720,
+        });
+      } finally {
+        statsCollector.stop();
+      }
+    });
+
     it('re-reads visibility and opacity every report, without a new display', () => {
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
       try {
         let rendered = true;
         statsCollector.videoTileDisplayDidChange('attendee-1', {
-          devicePixelRatio: 1,
+          devicePixelRatio: () => 1,
           boundingWidth: 640,
           boundingHeight: 360,
           intersectionPercent: 100,

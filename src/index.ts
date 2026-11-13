@@ -339,7 +339,6 @@ import VideoStreamIndex from './videostreamindex/VideoStreamIndex';
 import VideoTile from './videotile/VideoTile';
 import VideoTileController from './videotilecontroller/VideoTileController';
 import VideoTileControllerFacade from './videotilecontroller/VideoTileControllerFacade';
-import VideoTileDisplay from './videotilecontroller/VideoTileDisplay';
 import VideoTileFactory from './videotilefactory/VideoTileFactory';
 import VideoTileState from './videotile/VideoTileState';
 import VideoTransformDevice from './devicecontroller/VideoTransformDevice';
@@ -736,7 +735,6 @@ export {
   VideoTile,
   VideoTileController,
   VideoTileControllerFacade,
-  VideoTileDisplay,
   VideoTileFactory,
   VideoTileState,
   VideoTransformDevice,

@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DevicePixelRatioSource from '../devicepixelratiosource/DevicePixelRatioSource';
+import DevicePixelRatioWindowSource from '../devicepixelratiosource/DevicePixelRatioWindowSource';
 import VideoElementDisplay from './VideoElementDisplay';
 import VideoElementFrameMonitor from './VideoElementFrameMonitor';
 import VideoElementObjectFit from './VideoElementObjectFit';
@@ -47,7 +49,11 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
     );
   };
 
-  constructor() {
+  private devicePixelRatio = (): number => this.devicePixelRatioSource.devicePixelRatio();
+
+  constructor(
+    private devicePixelRatioSource: DevicePixelRatioSource = new DevicePixelRatioWindowSource()
+  ) {
     this.resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
@@ -156,6 +162,7 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
       objectFit: this.objectFit,
       intrinsicLayout: this.intrinsicLayout,
       isRendered: this.isRendered,
+      devicePixelRatio: this.devicePixelRatio,
     };
     const key = JSON.stringify(display);
     if (key === this.reportedDisplay) {

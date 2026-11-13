@@ -386,7 +386,7 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       rendered: boolean;
       bounding: { width: number; height: number };
     }
-    type Layout = Omit<VideoElementDisplay, 'isRendered'>;
+    type Layout = Omit<VideoElementDisplay, 'isRendered' | 'devicePixelRatio'>;
 
     const intersect = (intersectionRatio: number, width = 640, height = 360): void =>
       intersectionCallback([
@@ -521,6 +521,23 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       expect(displays.length).to.equal(1);
       monitor.bindVideoElement(null);
       expect(isRendered()).to.be.false;
+    });
+
+    it('reads the device pixel ratio from its source when asked, without a resize', () => {
+      let ratio = 2;
+      monitor = new DefaultVideoElementResolutionMonitor({ devicePixelRatio: () => ratio });
+      monitor.registerObserver({
+        videoElementResolutionChanged: (): void => {},
+        videoElementDisplayDidChange: (d: VideoElementDisplay): void => {
+          displays.push(d);
+        },
+      });
+      bindAndLayOut();
+      intersect(1);
+      expect(displays[0].devicePixelRatio()).to.equal(2);
+      ratio = 1.5;
+      expect(displays[0].devicePixelRatio()).to.equal(1.5);
+      expect(displays.length).to.equal(1);
     });
 
     it('treats an element without checkVisibility as rendered', () => {

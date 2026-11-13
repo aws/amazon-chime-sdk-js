@@ -25,9 +25,9 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import { Maybe } from '../utils/Types';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import VideoElementDisplay from '../videotile/VideoElementDisplay';
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import { VideoTileResolutionObserver } from '../videotilecontroller/VideoTileController';
-import VideoTileDisplay from '../videotilecontroller/VideoTileDisplay';
 import AudioLogEvent from './AudioLogEvent';
 import ComputePressureMonitor, { PressureState } from './ComputePressureMonitor';
 import VideoLogEvent from './VideoLogEvent';
@@ -95,7 +95,7 @@ export default class StatsCollector
   private backgroundSegmentationProcessorMetric: BackgroundSegmentationProcessorMetrics | null =
     null;
   private resolutionMap = new Map<string, { width: number; height: number }>();
-  private displayMap = new Map<string, VideoTileDisplay>();
+  private displayMap = new Map<string, VideoElementDisplay>();
   private remoteRenderFpsMap = new Map<number, number>();
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
@@ -303,7 +303,7 @@ export default class StatsCollector
     this.resolutionMap.set(attendeeId, { width: newWidth, height: newHeight });
   }
 
-  videoTileDisplayDidChange(attendeeId: string, display: VideoTileDisplay): void {
+  videoTileDisplayDidChange(attendeeId: string, display: VideoElementDisplay): void {
     this.displayMap.set(attendeeId, display);
   }
 
@@ -1136,11 +1136,13 @@ export default class StatsCollector
     const display = this.displayMap.get(attendeeId);
     if (display) {
       if (display.boundingWidth > 0 && display.boundingHeight > 0) {
+        // The ratio is read every report: it changes without a resize.
+        const devicePixelRatio = display.devicePixelRatio();
         metricReport.currentMetrics['videoRenderPhysicalWidth'] = Math.round(
-          display.boundingWidth * display.devicePixelRatio
+          display.boundingWidth * devicePixelRatio
         );
         metricReport.currentMetrics['videoRenderPhysicalHeight'] = Math.round(
-          display.boundingHeight * display.devicePixelRatio
+          display.boundingHeight * devicePixelRatio
         );
       }
       // checkVisibility is re-read every report: opacity and visibility change without a callback.

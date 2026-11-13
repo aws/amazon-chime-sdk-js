@@ -27,7 +27,7 @@ export default class DefaultVideoTileController implements VideoTileController {
   private devicePixelRatioMonitor: undefined | DefaultDevicePixelRatioMonitor;
   private currentPausedTilesByIds: Set<number> = new Set<number>();
   private resolutionObservers = new Set<VideoTileResolutionObserver>();
-  private tileDisplays = new Map<number, VideoElementDisplay>();
+  private devicePixelRatioSource = new DevicePixelRatioWindowSource();
   keepLastFrameWhenPaused: boolean | undefined = false;
 
   constructor(
@@ -43,7 +43,7 @@ export default class DefaultVideoTileController implements VideoTileController {
       return;
     }
     this.devicePixelRatioMonitor = new DefaultDevicePixelRatioMonitor(
-      new DevicePixelRatioWindowSource(),
+      this.devicePixelRatioSource,
       this.logger
     );
   }
@@ -81,7 +81,6 @@ export default class DefaultVideoTileController implements VideoTileController {
       return;
     }
     this.logger.info('Unbinding the video element');
-    this.tileDisplays.delete(tileId);
     for (const observer of this.resolutionObservers) {
       observer.videoTileUnbound(tile.state().boundAttendeeId, tile.state().groupId);
     }
@@ -221,7 +220,6 @@ export default class DefaultVideoTileController implements VideoTileController {
     }
     tile.destroy();
     this.tileMap.delete(tileId);
-    this.tileDisplays.delete(tileId);
     this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
       Maybe.of(observer.videoTileWasRemoved).map(f => f.bind(observer)(tileId));
     });
@@ -251,8 +249,6 @@ export default class DefaultVideoTileController implements VideoTileController {
     this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
       Maybe.of(observer.videoTileDidUpdate).map(f => f.bind(observer)(tileState));
     });
-    // A tile reports device pixel ratio changes through tile state updates.
-    this.sendTileDisplay(tileState);
   }
 
   haveVideoTilesWithStreams(): boolean {
@@ -318,7 +314,7 @@ export default class DefaultVideoTileController implements VideoTileController {
       }
     })(this, tileId);
 
-    const resolutionMonitor = new DefaultVideoElementResolutionMonitor();
+    const resolutionMonitor = new DefaultVideoElementResolutionMonitor(this.devicePixelRatioSource);
     resolutionMonitor.registerObserver(observer);
     return resolutionMonitor;
   }
@@ -354,18 +350,10 @@ export default class DefaultVideoTileController implements VideoTileController {
   private handleVideoElementDisplayChanged(tileId: number, display: VideoElementDisplay): void {
     const tile = this.getVideoTile(tileId);
     if (!tile) return;
-    this.tileDisplays.set(tileId, display);
-    this.sendTileDisplay(tile.state());
-  }
-
-  private sendTileDisplay(tileState: VideoTileState): void {
-    const display = this.tileDisplays.get(tileState.tileId);
-    if (!display || tileState.localTile || !tileState.boundAttendeeId) return;
+    const tileState = tile.state();
+    if (tileState.localTile || !tileState.boundAttendeeId) return;
     for (const observer of this.resolutionObservers) {
-      observer.videoTileDisplayDidChange?.(tileState.boundAttendeeId, {
-        devicePixelRatio: tileState.devicePixelRatio,
-        ...display,
-      });
+      observer.videoTileDisplayDidChange?.(tileState.boundAttendeeId, display);
     }
   }
 

@@ -9,6 +9,7 @@ import VideoElementObjectFit from './VideoElementObjectFit';
 export default interface VideoElementDisplay {
   /**
    * The width of the element on screen in CSS pixels, from `getBoundingClientRect`, which includes CSS transforms.
+   * Multiply by `devicePixelRatio()` for physical pixels.
    */
   boundingWidth: number;
 
@@ -39,4 +40,10 @@ export default interface VideoElementDisplay {
    * a resize or intersection change, so read this when the value is used. It is a style check, not a layout read.
    */
   isRendered: () => boolean;
+
+  /**
+   * The device pixel ratio now. It changes without a resize, for example when the window moves to another
+   * display, so read this when the value is used.
+   */
+  devicePixelRatio: () => number;
 }

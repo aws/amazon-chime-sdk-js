@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import VideoElementDisplay from '../videotile/VideoElementDisplay';
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
-import VideoTileDisplay from './VideoTileDisplay';
 
 /**
  * Observer for video tile events including resolution changes, unbinding, first-frame detection,
@@ -57,13 +57,13 @@ export interface VideoTileResolutionObserver {
   videoTileRenderMetricsDidReceive?(groupId: number, metrics: VideoElementFrameMetrics): void;
 
   /**
-   * Called when the device pixel ratio, the visible percent or the computed `object-fit` of a remote
-   * video tile's element changes.
+   * Called when how a remote video tile's element is displayed changes: its on-screen size, intersection with
+   * the viewport, computed `object-fit` or intrinsic layout. `isRendered` and `devicePixelRatio` are read when used.
    *
    * @param attendeeId The attendee whose video the tile shows
    * @param display How the tile's video element is displayed
    */
-  videoTileDisplayDidChange?(attendeeId: string, display: VideoTileDisplay): void;
+  videoTileDisplayDidChange?(attendeeId: string, display: VideoElementDisplay): void;
 }
 
 /**

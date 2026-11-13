@@ -10,12 +10,12 @@ import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver'
 import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
+import VideoElementDisplay from '../../src/videotile/VideoElementDisplay';
 import VideoElementObjectFit from '../../src/videotile/VideoElementObjectFit';
 import VideoTileState from '../../src/videotile/VideoTileState';
 import VideoTileController, {
   VideoTileResolutionObserver,
 } from '../../src/videotilecontroller/VideoTileController';
-import VideoTileDisplay from '../../src/videotilecontroller/VideoTileDisplay';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import { createFakeTimers } from '../utils/fakeTimerHelper';
 
@@ -607,11 +607,11 @@ describe('DefaultVideoTileController', () => {
 
   describe('videoTileDisplayDidChange', () => {
     let intersectionCallback: (entries: IntersectionObserverEntry[]) => void;
-    let displays: Array<[string, VideoTileDisplay]>;
+    let displays: Array<[string, VideoElementDisplay]>;
     const displayObserver: VideoTileResolutionObserver = {
       videoTileResolutionDidChange: () => {},
       videoTileUnbound: () => {},
-      videoTileDisplayDidChange: (attendeeId: string, display: VideoTileDisplay) => {
+      videoTileDisplayDidChange: (attendeeId: string, display: VideoElementDisplay) => {
         displays.push([attendeeId, display]);
       },
     };
@@ -630,10 +630,17 @@ describe('DefaultVideoTileController', () => {
       resizeCallback([{ contentRect: { width: 640, height: 360 } } as ResizeObserverEntry]);
       return videoElement;
     };
-    const reported = (): Array<[string, Omit<VideoTileDisplay, 'isRendered'>]> =>
-      displays.map(([attendeeId, { isRendered: _isRendered, ...display }]) => [
+    type Reported = Omit<VideoElementDisplay, 'isRendered' | 'devicePixelRatio'>;
+    const reported = (): Array<[string, Reported]> =>
+      displays.map(([attendeeId, d]) => [
         attendeeId,
-        display,
+        {
+          boundingWidth: d.boundingWidth,
+          boundingHeight: d.boundingHeight,
+          intersectionPercent: d.intersectionPercent,
+          objectFit: d.objectFit,
+          intrinsicLayout: d.intrinsicLayout,
+        },
       ]);
 
     beforeEach(() => {
@@ -660,25 +667,30 @@ describe('DefaultVideoTileController', () => {
       delete (globalThis as any).getComputedStyle;
     });
 
-    it('reports the display of a remote tile with its device pixel ratio, and again when the ratio changes', () => {
+    it('forwards the display of a remote tile, with the device pixel ratio read from the window when asked', () => {
       const tile = tileController.addVideoTile();
       tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1, 'ext', 5);
       boundAndLaidOut(tile.id());
-      const devicePixelRatio = tile.state().devicePixelRatio;
       intersect(0.4);
       (tile as DefaultVideoTile).devicePixelRatioChanged(2);
-      const display = {
-        boundingWidth: 640,
-        boundingHeight: 360,
-        intersectionPercent: 40,
-        objectFit: VideoElementObjectFit.Cover,
-        intrinsicLayout: false,
-      };
       expect(reported()).to.deep.equal([
-        ['attendee', { devicePixelRatio, ...display }],
-        ['attendee', { devicePixelRatio: 2, ...display }],
+        [
+          'attendee',
+          {
+            boundingWidth: 640,
+            boundingHeight: 360,
+            intersectionPercent: 40,
+            objectFit: VideoElementObjectFit.Cover,
+            intrinsicLayout: false,
+          },
+        ],
       ]);
-      expect(displays[1][1].isRendered()).to.be.true;
+      expect(displays[0][1].isRendered()).to.be.true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).devicePixelRatio = 3;
+      expect(displays[0][1].devicePixelRatio()).to.equal(3);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (globalThis as any).devicePixelRatio;
     });
 
     it('reports nothing for a local tile or a tile without a bound attendee', () => {
