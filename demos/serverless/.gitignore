@@ -1,7 +1,6 @@
-src/aws-sdk
-src/uuid
 src/index.html
-src/indexV2.html
-src/aws-embedded-metrics
+src/csp.js
+src/captureBucket.js
+src/meetingRequests.js
 src/speech.mp3
 src/speech_stereo.mp3
