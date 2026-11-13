@@ -13,6 +13,7 @@ export default class StreamMetricReport {
   currentMetrics: { [id: string]: number } = {};
   // As metric values do not necessarily be number, this is a workaround in case metric value is string
   currentStringMetrics: { [id: string]: string } = {};
+  currentBooleanMetrics: { [id: string]: boolean } = {};
   previousObjectMetrics: { [id: string]: object } = {};
   currentObjectMetrics: { [id: string]: object } = {};
 }
