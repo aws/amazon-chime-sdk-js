@@ -4,7 +4,6 @@
 // Inlined from lucide-static (ISC) via Vite `?raw` so the single-file bundle stays self-contained.
 import activity from 'lucide-static/icons/activity.svg?raw';
 import audioLines from 'lucide-static/icons/audio-lines.svg?raw';
-import cable from 'lucide-static/icons/cable.svg?raw';
 import captions from 'lucide-static/icons/captions.svg?raw';
 import captionsOff from 'lucide-static/icons/captions-off.svg?raw';
 import check from 'lucide-static/icons/check.svg?raw';
@@ -40,7 +39,6 @@ import pin from 'lucide-static/icons/pin.svg?raw';
 import pinOff from 'lucide-static/icons/pin-off.svg?raw';
 import play from 'lucide-static/icons/play.svg?raw';
 import radio from 'lucide-static/icons/radio.svg?raw';
-import rotateCcw from 'lucide-static/icons/rotate-ccw.svg?raw';
 import screenShare from 'lucide-static/icons/screen-share.svg?raw';
 import screenShareOff from 'lucide-static/icons/screen-share-off.svg?raw';
 import send from 'lucide-static/icons/send.svg?raw';
@@ -48,7 +46,6 @@ import settings from 'lucide-static/icons/settings.svg?raw';
 import slidersHorizontal from 'lucide-static/icons/sliders-horizontal.svg?raw';
 import smile from 'lucide-static/icons/smile.svg?raw';
 import sparkles from 'lucide-static/icons/sparkles.svg?raw';
-import stethoscope from 'lucide-static/icons/stethoscope.svg?raw';
 import triangleAlert from 'lucide-static/icons/triangle-alert.svg?raw';
 import userCog from 'lucide-static/icons/user-cog.svg?raw';
 import users from 'lucide-static/icons/users.svg?raw';
@@ -63,7 +60,6 @@ import x from 'lucide-static/icons/x.svg?raw';
 const ICONS = {
   activity,
   audioLines,
-  cable,
   captions,
   captionsOff,
   check,
@@ -104,7 +100,6 @@ const ICONS = {
   pinOff,
   play,
   radio,
-  rotateCcw,
   screenShare,
   screenShareOff,
   send,
@@ -112,7 +107,6 @@ const ICONS = {
   slidersHorizontal,
   smile,
   sparkles,
-  stethoscope,
   triangleAlert,
   userCog,
   users,

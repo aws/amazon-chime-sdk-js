@@ -19,7 +19,6 @@ export const STRINGS = {
   contextStopSharing: 'stopping the share',
   contextShare: 'pausing or resuming the share',
   contextDismiss: 'dismissing',
-  contextReadinessCheck: 'testing your setup',
   videoOnlyStage: 'Show only people with video',
   codecModeUnavailable: 'Not available with this video codec or browser',
   audioRedundancyUnavailable: 'This browser does not support audio redundancy',
@@ -45,11 +44,7 @@ export const STRINGS = {
   mediaRegion: (code: string) => `Media region: ${code}`,
   httpNotAllowed:
     'UserMedia is not allowed on HTTP sites. Use HTTPS or enable media capture on insecure sites.',
-  micTestRecording: (secondsLeft: number) => `Recording, plays back in ${secondsLeft} s`,
   speakerTestPlaying: 'Playing',
-  micTestPlaying: 'Playing',
-  micTestFailed: (message: string) => `Microphone test failed: ${message}`,
-  micTestRecordingFailed: 'Recording failed.',
   microphoneDisconnected: (label: string | undefined) =>
     `Microphone disconnected. Now using ${label ?? 'the default microphone'}.`,
   defaultSpeaker: 'Default speaker',
@@ -320,22 +315,10 @@ export const STRINGS = {
   unavailableRecordingOptions: (labels: string[]) => labels.join(' and '),
   meetingDetails: 'Meeting details',
   clipboardUnavailable: 'This page cannot use the clipboard. Copy the link from Meeting details.',
-  readinessTitle: 'Test your setup',
-  readinessRunning: 'Testing your setup',
-  readinessDone: 'Setup test complete',
-  readinessRegion: (region: string) => `Runs in a separate meeting in ${region}.`,
-  readinessNoAudio: 'No audio (silent stream)',
-  readinessWaiting: 'Waiting',
-  readinessChecking: 'Checking',
-  readinessPassed: 'Passed',
-  readinessProgress: (done: number, total: number) => `${done} of ${total} checks done`,
-  readinessYourTurn: (done: number, total: number, steps: string[]) =>
-    `${done} of ${total} done. To finish, ${steps.join(' and ')}.`,
-  readinessPlayToneStep: 'play the tone',
-  readinessShareStep: 'share your screen',
-  readinessAllPassed: (total: number) => `All ${total} checks passed`,
-  readinessNeedAttention: (failed: number) =>
-    failed === 1 ? '1 check needs attention' : `${failed} checks need attention`,
-  readinessPlayTone: 'Play tone',
-  readinessPlayAgain: 'Play again',
+  connectionChecking: 'Verifying Network',
+  connectionReady: 'Ready to Join!',
+  connectionTcpOnly: 'UDP is blocked, so audio and video will go over TCP, which can add delay.',
+  connectionBlockedAll:
+    'Neither UDP nor TCP reaches the media servers. Allow UDP 3478 or TCP 443 to *.chime.aws.',
+  connectionNoSignaling: (reason: string) => `Could not reach the meeting: ${reason}.`,
 } as const;

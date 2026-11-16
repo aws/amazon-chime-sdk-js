@@ -13,7 +13,6 @@ import Flows from './Flows';
 export interface JoinScreenCallbacks {
   onContinue: () => void;
   onOpenSettings: () => void;
-  onTestSetup: () => void;
 }
 
 export default class JoinScreen {
@@ -68,10 +67,6 @@ export default class JoinScreen {
     byId('additional-options-button').addEventListener('click', () =>
       this.callbacks.onOpenSettings()
     );
-    byId('button-readiness-check').addEventListener('click', event => {
-      event.preventDefault();
-      this.callbacks.onTestSetup();
-    });
     byId('join-info-override-join-button').addEventListener('click', () => {
       if (this.readOverride() && this.config.joinInfoOverride) {
         this.overrideDialog.close();
@@ -221,10 +216,6 @@ export default class JoinScreen {
       this.regionFromMeeting = true;
       this.selectRegion(result.mediaRegion);
     }
-  }
-
-  get region(): string {
-    return this.regionSelect.value;
   }
 
   regionName(region: string | undefined): string {
