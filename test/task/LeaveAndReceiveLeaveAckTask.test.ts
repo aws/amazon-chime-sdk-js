@@ -8,6 +8,7 @@ import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
@@ -66,7 +67,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
     signalingClient = new DefaultSignalingClient(webSocketAdapter, context.logger);
     // configuration.urls.signalingURL = 'ws://localhost:9999/control';
     context.signalingClient = signalingClient;
-    context.peer = new RTCPeerConnection();
+    context.peer = new DefaultPeerConnection(new RTCPeerConnection());
     request = new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth');
     context.signalingClient.openConnection(request);
   });

@@ -10,6 +10,7 @@ import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBeha
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import AsyncScheduler from '../../src/scheduler/AsyncScheduler';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import FinishGatheringICECandidatesTask from '../../src/task/FinishGatheringICECandidatesTask';
@@ -83,7 +84,7 @@ describe('FinishGatheringICECandidatesTask', () => {
     configuration.connectionTimeoutMs = 15000;
     context.meetingSessionConfiguration = configuration;
     const peer: RTCPeerConnection = new RTCPeerConnection();
-    context.peer = peer;
+    context.peer = new DefaultPeerConnection(peer);
     context.turnCredentials = turnCredentials;
     context.browserBehavior = new DefaultBrowserBehavior();
     context.audioProfile = new AudioProfile();
@@ -107,7 +108,7 @@ describe('FinishGatheringICECandidatesTask', () => {
   describe('run', () => {
     it('can be run and succeed without turn credentials', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       context.turnCredentials = null;
       task = new FinishGatheringICECandidatesTask(context);
       task.run().then(() => {
@@ -116,40 +117,40 @@ describe('FinishGatheringICECandidatesTask', () => {
       const event = new Event('icegatheringstatechange');
       new AsyncScheduler().start(() => {
         // @ts-ignore
-        peer.iceGatheringState = 'complete';
+        peer.rtcPeerConnection.iceGatheringState = 'complete';
         // fake a complete ice gathering without turn
-        peer.dispatchEvent(event);
+        peer.rtcPeerConnection.dispatchEvent(event);
       });
     });
 
     it('can be run and timeout without turn credentials', () => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       context.turnCredentials = null;
       task = new FinishGatheringICECandidatesTask(context, 300);
       task.run().then(() => {});
       const event = new Event('icegatheringstatechange');
       new AsyncScheduler().start(() => {
         // fake a complete ice gathering without turn
-        peer.dispatchEvent(event);
+        peer.rtcPeerConnection.dispatchEvent(event);
       });
     });
 
     it('can be run and succeed with one rtp candidate', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
       task.run().then(() => {
         const candidates = context.iceCandidates;
         expect(candidates.length).to.be.equal(1);
         done();
       });
-      new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
+      new AsyncScheduler().start(() => peer.rtcPeerConnection.dispatchEvent(testICEEvent));
     });
 
     it('can be run and succeed when gathering becomes complete and local description has ice candidate', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
       context.iceCandidates.push(testICEEvent.candidate);
       task = new FinishGatheringICECandidatesTask(context, 300);
@@ -159,15 +160,15 @@ describe('FinishGatheringICECandidatesTask', () => {
 
       new TimeoutScheduler(100).start(() => {
         // @ts-ignore
-        peer.iceGatheringState = 'complete';
-        setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
-        peer.dispatchEvent(makeICEEvent(null));
+        peer.rtcPeerConnection.iceGatheringState = 'complete';
+        setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+        peer.rtcPeerConnection.dispatchEvent(makeICEEvent(null));
       });
     });
 
     it('can be run and return immediately with previous gathered candidate and SDP which has candidate attributes', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.SAFARI_AV_SENDING);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.SAFARI_AV_SENDING);
       testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
       context.iceCandidates.push(testICEEvent.candidate);
       task.run().then(() => {
@@ -179,9 +180,9 @@ describe('FinishGatheringICECandidatesTask', () => {
 
     it('can bypass ice gathering if state is complete and SDP has candidates', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.SAFARI_AV_SENDING);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.SAFARI_AV_SENDING);
       // @ts-ignore
-      peer.iceGatheringState = 'complete';
+      peer.rtcPeerConnection.iceGatheringState = 'complete';
       task.run().then(() => {
         done();
       });
@@ -189,7 +190,7 @@ describe('FinishGatheringICECandidatesTask', () => {
 
     it('can be run and succeed when the SDP has candidates for all m-lines', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.MOZILLA_AV_SENDING);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.MOZILLA_AV_SENDING);
       testICEEvent = makeICEEvent(null);
       context.iceCandidates.push(testICEEvent.candidate);
       task.run().then(() => {
@@ -205,7 +206,10 @@ describe('FinishGatheringICECandidatesTask', () => {
         'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'
       );
       context.browserBehavior = new DefaultBrowserBehavior();
-      setLocalDescription(peer, SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      setLocalDescription(
+        peer.rtcPeerConnection,
+        SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE
+      );
       testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
       context.iceCandidates.push(testICEEvent.candidate);
       task.run().then(() => {
@@ -216,7 +220,7 @@ describe('FinishGatheringICECandidatesTask', () => {
 
       new TimeoutScheduler(100).start(() => {
         // @ts-ignore
-        peer.dispatchEvent(testICEEvent);
+        peer.rtcPeerConnection.dispatchEvent(testICEEvent);
       });
     });
 
@@ -227,9 +231,9 @@ describe('FinishGatheringICECandidatesTask', () => {
       context.browserBehavior = new DefaultBrowserBehavior();
       const peer = context.peer;
       // @ts-ignore
-      peer.iceGatheringState = 'complete';
+      peer.rtcPeerConnection.iceGatheringState = 'complete';
 
-      setLocalDescription(peer, SDPMock.SAFARI_AV_SENDING);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.SAFARI_AV_SENDING);
       testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
       task.run().then(() => {
         done();
@@ -238,7 +242,7 @@ describe('FinishGatheringICECandidatesTask', () => {
 
     it('throws error when there is no candidate on SDP upon event firing and gathering is complete', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       testICEEvent = makeICEEvent(null);
       task
         .run()
@@ -249,14 +253,14 @@ describe('FinishGatheringICECandidatesTask', () => {
 
       new TimeoutScheduler(100).start(() => {
         // @ts-ignore
-        peer.iceGatheringState = 'complete';
-        peer.dispatchEvent(testICEEvent);
+        peer.rtcPeerConnection.iceGatheringState = 'complete';
+        peer.rtcPeerConnection.dispatchEvent(testICEEvent);
       });
     });
 
     it('throws error with ice-candidate events but no RTP-type candidate', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       testICEEvent = makeICEEvent('non-rtp-candidate');
       task.run().catch(() => {
         const candidates = context.iceCandidates;
@@ -264,13 +268,13 @@ describe('FinishGatheringICECandidatesTask', () => {
         expect(peer.iceGatheringState).to.be.equal('complete');
         done();
       });
-      new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
-      new TimeoutScheduler(20).start(() => peer.dispatchEvent(testICEEvent));
+      new AsyncScheduler().start(() => peer.rtcPeerConnection.dispatchEvent(testICEEvent));
+      new TimeoutScheduler(20).start(() => peer.rtcPeerConnection.dispatchEvent(testICEEvent));
     });
 
     it('throws error with ice candidate event but no candidate', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       testICEEvent = makeICEEvent(null);
       task.run().catch(() => {
         const candidates = context.iceCandidates;
@@ -278,8 +282,8 @@ describe('FinishGatheringICECandidatesTask', () => {
         expect(peer.iceGatheringState).to.be.equal('complete');
         done();
       });
-      new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
-      new TimeoutScheduler(20).start(() => peer.dispatchEvent(testICEEvent));
+      new AsyncScheduler().start(() => peer.rtcPeerConnection.dispatchEvent(testICEEvent));
+      new TimeoutScheduler(20).start(() => peer.rtcPeerConnection.dispatchEvent(testICEEvent));
     });
 
     it('throws error when peer connection is null', done => {
@@ -291,7 +295,7 @@ describe('FinishGatheringICECandidatesTask', () => {
   describe('cancel', () => {
     it('will not finish if passing the non-RTP-candidate until it it canceled', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       task
         .run()
         .then(() => {
@@ -307,7 +311,7 @@ describe('FinishGatheringICECandidatesTask', () => {
 
     it('will not finish if passing the non-RTP-candidate until it it canceled', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       task
         .run()
         .then(() => {
@@ -329,7 +333,7 @@ describe('FinishGatheringICECandidatesTask', () => {
       );
       context.browserBehavior = new DefaultBrowserBehavior();
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       task.run().catch((error: Error) => {
         expect(error.message).includes(
           `the meeting status code: ${MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround}`
@@ -349,7 +353,7 @@ describe('FinishGatheringICECandidatesTask', () => {
       setUserAgent('Chrome/77.0.3865.75');
       context.browserBehavior = new DefaultBrowserBehavior();
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       task.run().catch((error: Error) => {
         expect(error.message).not.includes(
           `the meeting status code: ${MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround}`
@@ -366,7 +370,7 @@ describe('FinishGatheringICECandidatesTask', () => {
       setUserAgent('Chrome/77.0.3865.75');
       context.browserBehavior = new DefaultBrowserBehavior();
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      setLocalDescription(peer.rtcPeerConnection, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       task.run().catch((error: Error) => {
         expect(error.message).not.includes(
           `the meeting status code: ${MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround}`

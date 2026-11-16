@@ -9,6 +9,7 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import VideoCodecCapability from '../../src/sdp/VideoCodecCapability';
 import {
   SdkIndexFrame,
@@ -60,7 +61,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       context.browserBehavior,
       context
     );
-    transceiverController.setPeer(peer);
+    transceiverController.setPeer(new DefaultPeerConnection(peer));
     transceiverController.setupLocalTransceivers();
   });
 
@@ -868,7 +869,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
         context
       );
       const spy = sinon.spy(invalidTransceiverController, 'setEncodingParameters');
-      invalidTransceiverController.setPeer(new RTCPeerConnection());
+      invalidTransceiverController.setPeer(new DefaultPeerConnection(new RTCPeerConnection()));
       invalidTransceiverController.setupLocalTransceivers();
       policy.setTransceiverController(invalidTransceiverController);
       policy.updateTransceiverController();

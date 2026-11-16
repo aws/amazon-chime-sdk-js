@@ -10,6 +10,7 @@ import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import SetLocalDescriptionTask from '../../src/task/SetLocalDescriptionTask';
 import Task from '../../src/task/Task';
@@ -37,7 +38,7 @@ describe('SetLocalDescriptionTask', () => {
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
     const peer: RTCPeerConnection = new RTCPeerConnection();
-    context.peer = peer;
+    context.peer = new DefaultPeerConnection(peer);
     context.sdpOfferInit = sdpOffer;
     context.browserBehavior = new DefaultBrowserBehavior();
     task = new SetLocalDescriptionTask(context);
@@ -78,7 +79,7 @@ describe('SetLocalDescriptionTask', () => {
         }
       }
       const peer: RTCPeerConnection = new TestPeerConnectionMock();
-      context.peer = peer;
+      context.peer = new DefaultPeerConnection(peer);
       await task.run();
     });
 
@@ -92,7 +93,7 @@ describe('SetLocalDescriptionTask', () => {
         }
       }
       const peer: RTCPeerConnection = new TestPeerConnectionMock();
-      context.peer = peer;
+      context.peer = new DefaultPeerConnection(peer);
       expect(task.run()).to.eventually.be.rejected;
     });
 
@@ -196,7 +197,7 @@ describe('SetLocalDescriptionTask', () => {
         }
       }
       const peer: RTCPeerConnection = new TestPeerConnectionMock();
-      context.peer = peer;
+      context.peer = new DefaultPeerConnection(peer);
       context.audioVideoController.configuration.credentials.attendeeId = 'attendee#content';
       context.audioVideoController.configuration.enableSVC = true;
       await task.run();

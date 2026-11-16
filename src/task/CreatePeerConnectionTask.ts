@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import DefaultPeerConnection from '../peerconnection/DefaultPeerConnection';
 import RemovableObserver from '../removableobserver/RemovableObserver';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
@@ -101,7 +102,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     } else {
       this.context.logger.info('creating new peer connection');
       // @ts-ignore
-      this.context.peer = new RTCPeerConnection(configuration);
+      this.context.peer = new DefaultPeerConnection(new RTCPeerConnection(configuration));
       this.addPeerConnectionEventLogger();
     }
 

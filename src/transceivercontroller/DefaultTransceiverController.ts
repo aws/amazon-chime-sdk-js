@@ -5,6 +5,7 @@ import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControl
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import Logger from '../logger/Logger';
+import PeerConnection from '../peerconnection/PeerConnection';
 import RedundantAudioRecoveryMetricsObserver from '../redundantaudiorecoverymetricsobserver/RedundantAudioRecoveryMetricsObserver';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
@@ -21,7 +22,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   protected _localAudioTransceiver: RTCRtpTransceiver | null = null;
   protected videoSubscriptions: number[] = [];
   protected defaultMediaStream: MediaStream | null = null;
-  protected peer: RTCPeerConnection | null = null;
+  protected peer: PeerConnection | null = null;
   protected streamIdToTransceiver: Map<number, RTCRtpTransceiver> = new Map();
   protected groupIdToTransceiver: Map<number, RTCRtpTransceiver> = new Map();
   private senderParametersUpdate: Promise<void> = Promise.resolve();
@@ -135,7 +136,7 @@ export default class DefaultTransceiverController implements TransceiverControll
     await sender.setParameters(param);
   }
 
-  setPeer(peer: RTCPeerConnection): void {
+  setPeer(peer: PeerConnection): void {
     this.peer = peer;
     this.peer.addEventListener('track', this.handleTrack);
   }
@@ -167,7 +168,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   };
 
   useTransceivers(): boolean {
-    return !!this.peer && typeof this.peer.getTransceivers !== 'undefined';
+    return !!this.peer && this.peer.hasTransceivers();
   }
 
   hasVideoInput(): boolean {
@@ -232,8 +233,8 @@ export default class DefaultTransceiverController implements TransceiverControll
    * API (`getHeaderExtensionsToNegotiate` / `setHeaderExtensionsToNegotiate`),
    * which allows configuring RTP header extensions without SDP munging.
    */
-  static canUseHeaderExtensionApi(peer: RTCPeerConnection): boolean {
-    const transceivers = peer.getTransceivers?.();
+  static canUseHeaderExtensionApi(peer: PeerConnection): boolean {
+    const transceivers = peer.hasTransceivers() ? peer.getTransceivers() : undefined;
     if (!transceivers?.length) {
       return false;
     }

@@ -12,6 +12,7 @@ import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBeha
 import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import StatsCollector from '../../src/statscollector/StatsCollector';
 import AttachMediaInputTask from '../../src/task/AttachMediaInputTask';
 import Task from '../../src/task/Task';
@@ -56,7 +57,7 @@ describe('AttachMediaInputTask', () => {
       ],
       iceTransportPolicy: 'relay',
     };
-    context.peer = new RTCPeerConnection(configuration);
+    context.peer = new DefaultPeerConnection(new RTCPeerConnection(configuration));
     context.browserBehavior = new DefaultBrowserBehavior();
     context.audioProfile = new AudioProfile();
     context.transceiverController = new DefaultTransceiverController(

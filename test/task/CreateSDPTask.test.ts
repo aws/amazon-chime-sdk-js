@@ -8,6 +8,7 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import CreateSDPTask from '../../src/task/CreateSDPTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -40,7 +41,7 @@ describe('CreateSDPTask', () => {
     context.logger = context.audioVideoController.logger;
     context.videosToReceive = new DefaultVideoStreamIdSet();
     const peer: RTCPeerConnection = new RTCPeerConnection();
-    context.peer = peer;
+    context.peer = new DefaultPeerConnection(peer);
     task = new CreateSDPTask(context);
     context.meetingSessionConfiguration = new MeetingSessionConfiguration(
       CreateMeetingResponseMock.MeetingResponseMock,
@@ -73,7 +74,9 @@ describe('CreateSDPTask', () => {
           });
         }
       }
-      context.peer = new TestPeerConnectionMock() as unknown as RTCPeerConnection;
+      context.peer = new DefaultPeerConnection(
+        new TestPeerConnectionMock() as unknown as RTCPeerConnection
+      );
       task.run().then(() => done());
     });
 
@@ -89,7 +92,9 @@ describe('CreateSDPTask', () => {
           });
         }
       }
-      context.peer = new TestPeerConnectionMock() as unknown as RTCPeerConnection;
+      context.peer = new DefaultPeerConnection(
+        new TestPeerConnectionMock() as unknown as RTCPeerConnection
+      );
       await new CreateSDPTask(context).run();
       context.meetingSessionConfiguration.urls = null;
       await new CreateSDPTask(context).run();
@@ -117,7 +122,9 @@ describe('CreateSDPTask', () => {
           });
         }
       }
-      context.peer = new TestPeerConnectionMock() as unknown as RTCPeerConnection;
+      context.peer = new DefaultPeerConnection(
+        new TestPeerConnectionMock() as unknown as RTCPeerConnection
+      );
       task.run().catch(() => done());
     });
   });

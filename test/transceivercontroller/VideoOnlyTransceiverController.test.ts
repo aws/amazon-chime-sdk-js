@@ -9,6 +9,7 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import TransceiverController from '../../src/transceivercontroller/TransceiverController';
 import VideoOnlyTransceiverController from '../../src/transceivercontroller/VideoOnlyTransceiverController';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -59,7 +60,7 @@ describe('VideoOnlyTransceiverController', () => {
       expect(tc.useTransceivers()).to.equal(false);
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       expect(tc.useTransceivers()).to.equal(true);
 
       tc.reset();
@@ -77,7 +78,7 @@ describe('VideoOnlyTransceiverController', () => {
     it('can only set up video transceiver idempotently', () => {
       tc = new VideoOnlyTransceiverController(logger, context.browserBehavior, context);
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
       let transceivers = peer.getTransceivers();
       expect(transceivers.length).to.equal(1);
@@ -135,7 +136,7 @@ describe('VideoOnlyTransceiverController', () => {
       );
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       // VideoOnlyTransceiverController overrides setupLocalTransceivers and does not call
@@ -162,7 +163,7 @@ describe('VideoOnlyTransceiverController', () => {
       );
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       // VideoOnlyTransceiverController overrides setupLocalTransceivers completely
@@ -180,7 +181,7 @@ describe('VideoOnlyTransceiverController', () => {
       expect(tcWithoutManager).to.not.equal(null);
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithoutManager.setPeer(peer);
+      tcWithoutManager.setPeer(new DefaultPeerConnection(peer));
       tcWithoutManager.setupLocalTransceivers();
 
       const transceivers = peer.getTransceivers();

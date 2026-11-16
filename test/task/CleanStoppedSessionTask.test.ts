@@ -13,6 +13,7 @@ import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBeha
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
 import Logger from '../../src/logger/Logger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
@@ -114,7 +115,7 @@ describe('CleanStoppedSessionTask', () => {
     webSocketAdapter = new DefaultWebSocketAdapter(context.logger);
     signalingClient = new DefaultSignalingClient(webSocketAdapter, context.logger);
     context.signalingClient = signalingClient;
-    context.peer = new RTCPeerConnection();
+    context.peer = new DefaultPeerConnection(new RTCPeerConnection());
     request = new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth');
     context.signalingClient.openConnection(request);
     await tick(clock, behavior.asyncWaitMs + 10);

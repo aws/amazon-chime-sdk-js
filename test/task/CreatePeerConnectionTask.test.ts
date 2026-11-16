@@ -13,6 +13,7 @@ import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/Enc
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
 import MeetingSessionTimingManager from '../../src/meetingsessiontiming/MeetingSessionTimingManager';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -113,7 +114,7 @@ describe('CreatePeerConnectionTask', () => {
 
     it('creates the peer with correct configuration', done => {
       task.run().then(() => {
-        const configuration = context.peer.getConfiguration();
+        const configuration = context.peer.rtcPeerConnection.getConfiguration();
         const credentials = context.turnCredentials;
         expect(configuration.iceServers[0].urls).to.deep.equal(credentials.uris);
         expect(configuration.iceServers[0].username).to.equal(credentials.username);
@@ -128,7 +129,7 @@ describe('CreatePeerConnectionTask', () => {
       context.turnCredentials = null;
       task = new CreatePeerConnectionTask(context);
       task.run().then(() => {
-        const configuration = context.peer.getConfiguration();
+        const configuration = context.peer.rtcPeerConnection.getConfiguration();
         expect(configuration.bundlePolicy).to.equal(context.browserBehavior.requiresBundlePolicy());
         done();
       });
@@ -136,21 +137,21 @@ describe('CreatePeerConnectionTask', () => {
 
     it('reuses peer connection if it already exists', done => {
       const peer = new RTCPeerConnection();
-      context.peer = peer;
+      context.peer = new DefaultPeerConnection(peer);
       task.run().then(() => {
-        expect(context.peer).to.deep.equal(peer);
+        expect(context.peer.rtcPeerConnection).to.equal(peer);
         done();
       });
     });
 
     it('could log peer connection events', done => {
       task.run().then(() => {
-        context.peer.dispatchEvent(makeICEEvent(null));
-        context.peer.dispatchEvent(makeICEEvent('a=candidate something'));
-        context.peer.dispatchEvent(new Event('iceconnectionstatechange'));
-        context.peer.dispatchEvent(new Event('icegatheringstatechange'));
-        context.peer.dispatchEvent(new Event('negotiationneeded'));
-        context.peer.dispatchEvent(new Event('connectionstatechange'));
+        context.peer.rtcPeerConnection.dispatchEvent(makeICEEvent(null));
+        context.peer.rtcPeerConnection.dispatchEvent(makeICEEvent('a=candidate something'));
+        context.peer.rtcPeerConnection.dispatchEvent(new Event('iceconnectionstatechange'));
+        context.peer.rtcPeerConnection.dispatchEvent(new Event('icegatheringstatechange'));
+        context.peer.rtcPeerConnection.dispatchEvent(new Event('negotiationneeded'));
+        context.peer.rtcPeerConnection.dispatchEvent(new Event('connectionstatechange'));
         done();
       });
     });
@@ -161,8 +162,8 @@ describe('CreatePeerConnectionTask', () => {
       const spy = sinon.spy(timingManager, 'onIceConnected');
       task.run().then(() => {
         // @ts-ignore
-        context.peer.iceConnectionState = 'connected';
-        context.peer.dispatchEvent(new Event('iceconnectionstatechange'));
+        context.peer.rtcPeerConnection.iceConnectionState = 'connected';
+        context.peer.rtcPeerConnection.dispatchEvent(new Event('iceconnectionstatechange'));
         expect(spy.calledOnce).to.be.true;
         timingManager.destroy();
         done();
@@ -172,8 +173,8 @@ describe('CreatePeerConnectionTask', () => {
     it('handles ice connected without timing manager', done => {
       task.run().then(() => {
         // @ts-ignore
-        context.peer.iceConnectionState = 'connected';
-        context.peer.dispatchEvent(new Event('iceconnectionstatechange'));
+        context.peer.rtcPeerConnection.iceConnectionState = 'connected';
+        context.peer.rtcPeerConnection.dispatchEvent(new Event('iceconnectionstatechange'));
         done();
       });
     });
@@ -964,7 +965,7 @@ describe('CreatePeerConnectionTask', () => {
 
       expect(context.peer).to.not.be.null;
       // @ts-ignore
-      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.true;
+      expect(context.peer.rtcPeerConnection.getConfiguration().encodedInsertableStreams).to.be.true;
 
       // @ts-ignore
       window.RTCRtpScriptTransform = RTCRtpScriptTransform;
@@ -987,7 +988,8 @@ describe('CreatePeerConnectionTask', () => {
 
       expect(context.peer).to.not.be.null;
       // @ts-ignore
-      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.undefined;
+      expect(context.peer.rtcPeerConnection.getConfiguration().encodedInsertableStreams).to.be
+        .undefined;
     });
 
     it('sets encodedInsertableStreams to false when audio redundancy is disabled', async () => {
@@ -1009,7 +1011,8 @@ describe('CreatePeerConnectionTask', () => {
 
       expect(context.peer).to.not.be.null;
       // @ts-ignore
-      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.false;
+      expect(context.peer.rtcPeerConnection.getConfiguration().encodedInsertableStreams).to.be
+        .false;
 
       // @ts-ignore
       window.RTCRtpScriptTransform = RTCRtpScriptTransform;
@@ -1035,7 +1038,8 @@ describe('CreatePeerConnectionTask', () => {
 
       expect(context.peer).to.not.be.null;
       // @ts-ignore
-      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.false;
+      expect(context.peer.rtcPeerConnection.getConfiguration().encodedInsertableStreams).to.be
+        .false;
 
       // @ts-ignore
       window.RTCRtpScriptTransform = RTCRtpScriptTransform;
@@ -1063,7 +1067,8 @@ describe('CreatePeerConnectionTask', () => {
 
       expect(context.peer).to.not.be.null;
       // @ts-ignore
-      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.false;
+      expect(context.peer.rtcPeerConnection.getConfiguration().encodedInsertableStreams).to.be
+        .false;
 
       // @ts-ignore
       window.RTCRtpScriptTransform = RTCRtpScriptTransform;

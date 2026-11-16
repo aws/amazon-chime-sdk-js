@@ -90,11 +90,13 @@ import DefaultDevicePixelRatioMonitor from './devicepixelratiomonitor/DefaultDev
 import DefaultEncodedTransformWorkerManager from './encodedtransformmanager/DefaultEncodedTransformWorkerManager';
 import DefaultEventController from './eventcontroller/DefaultEventController';
 import DefaultMediaDeviceFactory from './mediadevicefactory/DefaultMediaDeviceFactory';
+import DefaultMediaDevices from './mediadevices/DefaultMediaDevices';
 import DefaultMeetingEventReporter from './eventreporter/DefaultMeetingEventReporter';
 import DefaultMeetingReadinessChecker from './meetingreadinesschecker/DefaultMeetingReadinessChecker';
 import DefaultMeetingSession from './meetingsession/DefaultMeetingSession';
 import DefaultMessagingSession from './messagingsession/DefaultMessagingSession';
 import DefaultModality from './modality/DefaultModality';
+import DefaultPeerConnection from './peerconnection/DefaultPeerConnection';
 import DefaultPingPong from './pingpong/DefaultPingPong';
 import DefaultRealtimeController from './realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from './reconnectcontroller/DefaultReconnectController';
@@ -162,6 +164,7 @@ import LogLevel from './logger/LogLevel';
 import Logger from './logger/Logger';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
+import MediaDevices from './mediadevices/MediaDevices';
 import MediaMetricsEncodedTransformManager from './encodedtransformmanager/MediaMetricsEncodedTransformManager';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
 import MediaStreamBrokerObserver from './mediastreambrokerobserver/MediaStreamBrokerObserver';
@@ -213,6 +216,7 @@ import OverconstrainedError from './devicecontroller/OverconstrainedError';
 import POSTLogger from './logger/POSTLogger';
 import POSTLoggerOptions from './logger/POSTLoggerOptions';
 import ParallelGroupTask from './task/ParallelGroupTask';
+import PeerConnection from './peerconnection/PeerConnection';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
@@ -471,11 +475,13 @@ export {
   DefaultEncodedTransformWorkerManager,
   DefaultEventController,
   DefaultMediaDeviceFactory,
+  DefaultMediaDevices,
   DefaultMeetingEventReporter,
   DefaultMeetingReadinessChecker,
   DefaultMeetingSession,
   DefaultMessagingSession,
   DefaultModality,
+  DefaultPeerConnection,
   DefaultPingPong,
   DefaultRealtimeController,
   DefaultReconnectController,
@@ -546,6 +552,7 @@ export {
   MaybeProvider,
   MediaDeviceFactory,
   MediaDeviceProxyHandler,
+  MediaDevices,
   MediaMetricsEncodedTransformManager,
   MediaStreamBroker,
   MediaStreamBrokerObserver,
@@ -607,6 +614,7 @@ export {
   POSTLoggerOptions,
   ParallelGroupTask,
   PartialOrd,
+  PeerConnection,
   PermissionDeniedError,
   PingPong,
   PingPongObserver,
