@@ -285,7 +285,8 @@ export default class DefaultAudioVideoController
   }
 
   get rtcPeerConnection(): RTCPeerConnection | null {
-    return (this.meetingSessionContext && this.meetingSessionContext.peer) || null;
+    const peer = this.meetingSessionContext && this.meetingSessionContext.peer;
+    return peer ? peer.rtcPeerConnection : null;
   }
 
   get mediaStreamBroker(): MediaStreamBroker {

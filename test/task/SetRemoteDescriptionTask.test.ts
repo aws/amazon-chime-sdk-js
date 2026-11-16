@@ -10,6 +10,7 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import SetRemoteDescriptionTask from '../../src/task/SetRemoteDescriptionTask';
 import Task from '../../src/task/Task';
 import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
@@ -53,7 +54,7 @@ describe('SetRemoteDescriptionTask', () => {
     context.logger = context.audioVideoController.logger;
 
     const peer: RTCPeerConnection = new RTCPeerConnection();
-    context.peer = peer;
+    context.peer = new DefaultPeerConnection(peer);
     context.sdpAnswer = SDPMock.VIDEO_HOST_AUDIO_ANSWER;
     context.turnCredentials = turnCredentials;
     context.videoCaptureAndEncodeParameter = new DefaultVideoAndCaptureParameter(0, 0, 0, 0, false);
@@ -83,7 +84,7 @@ describe('SetRemoteDescriptionTask', () => {
       const runPromise = task.run();
       await tick(clock, ASYNC_WAIT_MS);
       await runPromise;
-      const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
+      const peerSDPAnswer = context.peer.rtcPeerConnection.currentRemoteDescription.sdp;
       expect(peerSDPAnswer).to.be.equal(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
     });
 
@@ -92,7 +93,7 @@ describe('SetRemoteDescriptionTask', () => {
       const runPromise = task.run();
       await tick(clock, ASYNC_WAIT_MS);
       await runPromise;
-      const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
+      const peerSDPAnswer = context.peer.rtcPeerConnection.currentRemoteDescription.sdp;
       expect(peerSDPAnswer).to.be.equal(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
     });
 
@@ -105,7 +106,7 @@ describe('SetRemoteDescriptionTask', () => {
           return result;
         }
       }
-      context.peer = new TestPeerConnectionMock();
+      context.peer = new DefaultPeerConnection(new TestPeerConnectionMock());
       const runPromise = task.run();
       await tick(clock, ASYNC_WAIT_MS);
       await runPromise;
@@ -113,7 +114,7 @@ describe('SetRemoteDescriptionTask', () => {
 
     it('can proceed if it receives the connected state instead of completed', async () => {
       domMockBehavior.iceConnectionStates = ['connected'];
-      context.peer = new RTCPeerConnection();
+      context.peer = new DefaultPeerConnection(new RTCPeerConnection());
       const runPromise = task.run();
       await tick(clock, ASYNC_WAIT_MS);
       await runPromise;
@@ -121,7 +122,7 @@ describe('SetRemoteDescriptionTask', () => {
 
     it('ignores connection states that are not completed or connected', async () => {
       domMockBehavior.iceConnectionStates = ['someotherstate', 'completed'];
-      context.peer = new RTCPeerConnection();
+      context.peer = new DefaultPeerConnection(new RTCPeerConnection());
       const runPromise = task.run();
       await tick(clock, ASYNC_WAIT_MS);
       await runPromise;
@@ -132,7 +133,7 @@ describe('SetRemoteDescriptionTask', () => {
       const runPromise = task.run();
       await tick(clock, ASYNC_WAIT_MS);
       await runPromise;
-      const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
+      const peerSDPAnswer = context.peer.rtcPeerConnection.currentRemoteDescription.sdp;
       expect(peerSDPAnswer).to.be.equal(SDPMock.VIDEO_HOST_AUDIO_ANSWER_WITH_STEREO);
     });
 
@@ -142,7 +143,7 @@ describe('SetRemoteDescriptionTask', () => {
       const runPromise = task.run();
       await tick(clock, ASYNC_WAIT_MS);
       await runPromise;
-      const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
+      const peerSDPAnswer = context.peer.rtcPeerConnection.currentRemoteDescription.sdp;
       expect(peerSDPAnswer).to.be.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_H264_CBP_THEN_VP8
       );
@@ -158,7 +159,7 @@ describe('SetRemoteDescriptionTask', () => {
       const runPromise = task.run();
       await tick(clock, ASYNC_WAIT_MS);
       await runPromise;
-      const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
+      const peerSDPAnswer = context.peer.rtcPeerConnection.currentRemoteDescription.sdp;
       expect(peerSDPAnswer).to.be.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_H264_CBP_THEN_VP8
       );
@@ -263,7 +264,7 @@ describe('SetRemoteDescriptionTask', () => {
           return;
         }
       }
-      context.peer = new TestPeerConnectionMock();
+      context.peer = new DefaultPeerConnection(new TestPeerConnectionMock());
 
       const runPromise = task.run();
       task.cancel();
@@ -281,7 +282,7 @@ describe('SetRemoteDescriptionTask', () => {
           return;
         }
       }
-      context.peer = new TestPeerConnectionMock();
+      context.peer = new DefaultPeerConnection(new TestPeerConnectionMock());
       let eventFired = false;
       context.peer.addEventListener('iceconnectionstatechange', () => {
         eventFired = true;
@@ -302,7 +303,7 @@ describe('SetRemoteDescriptionTask', () => {
           return;
         }
       }
-      context.peer = new TestPeerConnectionMock();
+      context.peer = new DefaultPeerConnection(new TestPeerConnectionMock());
 
       const runPromise = task.run();
       context.peer = null;
@@ -326,7 +327,7 @@ describe('SetRemoteDescriptionTask', () => {
           });
         }
       }
-      context.peer = new TestPeerConnectionMock();
+      context.peer = new DefaultPeerConnection(new TestPeerConnectionMock());
       try {
         await task.run();
         expect.fail('Should have thrown');

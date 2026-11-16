@@ -25,6 +25,7 @@ import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCr
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import ServerSideNetworkAdaption from '../../src/signalingclient/ServerSideNetworkAdaption';
@@ -223,7 +224,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         type: 'offer',
         sdp: FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE,
       };
-      context.peer = new RTCPeerConnection();
+      context.peer = new DefaultPeerConnection(new RTCPeerConnection());
       context.peer.setLocalDescription(description);
       context.videoSubscriptions = [1, 2, 3, -1];
 
@@ -252,7 +253,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         type: 'offer',
         sdp: FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE,
       };
-      context.peer = new RTCPeerConnection();
+      context.peer = new DefaultPeerConnection(new RTCPeerConnection());
       context.peer.setLocalDescription(description);
       context.videoSubscriptions = [0, 0, 0];
 
@@ -281,7 +282,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         type: 'offer',
         sdp: FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE,
       };
-      context.peer = new RTCPeerConnection();
+      context.peer = new DefaultPeerConnection(new RTCPeerConnection());
       context.peer.setLocalDescription(description);
       context.videoSubscriptions = [0, 0, 0];
       context.transceiverController.getMidForStreamId = undefined;
@@ -361,7 +362,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         type: 'offer',
         sdp: SDPMock.CHROME_UNIFIED_PLAN_AUDIO_VIDEO_TWO_RECEIVE,
       };
-      context.peer = new RTCPeerConnection();
+      context.peer = new DefaultPeerConnection(new RTCPeerConnection());
       context.peer.setLocalDescription(description);
       context.videoSubscriptions = [0, 100, 1, 2, 3];
       context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy('self');
@@ -440,7 +441,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         type: 'offer',
         sdp: SDPMock.CHROME_UNIFIED_PLAN_AUDIO_VIDEO_TWO_RECEIVE,
       };
-      context.peer = new RTCPeerConnection();
+      context.peer = new DefaultPeerConnection(new RTCPeerConnection());
       context.peer.setLocalDescription(description);
       context.videoSubscriptions = [0, 1, 2, -1];
       context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy('self');
@@ -563,7 +564,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const description: RTCSessionDescriptionInit = { type: 'offer', sdp: 'sdp-offer' };
-      context.peer = new RTCPeerConnection();
+      context.peer = new DefaultPeerConnection(new RTCPeerConnection());
       context.peer.setLocalDescription(description);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);

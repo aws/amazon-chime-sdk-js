@@ -9,6 +9,7 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import SimulcastContentShareTransceiverController from '../../src/transceivercontroller/SimulcastContentShareTransceiverController';
 import TransceiverController from '../../src/transceivercontroller/TransceiverController';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -105,7 +106,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       const encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
       encodingParamMap.set('low', encoding);
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
       await tc.setEncodingParameters(encodingParamMap);
       expect(tc.localVideoTransceiver().direction).to.equal('inactive');
@@ -115,7 +116,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       const encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
       const peer: RTCPeerConnection = new RTCPeerConnection();
 
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
@@ -145,7 +146,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       };
       encodingParamMap.set('hi', highEncodingParams);
 
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
@@ -197,7 +198,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       };
       encodingParamMap.set('hi', highEncodingParams);
 
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
@@ -241,7 +242,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       );
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       expect(mockManager.setupAudioSenderTransform.calledOnce).to.be.true;
@@ -266,7 +267,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       );
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       expect(mockManager.setupVideoSenderTransform.calledOnce).to.be.true;
@@ -290,7 +291,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       );
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       expect(mockManager.setupAudioSenderTransform.called).to.be.false;
@@ -317,7 +318,7 @@ describe('SimulcastContentShareTransceiverController', () => {
       const warnSpy = sinon.spy(tcWithManager['logger'], 'warn');
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       expect(warnSpy.calledWith('Media transforms not supported, skipping audio transform setup'))

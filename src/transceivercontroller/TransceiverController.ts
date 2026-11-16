@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import PeerConnection from '../peerconnection/PeerConnection';
 import RedundantAudioRecoveryMetricsObserver from '../redundantaudiorecoverymetricsobserver/RedundantAudioRecoveryMetricsObserver';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
@@ -13,7 +14,7 @@ export default interface TransceiverController {
   /**
    * Sets the peer connection.
    */
-  setPeer(peer: RTCPeerConnection): void;
+  setPeer(peer: PeerConnection): void;
 
   /**
    * Resets the transceiver controller states.

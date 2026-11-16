@@ -9,6 +9,7 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import DefaultPeerConnection from '../../src/peerconnection/DefaultPeerConnection';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import {
   SdkIndexFrame,
@@ -82,7 +83,7 @@ describe('SimulcastTransceiverController', () => {
       expect(tc.useTransceivers()).to.equal(false);
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       expect(tc.useTransceivers()).to.equal(true);
 
       tc.reset();
@@ -114,7 +115,7 @@ describe('SimulcastTransceiverController', () => {
         minimalMockManager
       );
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
       expect(peer.getTransceivers().length).to.equal(2);
 
@@ -134,7 +135,7 @@ describe('SimulcastTransceiverController', () => {
 
     it('can set up transceivers once', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       expect(peer.getTransceivers().length).to.equal(0);
       tc.setupLocalTransceivers();
 
@@ -160,7 +161,7 @@ describe('SimulcastTransceiverController', () => {
   describe('trackIsVideoInput', () => {
     it('can check whether the given track is a video input', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const audioTrack = peer.getTransceivers()[0].receiver.track;
@@ -172,7 +173,7 @@ describe('SimulcastTransceiverController', () => {
 
     it('can not check if it has reset transceivers', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const videoTrack = peer.getTransceivers()[1].receiver.track;
@@ -185,7 +186,7 @@ describe('SimulcastTransceiverController', () => {
   describe('setAudioInput', () => {
     it('can set the audio track to null', done => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
       tc.setAudioInput(null);
 
@@ -198,7 +199,7 @@ describe('SimulcastTransceiverController', () => {
 
     it('can set the audio track', done => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const newAudioTrack = new MediaStreamTrack();
@@ -214,7 +215,7 @@ describe('SimulcastTransceiverController', () => {
 
     it('can not set the audio track if transceivers have not been set up', done => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
 
       const newAudioTrack = new MediaStreamTrack();
       tc.setAudioInput(newAudioTrack);
@@ -236,7 +237,7 @@ describe('SimulcastTransceiverController', () => {
   describe('setVideoInput', () => {
     it('can set the video track to null', done => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
       tc.setVideoInput(null);
 
@@ -249,7 +250,7 @@ describe('SimulcastTransceiverController', () => {
 
     it('can set the video track', done => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
@@ -265,7 +266,7 @@ describe('SimulcastTransceiverController', () => {
 
     it('can not set the video track if transceivers have not been set up', done => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
 
       const newVideoTrack = new MediaStreamTrack();
       tc.setVideoInput(newVideoTrack);
@@ -377,7 +378,7 @@ describe('SimulcastTransceiverController', () => {
 
     beforeEach(() => {
       peer = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
     });
 
     it('cannot update video transceivers if it has reset transceivers', () => {
@@ -700,7 +701,7 @@ describe('SimulcastTransceiverController', () => {
       const encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
       encodingParamMap.set('low', encoding);
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
       await tc.setEncodingParameters(encodingParamMap);
       expect(tc.localVideoTransceiver().direction).to.equal('inactive');
@@ -710,7 +711,7 @@ describe('SimulcastTransceiverController', () => {
       const encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
       const peer: RTCPeerConnection = new RTCPeerConnection();
 
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
@@ -739,7 +740,7 @@ describe('SimulcastTransceiverController', () => {
       encoding3.rid = 'hi';
       encodingParamMap.set('hi', encoding3);
 
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
@@ -781,7 +782,7 @@ describe('SimulcastTransceiverController', () => {
       encoding3.rid = 'hi';
       encodingParamMap.set('hi', encoding3);
 
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
@@ -807,7 +808,7 @@ describe('SimulcastTransceiverController', () => {
       // set up local transceivers
       success = true;
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
+      tc.setPeer(new DefaultPeerConnection(peer));
       tc.setupLocalTransceivers();
       success = await tc.replaceAudioTrack(newAudioTrack);
       expect(success).to.be.false;
@@ -842,7 +843,7 @@ describe('SimulcastTransceiverController', () => {
       );
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       expect(mockEncodedTransformWorkerManager.setupAudioSenderTransform.calledOnce).to.be.true;
@@ -867,7 +868,7 @@ describe('SimulcastTransceiverController', () => {
       );
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       expect(mockEncodedTransformWorkerManager.setupVideoSenderTransform.calledOnce).to.be.true;
@@ -891,7 +892,7 @@ describe('SimulcastTransceiverController', () => {
       );
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       expect(mockEncodedTransformWorkerManager.setupAudioSenderTransform.called).to.be.false;
@@ -918,7 +919,7 @@ describe('SimulcastTransceiverController', () => {
       const warnSpy = sinon.spy(tcWithManager['logger'], 'warn');
 
       const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
+      tcWithManager.setPeer(new DefaultPeerConnection(peer));
       tcWithManager.setupLocalTransceivers();
 
       expect(warnSpy.calledWith('Media transforms not supported, skipping audio transform setup'))

@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `PeerConnection`, the meeting's peer connection as the SDK uses it, and `DefaultPeerConnection`, which wraps a browser `RTCPeerConnection`. Added `MediaDevices` and `DefaultMediaDevices`, which `DefaultDeviceController` uses to open devices and list them. Behaviour is unchanged.
+
 ### Removed
 
 ### Changed
+
+- `AudioVideoControllerState.peer`, `TransceiverController.setPeer` and `DefaultTransceiverController.canUseHeaderExtensionApi` take a `PeerConnection` instead of an `RTCPeerConnection`. `AudioVideoController.rtcPeerConnection` still returns the `RTCPeerConnection`.
 
 ### Fixed
 

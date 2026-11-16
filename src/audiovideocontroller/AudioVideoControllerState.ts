@@ -14,6 +14,7 @@ import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfigu
 import MeetingSessionTURNCredentials from '../meetingsession/MeetingSessionTURNCredentials';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
 import MeetingSessionTimingManager from '../meetingsessiontiming/MeetingSessionTimingManager';
+import PeerConnection from '../peerconnection/PeerConnection';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import RemovableObserver from '../removableobserver/RemovableObserver';
@@ -51,7 +52,7 @@ export default class AudioVideoControllerState {
 
   signalingClient: SignalingClient | null = null;
 
-  peer: RTCPeerConnection | null = null;
+  peer: PeerConnection | null = null;
 
   previousSdpOffer: SDP | null = null;
 
