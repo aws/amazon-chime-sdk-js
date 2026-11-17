@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
 import NoOpDeviceController, {
   NoOpDeviceControllerWithEventController,
 } from '../../src/devicecontroller/NoOpDeviceController';
@@ -18,6 +19,7 @@ import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/D
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { makeCitrixAdapter } from '../vdi/FakeCitrixUCSDK';
 
 describe('DefaultMeetingSession', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -60,6 +62,36 @@ describe('DefaultMeetingSession', () => {
 
       // This is safe to call twice.
       await session.destroy();
+    });
+
+    describe('vdi adapter', () => {
+      function sessionWarnings(configAdapter?: boolean, deviceAdapter?: boolean): string[] {
+        const mockBuilder = new DOMMockBuilder();
+        const adapter = makeCitrixAdapter();
+        const logger = new NoOpLogger();
+        const warn = sinon.spy(logger, 'warn');
+        const configuration = new NoOpAudioVideoController().configuration;
+        configuration.vdiAdapter = configAdapter ? adapter : undefined;
+        const deviceController = new DefaultDeviceController(logger, {
+          vdiAdapter: deviceAdapter ? adapter : undefined,
+        });
+        new DefaultMeetingSession(configuration, logger, deviceController);
+        mockBuilder.cleanup();
+        return warn.args.map(args => args[0]).filter(m => m.includes('VDI adapter'));
+      }
+
+      it('accepts the same adapter in the configuration and the device controller', () => {
+        expect(sessionWarnings(true, true)).to.deep.equal([]);
+        expect(sessionWarnings(false, false)).to.deep.equal([]);
+      });
+
+      it('warns when only one of them has the adapter', () => {
+        expect(sessionWarnings(true, false)).to.deep.equal([
+          'The device controller uses VDI adapter undefined but the meeting session ' +
+            'configuration uses CitrixVDIAdapter; pass the same adapter to both',
+        ]);
+        expect(sessionWarnings(false, true)).to.have.lengthOf(1);
+      });
     });
 
     it('can be constructed with an unsupported browser', () => {

@@ -20,6 +20,7 @@ import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import DefaultReconnectController from '../reconnectcontroller/DefaultReconnectController';
+import VDIAdapter from '../vdi/VDIAdapter';
 import SimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../websocketadapter/DefaultWebSocketAdapter';
@@ -46,6 +47,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     this._logger = logger;
 
     this.checkBrowserSupportAndFeatureConfiguration();
+    this.checkVDIAdapter(deviceController);
 
     CSPMonitor.addLogger(this._logger);
     CSPMonitor.register();
@@ -171,6 +173,17 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     this._eventController = undefined;
     this.encodedTransformWorkerManager = undefined;
     this.contentShareEncodedTransformWorkerManager = undefined;
+  }
+
+  // Devices and the peer connection must come from the same platform.
+  private checkVDIAdapter(deviceController: DeviceControllerBasedMediaStreamBroker): void {
+    const deviceAdapter = (deviceController as { vdiAdapter?: VDIAdapter }).vdiAdapter;
+    if (deviceAdapter !== this._configuration.vdiAdapter) {
+      this._logger.warn(
+        `The device controller uses VDI adapter ${deviceAdapter?.name} but the meeting session ` +
+          `configuration uses ${this._configuration.vdiAdapter?.name}; pass the same adapter to both`
+      );
+    }
   }
 
   private checkBrowserSupportAndFeatureConfiguration(): void {
