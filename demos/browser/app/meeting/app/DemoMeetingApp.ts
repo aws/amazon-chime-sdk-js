@@ -8,20 +8,19 @@ import { ConfigValues } from '../config/schema';
 import BackgroundImagePicker from '../devices/BackgroundImagePicker';
 import DeviceManager, { DeviceKind } from '../devices/DeviceManager';
 import { buildDeviceSettingsSections } from '../devices/DeviceSettings';
-import MicTest from '../devices/MicTest';
 import PreCallDevices from '../devices/PreCallDevices';
 import TestSound from '../devices/TestSound';
 import Capabilities from '../features/Capabilities';
 import ChatPanel from '../features/ChatPanel';
 import ContentShareManager from '../features/ContentShareManager';
 import Reactions from '../features/Reactions';
-import ReadinessCheck from '../features/ReadinessCheck';
 import Recording, { RecordingOption } from '../features/Recording';
 import Roster from '../features/Roster';
 import StatsPanel from '../features/StatsPanel';
 import Transcription from '../features/Transcription';
 import ApiClient from '../session/ApiClient';
 import { videoCodecSupport } from '../session/codecSupport';
+import ConnectionCheck from '../session/ConnectionCheck';
 import MeetingSessionController, { AuthenticateResult } from '../session/MeetingSessionController';
 import AutoHideControls from '../shell/AutoHideControls';
 import Dock, { DockActions } from '../shell/Dock';
@@ -66,7 +65,7 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
   private readonly joinScreen: JoinScreen;
   private readonly preJoin: PreJoinScreen;
   private readonly infoDialog: Dialog;
-  private readonly readinessCheck: ReadinessCheck;
+  private connectionCheck: ConnectionCheck | undefined;
 
   // Created once the session exists (setupMeetingModules); read-only to SessionEvents.
   private _devices: DeviceManager | undefined;
@@ -156,19 +155,11 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
     this.joinScreen = new JoinScreen(config, this.api, this.flows, {
       onContinue: () => this.continueFromJoin(false),
       onOpenSettings: () => this.settings.open(),
-      onTestSetup: () => this.readinessCheck.open(),
-    });
-    this.readinessCheck = new ReadinessCheck(this.api, {
-      region: () => this.joinScreen.region,
-      regionName: region => this.joinScreen.regionName(region),
-      developerMode: () => this.config.developerMode,
-      logLevel: () => this.session.logLevel,
     });
     this.preJoin = new PreJoinScreen({
       onJoin: () => this.joinFromPreJoin(),
       onBack: () => location.assign(this.config.toShareUrl()),
       onTestSpeaker: button => this.testSpeaker(button),
-      onTestMicrophone: button => this.testMicrophone(button),
       onMicToggle: on => this.config.set('joinMuted', !on),
       onCameraToggle: on => runAction(() => this.togglePreviewCamera(on), STRINGS.contextCamera),
       onRetryMicrophone: () =>
@@ -270,6 +261,7 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
       'button-microphone',
       'button-camera',
       'button-content-share',
+      'button-reactions',
       'button-promote-to-primary',
     ]) {
       this.toolbar.set(id, 'off');
@@ -379,35 +371,6 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
       button.disabled = false;
     }, TestSound.PLAY_MS);
     void new TestSound(this.session.logger, sinkId).init();
-  }
-
-  private readonly micTest = new MicTest();
-
-  private async testMicrophone(button: HTMLButtonElement): Promise<void> {
-    if (this.micTest.isRunning || !this.devices) {
-      return;
-    }
-    const label = button.textContent;
-    button.disabled = true;
-    try {
-      await this.micTest.run(
-        this.devices.selectedRealAudioInputId,
-        this.devices.selectedRealAudioOutputId,
-        state => {
-          button.textContent =
-            state.phase === 'recording'
-              ? STRINGS.micTestRecording(state.secondsLeft)
-              : state.phase === 'playing'
-                ? STRINGS.micTestPlaying
-                : label;
-        }
-      );
-    } catch (error) {
-      Toast.show({ message: STRINGS.micTestFailed((error as Error).message) });
-    } finally {
-      button.textContent = label;
-      button.disabled = false;
-    }
   }
 
   /** Options marked `live` in the schema take effect here; `join`/`create` ones are read at join. */
@@ -604,6 +567,7 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
     // Join stays disabled until the previews are up, so a fast click cannot race them.
     this.preJoin.setBusy(true);
     this.flows.show('flow-devices');
+    void this.checkConnection();
     this.deviceSetup = this.prepareDevices(devices);
     await this.deviceSetup;
     this.joinScreen.setBusy(false);
@@ -747,7 +711,10 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
       this.session.usingStereoProfile,
       this.session.browser.hasChromiumWebRTC(),
       this.session.browser.supportsScalableVideoCoding(),
-      started => this.toolbar.setOn('button-content-share', started)
+      started => this.toolbar.setOn('button-content-share', started),
+      async () =>
+        (await this.api.getAttendee(this.config.meeting, result.attendeeId)).Attendee.Capabilities
+          .Content
     );
     this.chat = new ChatPanel(
       audioVideo,
@@ -761,8 +728,11 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
     this._reactions = new Reactions(audioVideo, pageElements.reactions(), result.attendeeId, {
       onHandRaised: (attendeeId, raised) => {
         const wasRaised = this.roster.isHandRaised(attendeeId);
-        this.roster.setHandRaised(attendeeId, raised);
-        this.tiles?.setAttendeeHandRaised(attendeeId, raised);
+        const ids = attendeeId === result.attendeeId ? this.session.localAttendeeIds : [attendeeId];
+        for (const id of ids) {
+          this.roster.setHandRaised(id, raised);
+          this.tiles?.setAttendeeHandRaised(id, raised);
+        }
         this.updateHandBadge();
         const name = this.roster.nameOf(attendeeId);
         if (raised && !wasRaised && attendeeId !== result.attendeeId && name) {
@@ -813,8 +783,25 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
     this.joinScreen.setBusy(false);
   }
 
+  private async checkConnection(): Promise<void> {
+    const configuration = this.session.meetingSession?.configuration;
+    if (!configuration) {
+      return;
+    }
+    this.connectionCheck ??= new ConnectionCheck(this.session.logger);
+    this.preJoin.showConnectionChecking();
+    const result = await this.connectionCheck.check(configuration);
+    if (result) {
+      this.session.logger.info(`[DEMO] Connection check: ${JSON.stringify(result)}`);
+      this.preJoin.showConnectionResult(result);
+    }
+  }
+
   private async joinFromPreJoin(): Promise<void> {
     const devices = this.devices!;
+    // The check's signaling connection is the same attendee; close it before the real join.
+    this.connectionCheck?.cancel();
+    this.preJoin.hideConnectionStatus();
     this.preJoin.setBusy(true);
     try {
       await this.deviceSetup;
@@ -877,9 +864,15 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
 
   applyReplicaPromotionState(state: 'promoted' | 'demoted'): void {
     const promoted = state === 'promoted';
-    for (const id of ['button-microphone', 'button-camera', 'button-content-share']) {
+    for (const id of [
+      'button-microphone',
+      'button-camera',
+      'button-content-share',
+      'button-reactions',
+    ]) {
       this.toolbar.set(id, promoted ? 'off' : 'disabled');
     }
+    this.chat?.setCanSend(promoted);
     this.toolbar.set('button-promote-to-primary', promoted ? 'on' : 'off');
     if (!promoted) {
       this.session.audioVideo?.realtimeMuteLocalAudio();

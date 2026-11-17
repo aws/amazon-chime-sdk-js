@@ -222,11 +222,6 @@ export default class DeviceManager {
     return this.camera.backgroundStatus(customStatsReports);
   }
 
-  get selectedRealAudioInputId(): string | undefined {
-    const value = this.audioInputSelect.value;
-    return this.audioInputs.some(device => device.deviceId === value) ? value : undefined;
-  }
-
   get selectedRealAudioOutputId(): string | undefined {
     const value = this.audioOutputSelect.value;
     return this.audioOutputs.some(device => device.deviceId === value) ? value : undefined;

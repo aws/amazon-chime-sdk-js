@@ -68,7 +68,6 @@
           <span data-icon="settings"></span>
         </button>
       </div>
-      <button type="button" id="button-readiness-check" class="button button-ghost button-small join-test"><span data-icon="stethoscope"></span>Test your devices and connection</button>
       <div id="progress-authenticate" class="progress" role="progressbar" aria-label="Connecting" hidden>
         <div class="progress-bar"></div>
       </div>
@@ -187,13 +186,10 @@
         <p id="prejoin-device-warning" class="prejoin-warning" role="status" hidden></p>
       </div>
       <div class="stack">
-        <div class="field">
-          <label class="field-label" for="audio-input">Microphone</label>
-          <div class="field-inline">
-            <select id="audio-input" class="select"></select>
-            <button id="button-test-mic" type="button" class="button button-ghost" title="Record a few seconds and play them back">Test</button>
-          </div>
-        </div>
+        <label class="field">
+          <span class="field-label">Microphone</span>
+          <select id="audio-input" class="select"></select>
+        </label>
         <div id="voice-focus-setting" class="inline-switch" hidden>
           <label class="setting">
             <span class="setting-label"><span>Noise suppression</span><span class="setting-help">Amazon Voice Focus</span></span>
@@ -222,9 +218,12 @@
         </div>
       </div>
     </div>
-    <div class="button-row prejoin-actions">
-      <button id="prejoin-back" type="button" class="button button-ghost">Back</button>
-      <button id="joinButton" class="button button-primary button-large" type="submit">Join now</button>
+    <div class="prejoin-actions">
+      <div class="button-row">
+        <button id="prejoin-back" type="button" class="button button-ghost">Back</button>
+        <button id="joinButton" class="button button-primary button-large" type="submit">Join now</button>
+      </div>
+      <p id="connection-status" class="connection-status" role="status" hidden></p>
     </div>
     <div id="progress-join" class="progress" role="progressbar" aria-label="Joining" hidden>
       <div class="progress-bar"></div>
@@ -658,107 +657,6 @@
     </dl>
     <button type="button" id="button-copy-join-link" class="button button-primary"><span data-icon="copy"></span><span>Copy join link</span></button>
   </div>
-</dialog>
-
-<!-- integration/pages/MeetingReadinessCheckerPage.js finds the results by id. -->
-<dialog id="readiness-dialog" class="dialog readiness-dialog" aria-labelledby="readiness-header">
-  <header class="dialog-header">
-    <h2 id="readiness-header">Test your setup</h2>
-    <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
-  </header>
-  <div class="dialog-body stack">
-    <p class="muted small readiness-intro">Make sure your speaker, microphone, camera and network work before you join.</p>
-    <div id="readiness-results" class="stack">
-      <div id="readiness-summary" class="readiness-summary" data-state="running">
-        <span id="readiness-summary-text" class="readiness-summary-text" role="status"></span>
-        <div id="readiness-meter" class="readiness-meter" role="progressbar" aria-labelledby="readiness-summary-text" aria-valuemin="0">
-          <div id="readiness-meter-bar" class="readiness-meter-bar"></div>
-        </div>
-      </div>
-      <section class="readiness-group" aria-labelledby="readiness-group-devices">
-        <h3 id="readiness-group-devices" class="readiness-group-title">Devices</h3>
-        <ul class="readiness-rows">
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="volume2"></span>
-            <label class="readiness-name" for="readiness-audio-output">Speaker</label>
-            <span class="readiness-status">
-              <button type="button" id="speakertest-button" class="button button-ghost button-small">Play tone</button>
-              <span id="speaker-test" class="readiness-result" hidden></span>
-            </span>
-            <select id="readiness-audio-output" class="select readiness-device"></select>
-            <span id="speaker-user-feedback" class="readiness-feedback" hidden>
-              <span>Can you hear the tone?</span>
-              <button type="button" id="speaker-yes" class="button button-ghost button-small">Yes</button>
-              <button type="button" id="speaker-no" class="button button-ghost button-small">No</button>
-            </span>
-            <audio id="speaker-test-audio-element" hidden></audio>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="mic"></span>
-            <label class="readiness-name" for="readiness-audio-input">Microphone</label>
-            <span class="readiness-status"><span id="mic-test" class="readiness-result"></span></span>
-            <select id="readiness-audio-input" class="select readiness-device"></select>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="video"></span>
-            <label class="readiness-name" for="readiness-video-input">Camera</label>
-            <span class="readiness-status"><span id="video-test" class="readiness-result"></span></span>
-            <select id="readiness-video-input" class="select readiness-device"></select>
-            <span class="readiness-sub">
-              <span class="readiness-sub-label">Resolutions</span>
-              <span id="camera-test1" class="readiness-result" data-label="640×480"></span>
-              <span id="camera-test2" class="readiness-result" data-label="1280×720"></span>
-              <span id="camera-test3" class="readiness-result" data-label="1920×1080"></span>
-            </span>
-          </li>
-        </ul>
-      </section>
-      <section class="readiness-group" aria-labelledby="readiness-group-network">
-        <h3 id="readiness-group-network" class="readiness-group-title">Network</h3>
-        <ul class="readiness-rows">
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="network"></span>
-            <span class="readiness-name">Standard connection<span class="readiness-hint">UDP, the usual route for audio and video</span></span>
-            <span class="readiness-status"><span id="networkudp-test" class="readiness-result"></span></span>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="cable"></span>
-            <span class="readiness-name">Fallback connection<span class="readiness-hint">TCP, for networks that block UDP</span></span>
-            <span class="readiness-status"><span id="networktcp-test" class="readiness-result"></span></span>
-          </li>
-        </ul>
-      </section>
-      <section class="readiness-group" aria-labelledby="readiness-group-media">
-        <h3 id="readiness-group-media" class="readiness-group-title">Audio and video</h3>
-        <ul class="readiness-rows">
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="audioLines"></span>
-            <span class="readiness-name">Audio<span class="readiness-hint">Connects and receives sound</span></span>
-            <span class="readiness-status"><span id="audioconnectivity-test" class="readiness-result"></span></span>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="clapperboard"></span>
-            <span class="readiness-name">Video<span class="readiness-hint">Sends your camera</span></span>
-            <span class="readiness-status"><span id="videoconnectivity-test" class="readiness-result"></span></span>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="screenShare"></span>
-            <span class="readiness-name">Screen sharing<span class="readiness-hint">Shares your screen for a moment</span></span>
-            <span class="readiness-status">
-              <button type="button" id="contentshare-button" class="button button-ghost button-small" disabled>Share screen</button>
-              <span id="contentshare-test" class="readiness-result" hidden></span>
-            </span>
-          </li>
-        </ul>
-      </section>
-      <p class="small muted developer-only"><span id="readiness-region"></span> Test meeting <span id="readiness-meeting-id" class="code"></span></p>
-    </div>
-    <p id="readiness-error" class="readiness-error small" role="alert" hidden></p>
-  </div>
-  <footer class="dialog-footer">
-    <button type="button" id="readiness-run-again" class="button button-ghost" hidden><span data-icon="rotateCcw"></span>Run again</button>
-    <button type="button" class="button button-primary" data-dialog-close>Done</button>
-  </footer>
 </dialog>
 
 <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>

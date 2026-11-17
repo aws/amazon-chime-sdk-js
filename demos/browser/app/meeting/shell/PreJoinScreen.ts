@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ConnectionCheckResult } from '../session/ConnectionCheck';
 import { STRINGS } from '../strings';
 import { byId, isPressed, setPressed } from '../ui/dom';
-import { setButtonIcon } from '../ui/icons';
+import { iconElement, setButtonIcon } from '../ui/icons';
 
 export interface PreJoinCallbacks {
   onJoin: () => void;
   onBack: () => void;
   onTestSpeaker: (button: HTMLButtonElement) => void;
-  onTestMicrophone: (button: HTMLButtonElement) => void;
   onMicToggle: (on: boolean) => void;
   onCameraToggle: (on: boolean) => void;
   onRetryMicrophone: () => void;
@@ -23,6 +23,7 @@ export default class PreJoinScreen {
   private readonly problems = new Map<'microphone' | 'camera', string>();
   /** The user's own choice, restored when a microphone problem clears. */
   private mutedByUser = false;
+  private readonly connectionStatus = byId('connection-status');
 
   constructor(private readonly callbacks: PreJoinCallbacks) {
     this.micToggle.dataset.kind = 'device';
@@ -36,11 +37,6 @@ export default class PreJoinScreen {
     testSound.addEventListener('click', event => {
       event.preventDefault();
       this.callbacks.onTestSpeaker(testSound);
-    });
-    const testMic = byId<HTMLButtonElement>('button-test-mic');
-    testMic.addEventListener('click', event => {
-      event.preventDefault();
-      this.callbacks.onTestMicrophone(testMic);
     });
     this.micToggle.addEventListener('click', () => {
       if (this.problems.has('microphone')) {
@@ -66,6 +62,35 @@ export default class PreJoinScreen {
     };
     preview.addEventListener('loadedmetadata', fitPreview);
     preview.addEventListener('resize', fitPreview);
+  }
+
+  showConnectionChecking(): void {
+    this.setConnectionStatus('checking', STRINGS.connectionChecking);
+  }
+
+  showConnectionResult(result: ConnectionCheckResult): void {
+    if (!result.reached) {
+      this.setConnectionStatus('warning', STRINGS.connectionNoSignaling(result.error));
+    } else if (result.transports.udp?.works) {
+      this.setConnectionStatus('ready', STRINGS.connectionReady);
+    } else if (result.transports.tcp?.works) {
+      this.setConnectionStatus('warning', STRINGS.connectionTcpOnly);
+    } else {
+      this.setConnectionStatus('warning', STRINGS.connectionBlockedAll);
+    }
+  }
+
+  hideConnectionStatus(): void {
+    this.connectionStatus.hidden = true;
+  }
+
+  private setConnectionStatus(state: 'checking' | 'ready' | 'warning', text: string): void {
+    this.connectionStatus.dataset.state = state;
+    this.connectionStatus.replaceChildren(text);
+    if (state !== 'checking') {
+      this.connectionStatus.prepend(iconElement(state === 'ready' ? 'check' : 'triangleAlert'));
+    }
+    this.connectionStatus.hidden = false;
   }
 
   /** null clears the problem. A blocked microphone shows as off. */
