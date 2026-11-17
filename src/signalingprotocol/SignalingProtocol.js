@@ -8453,6 +8453,7 @@ $root.SdkMetric = (function() {
             case 146:
             case 147:
             case 148:
+            case 153:
                 break;
             }
         if (message.value != null && Object.hasOwnProperty.call(message, "value"))
@@ -8946,6 +8947,10 @@ $root.SdkMetric = (function() {
         case 148:
             message.type = 148;
             break;
+        case "ICE_RELAY_PROTOCOL":
+        case 153:
+            message.type = 153;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -9125,6 +9130,7 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_RENDER_VISIBLE_PERCENT=146 VIDEO_RENDER_VISIBLE_PERCENT value
      * @property {number} VIDEO_RENDER_OBJECT_FIT=147 VIDEO_RENDER_OBJECT_FIT value
      * @property {number} VIDEO_RENDER_INTRINSIC_LAYOUT=148 VIDEO_RENDER_INTRINSIC_LAYOUT value
+     * @property {number} ICE_RELAY_PROTOCOL=153 ICE_RELAY_PROTOCOL value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -9243,6 +9249,7 @@ $root.SdkMetric = (function() {
         values[valuesById[146] = "VIDEO_RENDER_VISIBLE_PERCENT"] = 146;
         values[valuesById[147] = "VIDEO_RENDER_OBJECT_FIT"] = 147;
         values[valuesById[148] = "VIDEO_RENDER_INTRINSIC_LAYOUT"] = 148;
+        values[valuesById[153] = "ICE_RELAY_PROTOCOL"] = 153;
         return values;
     })();
 

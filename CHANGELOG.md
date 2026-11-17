@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added the `ICE_RELAY_PROTOCOL` client metric, the client's protocol to the TURN server for the selected candidate (0 udp, 1 tcp, 2 tls, from `RTCIceCandidateStats.relayProtocol`), which only the client can see. Nothing is reported when the selected candidate is not a relay or the browser does not report its relay protocol.
+
 ### Removed
 
 ### Changed

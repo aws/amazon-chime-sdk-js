@@ -79,6 +79,15 @@ export default class StatsCollector
     critical: 3,
   };
 
+  // Encodes RTCIceCandidateStats.relayProtocol into the SdkMetric.ICE_RELAY_PROTOCOL wire value.
+  // Nothing is reported when the selected local candidate is not a relay, or is a relay whose
+  // protocol the browser does not report or this table does not know.
+  private static readonly ICE_RELAY_PROTOCOL_VALUE: { [key: string]: number } = {
+    udp: 0,
+    tcp: 1,
+    tls: 2,
+  };
+
   private intervalScheduler: IntervalScheduler | null = null;
   private signalingClient: SignalingClient;
   private videoStreamIndex: VideoStreamIndex;
@@ -99,6 +108,7 @@ export default class StatsCollector
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
   private computePressureMonitor: ComputePressureMonitor | null = null;
+  private iceRelayProtocol: number | null = null;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -491,6 +501,7 @@ export default class StatsCollector
       this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName]);
     }
     this.maybeAddCpuPressureMetric(clientMetricFrame);
+    this.maybeAddIceRelayProtocolMetric(clientMetricFrame);
   }
 
   private maybeAddCpuPressureMetric(clientMetricFrame: SdkClientMetricFrame): void {
@@ -504,6 +515,40 @@ export default class StatsCollector
     const metricFrame = SdkMetric.create();
     metricFrame.type = SdkMetric.Type.CPU_PRESSURE_STATE;
     metricFrame.value = StatsCollector.CPU_PRESSURE_STATE_VALUE[state];
+    clientMetricFrame.globalMetrics.push(metricFrame);
+  }
+
+  private updateIceRelayProtocol(rawMetricReports: RawMetricReport[]): void {
+    this.iceRelayProtocol = null;
+
+    const candidatePairs = new Map<string, RawMetricReport>();
+    const localCandidates = new Map<string, RawMetricReport>();
+    let selectedCandidatePairId: string | undefined;
+    for (const report of rawMetricReports) {
+      if (report.type === 'candidate-pair') {
+        candidatePairs.set(report.id, report);
+      } else if (report.type === 'local-candidate') {
+        localCandidates.set(report.id, report);
+      } else if (report.type === 'transport' && report.selectedCandidatePairId) {
+        selectedCandidatePairId = report.selectedCandidatePairId;
+      }
+    }
+    const localCandidateId = candidatePairs.get(selectedCandidatePairId)?.localCandidateId;
+    const localCandidate = localCandidates.get(localCandidateId);
+    if (localCandidate?.candidateType !== 'relay') {
+      return;
+    }
+    this.iceRelayProtocol =
+      StatsCollector.ICE_RELAY_PROTOCOL_VALUE[localCandidate.relayProtocol] ?? null;
+  }
+
+  private maybeAddIceRelayProtocolMetric(clientMetricFrame: SdkClientMetricFrame): void {
+    if (this.iceRelayProtocol === null) {
+      return;
+    }
+    const metricFrame = SdkMetric.create();
+    metricFrame.type = SdkMetric.Type.ICE_RELAY_PROTOCOL;
+    metricFrame.value = this.iceRelayProtocol;
     clientMetricFrame.globalMetrics.push(metricFrame);
   }
 
@@ -727,6 +772,7 @@ export default class StatsCollector
     this.maybeAddRedRecoveryMetrics(customStatsReports);
     this.maybeAddTransformMetrics(customStatsReports, filteredRawMetricReports);
     this.addVideoEndToEndDelayMetrics(rawMetricReports, customStatsReports);
+    this.updateIceRelayProtocol(rawMetricReports);
     // We cannot use 'this.clientMetricsReport.getVideoUpstreamSsrc()' because the value
     // is dependent on the call to 'this.processRawMetricReports()' below, i.e. it depends on
     // the previous handling of raw metrics reports. This would lead to the addition of custom metrics

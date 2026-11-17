@@ -355,6 +355,11 @@ message SdkMetric {
         VIDEO_RENDER_VISIBLE_PERCENT = 146;
         VIDEO_RENDER_OBJECT_FIT = 147;
         VIDEO_RENDER_INTRINSIC_LAYOUT = 148;
+        // The client's protocol to the TURN server for the selected local candidate, from
+        // RTCIceCandidateStats.relayProtocol. Values: 0 = udp, 1 = tcp, 2 = tls. Not reported when
+        // the selected local candidate is not a relay, or is a relay whose protocol is missing or
+        // unrecognized.
+        ICE_RELAY_PROTOCOL = 153;
     }
     optional Type type = 1;
     optional double value = 2;

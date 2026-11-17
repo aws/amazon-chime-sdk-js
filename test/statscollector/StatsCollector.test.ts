@@ -1924,6 +1924,110 @@ describe('StatsCollector', () => {
     });
   });
 
+  describe('ICE relay protocol metric', () => {
+    function findRelayProtocolMetric(
+      frame: SdkClientMetricFrame
+    ): { type?: SdkMetric.Type; value?: number } | undefined {
+      return frame.globalMetrics.find(m => m.type === SdkMetric.Type.ICE_RELAY_PROTOCOL);
+    }
+
+    function reports(
+      localCandidate: { candidateType?: string; relayProtocol?: string } | null
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): any[] {
+      return [
+        { id: 'T', type: 'transport', selectedCandidatePairId: 'P' },
+        { id: 'P', type: 'candidate-pair', state: 'succeeded', localCandidateId: 'L' },
+        ...(localCandidate ? [{ id: 'L', type: 'local-candidate', ...localCandidate }] : []),
+      ];
+    }
+
+    function lastRelayProtocol(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      statsReports: any[],
+      done: (value: number | undefined) => void
+    ): void {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = statsReports;
+      const sendSpy = sinon.spy(signalingClient, 'sendClientMetrics');
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        const frames = sendSpy.getCalls().map(c => c.args[0] as SdkClientMetricFrame);
+        expect(frames.length).to.be.greaterThan(0);
+        done(findRelayProtocolMetric(frames[frames.length - 1])?.value);
+      });
+    }
+
+    it('sends 0 for a relay over udp', done => {
+      lastRelayProtocol(reports({ candidateType: 'relay', relayProtocol: 'udp' }), value => {
+        expect(value).to.equal(0);
+        done();
+      });
+    });
+
+    it('sends 1 for a relay over tcp', done => {
+      lastRelayProtocol(reports({ candidateType: 'relay', relayProtocol: 'tcp' }), value => {
+        expect(value).to.equal(1);
+        done();
+      });
+    });
+
+    it('sends 2 for a relay over tls', done => {
+      lastRelayProtocol(reports({ candidateType: 'relay', relayProtocol: 'tls' }), value => {
+        expect(value).to.equal(2);
+        done();
+      });
+    });
+
+    it('sends nothing when the selected local candidate is not a relay', done => {
+      lastRelayProtocol(reports({ candidateType: 'srflx' }), value => {
+        expect(value).to.equal(undefined);
+        done();
+      });
+    });
+
+    it('sends nothing for a relay whose protocol the browser does not report', done => {
+      lastRelayProtocol(reports({ candidateType: 'relay' }), value => {
+        expect(value).to.equal(undefined);
+        done();
+      });
+    });
+
+    it('sends nothing for a relay protocol it does not know', done => {
+      lastRelayProtocol(reports({ candidateType: 'relay', relayProtocol: 'quic' }), value => {
+        expect(value).to.equal(undefined);
+        done();
+      });
+    });
+
+    it('sends nothing when the selected local candidate is unknown', done => {
+      lastRelayProtocol(reports(null), value => {
+        expect(value).to.equal(undefined);
+        done();
+      });
+    });
+
+    it('stops sending when the selected pair moves off a relay', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const valueAfter = (statsReports: any[]): number | undefined => {
+        statsCollector['updateIceRelayProtocol'](statsReports);
+        const frame = SdkClientMetricFrame.create();
+        statsCollector['maybeAddIceRelayProtocolMetric'](frame);
+        return findRelayProtocolMetric(frame)?.value;
+      };
+      expect(valueAfter(reports({ candidateType: 'relay', relayProtocol: 'udp' }))).to.equal(0);
+      expect(valueAfter(reports({ candidateType: 'host' }))).to.equal(undefined);
+      expect(valueAfter(reports({ candidateType: 'relay', relayProtocol: 'tls' }))).to.equal(2);
+      expect(valueAfter(reports({ candidateType: 'relay', relayProtocol: 'quic' }))).to.equal(
+        undefined
+      );
+      expect(valueAfter(reports({ candidateType: 'relay', relayProtocol: 'tcp' }))).to.equal(1);
+      expect(valueAfter(reports(null))).to.equal(undefined);
+    });
+  });
+
   describe('videoProcessorMetricsDidReceive', () => {
     it('stores video processor metrics', () => {
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
