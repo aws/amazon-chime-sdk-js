@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { BackgroundEffectKind, backgroundEffectLabel } from '../devices/BackgroundEffect';
 import { ConnectionCheckResult } from '../session/ConnectionCheck';
 import { STRINGS } from '../strings';
 import { byId, isPressed, setPressed } from '../ui/dom';
@@ -9,15 +10,19 @@ import { iconElement, setButtonIcon } from '../ui/icons';
 export interface PreJoinCallbacks {
   onJoin: () => void;
   onBack: () => void;
-  onTestSpeaker: (button: HTMLButtonElement) => void;
+  onTestSpeaker: (button: HTMLButtonElement, label: HTMLElement) => void;
+  onTestMicrophone: (button: HTMLButtonElement, label: HTMLElement) => void;
   onMicToggle: (on: boolean) => void;
   onCameraToggle: (on: boolean) => void;
+  onBackgroundToggle: (on: boolean) => void;
+  onOpenBackgroundSettings: () => void;
   onRetryMicrophone: () => void;
 }
 
 export default class PreJoinScreen {
   private readonly micToggle = byId<HTMLButtonElement>('prejoin-mic-toggle');
   private readonly cameraToggle = byId<HTMLButtonElement>('prejoin-camera-toggle');
+  private readonly backgroundToggle = byId<HTMLButtonElement>('prejoin-background-toggle');
   private readonly progress = byId('progress-join');
   private readonly warning = byId('prejoin-device-warning');
   private readonly problems = new Map<'microphone' | 'camera', string>();
@@ -33,11 +38,26 @@ export default class PreJoinScreen {
       this.callbacks.onJoin();
     });
     byId('prejoin-back').addEventListener('click', () => this.callbacks.onBack());
-    const testSound = byId<HTMLButtonElement>('button-test-sound');
-    testSound.addEventListener('click', event => {
-      event.preventDefault();
-      this.callbacks.onTestSpeaker(testSound);
-    });
+    const footerAction = (
+      id: string,
+      action: (button: HTMLButtonElement, label: HTMLElement) => void
+    ): void => {
+      const button = byId<HTMLButtonElement>(id);
+      const label = button.querySelector<HTMLElement>('.menu-label > span')!;
+      button.addEventListener('click', () => action(button, label));
+    };
+    footerAction('button-test-sound', (button, label) =>
+      this.callbacks.onTestSpeaker(button, label)
+    );
+    footerAction('button-test-mic', (button, label) =>
+      this.callbacks.onTestMicrophone(button, label)
+    );
+    this.backgroundToggle.addEventListener('click', () =>
+      this.callbacks.onBackgroundToggle(!isPressed(this.backgroundToggle))
+    );
+    byId('prejoin-background').addEventListener('click', () =>
+      this.callbacks.onOpenBackgroundSettings()
+    );
     this.micToggle.addEventListener('click', () => {
       if (this.problems.has('microphone')) {
         this.callbacks.onRetryMicrophone();
@@ -127,8 +147,8 @@ export default class PreJoinScreen {
     on = on && !this.problems.has('microphone');
     setPressed(this.micToggle, on);
     setButtonIcon(this.micToggle, on ? 'mic' : 'micOff');
-    this.micToggle.setAttribute(
-      'aria-label',
+    PreJoinScreen.setLabel(
+      this.micToggle,
       this.problems.has('microphone')
         ? STRINGS.microphoneBlockedLabel
         : on
@@ -147,14 +167,30 @@ export default class PreJoinScreen {
   setCameraOn(on: boolean): void {
     setPressed(this.cameraToggle, on);
     setButtonIcon(this.cameraToggle, on ? 'video' : 'videoOff');
-    this.cameraToggle.setAttribute(
-      'aria-label',
+    PreJoinScreen.setLabel(
+      this.cameraToggle,
       this.problems.has('camera') && !on
         ? STRINGS.cameraBlockedLabel
         : on
           ? STRINGS.joinWithCameraOn
           : STRINGS.joinWithCameraOff
     );
+  }
+
+  /** `whenOn` is the effect the toggle turns on while the effect is off. */
+  setBackgroundEffect(effect: BackgroundEffectKind, whenOn: BackgroundEffectKind): void {
+    const on = effect !== 'none';
+    setPressed(this.backgroundToggle, on);
+    PreJoinScreen.setLabel(
+      this.backgroundToggle,
+      STRINGS.backgroundToggle(backgroundEffectLabel(on ? effect : whenOn))
+    );
+    byId('prejoin-background-value').textContent = backgroundEffectLabel(effect);
+  }
+
+  private static setLabel(button: HTMLElement, label: string): void {
+    button.setAttribute('aria-label', label);
+    button.title = label;
   }
 
   setMeetingInfo(meeting: string, name: string): void {

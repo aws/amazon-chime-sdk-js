@@ -15,21 +15,39 @@ import {
 
 // Inlined by vite-plugin-singlefile.
 import beachImageUrl from '../assets/beach.jpg';
-import { ConfigValues } from '../config/schema';
+import type { MeetingConfig } from '../config/MeetingConfig';
+import { ConfigValues, optionByKey } from '../config/schema';
 
 export type BackgroundEffectKind = ConfigValues['backgroundEffect'];
 
-export const DEFAULT_BACKGROUND_IMAGE = beachImageUrl;
+export const BACKGROUND_IMAGE_SAMPLES = [{ id: 'beach', url: beachImageUrl }] as const;
+
+export function backgroundImageUrl(config: MeetingConfig): string {
+  const id = config.chosenBackgroundImage;
+  return (
+    config.backgroundImages.find(image => image.id === id)?.dataUrl ??
+    BACKGROUND_IMAGE_SAMPLES.find(sample => sample.id === id)?.url ??
+    BACKGROUND_IMAGE_SAMPLES[0].url
+  );
+}
+
+export function backgroundEffectLabel(effect: BackgroundEffectKind): string {
+  const option = optionByKey('backgroundEffect');
+  return (
+    (option.type === 'select' && option.choices.find(choice => choice.value === effect)?.label) ||
+    effect
+  );
+}
 
 export interface BackgroundSettings {
   effect: BackgroundEffectKind;
   blurStrength: string;
   color: string;
   model: string;
-  image: string | null;
+  image: string;
 }
 
-export function backgroundSettings(values: ConfigValues, image: string | null): BackgroundSettings {
+export function backgroundSettings(values: ConfigValues, image: string): BackgroundSettings {
   return {
     effect: values.backgroundEffect,
     blurStrength: values.backgroundBlurStrength,
@@ -63,7 +81,7 @@ function processorConfig(
     case 'image':
       return {
         type: ProcessorEffect.IMAGE_REPLACEMENT,
-        replacementImageURL: settings.image ?? DEFAULT_BACKGROUND_IMAGE,
+        replacementImageURL: settings.image,
       };
     default:
       throw new Error(`No processor for background effect ${settings.effect}`);
@@ -273,17 +291,28 @@ export class BackgroundEffectProcessor {
 }
 
 /** Longest side of an uploaded background; larger images only cost memory and storage. */
-const MAX_IMAGE_SIDE = 1920;
+const MAX_IMAGE_SIDE = 1280;
+/** Per image, so several fit in the few megabytes of local storage. */
+const MAX_IMAGE_DATA_URL_LENGTH = 300_000;
 
 export async function imageFileToDataUrl(file: File): Promise<string> {
   const bitmap = await createImageBitmap(file);
   try {
-    const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-    canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL('image/jpeg', 0.85);
+    let dataUrl = '';
+    for (const side of [MAX_IMAGE_SIDE, 960, 640]) {
+      const scale = Math.min(1, side / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      for (const quality of [0.85, 0.7]) {
+        dataUrl = canvas.toDataURL('image/jpeg', quality);
+        if (dataUrl.length <= MAX_IMAGE_DATA_URL_LENGTH) {
+          return dataUrl;
+        }
+      }
+    }
+    return dataUrl;
   } finally {
     bitmap.close();
   }

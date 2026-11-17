@@ -67,19 +67,20 @@ app/meeting/
                               ConnectionCheck (UDP and TCP to the TURN servers, from a signaling-only JOIN)
   devices/                    DeviceManager, LocalCamera, PreCallDevices (Settings pickers before a meeting),
                               BackgroundEffect, testInputs, devicePermissions, DeviceSettings,
-                              BackgroundImagePicker, LevelMeter, TestSound
+                              BackgroundImagePicker (sample, uploaded and colour backgrounds), LevelMeter,
+                              MicTest, TestSound
   media/                      synthetic and file media sources for content share and the test inputs
                               (MediaStreamProvider, DemoMediaStreamProviders, SyntheticVideoDeviceFactory)
   video/                      VideoTileCollection, stagePolicy (grid and featured-tile rules), TileStats,
                               VideoTile (<video-tile>), AvatarTile, PaginationManager, RemoteVideoManager
   features/                   ChatPanel (+ chatMarkup), Reactions, Transcription (+ transcriptionRequest),
                               Recording, StatsPanel, Capabilities, Roster, ContentShareManager,
-                              ContentShareOptions
+                              ContentShareOptions, ContentShareTest (a local preview before joining)
   shell/                      page chrome: JoinScreen, PreJoinScreen, SettingsDialog, Dock, Toolbar, SidePanel,
                               Flows
   ui/                         widgets that import only each other and strings.ts: Menu (Popover API),
-                              Dialog (<dialog>), Toast, LinkedSelect, LineChart, avatar, actions, dom,
-                              icons (lucide-static)
+                              Dialog (<dialog>), Toast, LinkedSelect, SelectMenu (a LinkedSelect as a Menu),
+                              LineChart, avatar, actions, dom, icons (lucide-static)
 csp.js                        the Content-Security-Policy the Vite dev server, api-server.js and the serverless
                               page all send
 meetingRequests.js            the Chime SDK request bodies (CreateMeeting, transcription, live connector) that

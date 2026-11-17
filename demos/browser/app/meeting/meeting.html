@@ -173,23 +173,36 @@
           <video id="video-preview" autoplay muted playsinline></video>
           <span class="background-starting" role="status" hidden>Applying background effect</span>
           <div id="video-preview-placeholder" class="preview-placeholder"><span data-icon="videoOff"></span><span class="preview-placeholder-label">Camera is off</span></div>
+          <div class="preview-controls">
+            <button type="button" id="prejoin-mic-toggle" class="preview-toggle" aria-pressed="true" aria-label="Microphone">
+              <span data-icon="mic"></span>
+            </button>
+            <button type="button" id="prejoin-camera-toggle" class="preview-toggle" aria-pressed="false" aria-label="Camera">
+              <span data-icon="videoOff"></span>
+            </button>
+            <button type="button" id="prejoin-background-toggle" class="preview-toggle" aria-pressed="false" aria-label="Background effect" hidden>
+              <span data-icon="sparkles"></span>
+            </button>
+          </div>
         </div>
-        <div class="prejoin-preview-controls">
-          <button type="button" id="prejoin-mic-toggle" class="dock-button" aria-pressed="true" aria-label="Microphone">
-            <span data-icon="mic"></span><span class="dock-label">Mic</span>
-          </button>
-          <button type="button" id="prejoin-camera-toggle" class="dock-button" aria-pressed="false" aria-label="Camera">
-            <span data-icon="videoOff"></span><span class="dock-label">Camera</span>
-          </button>
-        </div>
-        <div class="level" aria-hidden="true"><div id="audio-preview" class="level-bar"></div></div>
         <p id="prejoin-device-warning" class="prejoin-warning" role="status" hidden></p>
       </div>
       <div class="stack">
-        <label class="field">
-          <span class="field-label">Microphone</span>
-          <select id="audio-input" class="select"></select>
-        </label>
+        <div class="field">
+          <span id="prejoin-microphone-label" class="field-label">Microphone</span>
+          <button type="button" id="prejoin-microphone" class="select select-button" aria-labelledby="prejoin-microphone-label prejoin-microphone-value">
+            <span data-icon="mic"></span><span id="prejoin-microphone-value" class="select-button-value"></span>
+          </button>
+          <div id="prejoin-microphone-menu" class="menu-select">
+            <div class="menu-footer" role="group" aria-label="Check your microphone">
+              <div class="menu-level" title="Input level" aria-hidden="true"><span data-icon="audioLines"></span><div class="level"><div id="prejoin-microphone-level" class="level-bar"></div></div></div>
+              <button type="button" id="button-test-mic" class="menu-item" role="menuitem">
+                <span class="menu-icon"><span data-icon="circleDot"></span></span>
+                <span class="menu-label"><span>Test microphone</span><span class="menu-description">Records 3 seconds and plays them back</span></span>
+              </button>
+            </div>
+          </div>
+        </div>
         <div id="voice-focus-setting" class="inline-switch" hidden>
           <label class="setting">
             <span class="setting-label"><span>Noise suppression</span><span class="setting-help">Amazon Voice Focus</span></span>
@@ -198,23 +211,38 @@
           <div id="add-voice-focus-info" class="setting-help" hidden>Voice Focus is not supported on this device.</div>
         </div>
         <div class="field">
-          <label class="field-label" for="audio-output">Speaker</label>
-          <div class="field-inline">
-            <select id="audio-output" class="select"></select>
-            <button id="button-test-sound" type="button" class="button button-ghost" title="Play a short tone">Test</button>
+          <span id="prejoin-speaker-label" class="field-label">Speaker</span>
+          <button type="button" id="prejoin-speaker" class="select select-button" aria-labelledby="prejoin-speaker-label prejoin-speaker-value">
+            <span data-icon="volume2"></span><span id="prejoin-speaker-value" class="select-button-value"></span>
+          </button>
+          <div id="prejoin-speaker-menu" class="menu-select">
+            <div class="menu-footer" role="group" aria-label="Check your speaker">
+              <button type="button" id="button-test-sound" class="menu-item" role="menuitem">
+                <span class="menu-icon"><span data-icon="play"></span></span>
+                <span class="menu-label"><span>Play test sound</span><span class="menu-description">A short tone on this speaker</span></span>
+              </button>
+            </div>
           </div>
         </div>
-        <label class="field">
-          <span class="field-label">Camera</span>
-          <select id="video-input" class="select"></select>
-        </label>
-        <div id="video-input-filter-container">
-          <label class="field">
-            <span class="field-label">Background effect</span>
-            <select id="video-input-filter" class="select">
-              <option value="None" selected>None</option>
-            </select>
-          </label>
+        <div class="field">
+          <span id="prejoin-camera-label" class="field-label">Camera</span>
+          <button type="button" id="prejoin-camera" class="select select-button" aria-labelledby="prejoin-camera-label prejoin-camera-value">
+            <span data-icon="video"></span><span id="prejoin-camera-value" class="select-button-value"></span>
+          </button>
+          <div id="prejoin-camera-menu" class="menu-select">
+            <div class="menu-footer" role="group" aria-label="Check what you share">
+              <button type="button" id="prejoin-content-share-test" class="menu-item" role="menuitem">
+                <span class="menu-icon"><span data-icon="screenShare"></span></span>
+                <span class="menu-label"><span>Test content share</span><span class="menu-description">Preview a screen or file before you join</span></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="prejoin-background-field" class="field" hidden>
+          <span id="prejoin-background-label" class="field-label">Background effect</span>
+          <button type="button" id="prejoin-background" class="select select-button select-button-dialog" aria-haspopup="dialog" aria-labelledby="prejoin-background-label prejoin-background-value">
+            <span data-icon="sparkles"></span><span id="prejoin-background-value" class="select-button-value"></span><span data-icon="chevronRight"></span>
+          </button>
         </div>
       </div>
     </div>
@@ -657,6 +685,48 @@
     </dl>
     <button type="button" id="button-copy-join-link" class="button button-primary"><span data-icon="copy"></span><span>Copy join link</span></button>
   </div>
+</dialog>
+
+<dialog id="content-share-test-dialog" class="dialog dialog-wide" aria-labelledby="content-share-test-title">
+  <header class="dialog-header">
+    <h2 id="content-share-test-title">Test content share</h2>
+    <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
+  </header>
+  <div class="dialog-body share-test">
+    <div class="share-test-sources">
+      <p class="muted small">See what others would see. Nothing is sent: the preview stays on this device.</p>
+      <div id="content-share-test-sources" class="share-test-source-list" role="group" aria-label="Preview">
+        <button type="button" class="menu-item" aria-pressed="false" data-source="dropdown-item-content-share-screen-capture">
+          <span class="menu-icon"><span data-icon="screenShare"></span></span>
+          <span class="menu-label"><span>A screen, window or tab</span><span class="menu-description">The browser asks which one</span></span>
+          <span class="menu-check"><span data-icon="check"></span></span>
+        </button>
+        <button type="button" class="menu-item" aria-pressed="false" data-source="dropdown-item-content-share-file-item">
+          <span class="menu-icon"><span data-icon="fileVideo"></span></span>
+          <span class="menu-label"><span>A video or audio file</span></span>
+          <span class="menu-check"><span data-icon="check"></span></span>
+        </button>
+      </div>
+      <input id="content-share-test-file" type="file" accept="video/*,audio/*" hidden>
+      <label class="setting">
+        <span class="setting-label"><span>Share computer sound</span><span class="setting-help">With a screen, window or tab</span></span>
+        <input type="checkbox" id="content-share-test-include-audio" class="switch" checked>
+      </label>
+    </div>
+    <div class="share-test-output">
+      <div class="preview-frame share-test-preview">
+        <video id="content-share-test-preview" autoplay muted playsinline></video>
+        <div id="content-share-test-placeholder" class="preview-placeholder"><span data-icon="screenShare"></span><span class="preview-placeholder-label">Choose something to preview</span></div>
+      </div>
+      <div class="share-test-level" title="Shared sound level"><span data-icon="volume2"></span><div class="level"><div id="content-share-test-level" class="level-bar"></div></div></div>
+      <p id="content-share-test-status" class="small muted" role="status"></p>
+    </div>
+    <video id="content-share-test-file-media" playsinline hidden></video>
+  </div>
+  <footer class="dialog-footer">
+    <button type="button" id="content-share-test-stop" class="button button-ghost" disabled>Stop preview</button>
+    <button type="button" class="button button-primary" data-dialog-close>Done</button>
+  </footer>
 </dialog>
 
 <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>

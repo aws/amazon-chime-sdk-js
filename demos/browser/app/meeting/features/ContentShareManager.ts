@@ -26,6 +26,36 @@ export type SourceId =
   | 'dropdown-item-content-share-test-stereo-audio-tone'
   | 'dropdown-item-content-share-file-item';
 
+export interface ContentSourceOptions {
+  includeAudio: boolean;
+  frameRate?: number;
+  fileUrl?: string;
+  fileElement?: HTMLVideoElement;
+}
+
+export function contentSourceProvider(
+  source: SourceId,
+  options: ContentSourceOptions
+): MediaStreamProvider {
+  switch (source) {
+    case 'dropdown-item-content-share-screen-capture':
+      return new ScreenShareMediaStreamProvider({
+        frameRate: options.frameRate,
+        includeAudio: options.includeAudio,
+      });
+    case 'dropdown-item-content-share-screen-test-video':
+      return new TestPatternMediaStreamProvider();
+    case 'dropdown-item-content-share-test-mono-audio-speech':
+      return new AudioBufferMediaStreamProvider('audio_file', true);
+    case 'dropdown-item-content-share-test-stereo-audio-speech':
+      return new AudioBufferMediaStreamProvider('stereo_audio_file', true);
+    case 'dropdown-item-content-share-test-stereo-audio-tone':
+      return new SynthesizedStereoMediaStreamProvider(500, 1000);
+    case 'dropdown-item-content-share-file-item':
+      return new FileMediaStreamProvider(options.fileUrl!, options.fileElement);
+  }
+}
+
 export interface ContentShareElements {
   button: HTMLButtonElement;
   menu: HTMLElement;
@@ -138,7 +168,7 @@ export default class ContentShareManager implements ContentShareObserver {
         this.logger.info(
           `Starting screen capture: frameRate=${this.options.frameRate} audio=${this.includeAudio} optimizeForVideo=${this.optimizeForVideo}`
         );
-        const provider = new ScreenShareMediaStreamProvider({
+        const provider = contentSourceProvider(source, {
           frameRate: this.options.frameRate,
           includeAudio: this.includeAudio,
         });
@@ -160,18 +190,6 @@ export default class ContentShareManager implements ContentShareObserver {
         this.streamProvider = provider;
         break;
       }
-      case 'dropdown-item-content-share-screen-test-video':
-        this.streamProvider = new TestPatternMediaStreamProvider();
-        break;
-      case 'dropdown-item-content-share-test-mono-audio-speech':
-        this.streamProvider = new AudioBufferMediaStreamProvider('audio_file', true);
-        break;
-      case 'dropdown-item-content-share-test-stereo-audio-speech':
-        this.streamProvider = new AudioBufferMediaStreamProvider('stereo_audio_file', true);
-        break;
-      case 'dropdown-item-content-share-test-stereo-audio-tone':
-        this.streamProvider = new SynthesizedStereoMediaStreamProvider(500, 1000);
-        break;
       case 'dropdown-item-content-share-file-item': {
         const file = this.elements.fileInput.files?.[0];
         if (!file) {
@@ -180,9 +198,14 @@ export default class ContentShareManager implements ContentShareObserver {
           return;
         }
         this.fileUrl = URL.createObjectURL(file);
-        this.streamProvider = new FileMediaStreamProvider(this.fileUrl);
+        this.streamProvider = contentSourceProvider(source, {
+          includeAudio: this.includeAudio,
+          fileUrl: this.fileUrl,
+        });
         break;
       }
+      default:
+        this.streamProvider = contentSourceProvider(source, { includeAudio: this.includeAudio });
     }
 
     let stream: MediaStream | undefined;

@@ -25,6 +25,7 @@ import flipHorizontal from 'lucide-static/icons/flip-horizontal.svg?raw';
 import focus from 'lucide-static/icons/focus.svg?raw';
 import globe from 'lucide-static/icons/globe.svg?raw';
 import hand from 'lucide-static/icons/hand.svg?raw';
+import imagePlus from 'lucide-static/icons/image-plus.svg?raw';
 import info from 'lucide-static/icons/info.svg?raw';
 import layoutGrid from 'lucide-static/icons/layout-grid.svg?raw';
 import layoutPanelTop from 'lucide-static/icons/layout-panel-top.svg?raw';
@@ -37,6 +38,7 @@ import pause from 'lucide-static/icons/pause.svg?raw';
 import phoneOff from 'lucide-static/icons/phone-off.svg?raw';
 import pin from 'lucide-static/icons/pin.svg?raw';
 import pinOff from 'lucide-static/icons/pin-off.svg?raw';
+import pipette from 'lucide-static/icons/pipette.svg?raw';
 import play from 'lucide-static/icons/play.svg?raw';
 import radio from 'lucide-static/icons/radio.svg?raw';
 import screenShare from 'lucide-static/icons/screen-share.svg?raw';
@@ -81,6 +83,7 @@ const ICONS = {
   focus,
   globe,
   hand,
+  imagePlus,
   info,
   layoutGrid,
   layoutPanelTop,
@@ -98,6 +101,7 @@ const ICONS = {
   phoneOff,
   pin,
   pinOff,
+  pipette,
   play,
   radio,
   screenShare,

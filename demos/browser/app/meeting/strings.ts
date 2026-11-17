@@ -44,7 +44,11 @@ export const STRINGS = {
   mediaRegion: (code: string) => `Media region: ${code}`,
   httpNotAllowed:
     'UserMedia is not allowed on HTTP sites. Use HTTPS or enable media capture on insecure sites.',
+  micTestRecording: (secondsLeft: number) => `Recording, plays back in ${secondsLeft} s`,
   speakerTestPlaying: 'Playing',
+  micTestPlaying: 'Playing',
+  micTestFailed: (message: string) => `Microphone test failed: ${message}`,
+  micTestRecordingFailed: 'Recording failed.',
   microphoneDisconnected: (label: string | undefined) =>
     `Microphone disconnected. Now using ${label ?? 'the default microphone'}.`,
   defaultSpeaker: 'Default speaker',
@@ -91,9 +95,26 @@ export const STRINGS = {
   backgroundStarting: 'Applying background effect',
   backgroundUnavailable:
     'Background effects could not start in this browser, so the camera shows as is.',
-  backgroundImage: 'Image',
+  backgroundToggle: (effect: string) => `Background effect: ${effect}`,
+  backgroundSection: 'Background',
+  backgroundImages: 'Images',
+  backgroundColors: 'Colors',
+  backgroundSampleNames: { beach: 'Beach' },
+  backgroundColorNames: {
+    blue: 'Blue',
+    teal: 'Teal',
+    green: 'Green',
+    purple: 'Purple',
+    red: 'Red',
+    slate: 'Slate',
+    stone: 'Stone',
+  },
+  customColor: 'Custom color',
+  uploadedImage: (index: number) => `Your image ${index}`,
+  deleteUploadedImage: (index: number) => `Delete your image ${index}`,
   uploadImage: 'Upload image',
-  backgroundImageNotSaved: 'The image is too large to remember; it is used until you leave.',
+  backgroundImageNotSaved:
+    'There is no room left to remember this image, so it is used until you leave. Delete an image to make room.',
   backgroundImageUnreadable: 'That file could not be read as an image.',
   noiseSuppression: 'Suppress background noise',
   noiseSuppressionDescription: 'Amazon Voice Focus',
@@ -303,6 +324,12 @@ export const STRINGS = {
   resumeSharing: 'Resume sharing',
   optimizeForVideoClip: 'Optimize for video clip',
   startingContentShareAction: 'starting content share',
+  contextContentShareTest: 'previewing content',
+  contentShareTestStarting: 'Starting the preview',
+  contentShareTestVideo: (width: number | undefined, height: number | undefined, sound: boolean) =>
+    `${width && height ? `${width} × ${height}` : 'Video'}, ${sound ? 'with sound' : 'no sound'}`,
+  contentShareTestSoundOnly: 'Sound only',
+  contentShareTestNoVideo: 'No video',
   stoppingContentShareAction: 'stopping content share',
   level: { low: 'Low', medium: 'Medium', high: 'High', max: 'Maximum' },
   degradation: {

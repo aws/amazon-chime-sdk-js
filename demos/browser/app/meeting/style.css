@@ -792,7 +792,8 @@ dialog.dialog-settings {
   .settings-tabs,
   .settings-section-title,
   .settings-actions,
-  .settings-preview {
+  .settings-preview,
+  .background-gallery {
     display: none;
   }
 
@@ -889,10 +890,140 @@ body.no-mirror .preview-frame video {
   }
 }
 
-.prejoin-preview-controls {
+/* Centred above the toggles, so a long camera error never runs under them. */
+.prejoin-preview .preview-placeholder {
+  padding-bottom: calc(44px + 2 * var(--space-3));
+}
+
+.preview-controls {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-3);
+  transform: translateX(-50%);
+  z-index: 2;
   display: flex;
-  justify-content: center;
   gap: var(--space-2);
+}
+
+/* Over video and the camera-off placeholder alike, so the same in both themes. */
+.preview-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 50%;
+  background: var(--media-scrim);
+  color: var(--on-media);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    background: var(--media-scrim-strong);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  & svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &[aria-pressed='false'][data-kind='device'] {
+    background: var(--danger-strong);
+    border-color: transparent;
+
+    &:hover {
+      background: var(--danger-stronger);
+    }
+  }
+
+  &[data-blocked][data-kind='device']::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--warning);
+    box-shadow: 0 0 0 2px var(--media-scrim-strong);
+  }
+
+  &[aria-pressed='true']:not([data-kind]) {
+    background: var(--accent-strong);
+    border-color: transparent;
+
+    &:hover {
+      background: var(--accent-stronger);
+    }
+  }
+}
+
+.select-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-right: 34px;
+  text-align: left;
+  cursor: pointer;
+  background: var(--surface) var(--select-chevron) no-repeat right 10px center / 16px 16px;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  & > [data-icon] {
+    flex: none;
+    color: var(--text-muted);
+  }
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.select-button-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-select {
+  max-width: min(420px, calc(100vw - 16px));
+}
+
+.menu-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menu-level {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  color: var(--text-muted);
+
+  & svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+  }
+
+  & .level {
+    flex: 1;
+  }
 }
 
 .preview-placeholder-error {
@@ -1413,43 +1544,203 @@ body.no-mirror .preview-frame video {
   margin: var(--space-2) 0;
 }
 
-.color-input {
-  width: 44px;
-  height: 32px;
-  padding: 2px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-s);
-  background: var(--surface);
-  cursor: pointer;
+.settings-background-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
 
-  &::-webkit-color-swatch-wrapper {
-    padding: 0;
-  }
-
-  /* Separate rules: a browser drops a whole selector list with a pseudo-element it does not know. */
-  &::-webkit-color-swatch {
-    border: 0;
-    border-radius: 4px;
-  }
-
-  &::-moz-color-swatch {
-    border: 0;
-    border-radius: 4px;
+  & .setting .select {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    max-width: 220px;
   }
 }
 
-.background-image-field {
+.background-gallery {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+}
+
+.background-gallery-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.background-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
   gap: var(--space-2);
 }
 
-.background-image-preview {
-  width: 64px;
-  height: 36px;
-  object-fit: cover;
+.background-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--control-off);
+  }
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  & svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &[aria-pressed='true'],
+  &[data-selected] {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: transparent;
+  }
+
+  &:has(:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.background-swatch {
+  background: var(--swatch, var(--surface));
+}
+
+.background-custom {
+  color: var(--text);
+
+  & svg {
+    padding: 3px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+  }
+}
+
+.background-color-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.background-tile-slot {
+  position: relative;
+}
+
+.background-tile-delete {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--text);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  & svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.share-test {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: var(--space-4);
+}
+
+.share-test-sources {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.share-test-source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  & .menu-item[aria-pressed='true'] {
+    background: var(--surface-active);
+
+    & .menu-check {
+      visibility: visible;
+    }
+  }
+}
+
+.share-test-output {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Not the camera preview's phone sizing: the dialog is no size container. */
+.preview-frame.share-test-preview {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+
+  & video {
+    object-fit: contain;
+    transform: none;
+  }
+}
+
+.select-button-dialog {
+  padding-right: 10px;
+  background-image: none;
+
+  & > [data-icon]:last-child {
+    margin-left: auto;
+  }
+}
+
+.share-test-level {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  & .level {
+    flex: 1;
+  }
 }
 
 .settings-dev-toggle {
@@ -2346,7 +2637,9 @@ video-tile {
     flex-wrap: wrap;
   }
 
-  .settings-camera {
+  .settings-camera,
+  .settings-background-layout,
+  .share-test {
     grid-template-columns: minmax(0, 1fr);
   }
 
