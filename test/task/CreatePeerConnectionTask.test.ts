@@ -11,6 +11,7 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
 import MeetingSessionTimingManager from '../../src/meetingsessiontiming/MeetingSessionTimingManager';
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
@@ -27,6 +28,7 @@ import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 import SDPMock from '../sdp/SDPMock';
 import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
+import { makeCitrixAdapter, makeUcsdk } from '../vdi/citrix/FakeCitrixUCSDK';
 
 describe('CreatePeerConnectionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -1083,6 +1085,40 @@ describe('CreatePeerConnectionTask', () => {
       expect(logSpy.calledWith('reusing peer connection')).to.be.true;
 
       logSpy.restore();
+    });
+  });
+  describe('vdi adapter', () => {
+    it('creates the peer connection for the configured adapter', async () => {
+      // The task listens on the connection, so the redirected one must be a mock peer.
+      class RedirectedPeerConnection extends RTCPeerConnection {}
+      const ucsdk = makeUcsdk();
+      ucsdk.CitrixPeerConnection = RedirectedPeerConnection;
+      context.meetingSessionConfiguration = new MeetingSessionConfiguration();
+      context.meetingSessionConfiguration.vdiAdapter = makeCitrixAdapter(ucsdk);
+      const logSpy = sinon.spy(context.logger, 'info');
+
+      await new CreatePeerConnectionTask(context).run();
+
+      expect(context.peer).to.be.instanceOf(RedirectedPeerConnection);
+      expect(logSpy.calledWith('creating new peer connection with CitrixVDIAdapter')).to.be.true;
+      logSpy.restore();
+    });
+
+    it('creates a browser peer connection when the adapter supplies none', async () => {
+      context.meetingSessionConfiguration = new MeetingSessionConfiguration();
+      context.meetingSessionConfiguration.vdiAdapter = { name: 'Other' };
+
+      await new CreatePeerConnectionTask(context).run();
+
+      expect(context.peer).to.be.instanceOf(RTCPeerConnection);
+    });
+
+    it('creates a browser peer connection without a configuration', async () => {
+      context.meetingSessionConfiguration = undefined;
+
+      await new CreatePeerConnectionTask(context).run();
+
+      expect(context.peer).to.be.instanceOf(RTCPeerConnection);
     });
   });
 });

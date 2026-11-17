@@ -12,6 +12,7 @@ import ContentShareMediaStreamBroker from '../contentsharecontroller/ContentShar
 import DefaultContentShareController from '../contentsharecontroller/DefaultContentShareController';
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
+import DefaultDeviceController from '../devicecontroller/DefaultDeviceController';
 import DeviceController from '../devicecontroller/DeviceController';
 import DefaultEncodedTransformWorkerManager from '../encodedtransformmanager/DefaultEncodedTransformWorkerManager';
 import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
@@ -46,6 +47,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     this._logger = logger;
 
     this.checkBrowserSupportAndFeatureConfiguration();
+    this.checkVDIAdapter(deviceController);
 
     CSPMonitor.addLogger(this._logger);
     CSPMonitor.register();
@@ -171,6 +173,20 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     this._eventController = undefined;
     this.encodedTransformWorkerManager = undefined;
     this.contentShareEncodedTransformWorkerManager = undefined;
+  }
+
+  // Devices and the peer connection must come from the same platform.
+  private checkVDIAdapter(deviceController: DeviceControllerBasedMediaStreamBroker): void {
+    if (!(deviceController instanceof DefaultDeviceController)) {
+      return;
+    }
+    const deviceAdapter = deviceController.vdiAdapter;
+    if (deviceAdapter !== this._configuration.vdiAdapter) {
+      throw new Error(
+        `The device controller uses VDI adapter ${deviceAdapter?.name} but the meeting session ` +
+          `configuration uses ${this._configuration.vdiAdapter?.name}; pass the same adapter to both`
+      );
+    }
   }
 
   private checkBrowserSupportAndFeatureConfiguration(): void {

@@ -99,9 +99,14 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     if (this.context.peer) {
       this.context.logger.info('reusing peer connection');
     } else {
-      this.context.logger.info('creating new peer connection');
-      // @ts-ignore
-      this.context.peer = new RTCPeerConnection(configuration);
+      const vdiAdapter = this.context.meetingSessionConfiguration?.vdiAdapter;
+      this.context.logger.info(
+        `creating new peer connection${vdiAdapter ? ` with ${vdiAdapter.name}` : ''}`
+      );
+      this.context.peer =
+        vdiAdapter?.createPeerConnection?.(configuration) ??
+        // @ts-ignore
+        new RTCPeerConnection(configuration);
       this.addPeerConnectionEventLogger();
     }
 

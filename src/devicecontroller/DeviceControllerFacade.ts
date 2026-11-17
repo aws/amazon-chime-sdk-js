@@ -32,9 +32,9 @@ import VideoQualitySettings from './VideoQualitySettings';
  * access is being asked for by supplying your own function to
  * setDeviceLabelTrigger(). To disable the device label trigger, supply a
  * function that returns a rejected promise instead. For reference, the default
- * implementation calls getUserMedia for audio and video and returns the promise
- * to the stream so that the stream can be cleaned up once the labels are
- * detected.
+ * implementation calls getUserMedia (the VDI adapter's, when one is set) for
+ * audio and video and returns the promise to the stream so that the stream
+ * can be cleaned up once the labels are detected.
  *
  * ```typescript
  * (): Promise<MediaStream> => {
