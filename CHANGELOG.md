@@ -10,12 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added the `ICE_RELAY_PROTOCOL` client metric dimension, the client's protocol to the TURN server for the selected candidate, sent as the `RTCIceCandidateStats.relayProtocol` string the browser reports (such as `udp`, `tcp` or `tls`), which only the client can see. Nothing is sent when the selected candidate is not a relay or the browser does not report its relay protocol.
-- Added `VDIAdapter`, which lets a meeting run its media on a virtual desktop's endpoint instead of in the browser. Supply one through `MeetingSessionConfiguration.vdiAdapter` and the `vdiAdapter` option of `DefaultDeviceController`; without one the SDK uses the browser as before. The adapter can supply the peer connection and the `getUserMedia` and `enumerateDevices` calls, and the SDK uses the browser for anything it does not supply. `DefaultMeetingSession` throws when a `DefaultDeviceController` and the configuration have different adapters. Content share always runs in the browser.
-- Added `CitrixVDIAdapter` for Citrix HDX media redirection. The application passes in an initialized Citrix UCSDK object and the window handle from the Citrix Bootstrap, or calls `CitrixVDIAdapter.connect` to initialize them; the SDK does not include the UCSDK. `CitrixMediaDevices` opens and lists the endpoint's devices.
+- Added `VDIAdapter`, which lets a meeting run its media on a virtual desktop's endpoint instead of in the browser. Supply one through `MeetingSessionConfiguration.vdiAdapter` and the `vdiAdapter` option of `DefaultDeviceController`; without one the SDK uses the browser as before. The adapter can supply the peer connection and the `getUserMedia` and `enumerateDevices` calls, and the SDK uses the browser for anything it does not supply. Video tiles, the local video preview and the meeting audio element call its optional `bindVideoElement` and `bindAudioElement` just before they set `srcObject`, and `unbindVideoElement` and `unbindAudioElement` after they clear it and stop using the element, for a platform that renders media itself. `DefaultMeetingSession` throws when a `DefaultDeviceController` and the configuration have different adapters. Content share always runs in the browser.
+- Added `CitrixVDIAdapter` for Citrix HDX media redirection. The application passes in an initialized Citrix UCSDK object and the window handle from the Citrix Bootstrap, or calls `CitrixVDIAdapter.connect` to initialize them; the SDK does not include the UCSDK. `CitrixMediaDevices` opens and lists the endpoint's devices. `CitrixVDIAdapter` maps the video and audio elements that show UCSDK streams and disposes them when the SDK stops using them or gives them a browser stream.
 
 ### Removed
 
 ### Changed
+
+- `DefaultVideoTile.connectVideoStreamToVideoElement` takes a `VDIAdapter` as a new optional trailing argument.
 
 ### Fixed
 

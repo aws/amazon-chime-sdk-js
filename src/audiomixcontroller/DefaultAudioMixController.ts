@@ -7,6 +7,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import VDIAdapter from '../vdi/VDIAdapter';
 import AudioMixController from './AudioMixController';
 
 export default class DefaultAudioMixController
@@ -18,7 +19,10 @@ export default class DefaultAudioMixController
   private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior();
   private observers: Set<AudioMixObserver> = new Set<AudioMixObserver>();
 
-  constructor(private logger?: Logger) {}
+  constructor(
+    private logger?: Logger,
+    private vdiAdapter?: VDIAdapter
+  ) {}
 
   async bindAudioElement(element: HTMLAudioElement): Promise<void> {
     if (!element) {
@@ -34,6 +38,7 @@ export default class DefaultAudioMixController
       return;
     }
     this.audioElement.srcObject = null;
+    this.vdiAdapter?.unbindAudioElement?.(this.audioElement);
     this.audioElement = null;
     this.forEachObserver((observer: AudioMixObserver) => {
       if (this.audioStream) {
@@ -93,6 +98,9 @@ export default class DefaultAudioMixController
     const previousStream = this.audioElement.srcObject as MediaStream;
 
     if (this.audioStream) {
+      if (previousStream !== this.audioStream) {
+        this.vdiAdapter?.bindAudioElement?.(this.audioElement, this.audioStream);
+      }
       this.audioElement.srcObject = this.audioStream;
     }
 

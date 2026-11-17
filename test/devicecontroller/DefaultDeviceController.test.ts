@@ -2718,6 +2718,27 @@ describe('DefaultDeviceController', () => {
       expect(connectVideoStreamSpy.calledOnce).to.be.true;
       expect(disconnectVideoStreamSpy.calledOnce).to.be.true;
     });
+
+    it('maps and disposes the preview element with the Citrix adapter', async () => {
+      const ucsdk = makeUcsdk();
+      const citrixTrack = new MediaStreamTrack();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (citrixTrack as any).object_id = (): string => 'id';
+      const citrixStream = new MediaStream();
+      citrixStream.addTrack(citrixTrack);
+      (ucsdk.getUserMedia as sinon.SinonStub).resolves(citrixStream);
+      deviceController = new DefaultDeviceController(logger, {
+        vdiAdapter: makeCitrixAdapter(ucsdk),
+      });
+      await deviceController.startVideoInput(stringDeviceId);
+
+      deviceController.startVideoPreviewForVideoInput(element);
+      expect((ucsdk.mapVideoElement as sinon.SinonSpy).calledOnceWith(element, '0x1f')).to.be.true;
+
+      deviceController.stopVideoPreviewForVideoInput(element);
+      expect((ucsdk.disposeVideoElement as sinon.SinonSpy).calledOnceWith(element, '0x1f')).to.be
+        .true;
+    });
   });
 
   describe('device trigger', () => {

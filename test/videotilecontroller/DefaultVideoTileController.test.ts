@@ -13,11 +13,15 @@ import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import VideoElementDisplay from '../../src/videotile/VideoElementDisplay';
 import VideoElementObjectFit from '../../src/videotile/VideoElementObjectFit';
 import VideoTileState from '../../src/videotile/VideoTileState';
+import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import VideoTileController, {
   VideoTileResolutionObserver,
 } from '../../src/videotilecontroller/VideoTileController';
+import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import { createFakeTimers } from '../utils/fakeTimerHelper';
+import { makeCitrixAdapter } from '../vdi/citrix/FakeCitrixUCSDK';
+import MockVDIAdapter from '../vdi/MockVDIAdapter';
 
 describe('DefaultVideoTileController', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -192,6 +196,64 @@ describe('DefaultVideoTileController', () => {
       tileController.unbindVideoElement(0);
       expect(loggerSpy.calledWith('Ignoring video element unbinding for unknown tile id 0')).to.be
         .true;
+    });
+
+    it('unbinds the element from the adapter after cleaning it up', () => {
+      const adapter = new MockVDIAdapter();
+      tileController.vdiAdapter = adapter;
+      let videoElement = document.createElement('video');
+      const tileId = tileController.addVideoTile().id();
+      tileController.bindVideoElement(tileId, videoElement);
+      const tile = tileController.getVideoTile(tileId);
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1);
+
+      tileController.unbindVideoElement(tileId);
+      expect(adapter.callsOf('unbindVideoElement')).to.deep.equal([[videoElement, null, null]]);
+      videoElement = null;
+    });
+
+    it('keeps the element bound to the adapter when the application keeps it', () => {
+      const adapter = new MockVDIAdapter();
+      tileController.vdiAdapter = adapter;
+      const videoElement = document.createElement('video');
+      const tileId = tileController.addVideoTile().id();
+      tileController.bindVideoElement(tileId, videoElement);
+      tileController
+        .getVideoTile(tileId)
+        .bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1);
+
+      tileController.unbindVideoElement(tileId, false);
+      expect(adapter.callsOf('unbindVideoElement')).to.deep.equal([]);
+    });
+
+    it('does not unbind when the tile has no element', () => {
+      const adapter = new MockVDIAdapter();
+      tileController.vdiAdapter = adapter;
+      const tileId = tileController.addVideoTile().id();
+
+      tileController.unbindVideoElement(tileId);
+      expect(adapter.callsOf('unbindVideoElement')).to.deep.equal([]);
+    });
+  });
+
+  describe('vdi adapter', () => {
+    it('is the configured one', () => {
+      audioVideoController.configuration.vdiAdapter = makeCitrixAdapter();
+      const controller = new DefaultVideoTileController(
+        new DefaultVideoTileFactory(),
+        audioVideoController,
+        audioVideoController.logger
+      );
+      expect(controller.vdiAdapter).to.equal(audioVideoController.configuration.vdiAdapter);
+    });
+
+    it('is undefined without one', () => {
+      const controller = new DefaultVideoTileController(
+        new DefaultVideoTileFactory(),
+        audioVideoController,
+        audioVideoController.logger
+      );
+      expect(controller.vdiAdapter).to.be.undefined;
     });
   });
 
