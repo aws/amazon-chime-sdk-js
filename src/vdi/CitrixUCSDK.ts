@@ -11,4 +11,8 @@ export default interface CitrixUCSDK {
   CitrixPeerConnection: new (configuration: RTCConfiguration) => RTCPeerConnection;
   getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>;
   enumerateDevices(): Promise<MediaDeviceInfo[]>;
+  mapVideoElement(element: HTMLVideoElement, windowHandle: string): void;
+  disposeVideoElement?(element: HTMLVideoElement): void;
+  mapAudioElement(element: HTMLAudioElement): void;
+  disposeAudioElement?(element: HTMLAudioElement): void;
 }

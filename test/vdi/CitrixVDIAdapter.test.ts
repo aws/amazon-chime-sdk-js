@@ -13,7 +13,7 @@ import CitrixVDIAdapter from '../../src/vdi/CitrixVDIAdapter';
 import CitrixVMEvent from '../../src/vdi/CitrixVMEvent';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { FakePeerConnection, makeUcsdk } from './FakeCitrixUCSDK';
+import { browserStream, citrixStream, FakePeerConnection, makeUcsdk } from './FakeCitrixUCSDK';
 
 describe('CitrixVDIAdapter', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -51,6 +51,99 @@ describe('CitrixVDIAdapter', () => {
     expect(
       new CitrixVDIAdapter({ ucsdk, windowHandle: '0x1f' }).createPeerConnection({})
     ).to.be.instanceOf(FakePeerConnection);
+  });
+
+  describe('elements', () => {
+    let adapter: CitrixVDIAdapter;
+
+    beforeEach(() => {
+      adapter = new CitrixVDIAdapter({ ucsdk, windowHandle: '0x1f' });
+    });
+
+    describe('isCitrixStream', () => {
+      it('is true only when every track is a UCSDK track', () => {
+        expect(CitrixVDIAdapter.isCitrixStream(citrixStream())).to.be.true;
+        expect(CitrixVDIAdapter.isCitrixStream(browserStream())).to.be.false;
+      });
+
+      it('is false for an empty or missing stream', () => {
+        expect(CitrixVDIAdapter.isCitrixStream(null)).to.be.false;
+        expect(CitrixVDIAdapter.isCitrixStream(undefined)).to.be.false;
+        expect(
+          CitrixVDIAdapter.isCitrixStream({
+            getTracks: (): unknown[] => [],
+          } as unknown as MediaStream)
+        ).to.be.false;
+        expect(CitrixVDIAdapter.isCitrixStream({} as unknown as MediaStream)).to.be.false;
+      });
+    });
+
+    describe('video elements', () => {
+      let element: HTMLVideoElement;
+
+      beforeEach(() => {
+        element = document.createElement('video');
+      });
+
+      it('maps an element showing a Citrix stream once', () => {
+        adapter.bindVideoElement(element, citrixStream());
+        adapter.bindVideoElement(element, citrixStream());
+        expect((ucsdk.mapVideoElement as sinon.SinonStub).calledOnceWith(element, '0x1f')).to.be
+          .true;
+      });
+
+      it('leaves an element showing a browser stream alone', () => {
+        adapter.bindVideoElement(element, browserStream());
+        adapter.unbindVideoElement(element);
+        expect((ucsdk.mapVideoElement as sinon.SinonStub).called).to.be.false;
+        expect((ucsdk.disposeVideoElement as sinon.SinonStub).called).to.be.false;
+      });
+
+      it('disposes a mapped element on unbind', () => {
+        adapter.bindVideoElement(element, citrixStream());
+        adapter.unbindVideoElement(element);
+        expect((ucsdk.disposeVideoElement as sinon.SinonStub).calledOnceWith(element)).to.be.true;
+      });
+
+      it('tolerates a UCSDK without disposeVideoElement', () => {
+        delete ucsdk.disposeVideoElement;
+        adapter.bindVideoElement(element, citrixStream());
+        expect(() => adapter.unbindVideoElement(element)).to.not.throw();
+      });
+    });
+
+    describe('audio elements', () => {
+      let element: HTMLAudioElement;
+
+      beforeEach(() => {
+        element = new HTMLAudioElement();
+      });
+
+      it('maps an element playing a Citrix stream once', () => {
+        adapter.bindAudioElement(element, citrixStream());
+        adapter.bindAudioElement(element, citrixStream());
+        expect((ucsdk.mapAudioElement as sinon.SinonStub).calledOnceWith(element)).to.be.true;
+      });
+
+      it('leaves an element playing a browser stream alone', () => {
+        adapter.bindAudioElement(element, browserStream());
+        adapter.unbindAudioElement(element);
+        expect((ucsdk.mapAudioElement as sinon.SinonStub).called).to.be.false;
+        expect((ucsdk.disposeAudioElement as sinon.SinonStub).called).to.be.false;
+      });
+
+      it('disposes a mapped element on unbind', () => {
+        adapter.bindAudioElement(element, citrixStream());
+        adapter.unbindAudioElement(element);
+        expect((ucsdk.disposeAudioElement as sinon.SinonStub).calledOnceWith(element)).to.be.true;
+      });
+
+      it('tolerates a UCSDK without disposeAudioElement', () => {
+        delete ucsdk.disposeAudioElement;
+        adapter.bindAudioElement(element, citrixStream());
+        expect(() => adapter.unbindAudioElement(element)).to.not.throw();
+      });
+    });
   });
 
   describe('connect', () => {

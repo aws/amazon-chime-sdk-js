@@ -17,4 +17,22 @@ export default interface VDIAdapter {
 
   /** Opens and lists devices. Without it, `navigator.mediaDevices`. */
   readonly mediaDevices?: Pick<MediaDevices, 'getUserMedia' | 'enumerateDevices'>;
+
+  /**
+   * Called just before a video element's `srcObject` is set to a stream, for a
+   * platform that renders the stream itself.
+   */
+  bindVideoElement?(element: HTMLVideoElement, stream: MediaStream): void;
+
+  /** Called when a video element's `srcObject` is cleared. */
+  unbindVideoElement?(element: HTMLVideoElement): void;
+
+  /**
+   * Called just before an audio element's `srcObject` is set to a stream, for a
+   * platform that plays the stream itself.
+   */
+  bindAudioElement?(element: HTMLAudioElement, stream: MediaStream): void;
+
+  /** Called when an audio element's `srcObject` is cleared. */
+  unbindAudioElement?(element: HTMLAudioElement): void;
 }

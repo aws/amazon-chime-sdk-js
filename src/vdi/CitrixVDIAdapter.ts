@@ -18,6 +18,8 @@ export default class CitrixVDIAdapter implements VDIAdapter {
   readonly windowHandle: string;
   readonly logger?: Logger;
   readonly mediaDevices: CitrixMediaDevices;
+  private readonly mappedVideo = new WeakSet<HTMLVideoElement>();
+  private readonly mappedAudio = new WeakSet<HTMLAudioElement>();
 
   constructor(options: CitrixVDIAdapterOptions) {
     this.ucsdk = options.ucsdk;
@@ -29,6 +31,48 @@ export default class CitrixVDIAdapter implements VDIAdapter {
   createPeerConnection(configuration: RTCConfiguration): RTCPeerConnection {
     this.logger?.info('CitrixVDIAdapter: peer connection is redirected');
     return new this.ucsdk.CitrixPeerConnection(configuration);
+  }
+
+  // The endpoint draws redirected video over the browser window and plays
+  // redirected audio itself, so the UCSDK maps the elements that show its streams.
+  bindVideoElement(element: HTMLVideoElement, stream: MediaStream): void {
+    if (!CitrixVDIAdapter.isCitrixStream(stream) || this.mappedVideo.has(element)) {
+      return;
+    }
+    this.ucsdk.mapVideoElement(element, this.windowHandle);
+    this.mappedVideo.add(element);
+  }
+
+  unbindVideoElement(element: HTMLVideoElement): void {
+    if (!this.mappedVideo.delete(element)) {
+      return;
+    }
+    this.ucsdk.disposeVideoElement?.(element);
+  }
+
+  bindAudioElement(element: HTMLAudioElement, stream: MediaStream): void {
+    if (!CitrixVDIAdapter.isCitrixStream(stream) || this.mappedAudio.has(element)) {
+      return;
+    }
+    this.ucsdk.mapAudioElement(element);
+    this.mappedAudio.add(element);
+  }
+
+  unbindAudioElement(element: HTMLAudioElement): void {
+    if (!this.mappedAudio.delete(element)) {
+      return;
+    }
+    this.ucsdk.disposeAudioElement?.(element);
+  }
+
+  /** A UCSDK proxy track exposes `object_id()`; a browser track does not. */
+  static isCitrixStream(stream: MediaStream | null | undefined): boolean {
+    const tracks = stream?.getTracks?.() ?? [];
+    return (
+      tracks.length > 0 &&
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      tracks.every(track => typeof (track as any).object_id === 'function')
+    );
   }
 
   /**
