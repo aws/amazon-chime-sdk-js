@@ -25,6 +25,7 @@ export default class ChatPanel {
   private readonly ownMessages: { text: string; sentAt: number }[] = [];
   private unread = 0;
   private panelVisible = false;
+  private readonly placeholder: string;
   private readonly handler = (dataMessage: DataMessage): void => this.receive(dataMessage);
   private readonly onSubmit = (event: Event): void => {
     event.preventDefault();
@@ -55,6 +56,7 @@ export default class ChatPanel {
     private readonly localExternalUserId: string,
     private readonly onUnreadChange: (count: number) => void
   ) {
+    this.placeholder = elements.composer.placeholder;
     this.audioVideo.realtimeSubscribeToReceiveDataMessage(ChatPanel.TOPIC, this.handler);
     elements.form.addEventListener('submit', this.onSubmit);
     elements.composer.addEventListener('keydown', this.onKeyDown);
@@ -83,6 +85,13 @@ export default class ChatPanel {
     newMessages.hidden = true;
   }
 
+  setCanSend(canSend: boolean): void {
+    const { composer, form } = this.elements;
+    composer.disabled = !canSend;
+    composer.placeholder = canSend ? this.placeholder : STRINGS.replicaCannotSend;
+    form.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled = !canSend;
+  }
+
   focusComposer(): void {
     this.elements.composer.focus();
   }
@@ -96,6 +105,7 @@ export default class ChatPanel {
     this.elements.newMessages.removeEventListener('click', this.onNewMessagesClick);
     this.elements.newMessages.hidden = true;
     this.elements.composer.style.height = '';
+    this.setCanSend(true);
   }
 
   private send(): void {

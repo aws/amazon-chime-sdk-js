@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { STRINGS } from '../strings';
-import { clear, el, maybeById } from './dom';
+import { clear, el } from './dom';
 
 export interface SelectChoice {
   value: string;
@@ -10,70 +10,40 @@ export interface SelectChoice {
   group?: string;
 }
 
-/** One logical `<select>` rendered in several places; a change in any copy fires one handler. */
+/**
+ * A `<select>` that other views (`SelectMenu`) show too: they redraw from `onUpdate` and choose
+ * with `pick`, and a choice made in any of them fires one handler.
+ */
 export default class LinkedSelect {
-  private readonly selects: HTMLSelectElement[];
   private readonly handlers = new Set<(value: string) => void>();
-  private readonly listeners: [HTMLSelectElement, () => void][] = [];
+  private readonly updateHandlers = new Set<() => void>();
+  private readonly onSelectChange = (): void => this.pick(this.element.value);
 
-  constructor(primary: HTMLSelectElement, ...mirrorIds: string[]) {
-    this.selects = [
-      primary,
-      ...mirrorIds
-        .map(id => maybeById<HTMLSelectElement>(id))
-        .filter((s): s is HTMLSelectElement => !!s),
-    ];
-    // Empty mirrors (the Settings dialog builds bare <select>s) copy the primary's static options.
-    for (const mirror of this.selects.slice(1)) {
-      if (mirror.options.length === 0) {
-        for (const option of Array.from(primary.children)) {
-          mirror.appendChild(option.cloneNode(true));
-        }
-        mirror.value = primary.value;
-      }
-    }
-    for (const select of this.selects) {
-      const listener = (): void => {
-        this.value = select.value;
-        for (const handler of this.handlers) {
-          handler(select.value);
-        }
-      };
-      select.addEventListener('change', listener);
-      this.listeners.push([select, listener]);
-    }
+  constructor(public readonly element: HTMLSelectElement) {
+    element.addEventListener('change', this.onSelectChange);
   }
 
   destroy(): void {
-    for (const [select, listener] of this.listeners) {
-      select.removeEventListener('change', listener);
-    }
-    this.listeners.length = 0;
+    this.element.removeEventListener('change', this.onSelectChange);
     this.handlers.clear();
-  }
-
-  get primary(): HTMLSelectElement {
-    return this.selects[0];
+    this.updateHandlers.clear();
   }
 
   get value(): string {
-    return this.primary.value;
+    return this.element.value;
   }
 
   set value(value: string) {
-    for (const select of this.selects) {
-      select.value = value;
-    }
+    this.element.value = value;
+    this.notifyUpdate();
   }
 
   get options(): HTMLOptionElement[] {
-    return Array.from(this.primary.options);
+    return Array.from(this.element.options);
   }
 
   set disabled(disabled: boolean) {
-    for (const select of this.selects) {
-      select.disabled = disabled;
-    }
+    this.element.disabled = disabled;
   }
 
   hasValue(value: string): boolean {
@@ -84,6 +54,24 @@ export default class LinkedSelect {
     this.handlers.add(handler);
   }
 
+  onUpdate(handler: () => void): void {
+    this.updateHandlers.add(handler);
+  }
+
+  /** As if the user chose `value` in the select. */
+  pick(value: string): void {
+    this.value = value;
+    for (const handler of this.handlers) {
+      handler(value);
+    }
+  }
+
+  private notifyUpdate(): void {
+    for (const handler of this.updateHandlers) {
+      handler();
+    }
+  }
+
   /** Keeps the previous selection when it still exists, else tries `preferred`. */
   fill(
     choices: SelectChoice[],
@@ -91,25 +79,24 @@ export default class LinkedSelect {
     emptyLabel: string = STRINGS.selectionUnavailable
   ): void {
     const previous = this.value;
-    for (const select of this.selects) {
-      clear(select);
-      let currentGroup: HTMLOptGroupElement | undefined;
-      for (const choice of choices) {
-        const option = el('option', { value: choice.value, text: choice.label });
-        if (choice.group) {
-          if (!currentGroup || currentGroup.label !== choice.group) {
-            currentGroup = el('optgroup', { label: choice.group });
-            select.appendChild(currentGroup);
-          }
-          currentGroup.appendChild(option);
-        } else {
-          currentGroup = undefined;
-          select.appendChild(option);
+    const select = this.element;
+    clear(select);
+    let currentGroup: HTMLOptGroupElement | undefined;
+    for (const choice of choices) {
+      const option = el('option', { value: choice.value, text: choice.label });
+      if (choice.group) {
+        if (!currentGroup || currentGroup.label !== choice.group) {
+          currentGroup = el('optgroup', { label: choice.group });
+          select.appendChild(currentGroup);
         }
+        currentGroup.appendChild(option);
+      } else {
+        currentGroup = undefined;
+        select.appendChild(option);
       }
-      if (!select.firstElementChild) {
-        select.appendChild(el('option', { text: emptyLabel, value: '' }));
-      }
+    }
+    if (!select.firstElementChild) {
+      select.appendChild(el('option', { text: emptyLabel, value: '' }));
     }
     for (const candidate of [previous, preferred]) {
       if (candidate && this.hasValue(candidate)) {
@@ -117,13 +104,11 @@ export default class LinkedSelect {
         return;
       }
     }
+    this.notifyUpdate();
   }
 
   removeOption(value: string): void {
-    for (const select of this.selects) {
-      Array.from(select.options)
-        .find(option => option.value === value)
-        ?.remove();
-    }
+    this.options.find(option => option.value === value)?.remove();
+    this.notifyUpdate();
   }
 }

@@ -15,6 +15,7 @@ import { maybeById } from '../ui/dom';
 import {
   BackgroundEffectKind,
   BackgroundEffectProcessor,
+  backgroundImageUrl,
   BackgroundSettings,
   backgroundSettings,
   BackgroundStatus,
@@ -92,7 +93,7 @@ export default class LocalCamera {
   }
 
   private get backgroundSettings(): BackgroundSettings {
-    return backgroundSettings(this.config.values, this.config.backgroundImage);
+    return backgroundSettings(this.config.values, backgroundImageUrl(this.config));
   }
 
   /** Queued, so a processor still being created gets the change too. */

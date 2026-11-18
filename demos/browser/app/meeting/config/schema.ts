@@ -48,7 +48,6 @@ export interface TextOption {
   type: 'text';
   default: string;
   placeholder?: string;
-  inputType?: 'color';
   /** Values from the URL or storage that do not match are ignored. */
   pattern?: RegExp;
 }
@@ -399,19 +398,15 @@ export const OPTIONS: OptionSpec[] = [
   },
   {
     key: 'backgroundColor',
+    hidden: true,
     applies: 'live',
     id: 'background-color',
     param: 'background-color',
-    label: 'Background color',
-    group: 'video',
-    slot: 'settings-background',
     audience: 'user',
     persist: true,
     type: 'text',
-    inputType: 'color',
     pattern: /^#[0-9a-f]{6}$/i,
     default: '#1d4ed8',
-    showIf: values => values.backgroundEffect === 'color',
   },
   {
     key: 'backgroundModel',

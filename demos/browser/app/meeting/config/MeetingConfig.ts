@@ -13,6 +13,11 @@ export interface JoinInfoOverride {
 
 export type RememberedChoice = 'audioInput' | 'videoInput' | 'audioOutput' | 'videoQuality';
 
+export interface UploadedImage {
+  id: string;
+  dataUrl: string;
+}
+
 export interface VoiceFocusOverrides {
   name?: string;
   cdn?: string;
@@ -35,8 +40,9 @@ export class MeetingConfig {
   private readonly listeners = new Set<(key: keyof ConfigValues) => void>();
   // Only user choices are stored; URL values apply to this visit only.
   private readonly stored: Partial<ConfigValues> = {};
-  // Kept apart from the option values because of its size.
-  private uploadedBackgroundImage: string | null = null;
+  // Kept apart from the option values because of their size.
+  private uploadedBackgroundImages: UploadedImage[] = [];
+  private backgroundImageId: string | null = null;
   private readonly backgroundImageListeners = new Set<() => void>();
 
   constructor(
@@ -46,7 +52,7 @@ export class MeetingConfig {
     this.values = defaultValues();
     this.applyPersisted();
     this.applyUrl();
-    this.uploadedBackgroundImage = this.readStorage('backgroundImage');
+    this.readBackgroundImages();
 
     this.meeting = search.get('m') ?? '';
     this.name = search.get('name') ?? this.readStorage('name') ?? '';
@@ -148,24 +154,93 @@ export class MeetingConfig {
     return this.readStorage(`device.${kind}`);
   }
 
-  get backgroundImage(): string | null {
-    return this.uploadedBackgroundImage;
+  rememberBackgroundEffect(effect: ConfigValues['backgroundEffect']): void {
+    this.writeStorage('lastBackgroundEffect', effect);
   }
 
-  /** False when storage refused it (too large, private mode): it then lasts this visit only. */
-  setBackgroundImage(dataUrl: string): boolean {
-    this.uploadedBackgroundImage = dataUrl;
-    let saved = false;
+  /** The effect the background toggle turns on: the last one chosen, else blur. */
+  get rememberedBackgroundEffect(): ConfigValues['backgroundEffect'] {
+    const effect = this.readStorage('lastBackgroundEffect');
+    return effect !== 'none' && MeetingConfig.isValidValue(optionByKey('backgroundEffect'), effect)
+      ? (effect as ConfigValues['backgroundEffect'])
+      : 'blur';
+  }
+
+  get backgroundImages(): readonly UploadedImage[] {
+    return this.uploadedBackgroundImages;
+  }
+
+  /** An uploaded image's id or a sample's; null for the default. */
+  get chosenBackgroundImage(): string | null {
+    return this.backgroundImageId;
+  }
+
+  chooseBackgroundImage(id: string | null): void {
+    this.backgroundImageId = id;
+    this.writeStorage('backgroundImage.chosen', id ?? '');
+    this.notifyBackgroundImage();
+  }
+
+  /** False when storage refused it (quota, private mode): the image then lasts this visit only. */
+  addBackgroundImage(dataUrl: string): { id: string; saved: boolean } {
+    const id = `upload-${Date.now().toString(36)}`;
+    this.uploadedBackgroundImages = [...this.uploadedBackgroundImages, { id, dataUrl }];
+    const saved = this.saveBackgroundImages();
+    this.chooseBackgroundImage(id);
+    return { id, saved };
+  }
+
+  removeBackgroundImage(id: string): void {
+    this.uploadedBackgroundImages = this.uploadedBackgroundImages.filter(image => image.id !== id);
+    this.saveBackgroundImages();
+    if (this.backgroundImageId === id) {
+      this.chooseBackgroundImage(null);
+    } else {
+      this.notifyBackgroundImage();
+    }
+  }
+
+  private readBackgroundImages(): void {
+    const legacy = this.readStorage('backgroundImage');
+    const raw = this.readStorage('backgroundImages');
     try {
-      this.storage?.setItem(`${STORAGE_KEY}.backgroundImage`, dataUrl);
-      saved = this.storage !== null;
+      const stored: unknown = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(stored)) {
+        this.uploadedBackgroundImages = stored.filter(
+          (image): image is UploadedImage =>
+            typeof image?.id === 'string' && typeof image?.dataUrl === 'string'
+        );
+      }
+    } catch {
+      // Ignore a corrupt list; no uploads apply.
+    }
+    this.backgroundImageId = this.readStorage('backgroundImage.chosen') || null;
+    // Earlier versions kept one uploaded image, always the chosen one.
+    if (legacy) {
+      this.removeStorage('backgroundImage');
+      if (!this.addBackgroundImage(legacy).saved) {
+        this.writeStorage('backgroundImage', legacy);
+      }
+    }
+  }
+
+  private saveBackgroundImages(): boolean {
+    try {
+      this.storage?.setItem(
+        `${STORAGE_KEY}.backgroundImages`,
+        JSON.stringify(this.uploadedBackgroundImages)
+      );
+      return this.storage !== null;
     } catch {
       // Too large for the quota, or storage is unavailable.
+      return false;
     }
+  }
+
+  private notifyBackgroundImage(): void {
     for (const listener of this.backgroundImageListeners) {
       listener();
     }
-    return saved;
   }
 
   onBackgroundImageChange(listener: () => void): () => void {
@@ -283,6 +358,14 @@ export class MeetingConfig {
       this.storage?.setItem(`${STORAGE_KEY}.${key}`, value);
     } catch {
       // Private mode or quota: preferences do not persist.
+    }
+  }
+
+  private removeStorage(key: string): void {
+    try {
+      this.storage?.removeItem(`${STORAGE_KEY}.${key}`);
+    } catch {
+      // Storage is unavailable.
     }
   }
 

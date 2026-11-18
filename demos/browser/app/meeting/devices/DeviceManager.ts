@@ -13,13 +13,13 @@ import {
 } from 'amazon-chime-sdk-js';
 
 import { MeetingConfig } from '../config/MeetingConfig';
-import { optionByKey } from '../config/schema';
 import { JoinInfo } from '../session/ApiClient';
 import VoiceFocus from '../session/VoiceFocus';
 import { STRINGS } from '../strings';
-import { byId, clear, el, maybeById, slug } from '../ui/dom';
+import { byId, maybeById, slug } from '../ui/dom';
 import LinkedSelect from '../ui/LinkedSelect';
 import Menu from '../ui/Menu';
+import SelectMenu from '../ui/SelectMenu';
 import { BackgroundEffectKind, BackgroundStatus } from './BackgroundEffect';
 import { DeviceKind } from './devicePermissions';
 import { DEVICE_SETTINGS_IDS } from './DeviceSettings';
@@ -79,11 +79,14 @@ const KNOWN_DEVICE_ERRORS = new Set([
 ]);
 
 export interface DeviceElements {
-  audioInput: HTMLSelectElement;
-  videoInput: HTMLSelectElement;
-  audioOutput: HTMLSelectElement;
-  videoFilter: HTMLSelectElement;
-  videoFilterContainer: HTMLElement;
+  audioInput: HTMLButtonElement;
+  audioInputMenu: HTMLElement;
+  videoInput: HTMLButtonElement;
+  videoInputMenu: HTMLElement;
+  audioOutput: HTMLButtonElement;
+  audioOutputMenu: HTMLElement;
+  contentShareTest: HTMLElement;
+  backgroundControls: HTMLElement[];
   voiceFocusSetting: HTMLElement;
   voiceFocusSwitch: HTMLInputElement;
   voiceFocusInfo: HTMLElement;
@@ -102,6 +105,7 @@ export interface DeviceManagerCallbacks {
   onVideoFilterChanged: (effect: BackgroundEffectKind) => void;
   onBackgroundStarting: (starting: boolean) => void;
   onOpenBackgroundSettings: () => void;
+  onTestContentShare: () => void;
   onError: (error: Error, context: string) => void;
   onNotice: (message: string) => void;
   onDeviceProblem: (kind: DeviceKind, reason: string | null) => void;
@@ -117,12 +121,11 @@ export default class DeviceManager {
   private openedAudioInput: string | undefined;
   private previewActive = false;
   private settingsLevelActive = false;
-  private previewMuted = false;
+  private microphonePickerOpen = false;
   private readonly levelMeter = new LevelMeter(() =>
-    [
-      this.previewMuted ? null : this.elements.levelBar,
-      maybeById(DEVICE_SETTINGS_IDS.audioLevel),
-    ].filter((bar): bar is HTMLElement => bar !== null)
+    [this.elements.levelBar, maybeById(DEVICE_SETTINGS_IDS.audioLevel)].filter(
+      (bar): bar is HTMLElement => bar !== null
+    )
   );
   private analyserNode: RemovableAnalyserNode | undefined;
   private incomingAudioMuted = false;
@@ -131,13 +134,14 @@ export default class DeviceManager {
   private audioOutputs: MediaDeviceInfo[] = [];
   private readonly microphoneMenu: Menu;
   private readonly cameraMenu: Menu;
+  private readonly cameraPicker: SelectMenu;
 
-  // Each picker exists on the pre-join form and in Settings; LinkedSelect keeps them in step.
+  // Each picker is a select in Settings and a SelectMenu on the pre-join form.
   private readonly audioInputSelect: LinkedSelect;
   private readonly videoInputSelect: LinkedSelect;
   private readonly audioOutputSelect: LinkedSelect;
   private readonly videoQualitySelect: LinkedSelect;
-  private readonly effectSelect: HTMLSelectElement;
+  private readonly pickers: SelectMenu[];
   private readonly preJoinVoiceFocusSwitch: HTMLInputElement;
   private readonly unsubscribeConfig: () => void;
   private readonly unsubscribeBackgroundImage: () => void;
@@ -153,16 +157,44 @@ export default class DeviceManager {
     private readonly callbacks: DeviceManagerCallbacks,
     private readonly elements: DeviceElements
   ) {
-    this.audioInputSelect = new LinkedSelect(elements.audioInput, DEVICE_SETTINGS_IDS.audioInput);
-    this.videoInputSelect = new LinkedSelect(elements.videoInput, DEVICE_SETTINGS_IDS.videoInput);
+    this.audioInputSelect = new LinkedSelect(
+      byId<HTMLSelectElement>(DEVICE_SETTINGS_IDS.audioInput)
+    );
+    this.videoInputSelect = new LinkedSelect(
+      byId<HTMLSelectElement>(DEVICE_SETTINGS_IDS.videoInput)
+    );
     this.audioOutputSelect = new LinkedSelect(
-      elements.audioOutput,
-      DEVICE_SETTINGS_IDS.audioOutput
+      byId<HTMLSelectElement>(DEVICE_SETTINGS_IDS.audioOutput)
     );
     this.videoQualitySelect = new LinkedSelect(
       byId<HTMLSelectElement>(DEVICE_SETTINGS_IDS.videoQuality)
     );
-    this.effectSelect = elements.videoFilter;
+    const microphonePicker = new SelectMenu(
+      elements.audioInput,
+      elements.audioInputMenu,
+      this.audioInputSelect,
+      STRINGS.microphone
+    );
+    microphonePicker.onOpenChange(open => {
+      this.microphonePickerOpen = open;
+      this.updateLevelMeter();
+    });
+    this.cameraPicker = new SelectMenu(
+      elements.videoInput,
+      elements.videoInputMenu,
+      this.videoInputSelect,
+      STRINGS.camera
+    );
+    this.pickers = [
+      microphonePicker,
+      new SelectMenu(
+        elements.audioOutput,
+        elements.audioOutputMenu,
+        this.audioOutputSelect,
+        STRINGS.speaker
+      ),
+      this.cameraPicker,
+    ];
     this.preJoinVoiceFocusSwitch = elements.voiceFocusSwitch;
     this.camera = new LocalCamera(audioVideo, logger, config, callbacks, elements, {
       isBot: () => this.isBot,
@@ -186,7 +218,6 @@ export default class DeviceManager {
       } else if (key === 'developerMode' || key === 'audioProfile') {
         void this.refreshAll();
       } else if (key === 'backgroundEffect') {
-        this.effectSelect.value = this.config.get('backgroundEffect');
         void this.camera.applyBackgroundEffect();
       } else if (
         key === 'backgroundBlurStrength' ||
@@ -254,7 +285,6 @@ export default class DeviceManager {
       this.refreshVideoInputs(),
       this.refreshAudioOutputs(),
     ]);
-    this.fillEffectSelect();
   }
 
   async refreshAudioInputs(): Promise<void> {
@@ -324,19 +354,6 @@ export default class DeviceManager {
       remembered,
       STRINGS.deviceSelectionUnavailable
     );
-  }
-
-  private get effectChoices(): { value: string; label: string }[] {
-    const option = optionByKey('backgroundEffect');
-    return option.type === 'select' ? option.choices : [];
-  }
-
-  private fillEffectSelect(): void {
-    clear(this.effectSelect);
-    for (const choice of this.effectChoices) {
-      this.effectSelect.appendChild(el('option', { value: choice.value, text: choice.label }));
-    }
-    this.effectSelect.value = this.config.get('backgroundEffect');
   }
 
   private renderMicrophoneMenu(): void {
@@ -467,17 +484,22 @@ export default class DeviceManager {
     this.videoQualitySelect.onChange(async value => {
       await this.applyVideoQuality(value, !inMeeting());
     });
-    this.effectSelect.addEventListener('change', this.onEffectSelectChange);
     this.preJoinVoiceFocusSwitch.addEventListener('change', this.onPreJoinVoiceFocusChange);
-    this.elements.videoFilterContainer.hidden = false;
+    this.elements.contentShareTest.addEventListener('click', this.onTestContentShare);
+    for (const control of this.elements.backgroundControls) {
+      control.hidden = false;
+    }
   }
 
   private get inMeeting(): boolean {
     return this.audioVideo.hasStartedLocalVideoTile() || this.joined;
   }
 
-  private readonly onEffectSelectChange = (): void =>
-    this.config.set('backgroundEffect', this.effectSelect.value as BackgroundEffectKind);
+  private readonly onTestContentShare = (): void => {
+    this.elements.videoInput.focus();
+    this.cameraPicker.close();
+    this.callbacks.onTestContentShare();
+  };
 
   private readonly onPreJoinVoiceFocusChange = (): void =>
     this.config.set('noiseSuppression', this.preJoinVoiceFocusSwitch.checked);
@@ -683,12 +705,6 @@ export default class DeviceManager {
     this.updateLevelMeter(true);
   }
 
-  setPreviewMuted(muted: boolean): void {
-    this.previewMuted = muted;
-    this.elements.levelBar.style.width = '0%';
-    this.updateLevelMeter();
-  }
-
   setSettingsLevelActive(active: boolean): void {
     this.settingsLevelActive = active;
     this.updateLevelMeter();
@@ -699,7 +715,7 @@ export default class DeviceManager {
   }
 
   private updateLevelMeter(restart = false): void {
-    const wanted = (this.previewActive && !this.previewMuted) || this.settingsLevelActive;
+    const wanted = (this.previewActive && this.microphonePickerOpen) || this.settingsLevelActive;
     if (this.analyserNode && (!wanted || restart)) {
       this.levelMeter.detach();
       this.analyserNode.disconnect();
@@ -809,6 +825,9 @@ export default class DeviceManager {
     this.unsubscribeConfig();
     this.microphoneMenu.destroy();
     this.cameraMenu.destroy();
+    for (const picker of this.pickers) {
+      picker.destroy();
+    }
     for (const select of [
       this.audioInputSelect,
       this.videoInputSelect,
@@ -818,7 +837,7 @@ export default class DeviceManager {
       select.destroy();
     }
     this.unsubscribeBackgroundImage();
-    this.effectSelect.removeEventListener('change', this.onEffectSelectChange);
+    this.elements.contentShareTest.removeEventListener('click', this.onTestContentShare);
     this.preJoinVoiceFocusSwitch.removeEventListener('change', this.onPreJoinVoiceFocusChange);
     this.voiceFocus.onDegraded = undefined;
     this.settingsLevelActive = false;

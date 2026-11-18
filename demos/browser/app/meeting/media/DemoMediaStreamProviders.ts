@@ -171,10 +171,12 @@ let canvasCopies = 0;
  * provided URI.
  */
 export class FileMediaStreamProvider implements MediaStreamProvider {
-  private readonly mediaElementSource: HTMLVideoElement;
-
-  constructor(path: string) {
-    this.mediaElementSource = document.getElementById('content-share-video') as HTMLVideoElement;
+  constructor(
+    path: string,
+    private readonly mediaElementSource = document.getElementById(
+      'content-share-video'
+    ) as HTMLVideoElement
+  ) {
     this.mediaElementSource.src = path;
   }
 
