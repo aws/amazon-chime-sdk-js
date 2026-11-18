@@ -1873,6 +1873,39 @@ describe('StatsCollector', () => {
       });
     });
 
+    it('sends the metrics of a getStats call that completes after stop', async () => {
+      let errorMessage: string | undefined;
+      class TestLogger extends NoOpDebugLogger {
+        error(msg: string): void {
+          errorMessage = msg;
+        }
+      }
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+      const peer = audioVideoController.rtcPeerConnection;
+      const report = await peer.getStats();
+      let completeGetStats: () => void;
+      const getStatsCompleted = new Promise<void>(resolve => (completeGetStats = resolve));
+      const getStatsStub = sinon.stub(peer, 'getStats').callsFake(async () => {
+        await getStatsCompleted;
+        return report;
+      });
+      const sendSpy = sinon.spy(signalingClient, 'sendClientMetrics');
+      statsCollector = new StatsCollector(audioVideoController, new TestLogger(), interval);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+      await Promise.resolve();
+      pressureCallback([{ source: 'cpu', state: 'serious' }]);
+
+      await new Promise(resolve => setTimeout(resolve, interval + 5));
+      expect(getStatsStub.calledOnce).to.be.true;
+      statsCollector.stop();
+      completeGetStats();
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(errorMessage).to.be.undefined;
+      expect(sendSpy.calledOnce).to.be.true;
+      expect(findCpuPressureMetric(sendSpy.firstCall.args[0])).to.equal(undefined);
+    });
+
     it('omits the CPU pressure metric when no sample has been observed', done => {
       domMockBehavior.rtcPeerConnectionGetStatsReports = [];
       const sendSpy = sinon.spy(signalingClient, 'sendClientMetrics');
