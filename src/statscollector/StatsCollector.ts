@@ -16,6 +16,7 @@ import RedundantAudioRecoveryMetricsObserver from '../redundantaudiorecoverymetr
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import SignalingClient from '../signalingclient/SignalingClient';
 import {
+  SdkClientDimension,
   SdkClientMetricFrame,
   SdkDimensionValue,
   SdkMetric,
@@ -79,15 +80,6 @@ export default class StatsCollector
     critical: 3,
   };
 
-  // Encodes RTCIceCandidateStats.relayProtocol into the SdkMetric.ICE_RELAY_PROTOCOL wire value.
-  // Nothing is reported when the selected local candidate is not a relay, or is a relay whose
-  // protocol the browser does not report or this table does not know.
-  private static readonly ICE_RELAY_PROTOCOL_VALUE: { [key: string]: number } = {
-    udp: 0,
-    tcp: 1,
-    tls: 2,
-  };
-
   private intervalScheduler: IntervalScheduler | null = null;
   private signalingClient: SignalingClient;
   private videoStreamIndex: VideoStreamIndex;
@@ -108,7 +100,7 @@ export default class StatsCollector
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
   private computePressureMonitor: ComputePressureMonitor | null = null;
-  private iceRelayProtocol: number | null = null;
+  private iceRelayProtocol: string | null = null;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -501,7 +493,6 @@ export default class StatsCollector
       this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName]);
     }
     this.maybeAddCpuPressureMetric(clientMetricFrame);
-    this.maybeAddIceRelayProtocolMetric(clientMetricFrame);
   }
 
   private maybeAddCpuPressureMetric(clientMetricFrame: SdkClientMetricFrame): void {
@@ -538,18 +529,22 @@ export default class StatsCollector
     if (localCandidate?.candidateType !== 'relay') {
       return;
     }
-    this.iceRelayProtocol =
-      StatsCollector.ICE_RELAY_PROTOCOL_VALUE[localCandidate.relayProtocol] ?? null;
+    const relayProtocol = localCandidate.relayProtocol;
+    if (typeof relayProtocol === 'string' && relayProtocol !== '') {
+      this.iceRelayProtocol = relayProtocol;
+    }
   }
 
-  private maybeAddIceRelayProtocolMetric(clientMetricFrame: SdkClientMetricFrame): void {
+  private maybeAddIceRelayProtocolDimension(clientMetricFrame: SdkClientMetricFrame): void {
     if (this.iceRelayProtocol === null) {
       return;
     }
-    const metricFrame = SdkMetric.create();
-    metricFrame.type = SdkMetric.Type.ICE_RELAY_PROTOCOL;
-    metricFrame.value = this.iceRelayProtocol;
-    clientMetricFrame.globalMetrics.push(metricFrame);
+    const dimension = SdkClientDimension.create();
+    dimension.type = SdkClientDimension.Type.ICE_RELAY_PROTOCOL;
+    const dimensionValue = SdkDimensionValue.create();
+    dimensionValue.stringValue = this.iceRelayProtocol;
+    dimension.value = dimensionValue;
+    clientMetricFrame.dimensions.push(dimension);
   }
 
   /**
@@ -616,6 +611,7 @@ export default class StatsCollector
     clientMetricFrame.streamMetricFrames = [];
     this.addGlobalMetricsToProtobuf(clientMetricFrame);
     this.addStreamMetricsToProtobuf(clientMetricFrame);
+    this.maybeAddIceRelayProtocolDimension(clientMetricFrame);
     return clientMetricFrame;
   }
 

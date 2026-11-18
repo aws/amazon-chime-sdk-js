@@ -22,7 +22,11 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
-import { SdkClientMetricFrame, SdkMetric } from '../../src/signalingprotocol/SignalingProtocol';
+import {
+  SdkClientDimension,
+  SdkClientMetricFrame,
+  SdkMetric,
+} from '../../src/signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../../src/statscollector/AudioLogEvent';
 import StatsCollector from '../../src/statscollector/StatsCollector';
 import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
@@ -1924,11 +1928,15 @@ describe('StatsCollector', () => {
     });
   });
 
-  describe('ICE relay protocol metric', () => {
-    function findRelayProtocolMetric(
-      frame: SdkClientMetricFrame
-    ): { type?: SdkMetric.Type; value?: number } | undefined {
-      return frame.globalMetrics.find(m => m.type === SdkMetric.Type.ICE_RELAY_PROTOCOL);
+  describe('ICE relay protocol dimension', () => {
+    type Dimension = { type?: SdkClientDimension.Type; stringValue?: string };
+
+    function dimensionsOf(frame: SdkClientMetricFrame): Dimension[] {
+      return frame.dimensions.map(d => ({ type: d.type, stringValue: d.value?.stringValue }));
+    }
+
+    function relayProtocolDimension(relayProtocol: string): Dimension[] {
+      return [{ type: SdkClientDimension.Type.ICE_RELAY_PROTOCOL, stringValue: relayProtocol }];
     }
 
     function reports(
@@ -1942,10 +1950,10 @@ describe('StatsCollector', () => {
       ];
     }
 
-    function lastRelayProtocol(
+    function lastFrame(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       statsReports: any[],
-      done: (value: number | undefined) => void
+      done: (frame: SdkClientMetricFrame) => void
     ): void {
       domMockBehavior.rtcPeerConnectionGetStatsReports = statsReports;
       const sendSpy = sinon.spy(signalingClient, 'sendClientMetrics');
@@ -1956,75 +1964,86 @@ describe('StatsCollector', () => {
         statsCollector.stop();
         const frames = sendSpy.getCalls().map(c => c.args[0] as SdkClientMetricFrame);
         expect(frames.length).to.be.greaterThan(0);
-        done(findRelayProtocolMetric(frames[frames.length - 1])?.value);
+        done(frames[frames.length - 1]);
       });
     }
 
-    it('sends 0 for a relay over udp', done => {
-      lastRelayProtocol(reports({ candidateType: 'relay', relayProtocol: 'udp' }), value => {
-        expect(value).to.equal(0);
+    for (const relayProtocol of ['udp', 'tcp', 'tls']) {
+      it(`sends ${relayProtocol} as the string value for a relay over ${relayProtocol}`, done => {
+        lastFrame(reports({ candidateType: 'relay', relayProtocol }), frame => {
+          expect(dimensionsOf(frame)).to.deep.equal(relayProtocolDimension(relayProtocol));
+          done();
+        });
+      });
+    }
+
+    it('forwards a relay protocol it does not recognize verbatim', done => {
+      lastFrame(reports({ candidateType: 'relay', relayProtocol: 'quic' }), frame => {
+        expect(dimensionsOf(frame)).to.deep.equal(relayProtocolDimension('quic'));
         done();
       });
     });
 
-    it('sends 1 for a relay over tcp', done => {
-      lastRelayProtocol(reports({ candidateType: 'relay', relayProtocol: 'tcp' }), value => {
-        expect(value).to.equal(1);
-        done();
-      });
-    });
-
-    it('sends 2 for a relay over tls', done => {
-      lastRelayProtocol(reports({ candidateType: 'relay', relayProtocol: 'tls' }), value => {
-        expect(value).to.equal(2);
+    it('sends no other dimension or metric', done => {
+      lastFrame(reports({ candidateType: 'relay', relayProtocol: 'udp' }), frame => {
+        expect(frame.dimensions).to.have.lengthOf(1);
+        expect(frame.globalMetrics).to.have.lengthOf(0);
+        expect(frame.streamMetricFrames).to.have.lengthOf(0);
         done();
       });
     });
 
     it('sends nothing when the selected local candidate is not a relay', done => {
-      lastRelayProtocol(reports({ candidateType: 'srflx' }), value => {
-        expect(value).to.equal(undefined);
-        done();
-      });
-    });
-
-    it('sends nothing for a relay whose protocol the browser does not report', done => {
-      lastRelayProtocol(reports({ candidateType: 'relay' }), value => {
-        expect(value).to.equal(undefined);
-        done();
-      });
-    });
-
-    it('sends nothing for a relay protocol it does not know', done => {
-      lastRelayProtocol(reports({ candidateType: 'relay', relayProtocol: 'quic' }), value => {
-        expect(value).to.equal(undefined);
+      // A relayProtocol on a candidate that is not a relay is ignored.
+      lastFrame(reports({ candidateType: 'srflx', relayProtocol: 'udp' }), frame => {
+        expect(frame.dimensions).to.have.lengthOf(0);
         done();
       });
     });
 
     it('sends nothing when the selected local candidate is unknown', done => {
-      lastRelayProtocol(reports(null), value => {
-        expect(value).to.equal(undefined);
+      lastFrame(reports(null), frame => {
+        expect(frame.dimensions).to.have.lengthOf(0);
+        done();
+      });
+    });
+
+    it('sends nothing for a relay whose protocol the browser does not report', done => {
+      lastFrame(reports({ candidateType: 'relay' }), frame => {
+        expect(frame.dimensions).to.have.lengthOf(0);
+        done();
+      });
+    });
+
+    it('sends nothing for a relay whose protocol is empty', done => {
+      lastFrame(reports({ candidateType: 'relay', relayProtocol: '' }), frame => {
+        expect(frame.dimensions).to.have.lengthOf(0);
         done();
       });
     });
 
     it('stops sending when the selected pair moves off a relay', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const valueAfter = (statsReports: any[]): number | undefined => {
+      const dimensionsAfter = (statsReports: any[]): Dimension[] => {
         statsCollector['updateIceRelayProtocol'](statsReports);
         const frame = SdkClientMetricFrame.create();
-        statsCollector['maybeAddIceRelayProtocolMetric'](frame);
-        return findRelayProtocolMetric(frame)?.value;
+        statsCollector['maybeAddIceRelayProtocolDimension'](frame);
+        return dimensionsOf(frame);
       };
-      expect(valueAfter(reports({ candidateType: 'relay', relayProtocol: 'udp' }))).to.equal(0);
-      expect(valueAfter(reports({ candidateType: 'host' }))).to.equal(undefined);
-      expect(valueAfter(reports({ candidateType: 'relay', relayProtocol: 'tls' }))).to.equal(2);
-      expect(valueAfter(reports({ candidateType: 'relay', relayProtocol: 'quic' }))).to.equal(
-        undefined
+      expect(
+        dimensionsAfter(reports({ candidateType: 'relay', relayProtocol: 'udp' }))
+      ).to.deep.equal(relayProtocolDimension('udp'));
+      expect(dimensionsAfter(reports({ candidateType: 'host' }))).to.deep.equal([]);
+      expect(
+        dimensionsAfter(reports({ candidateType: 'relay', relayProtocol: 'tls' }))
+      ).to.deep.equal(relayProtocolDimension('tls'));
+      expect(dimensionsAfter(reports({ candidateType: 'relay', relayProtocol: '' }))).to.deep.equal(
+        []
       );
-      expect(valueAfter(reports({ candidateType: 'relay', relayProtocol: 'tcp' }))).to.equal(1);
-      expect(valueAfter(reports(null))).to.equal(undefined);
+      expect(
+        dimensionsAfter(reports({ candidateType: 'relay', relayProtocol: 'tcp' }))
+      ).to.deep.equal(relayProtocolDimension('tcp'));
+      expect(dimensionsAfter(reports(null))).to.deep.equal([]);
     });
   });
 
