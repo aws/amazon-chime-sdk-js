@@ -494,6 +494,9 @@ export default class StatsCollector
   }
 
   private maybeAddCpuPressureMetric(clientMetricFrame: SdkClientMetricFrame): void {
+    if (!this.computePressureMonitor) {
+      return;
+    }
     const state = this.computePressureMonitor.currentState();
     if (state === null) {
       return;
