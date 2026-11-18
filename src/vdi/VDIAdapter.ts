@@ -12,7 +12,11 @@ export default interface VDIAdapter {
   /** Identifies the platform in logs, for example when the peer connection is created. */
   readonly name: string;
 
-  /** Creates the meeting's peer connection. Without it, `new RTCPeerConnection(configuration)`. */
+  /**
+   * Creates the meeting's peer connection. Without it, `new RTCPeerConnection(configuration)`.
+   * The SDK compares transceivers, senders and receivers with `===`, so the connection must return
+   * the same object for the same transceiver, sender or receiver every time.
+   */
   createPeerConnection?(configuration: RTCConfiguration): RTCPeerConnection;
 
   /** Opens and lists devices. Without it, `navigator.mediaDevices`. */

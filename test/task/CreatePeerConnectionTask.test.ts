@@ -17,6 +17,7 @@ import MeetingSessionTimingManager from '../../src/meetingsessiontiming/MeetingS
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
+import CitrixRTCPeerConnection, { unwrap } from '../../src/vdi/citrix/CitrixRTCPeerConnection';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import VideoTile from '../../src/videotile/VideoTile';
@@ -1099,7 +1100,8 @@ describe('CreatePeerConnectionTask', () => {
 
       await new CreatePeerConnectionTask(context).run();
 
-      expect(context.peer).to.be.instanceOf(RedirectedPeerConnection);
+      expect(context.peer).to.be.instanceOf(CitrixRTCPeerConnection);
+      expect(unwrap(context.peer)).to.be.instanceOf(RedirectedPeerConnection);
       expect(logSpy.calledWith('creating new peer connection with CitrixVDIAdapter')).to.be.true;
       logSpy.restore();
     });

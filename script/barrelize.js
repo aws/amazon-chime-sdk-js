@@ -24,6 +24,12 @@ const importStrings = [];
 const exportStrings = [];
 
 const ignoredTypes = [
+  // These are @internal Citrix peer connection wrappers.
+  'CitrixRTCPeerConnection',
+  'CitrixRTCRtpReceiver',
+  'CitrixRTCRtpSender',
+  'CitrixRTCRtpTransceiver',
+
   // These are @internal Voice Focus types.
   'VoiceFocusTransformDeviceDelegate',
   'LoggerAdapter',
