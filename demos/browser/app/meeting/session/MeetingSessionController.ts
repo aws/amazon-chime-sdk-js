@@ -190,6 +190,12 @@ export default class MeetingSessionController
     return this.credentials.attendeeId!;
   }
 
+  /** A promoted replica attendee is also an attendee of the primary meeting. */
+  get localAttendeeIds(): string[] {
+    const primary = this.primaryMeetingSessionCredentials?.attendeeId;
+    return primary ? [this.localAttendeeId, primary] : [this.localAttendeeId];
+  }
+
   isSelfAttendee(attendeeId: string): boolean {
     const base = new DefaultModality(attendeeId).base();
     return (

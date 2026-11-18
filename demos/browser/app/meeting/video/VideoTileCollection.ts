@@ -310,7 +310,9 @@ export default class VideoTileCollection implements AudioVideoObserver {
           if (tileState.localTile) {
             return;
           }
-          if (tile.paused) {
+          if (tileState.isContent && this.isLocalAttendee(attendeeId)) {
+            this.toggleOwnContentPause(tileId, tile);
+          } else if (tile.paused) {
             this.videoTileController.unpauseVideoTile(tileId);
           } else {
             this.videoTileController.pauseVideoTile(tileId);
@@ -410,6 +412,18 @@ export default class VideoTileCollection implements AudioVideoObserver {
 
   private isLocalAttendee(attendeeId: string): boolean {
     return attendeeId.startsWith(this.options.localAttendeeId);
+  }
+
+  // Your own share plays from the local stream, so there is no received stream to pause.
+  private toggleOwnContentPause(tileId: number, tile: DemoVideoTile): void {
+    const sdkTile = this.videoTileController.getVideoTile(tileId);
+    if (tile.paused) {
+      sdkTile?.unpause();
+      void tile.videoElement.play().catch(() => {});
+    } else {
+      sdkTile?.pause();
+      tile.videoElement.pause();
+    }
   }
 
   setShowingStats(showing: boolean): void {

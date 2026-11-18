@@ -302,16 +302,12 @@ export default class SettingsDialog {
       control.value = value === null ? '' : String(value);
     } else {
       control = el('input', {
-        type: option.inputType ?? 'text',
+        type: 'text',
         id: option.id,
-        class: option.inputType === 'color' ? 'color-input' : 'input',
+        class: 'input',
         placeholder: option.placeholder,
       });
       control.value = String(values[option.key]);
-      if (option.inputType === 'color') {
-        // 'input' so the colour applies while the picker is dragged.
-        control.addEventListener('input', () => this.onControlChanged(option, control));
-      }
     }
 
     const row = el('label', { class: 'setting', for: option.id }, label, control);

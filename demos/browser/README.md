@@ -44,7 +44,7 @@ Changes to demo source files (`.ts`, `.css`, `.html`) will trigger an automatic 
 
 ### Demo application
 
-The `app/meeting` demo is a videoconferencing application covering the SDK's meeting features: devices, video tiles, content share, background effects, chat and reactions over data messages, live transcription, a setup test (**Test your devices and connection** on the join screen runs the SDK's meeting readiness checker in a test meeting of its own), and, in developer mode (`?dev=1`, or **Show developer options** in More or Settings), codec, policy, capability and media pipeline controls
+The `app/meeting` demo is a videoconferencing application covering the SDK's meeting features: devices, video tiles, content share, background effects, chat and reactions over data messages, live transcription, a connection check on the device page before joining (it reaches the meeting's TURN servers over UDP and TCP without joining audio, so no one sees it), and, in developer mode (`?dev=1`, or **Show developer options** in More or Settings), codec, policy, capability and media pipeline controls
 
 After running `start` the first time, you can speed things up on subsequent iterations by using `start:fast`, e.g.
 
@@ -63,22 +63,24 @@ app/meeting/
                               SessionEvents (SDK callbacks -> UI); only meeting.ts imports it
   config/                     option schema and MeetingConfig (URL + localStorage); imports nothing else
   session/                    MeetingSessionController (SDK session, observers), SessionLogging,
-                              AudioDiagnostics, VoiceFocus, ApiClient, codecSupport, MeetingLogger
+                              AudioDiagnostics, VoiceFocus, ApiClient, codecSupport, MeetingLogger,
+                              ConnectionCheck (UDP and TCP to the TURN servers, from a signaling-only JOIN)
   devices/                    DeviceManager, LocalCamera, PreCallDevices (Settings pickers before a meeting),
                               BackgroundEffect, testInputs, devicePermissions, DeviceSettings,
-                              BackgroundImagePicker, LevelMeter, MicTest, TestSound
+                              BackgroundImagePicker (sample, uploaded and colour backgrounds), LevelMeter,
+                              MicTest, TestSound
   media/                      synthetic and file media sources for content share and the test inputs
                               (MediaStreamProvider, DemoMediaStreamProviders, SyntheticVideoDeviceFactory)
   video/                      VideoTileCollection, stagePolicy (grid and featured-tile rules), TileStats,
                               VideoTile (<video-tile>), AvatarTile, PaginationManager, RemoteVideoManager
   features/                   ChatPanel (+ chatMarkup), Reactions, Transcription (+ transcriptionRequest),
                               Recording, StatsPanel, Capabilities, Roster, ContentShareManager,
-                              ContentShareOptions, ReadinessCheck (Test your setup)
+                              ContentShareOptions, ContentShareTest (a local preview before joining)
   shell/                      page chrome: JoinScreen, PreJoinScreen, SettingsDialog, Dock, Toolbar, SidePanel,
                               Flows
   ui/                         widgets that import only each other and strings.ts: Menu (Popover API),
-                              Dialog (<dialog>), Toast, LinkedSelect, LineChart, avatar, actions, dom,
-                              icons (lucide-static)
+                              Dialog (<dialog>), Toast, LinkedSelect, SelectMenu (a LinkedSelect as a Menu),
+                              LineChart, avatar, actions, dom, icons (lucide-static)
 csp.js                        the Content-Security-Policy the Vite dev server, api-server.js and the serverless
                               page all send
 meetingRequests.js            the Chime SDK request bodies (CreateMeeting, transcription, live connector) that

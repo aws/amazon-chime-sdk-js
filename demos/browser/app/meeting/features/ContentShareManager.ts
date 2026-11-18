@@ -26,6 +26,36 @@ export type SourceId =
   | 'dropdown-item-content-share-test-stereo-audio-tone'
   | 'dropdown-item-content-share-file-item';
 
+export interface ContentSourceOptions {
+  includeAudio: boolean;
+  frameRate?: number;
+  fileUrl?: string;
+  fileElement?: HTMLVideoElement;
+}
+
+export function contentSourceProvider(
+  source: SourceId,
+  options: ContentSourceOptions
+): MediaStreamProvider {
+  switch (source) {
+    case 'dropdown-item-content-share-screen-capture':
+      return new ScreenShareMediaStreamProvider({
+        frameRate: options.frameRate,
+        includeAudio: options.includeAudio,
+      });
+    case 'dropdown-item-content-share-screen-test-video':
+      return new TestPatternMediaStreamProvider();
+    case 'dropdown-item-content-share-test-mono-audio-speech':
+      return new AudioBufferMediaStreamProvider('audio_file', true);
+    case 'dropdown-item-content-share-test-stereo-audio-speech':
+      return new AudioBufferMediaStreamProvider('stereo_audio_file', true);
+    case 'dropdown-item-content-share-test-stereo-audio-tone':
+      return new SynthesizedStereoMediaStreamProvider(500, 1000);
+    case 'dropdown-item-content-share-file-item':
+      return new FileMediaStreamProvider(options.fileUrl!, options.fileElement);
+  }
+}
+
 export interface ContentShareElements {
   button: HTMLButtonElement;
   menu: HTMLElement;
@@ -69,7 +99,8 @@ export default class ContentShareManager implements ContentShareObserver {
     private readonly usingStereoMusicAudioProfile: boolean,
     supportsSimulcast: boolean,
     supportsSVC: boolean,
-    private readonly onStartedChange: (started: boolean) => void
+    private readonly onStartedChange: (started: boolean) => void,
+    private readonly contentCapability: () => Promise<string>
   ) {
     this.audioVideo.addContentShareObserver(this);
     this.menu = new Menu(elements.menu, elements.button, false);
@@ -131,15 +162,13 @@ export default class ContentShareManager implements ContentShareObserver {
   async start(source: SourceId = this.source): Promise<void> {
     this.source = source;
     this.joined = false;
-    this.streamProvider = undefined;
-    this.screenTracks = [];
-    this.revokeFileUrl();
+    this.releaseSource();
     switch (source) {
       case 'dropdown-item-content-share-screen-capture': {
         this.logger.info(
           `Starting screen capture: frameRate=${this.options.frameRate} audio=${this.includeAudio} optimizeForVideo=${this.optimizeForVideo}`
         );
-        const provider = new ScreenShareMediaStreamProvider({
+        const provider = contentSourceProvider(source, {
           frameRate: this.options.frameRate,
           includeAudio: this.includeAudio,
         });
@@ -161,18 +190,6 @@ export default class ContentShareManager implements ContentShareObserver {
         this.streamProvider = provider;
         break;
       }
-      case 'dropdown-item-content-share-screen-test-video':
-        this.streamProvider = new TestPatternMediaStreamProvider();
-        break;
-      case 'dropdown-item-content-share-test-mono-audio-speech':
-        this.streamProvider = new AudioBufferMediaStreamProvider('audio_file', true);
-        break;
-      case 'dropdown-item-content-share-test-stereo-audio-speech':
-        this.streamProvider = new AudioBufferMediaStreamProvider('stereo_audio_file', true);
-        break;
-      case 'dropdown-item-content-share-test-stereo-audio-tone':
-        this.streamProvider = new SynthesizedStereoMediaStreamProvider(500, 1000);
-        break;
       case 'dropdown-item-content-share-file-item': {
         const file = this.elements.fileInput.files?.[0];
         if (!file) {
@@ -181,9 +198,14 @@ export default class ContentShareManager implements ContentShareObserver {
           return;
         }
         this.fileUrl = URL.createObjectURL(file);
-        this.streamProvider = new FileMediaStreamProvider(this.fileUrl);
+        this.streamProvider = contentSourceProvider(source, {
+          includeAudio: this.includeAudio,
+          fileUrl: this.fileUrl,
+        });
         break;
       }
+      default:
+        this.streamProvider = contentSourceProvider(source, { includeAudio: this.includeAudio });
     }
 
     let stream: MediaStream | undefined;
@@ -202,10 +224,7 @@ export default class ContentShareManager implements ContentShareObserver {
       this.logger.error(`Could not start content share: ${error}`);
       ContentShareManager.toastStartFailure(error);
       stream?.getTracks().forEach(track => track.stop());
-      this.streamProvider?.pause();
-      this.streamProvider = undefined;
-      this.screenTracks = [];
-      this.revokeFileUrl();
+      this.releaseSource();
       this.started = false;
       this.paused = false;
       this.updateContentShareUX();
@@ -220,9 +239,7 @@ export default class ContentShareManager implements ContentShareObserver {
   async stop(): Promise<void> {
     this.paused = false;
     this.audioVideo.stopContentShare();
-    this.streamProvider?.pause();
-    this.screenTracks = [];
-    this.revokeFileUrl();
+    this.releaseSource();
     this.started = false;
     this.updateContentShareUX();
   }
@@ -264,6 +281,14 @@ export default class ContentShareManager implements ContentShareObserver {
   private static toastStartFailure(error: unknown): void {
     const message = error instanceof Error ? error.message : String(error);
     Toast.show({ message: STRINGS.failed(STRINGS.startingContentShareAction, message) });
+  }
+
+  /** A file or test sound keeps playing locally until paused, even after its tracks stop. */
+  private releaseSource(): void {
+    this.streamProvider?.pause();
+    this.streamProvider = undefined;
+    this.screenTracks = [];
+    this.revokeFileUrl();
   }
 
   private revokeFileUrl(): void {
@@ -347,13 +372,24 @@ export default class ContentShareManager implements ContentShareObserver {
     this.paused = false;
     if (this.started) {
       if (!this.joined) {
-        Toast.show({ message: STRINGS.contentShareRefused });
+        void this.explainRefusal();
       }
-      // Stopped from outside, e.g. the browser's "Stop sharing" bar.
+      // Refused, or stopped from outside, e.g. the browser's "Stop sharing" bar.
       this.started = false;
-      this.screenTracks = [];
+      this.releaseSource();
       this.updateContentShareUX();
     }
+  }
+
+  // The SDK does not say why the content attendee was refused.
+  private async explainRefusal(): Promise<void> {
+    const capability = await this.contentCapability().catch(() => 'SendReceive');
+    Toast.show({
+      message:
+        capability === 'None' || capability === 'Receive'
+          ? STRINGS.contentShareNotAllowed(capability)
+          : STRINGS.contentShareRefused,
+    });
   }
 
   contentShareDidPause(): void {
