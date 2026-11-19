@@ -36,6 +36,7 @@ import micOff from 'lucide-static/icons/mic-off.svg?raw';
 import network from 'lucide-static/icons/network.svg?raw';
 import pause from 'lucide-static/icons/pause.svg?raw';
 import phoneOff from 'lucide-static/icons/phone-off.svg?raw';
+import pictureInPicture from 'lucide-static/icons/picture-in-picture-2.svg?raw';
 import pin from 'lucide-static/icons/pin.svg?raw';
 import pinOff from 'lucide-static/icons/pin-off.svg?raw';
 import pipette from 'lucide-static/icons/pipette.svg?raw';
@@ -99,6 +100,7 @@ const ICONS = {
   network,
   pause,
   phoneOff,
+  pictureInPicture,
   pin,
   pinOff,
   pipette,
