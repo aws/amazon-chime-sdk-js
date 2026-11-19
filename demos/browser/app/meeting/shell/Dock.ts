@@ -23,6 +23,9 @@ export interface DockActions {
   readonly contentShareOptimizable: boolean;
   readonly contentShareOptimizedForVideo: boolean;
   readonly videoOnlyStage: boolean;
+  readonly popoutSupported: boolean;
+  readonly popoutOpen: boolean;
+  togglePopout(): Promise<void>;
   toggleMute(): void;
   toggleCamera(): Promise<void>;
   toggleContentSharePause(): Promise<void>;
@@ -199,6 +202,14 @@ export default class Dock {
       checked: actions.videoOnlyStage,
       onSelect: () => actions.setVideoOnlyStage(!actions.videoOnlyStage),
     });
+    if (actions.popoutSupported) {
+      menu.addItem({
+        id: 'dropdown-item-popout',
+        label: actions.popoutOpen ? STRINGS.closePopout : STRINGS.openPopout,
+        icon: 'pictureInPicture',
+        onSelect: () => runAction(() => actions.togglePopout(), STRINGS.contextPopout),
+      });
+    }
     menu.addItem({
       label: STRINGS.settings,
       icon: 'settings',
