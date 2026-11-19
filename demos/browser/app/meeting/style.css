@@ -1206,6 +1206,32 @@ body.no-mirror .preview-frame video {
   }
 }
 
+.popout-placeholder {
+  pointer-events: auto;
+}
+
+/* The picture-in-picture window. */
+.popout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  box-sizing: border-box;
+  height: 100%;
+  padding: var(--space-2);
+
+  /* Tile menus position themselves in the main window. */
+  & .video-tile-menu-button {
+    display: none;
+  }
+}
+
+.popout-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .paginate {
   position: absolute;
   top: 50%;

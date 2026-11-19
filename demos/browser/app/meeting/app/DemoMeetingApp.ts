@@ -28,6 +28,7 @@ import AutoHideControls from '../shell/AutoHideControls';
 import Dock, { DockActions } from '../shell/Dock';
 import Flows from '../shell/Flows';
 import JoinScreen from '../shell/JoinScreen';
+import Popout from '../shell/Popout';
 import PreJoinScreen from '../shell/PreJoinScreen';
 import SettingsDialog from '../shell/SettingsDialog';
 import SidePanel from '../shell/SidePanel';
@@ -69,6 +70,7 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
   private readonly infoDialog: Dialog;
   private connectionCheck: ConnectionCheck | undefined;
   private contentShareTest: ContentShareTest | undefined;
+  private readonly popout: Popout;
 
   // Created once the session exists (setupMeetingModules); read-only to SessionEvents.
   private _devices: DeviceManager | undefined;
@@ -172,6 +174,10 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
         runAction(() => this.devices?.retryDeviceAccess('microphone'), STRINGS.contextMute),
     });
     this.showBackgroundEffect();
+    this.popout = new Popout(
+      () => runAction(() => this.leave(), STRINGS.contextLeave),
+      error => this.session.logger.warn(`[DEMO] Could not open picture-in-picture: ${error}`)
+    );
     new Dock(this.sidePanel, this);
     this.sidePanel.onChange(showing => {
       this.toolbar.set('button-participants', showing.has('participants') ? 'on' : 'off');
@@ -913,6 +919,23 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
       this.devices.joined = true;
     }
     this.reactions?.rebroadcastHand();
+    this.popout.setAutomatic(true);
+  }
+
+  get popoutSupported(): boolean {
+    return Popout.supported;
+  }
+
+  get popoutOpen(): boolean {
+    return this.popout.isOpen;
+  }
+
+  async togglePopout(): Promise<void> {
+    if (this.popout.isOpen) {
+      this.popout.close();
+    } else {
+      await this.popout.open();
+    }
   }
 
   private applyViewOnlyMode(): void {
@@ -1163,6 +1186,13 @@ export default class DemoMeetingApp implements DockActions, SessionUi {
   async cleanUp(): Promise<void> {
     // Every step runs even when an earlier one fails, so a rejoin never starts half torn down.
     const steps: [string, () => unknown][] = [
+      [
+        'picture-in-picture',
+        () => {
+          this.popout.setAutomatic(false);
+          this.popout.close();
+        },
+      ],
       ['chat', () => this.chat?.destroy()],
       ['reactions', () => this.reactions?.destroy()],
       ['transcription', () => this.transcription?.destroy()],
