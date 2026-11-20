@@ -9640,6 +9640,7 @@ $root.SdkClientMetricFrame = (function() {
      * @interface ISdkClientMetricFrame
      * @property {Array.<ISdkMetric>|null} [globalMetrics] SdkClientMetricFrame globalMetrics
      * @property {Array.<ISdkStreamMetricFrame>|null} [streamMetricFrames] SdkClientMetricFrame streamMetricFrames
+     * @property {Array.<ISdkClientDimension>|null} [dimensions] SdkClientMetricFrame dimensions
      */
 
     /**
@@ -9653,6 +9654,7 @@ $root.SdkClientMetricFrame = (function() {
     function SdkClientMetricFrame(properties) {
         this.globalMetrics = [];
         this.streamMetricFrames = [];
+        this.dimensions = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null && keys[i] !== "__proto__")
@@ -9674,6 +9676,14 @@ $root.SdkClientMetricFrame = (function() {
      * @instance
      */
     SdkClientMetricFrame.prototype.streamMetricFrames = $util.emptyArray;
+
+    /**
+     * SdkClientMetricFrame dimensions.
+     * @member {Array.<ISdkClientDimension>} dimensions
+     * @memberof SdkClientMetricFrame
+     * @instance
+     */
+    SdkClientMetricFrame.prototype.dimensions = $util.emptyArray;
 
     /**
      * Creates a new SdkClientMetricFrame instance using the specified properties.
@@ -9709,6 +9719,9 @@ $root.SdkClientMetricFrame = (function() {
         if (message.streamMetricFrames != null && message.streamMetricFrames.length)
             for (var i = 0; i < message.streamMetricFrames.length; ++i)
                 $root.SdkStreamMetricFrame.encode(message.streamMetricFrames[i], writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
+        if (message.dimensions != null && message.dimensions.length)
+            for (var i = 0; i < message.dimensions.length; ++i)
+                $root.SdkClientDimension.encode(message.dimensions[i], writer.uint32(/* id 3, wireType 2 =*/26).fork(), q + 1).ldelim();
         return writer;
     };
 
@@ -9759,6 +9772,12 @@ $root.SdkClientMetricFrame = (function() {
                     if (!(message.streamMetricFrames && message.streamMetricFrames.length))
                         message.streamMetricFrames = [];
                     message.streamMetricFrames.push($root.SdkStreamMetricFrame.decode(reader, reader.uint32(), undefined, long + 1));
+                    break;
+                }
+            case 3: {
+                    if (!(message.dimensions && message.dimensions.length))
+                        message.dimensions = [];
+                    message.dimensions.push($root.SdkClientDimension.decode(reader, reader.uint32(), undefined, long + 1));
                     break;
                 }
             default:
@@ -9818,6 +9837,15 @@ $root.SdkClientMetricFrame = (function() {
                     return "streamMetricFrames." + error;
             }
         }
+        if (message.dimensions != null && Object.hasOwnProperty.call(message, "dimensions")) {
+            if (!Array.isArray(message.dimensions))
+                return "dimensions: array expected";
+            for (var i = 0; i < message.dimensions.length; ++i) {
+                var error = $root.SdkClientDimension.verify(message.dimensions[i], long + 1);
+                if (error)
+                    return "dimensions." + error;
+            }
+        }
         return null;
     };
 
@@ -9859,6 +9887,16 @@ $root.SdkClientMetricFrame = (function() {
                 message.streamMetricFrames[i] = $root.SdkStreamMetricFrame.fromObject(object.streamMetricFrames[i], long + 1);
             }
         }
+        if (object.dimensions) {
+            if (!Array.isArray(object.dimensions))
+                throw TypeError(".SdkClientMetricFrame.dimensions: array expected");
+            message.dimensions = [];
+            for (var i = 0; i < object.dimensions.length; ++i) {
+                if (!$util.isObject(object.dimensions[i]))
+                    throw TypeError(".SdkClientMetricFrame.dimensions: object expected");
+                message.dimensions[i] = $root.SdkClientDimension.fromObject(object.dimensions[i], long + 1);
+            }
+        }
         return message;
     };
 
@@ -9882,6 +9920,7 @@ $root.SdkClientMetricFrame = (function() {
         if (options.arrays || options.defaults) {
             object.globalMetrics = [];
             object.streamMetricFrames = [];
+            object.dimensions = [];
         }
         if (message.globalMetrics && message.globalMetrics.length) {
             object.globalMetrics = [];
@@ -9892,6 +9931,11 @@ $root.SdkClientMetricFrame = (function() {
             object.streamMetricFrames = [];
             for (var j = 0; j < message.streamMetricFrames.length; ++j)
                 object.streamMetricFrames[j] = $root.SdkStreamMetricFrame.toObject(message.streamMetricFrames[j], options, q + 1);
+        }
+        if (message.dimensions && message.dimensions.length) {
+            object.dimensions = [];
+            for (var j = 0; j < message.dimensions.length; ++j)
+                object.dimensions[j] = $root.SdkClientDimension.toObject(message.dimensions[j], options, q + 1);
         }
         return object;
     };
@@ -10233,6 +10277,288 @@ $root.SdkStreamDimension = (function() {
     })();
 
     return SdkStreamDimension;
+})();
+
+$root.SdkClientDimension = (function() {
+
+    /**
+     * Properties of a SdkClientDimension.
+     * @name ISdkClientDimension
+     * @interface ISdkClientDimension
+     * @property {SdkClientDimension.Type|null} [type] SdkClientDimension type
+     * @property {ISdkDimensionValue|null} [value] SdkClientDimension value
+     */
+
+    /**
+     * Constructs a new SdkClientDimension.
+     * @name SdkClientDimension
+     * @classdesc Represents a SdkClientDimension.
+     * @implements ISdkClientDimension
+     * @constructor
+     * @param {ISdkClientDimension=} [properties] Properties to set
+     */
+    function SdkClientDimension(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkClientDimension type.
+     * @member {SdkClientDimension.Type} type
+     * @memberof SdkClientDimension
+     * @instance
+     */
+    SdkClientDimension.prototype.type = 1;
+
+    /**
+     * SdkClientDimension value.
+     * @member {ISdkDimensionValue|null|undefined} value
+     * @memberof SdkClientDimension
+     * @instance
+     */
+    SdkClientDimension.prototype.value = null;
+
+    /**
+     * Creates a new SdkClientDimension instance using the specified properties.
+     * @function create
+     * @memberof SdkClientDimension
+     * @static
+     * @param {ISdkClientDimension=} [properties] Properties to set
+     * @returns {SdkClientDimension} SdkClientDimension instance
+     */
+    SdkClientDimension.create = function create(properties) {
+        return new SdkClientDimension(properties);
+    };
+
+    /**
+     * Encodes the specified SdkClientDimension message. Does not implicitly {@link SdkClientDimension.verify|verify} messages.
+     * @function encode
+     * @memberof SdkClientDimension
+     * @static
+     * @param {ISdkClientDimension} message SdkClientDimension message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkClientDimension.encode = function encode(message, writer, q) {
+        if (!writer)
+            writer = $Writer.create();
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
+        if (message.value != null && Object.hasOwnProperty.call(message, "value"))
+            $root.SdkDimensionValue.encode(message.value, writer.uint32(/* id 2, wireType 2 =*/18).fork(), q + 1).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkClientDimension message, length delimited. Does not implicitly {@link SdkClientDimension.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkClientDimension
+     * @static
+     * @param {ISdkClientDimension} message SdkClientDimension message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkClientDimension.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkClientDimension message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkClientDimension
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkClientDimension} SdkClientDimension
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkClientDimension.decode = function decode(reader, length, error, long) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        if (long === undefined)
+            long = 0;
+        if (long > $Reader.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkClientDimension();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            if (tag === error)
+                break;
+            switch (tag >>> 3) {
+            case 1: {
+                    message.type = reader.int32();
+                    break;
+                }
+            case 2: {
+                    message.value = $root.SdkDimensionValue.decode(reader, reader.uint32(), undefined, long + 1);
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7, long);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkClientDimension message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkClientDimension
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkClientDimension} SdkClientDimension
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkClientDimension.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkClientDimension message.
+     * @function verify
+     * @memberof SdkClientDimension
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkClientDimension.verify = function verify(message, long) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            return "maximum nesting depth exceeded";
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+            switch (message.type) {
+            default:
+                return "type: enum value expected";
+            case 1:
+                break;
+            }
+        if (message.value != null && Object.hasOwnProperty.call(message, "value")) {
+            var error = $root.SdkDimensionValue.verify(message.value, long + 1);
+            if (error)
+                return "value." + error;
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkClientDimension message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkClientDimension
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkClientDimension} SdkClientDimension
+     */
+    SdkClientDimension.fromObject = function fromObject(object, long) {
+        if (object instanceof $root.SdkClientDimension)
+            return object;
+        if (!$util.isObject(object))
+            throw TypeError(".SdkClientDimension: object expected");
+        if (long === undefined)
+            long = 0;
+        if (long > $util.recursionLimit)
+            throw Error("maximum nesting depth exceeded");
+        var message = new $root.SdkClientDimension();
+        switch (object.type) {
+        default:
+            if (typeof object.type === "number") {
+                message.type = object.type;
+                break;
+            }
+            break;
+        case "ICE_RELAY_PROTOCOL":
+        case 1:
+            message.type = 1;
+            break;
+        }
+        if (object.value != null) {
+            if (!$util.isObject(object.value))
+                throw TypeError(".SdkClientDimension.value: object expected");
+            message.value = $root.SdkDimensionValue.fromObject(object.value, long + 1);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkClientDimension message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkClientDimension
+     * @static
+     * @param {SdkClientDimension} message SdkClientDimension
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkClientDimension.toObject = function toObject(message, options, q) {
+        if (!options)
+            options = {};
+        if (q === undefined)
+            q = 0;
+        if (q > $util.recursionLimit)
+            throw Error("max depth exceeded");
+        var object = {};
+        if (options.defaults) {
+            object.type = options.enums === String ? "ICE_RELAY_PROTOCOL" : 1;
+            object.value = null;
+        }
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+            object.type = options.enums === String ? $root.SdkClientDimension.Type[message.type] === undefined ? message.type : $root.SdkClientDimension.Type[message.type] : message.type;
+        if (message.value != null && Object.hasOwnProperty.call(message, "value"))
+            object.value = $root.SdkDimensionValue.toObject(message.value, options, q + 1);
+        return object;
+    };
+
+    /**
+     * Converts this SdkClientDimension to JSON.
+     * @function toJSON
+     * @memberof SdkClientDimension
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkClientDimension.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkClientDimension
+     * @function getTypeUrl
+     * @memberof SdkClientDimension
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkClientDimension.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkClientDimension";
+    };
+
+    /**
+     * Type enum.
+     * @name SdkClientDimension.Type
+     * @enum {number}
+     * @property {number} ICE_RELAY_PROTOCOL=1 ICE_RELAY_PROTOCOL value
+     */
+    SdkClientDimension.Type = (function() {
+        var valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[1] = "ICE_RELAY_PROTOCOL"] = 1;
+        return values;
+    })();
+
+    return SdkClientDimension;
 })();
 
 $root.SdkDimensionValue = (function() {
