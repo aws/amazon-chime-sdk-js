@@ -57,6 +57,13 @@ import CheckNetworkTCPConnectivityFeedback from './meetingreadinesschecker/Check
 import CheckNetworkUDPConnectivityFeedback from './meetingreadinesschecker/CheckNetworkUDPConnectivityFeedback';
 import CheckVideoConnectivityFeedback from './meetingreadinesschecker/CheckVideoConnectivityFeedback';
 import CheckVideoInputFeedback from './meetingreadinesschecker/CheckVideoInputFeedback';
+import CitrixBootstrap from './vdi/CitrixBootstrap';
+import CitrixMediaDevices from './vdi/CitrixMediaDevices';
+import CitrixUCSDK from './vdi/CitrixUCSDK';
+import CitrixVDIAdapter from './vdi/CitrixVDIAdapter';
+import CitrixVDIAdapterConnectOptions from './vdi/CitrixVDIAdapterConnectOptions';
+import CitrixVDIAdapterOptions from './vdi/CitrixVDIAdapterOptions';
+import CitrixVMEvent from './vdi/CitrixVMEvent';
 import CleanRestartedSessionTask from './task/CleanRestartedSessionTask';
 import CleanStoppedSessionTask from './task/CleanStoppedSessionTask';
 import ClientMetricReport from './clientmetricreport/ClientMetricReport';
@@ -296,6 +303,7 @@ import TranscriptionStatusType from './transcript/TranscriptionStatusType';
 import TypeError from './devicecontroller/TypeError';
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import UserAgentParser from './useragentparser/UserAgentParser';
+import VDIAdapter from './vdi/VDIAdapter';
 import Versioning from './versioning/Versioning';
 import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
@@ -438,6 +446,13 @@ export {
   CheckNetworkUDPConnectivityFeedback,
   CheckVideoConnectivityFeedback,
   CheckVideoInputFeedback,
+  CitrixBootstrap,
+  CitrixMediaDevices,
+  CitrixUCSDK,
+  CitrixVDIAdapter,
+  CitrixVDIAdapterConnectOptions,
+  CitrixVDIAdapterOptions,
+  CitrixVMEvent,
   CleanRestartedSessionTask,
   CleanStoppedSessionTask,
   ClientMetricReport,
@@ -692,6 +707,7 @@ export {
   TypeError,
   UnusableAudioWarningConnectionHealthPolicy,
   UserAgentParser,
+  VDIAdapter,
   Versioning,
   VideoAdaptiveProbePolicy,
   VideoCaptureAndEncodeParameter,

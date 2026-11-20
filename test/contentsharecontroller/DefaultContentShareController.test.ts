@@ -25,6 +25,7 @@ import DefaultSimulcastUplinkPolicyForContentShare from '../../src/videouplinkba
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 import { createFakeTimers } from '../utils/fakeTimerHelper';
+import { makeCitrixAdapter } from '../vdi/FakeCitrixUCSDK';
 
 describe('DefaultContentShareController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -134,6 +135,16 @@ describe('DefaultContentShareController', () => {
     expect(contentShareMeetingSessionConfigure.credentials.joinToken).to.equal(
       meetingSessionConfigure.credentials.joinToken + ContentShareConstants.Modality
     );
+  });
+
+  it('keeps content share in the browser when the meeting has a vdi adapter', () => {
+    const meetingSessionConfigure = makeSessionConfiguration();
+    meetingSessionConfigure.vdiAdapter = makeCitrixAdapter();
+    const contentShareMeetingSessionConfigure =
+      DefaultContentShareController.createContentShareMeetingSessionConfigure(
+        meetingSessionConfigure
+      );
+    expect(contentShareMeetingSessionConfigure.vdiAdapter).to.be.undefined;
   });
 
   describe('content share APIs', () => {
