@@ -15,6 +15,14 @@ export function citrixStream(): MediaStream {
   } as unknown as MediaStream;
 }
 
+export function browserStream(): MediaStream {
+  const track = { kind: 'video', enabled: true };
+  return {
+    getTracks: () => [track],
+    getAudioTracks: (): unknown[] => [],
+  } as unknown as MediaStream;
+}
+
 export class FakePeerConnection {
   constructor(public configuration: RTCConfiguration) {}
 }
@@ -29,6 +37,10 @@ export function makeUcsdk(devices: MediaDeviceInfo[] = []): CitrixUCSDK {
     initUCSDK: sinon.stub(),
     setVMEventCallback: sinon.stub(),
     isFeatureOn: sinon.stub().returns(true),
+    mapVideoElement: sinon.stub(),
+    disposeVideoElement: sinon.stub(),
+    mapAudioElement: sinon.stub(),
+    disposeAudioElement: sinon.stub(),
   };
 }
 

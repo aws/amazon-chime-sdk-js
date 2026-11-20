@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import VDIAdapter from '../vdi/VDIAdapter';
 import VideoElementDisplay from '../videotile/VideoElementDisplay';
 import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import VideoTile from '../videotile/VideoTile';
@@ -76,6 +77,9 @@ export interface VideoTileResolutionObserver {
  */
 export default interface VideoTileController {
   keepLastFrameWhenPaused?: boolean | undefined;
+
+  /** Told about the video elements tiles show streams in, when the platform renders them. */
+  vdiAdapter?: VDIAdapter;
 
   /**
    * Binds the video element to the tile if it exists for the provided tileId.

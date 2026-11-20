@@ -13,6 +13,7 @@ import MediaStreamBrokerObserver from '../../src/mediastreambrokerobserver/Media
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import { createFakeTimers } from '../utils/fakeTimerHelper';
+import MockVDIAdapter from '../vdi/MockVDIAdapter';
 
 describe('DefaultAudioMixController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -431,6 +432,78 @@ describe('DefaultAudioMixController', () => {
       expect(spy.calledOnceWith(null)).to.be.true;
       mediaStreamBroker.removeMediaStreamBrokerObserver(defaultAudioMixController);
       spy.restore();
+    });
+  });
+
+  describe('media element binding', () => {
+    it('registers the element with the adapter before assigning the stream', async () => {
+      const binder = new MockVDIAdapter();
+      const controller = new DefaultAudioMixController(logger, binder);
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(stream);
+
+      expect(binder.boundAudioElements.length).to.be.at.least(1);
+      expect(binder.boundAudioElements[0][0]).to.equal(element);
+      expect(binder.boundAudioElements[0][1]).to.equal(stream);
+      expect(element.srcObject).to.equal(stream);
+    });
+
+    it('releases the element with the adapter on unbind', async () => {
+      const binder = new MockVDIAdapter();
+      const controller = new DefaultAudioMixController(logger, binder);
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(stream);
+      controller.unbindAudioElement();
+
+      expect(binder.unboundAudioElements).to.deep.equal([element]);
+      expect(element.srcObject).to.equal(null);
+    });
+
+    it('releases and re-registers the element across a Chromium sink change', async () => {
+      behavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(behavior);
+      const binder = new MockVDIAdapter();
+      const controller = new DefaultAudioMixController(logger, binder);
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(stream);
+      const boundBefore = binder.boundAudioElements.length;
+      const unboundBefore = binder.unboundAudioElements.length;
+
+      await controller.bindAudioDevice(device);
+
+      // The sink change detaches the stream to call setSinkId and reattaches it, so
+      // the platform is told both times rather than being left with a stale target.
+      expect(binder.unboundAudioElements.length).to.equal(unboundBefore + 1);
+      expect(binder.boundAudioElements.length).to.equal(boundBefore + 1);
+      expect(binder.unboundAudioElements.every(el => el === element)).to.be.true;
+      expect(element.srcObject).to.equal(stream);
+    });
+
+    it('does not re-register a sink change that has no stream to reattach', async () => {
+      behavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(behavior);
+      const binder = new MockVDIAdapter();
+      const controller = new DefaultAudioMixController(logger, binder);
+      await controller.bindAudioElement(element);
+      const unboundBefore = binder.unboundAudioElements.length;
+
+      await controller.bindAudioDevice(device);
+
+      expect(binder.boundAudioElements.length).to.equal(0);
+      expect(binder.unboundAudioElements.length).to.equal(unboundBefore + 1);
+    });
+
+    it('only assigns srcObject without an adapter', async () => {
+      behavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(behavior);
+      const controller = new DefaultAudioMixController(logger);
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(stream);
+      expect(element.srcObject).to.equal(stream);
+
+      await controller.bindAudioDevice(device);
+      controller.unbindAudioElement();
+      expect(element.srcObject).to.equal(null);
     });
   });
 });

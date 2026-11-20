@@ -5,6 +5,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
+import VDIAdapter from '../vdi/VDIAdapter';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoElementResolutionMonitor from './VideoElementResolutionMonitor';
 import VideoTile from './VideoTile';
@@ -18,11 +19,13 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
    * @param videoStream The video stream input.
    * @param videoElement The video element input.
    * @param localTile Flag to indicate whether this is a local video.
+   * @param vdiAdapter Told about the element before the stream is assigned.
    */
   static connectVideoStreamToVideoElement(
     videoStream: MediaStream,
     videoElement: HTMLVideoElement,
-    localTile: boolean
+    localTile: boolean,
+    vdiAdapter?: VDIAdapter
   ): void {
     const transform =
       localTile && videoStream.getVideoTracks()[0].getSettings().facingMode !== 'environment'
@@ -59,6 +62,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     }
 
     if (videoElement.srcObject !== videoStream) {
+      vdiAdapter?.bindVideoElement?.(videoElement, videoStream);
       videoElement.srcObject = videoStream;
 
       // In Safari, a hidden video element can show a black screen.
@@ -89,11 +93,13 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
    * Based on `keepLastFrameWhenPaused`, it sets `HTMLVideoElement.srcObject` to `null`.
    * @param keepLastFrameWhenPaused If `true` and `dueToPause` is also `true`, then we will not set `HTMLVideoElement.srcObject` of the
    * video element to `null` when it is paused and therefore, the last frame of the stream will be shown.
+   * @param vdiAdapter Told about the element only on the paths that clear `srcObject`.
    */
   static disconnectVideoStreamFromVideoElement(
     videoElement: HTMLVideoElement | null,
     dueToPause: boolean,
-    keepLastFrameWhenPaused: boolean | undefined = false
+    keepLastFrameWhenPaused: boolean | undefined = false,
+    vdiAdapter?: VDIAdapter
   ): void {
     if (!videoElement) {
       return;
@@ -101,6 +107,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
 
     if (dueToPause) {
       if (!keepLastFrameWhenPaused) {
+        vdiAdapter?.unbindVideoElement?.(videoElement);
         videoElement.srcObject = null;
         videoElement.style.transform = '';
       }
@@ -114,6 +121,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       DefaultVideoTile.setVideoElementFlag(videoElement, 'disablePictureInPicture', false);
       DefaultVideoTile.setVideoElementFlag(videoElement, 'disableRemotePlayback', false);
 
+      vdiAdapter?.unbindVideoElement?.(videoElement);
       videoElement.srcObject = null;
     }
   }
@@ -139,7 +147,9 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     ) {
       DefaultVideoTile.disconnectVideoStreamFromVideoElement(
         this.tileState.boundVideoElement,
-        false
+        false,
+        undefined,
+        this.tileController.vdiAdapter
       );
     }
     this.tileState = new VideoTileState();
@@ -327,13 +337,15 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       DefaultVideoTile.connectVideoStreamToVideoElement(
         this.tileState.boundVideoStream,
         this.tileState.boundVideoElement,
-        this.tileState.localTile
+        this.tileState.localTile,
+        this.tileController.vdiAdapter
       );
     } else {
       DefaultVideoTile.disconnectVideoStreamFromVideoElement(
         this.tileState.boundVideoElement,
         this.tileState.paused,
-        this.tileController.keepLastFrameWhenPaused
+        this.tileController.keepLastFrameWhenPaused,
+        this.tileController.vdiAdapter
       );
     }
   }

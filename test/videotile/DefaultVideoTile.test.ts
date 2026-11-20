@@ -14,6 +14,7 @@ import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import MockVDIAdapter from '../vdi/MockVDIAdapter';
 
 class InvokingDevicePixelRatioMonitor implements DevicePixelRatioMonitor {
   private observerQueue: Set<DevicePixelRatioObserver>;
@@ -597,6 +598,103 @@ describe('DefaultVideoTile', () => {
       const image = tile.capture();
       expect(image.width).to.equal(videoElement.width);
       expect(image.height).to.equal(videoElement.height);
+    });
+  });
+
+  describe('media element binding', () => {
+    it('registers the element with the adapter before assigning the stream', () => {
+      const binder = new MockVDIAdapter();
+      tileController.vdiAdapter = binder;
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+
+      expect(binder.boundVideoElements.length).to.equal(1);
+      expect(binder.boundVideoElements[0][0]).to.equal(videoElement);
+      expect(binder.boundVideoElements[0][1]).to.equal(mockVideoStream);
+      // The element still carried the factory's initial value, so the call landed
+      // ahead of the assignment rather than after it.
+      expect(binder.srcObjectAtBindTime[0]).to.not.equal(mockVideoStream);
+      expect(videoElement.srcObject).to.equal(mockVideoStream);
+    });
+
+    it('releases the element with the adapter when the stream is cleared', () => {
+      const binder = new MockVDIAdapter();
+      tileController.vdiAdapter = binder;
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+      tile.bindVideoStream('attendee', true, null, 1, 1, 1);
+
+      expect(binder.unboundVideoElements).to.deep.equal([videoElement]);
+      expect(videoElement.srcObject).to.equal(null);
+    });
+
+    it('keeps the element registered when a pause leaves the last frame in place', () => {
+      const binder = new MockVDIAdapter();
+      tileController.vdiAdapter = binder;
+      tileController.keepLastFrameWhenPaused = true;
+      tile = new DefaultVideoTile(tileId, false, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', false, mockVideoStream, 1, 1, 1);
+      tile.pause();
+
+      expect(binder.unboundVideoElements.length).to.equal(0);
+      expect(videoElement.srcObject).to.equal(mockVideoStream);
+    });
+
+    it('releases the element on a pause that clears the stream', () => {
+      const binder = new MockVDIAdapter();
+      tileController.vdiAdapter = binder;
+      tileController.keepLastFrameWhenPaused = false;
+      tile = new DefaultVideoTile(tileId, false, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', false, mockVideoStream, 1, 1, 1);
+      tile.pause();
+
+      expect(binder.unboundVideoElements).to.deep.equal([videoElement]);
+    });
+
+    it('releases the element when the tile is destroyed', () => {
+      const binder = new MockVDIAdapter();
+      tileController.vdiAdapter = binder;
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+      tile.destroy();
+
+      expect(binder.unboundVideoElements).to.deep.equal([videoElement]);
+    });
+
+    it('only assigns srcObject without an adapter', () => {
+      tileController.vdiAdapter = undefined;
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+      expect(videoElement.srcObject).to.equal(mockVideoStream);
+
+      tile.bindVideoStream('attendee', true, null, 1, 1, 1);
+      expect(videoElement.srcObject).to.equal(null);
+    });
+
+    it('defaults the static helpers to the default binder', () => {
+      const videoElement = videoElementFactory.create();
+      DefaultVideoTile.connectVideoStreamToVideoElement(mockVideoStream, videoElement, true);
+      expect(videoElement.srcObject).to.equal(mockVideoStream);
+      DefaultVideoTile.disconnectVideoStreamFromVideoElement(videoElement, false);
+      expect(videoElement.srcObject).to.equal(null);
     });
   });
 
