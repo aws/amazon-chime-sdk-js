@@ -8,7 +8,9 @@ import {
   COMMON_MESSAGE_TYPES,
   TRANSFORM_NAMES,
 } from '../../src/encodedtransformworker/EncodedTransform';
-import EncodedTransformWorker from '../../src/encodedtransformworker/EncodedTransformWorker';
+import EncodedTransformWorker, {
+  TRANSFORMER_HOLD_MS,
+} from '../../src/encodedtransformworker/EncodedTransformWorker';
 
 describe('EncodedTransformWorker', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -239,10 +241,41 @@ describe('EncodedTransformWorker', () => {
   });
 
   describe('RTCRtpScriptTransform handler', () => {
+    let clock: sinon.SinonFakeTimers;
+
     beforeEach(() => {
+      clock = sinon.useFakeTimers();
       // @ts-ignore
       global.self.RTCRtpScriptTransformer = class {};
       EncodedTransformWorker.initializeWorker();
+    });
+
+    afterEach(() => {
+      clock.runAll();
+      clock.restore();
+    });
+
+    it('holds the transformer for TRANSFORMER_HOLD_MS', () => {
+      const mockReadable = {
+        pipeThrough: sinon.stub().returnsThis(),
+        pipeTo: sinon.stub(),
+      };
+      const transformer = {
+        readable: mockReadable,
+        writable: {},
+        options: { mediaType: 'video', operation: 'receive' },
+      };
+
+      // @ts-ignore
+      global.self.onrtctransform({ transformer });
+      // @ts-ignore
+      expect(EncodedTransformWorker.heldTransformers.has(transformer)).to.be.true;
+      clock.tick(TRANSFORMER_HOLD_MS - 1);
+      // @ts-ignore
+      expect(EncodedTransformWorker.heldTransformers.has(transformer)).to.be.true;
+      clock.tick(1);
+      // @ts-ignore
+      expect(EncodedTransformWorker.heldTransformers.has(transformer)).to.be.false;
     });
 
     it('sets up audio sender pipeline', () => {
