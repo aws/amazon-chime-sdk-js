@@ -4,7 +4,6 @@
 // Inlined from lucide-static (ISC) via Vite `?raw` so the single-file bundle stays self-contained.
 import activity from 'lucide-static/icons/activity.svg?raw';
 import audioLines from 'lucide-static/icons/audio-lines.svg?raw';
-import cable from 'lucide-static/icons/cable.svg?raw';
 import captions from 'lucide-static/icons/captions.svg?raw';
 import captionsOff from 'lucide-static/icons/captions-off.svg?raw';
 import check from 'lucide-static/icons/check.svg?raw';
@@ -26,6 +25,7 @@ import flipHorizontal from 'lucide-static/icons/flip-horizontal.svg?raw';
 import focus from 'lucide-static/icons/focus.svg?raw';
 import globe from 'lucide-static/icons/globe.svg?raw';
 import hand from 'lucide-static/icons/hand.svg?raw';
+import imagePlus from 'lucide-static/icons/image-plus.svg?raw';
 import info from 'lucide-static/icons/info.svg?raw';
 import layoutGrid from 'lucide-static/icons/layout-grid.svg?raw';
 import layoutPanelTop from 'lucide-static/icons/layout-panel-top.svg?raw';
@@ -36,11 +36,12 @@ import micOff from 'lucide-static/icons/mic-off.svg?raw';
 import network from 'lucide-static/icons/network.svg?raw';
 import pause from 'lucide-static/icons/pause.svg?raw';
 import phoneOff from 'lucide-static/icons/phone-off.svg?raw';
+import pictureInPicture from 'lucide-static/icons/picture-in-picture-2.svg?raw';
 import pin from 'lucide-static/icons/pin.svg?raw';
 import pinOff from 'lucide-static/icons/pin-off.svg?raw';
+import pipette from 'lucide-static/icons/pipette.svg?raw';
 import play from 'lucide-static/icons/play.svg?raw';
 import radio from 'lucide-static/icons/radio.svg?raw';
-import rotateCcw from 'lucide-static/icons/rotate-ccw.svg?raw';
 import screenShare from 'lucide-static/icons/screen-share.svg?raw';
 import screenShareOff from 'lucide-static/icons/screen-share-off.svg?raw';
 import send from 'lucide-static/icons/send.svg?raw';
@@ -48,7 +49,6 @@ import settings from 'lucide-static/icons/settings.svg?raw';
 import slidersHorizontal from 'lucide-static/icons/sliders-horizontal.svg?raw';
 import smile from 'lucide-static/icons/smile.svg?raw';
 import sparkles from 'lucide-static/icons/sparkles.svg?raw';
-import stethoscope from 'lucide-static/icons/stethoscope.svg?raw';
 import triangleAlert from 'lucide-static/icons/triangle-alert.svg?raw';
 import userCog from 'lucide-static/icons/user-cog.svg?raw';
 import users from 'lucide-static/icons/users.svg?raw';
@@ -63,7 +63,6 @@ import x from 'lucide-static/icons/x.svg?raw';
 const ICONS = {
   activity,
   audioLines,
-  cable,
   captions,
   captionsOff,
   check,
@@ -85,6 +84,7 @@ const ICONS = {
   focus,
   globe,
   hand,
+  imagePlus,
   info,
   layoutGrid,
   layoutPanelTop,
@@ -100,11 +100,12 @@ const ICONS = {
   network,
   pause,
   phoneOff,
+  pictureInPicture,
   pin,
   pinOff,
+  pipette,
   play,
   radio,
-  rotateCcw,
   screenShare,
   screenShareOff,
   send,
@@ -112,7 +113,6 @@ const ICONS = {
   slidersHorizontal,
   smile,
   sparkles,
-  stethoscope,
   triangleAlert,
   userCog,
   users,

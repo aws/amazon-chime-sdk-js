@@ -38,6 +38,8 @@ export interface StoppableMediaStreamTrack extends MediaStreamTrack {
 
 // eslint-disable-next-line
 const GlobalAny = global as any;
+// Node 21 and later define a getter-only global navigator, which the mock assigns.
+delete GlobalAny.navigator;
 // eslint-disable-next-line
 type MockMediaStreamConstraints = any;
 // eslint-disable-next-line

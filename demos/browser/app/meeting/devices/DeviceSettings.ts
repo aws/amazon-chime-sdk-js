@@ -16,10 +16,10 @@ export const DEVICE_SETTINGS_IDS = {
   videoPreviewPlaceholder: 'settings-video-preview-placeholder',
   videoInput: 'settings-video-input',
   videoQuality: 'settings-video-quality',
+  backgroundSection: 'settings-background-section',
   backgroundOptions: 'settings-background',
-  backgroundImageRow: 'settings-background-image',
-  backgroundImagePreview: 'settings-background-image-preview',
-  backgroundImageUpload: 'settings-background-image-upload',
+  backgroundImages: 'settings-background-images',
+  backgroundColors: 'settings-background-colors',
   backgroundImageFile: 'settings-background-image-file',
   /** Shown before a meeting when the browser hides device names until access is granted. */
   permissionNoteAudio: 'settings-device-permission-audio',
@@ -71,36 +71,19 @@ export function buildDeviceSettingsSections(
   });
   const videoInput = el('select', { id: DEVICE_SETTINGS_IDS.videoInput, class: 'select' });
   const videoQuality = el('select', { id: DEVICE_SETTINGS_IDS.videoQuality, class: 'select' });
-  // The Settings filter sets `hidden` on the row itself, so the wrapper carries the effect.
-  const backgroundImage = el(
+  const backgroundGallery = el(
     'div',
-    { id: DEVICE_SETTINGS_IDS.backgroundImageRow, hidden: true },
-    el(
-      'div',
-      { class: 'setting' },
-      el('span', { class: 'setting-label' }, el('span', { text: STRINGS.backgroundImage })),
-      el(
-        'span',
-        { class: 'background-image-field' },
-        el('img', {
-          id: DEVICE_SETTINGS_IDS.backgroundImagePreview,
-          class: 'background-image-preview',
-          alt: '',
-        }),
-        el('button', {
-          type: 'button',
-          id: DEVICE_SETTINGS_IDS.backgroundImageUpload,
-          class: 'button button-ghost button-small',
-          text: STRINGS.uploadImage,
-        }),
-        el('input', {
-          type: 'file',
-          id: DEVICE_SETTINGS_IDS.backgroundImageFile,
-          accept: 'image/*',
-          hidden: true,
-        })
-      )
-    )
+    { class: 'background-gallery' },
+    el('h4', { class: 'background-gallery-title', text: STRINGS.backgroundImages }),
+    el('div', { class: 'background-tiles', id: DEVICE_SETTINGS_IDS.backgroundImages }),
+    el('input', {
+      type: 'file',
+      id: DEVICE_SETTINGS_IDS.backgroundImageFile,
+      accept: 'image/*',
+      hidden: true,
+    }),
+    el('h4', { class: 'background-gallery-title', text: STRINGS.backgroundColors }),
+    el('div', { class: 'background-tiles', id: DEVICE_SETTINGS_IDS.backgroundColors })
   );
 
   return {
@@ -153,14 +136,23 @@ export function buildDeviceSettingsSections(
           'div',
           {},
           field(STRINGS.camera, videoInput),
-          developerOnly(field(STRINGS.resolution, videoQuality)),
-          el('div', { id: DEVICE_SETTINGS_IDS.backgroundOptions }),
-          backgroundImage
+          developerOnly(field(STRINGS.resolution, videoQuality))
         )
       ),
       permissionNote(
         DEVICE_SETTINGS_IDS.permissionNoteVideo,
         DEVICE_SETTINGS_IDS.allowDevicesVideo
+      ),
+      el('h3', {
+        class: 'settings-section-title',
+        id: DEVICE_SETTINGS_IDS.backgroundSection,
+        text: STRINGS.backgroundSection,
+      }),
+      el(
+        'div',
+        { class: 'settings-background-layout' },
+        el('div', { id: DEVICE_SETTINGS_IDS.backgroundOptions }),
+        backgroundGallery
       ),
       el('h3', { class: 'settings-section-title', text: STRINGS.options }),
     ],

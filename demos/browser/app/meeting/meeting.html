@@ -68,7 +68,6 @@
           <span data-icon="settings"></span>
         </button>
       </div>
-      <button type="button" id="button-readiness-check" class="button button-ghost button-small join-test"><span data-icon="stethoscope"></span>Test your devices and connection</button>
       <div id="progress-authenticate" class="progress" role="progressbar" aria-label="Connecting" hidden>
         <div class="progress-bar"></div>
       </div>
@@ -174,24 +173,34 @@
           <video id="video-preview" autoplay muted playsinline></video>
           <span class="background-starting" role="status" hidden>Applying background effect</span>
           <div id="video-preview-placeholder" class="preview-placeholder"><span data-icon="videoOff"></span><span class="preview-placeholder-label">Camera is off</span></div>
+          <div class="preview-controls">
+            <button type="button" id="prejoin-mic-toggle" class="preview-toggle" aria-pressed="true" aria-label="Microphone">
+              <span data-icon="mic"></span>
+            </button>
+            <button type="button" id="prejoin-camera-toggle" class="preview-toggle" aria-pressed="false" aria-label="Camera">
+              <span data-icon="videoOff"></span>
+            </button>
+            <button type="button" id="prejoin-background-toggle" class="preview-toggle" aria-pressed="false" aria-label="Background effect" hidden>
+              <span data-icon="sparkles"></span>
+            </button>
+          </div>
         </div>
-        <div class="prejoin-preview-controls">
-          <button type="button" id="prejoin-mic-toggle" class="dock-button" aria-pressed="true" aria-label="Microphone">
-            <span data-icon="mic"></span><span class="dock-label">Mic</span>
-          </button>
-          <button type="button" id="prejoin-camera-toggle" class="dock-button" aria-pressed="false" aria-label="Camera">
-            <span data-icon="videoOff"></span><span class="dock-label">Camera</span>
-          </button>
-        </div>
-        <div class="level" aria-hidden="true"><div id="audio-preview" class="level-bar"></div></div>
         <p id="prejoin-device-warning" class="prejoin-warning" role="status" hidden></p>
       </div>
       <div class="stack">
         <div class="field">
-          <label class="field-label" for="audio-input">Microphone</label>
-          <div class="field-inline">
-            <select id="audio-input" class="select"></select>
-            <button id="button-test-mic" type="button" class="button button-ghost" title="Record a few seconds and play them back">Test</button>
+          <span id="prejoin-microphone-label" class="field-label">Microphone</span>
+          <button type="button" id="prejoin-microphone" class="select select-button" aria-labelledby="prejoin-microphone-label prejoin-microphone-value">
+            <span data-icon="mic"></span><span id="prejoin-microphone-value" class="select-button-value"></span>
+          </button>
+          <div id="prejoin-microphone-menu" class="menu-select">
+            <div class="menu-footer" role="group" aria-label="Check your microphone">
+              <div class="menu-level" title="Input level" aria-hidden="true"><span data-icon="audioLines"></span><div class="level"><div id="prejoin-microphone-level" class="level-bar"></div></div></div>
+              <button type="button" id="button-test-mic" class="menu-item" role="menuitem">
+                <span class="menu-icon"><span data-icon="circleDot"></span></span>
+                <span class="menu-label"><span>Test microphone</span><span class="menu-description">Records 3 seconds and plays them back</span></span>
+              </button>
+            </div>
           </div>
         </div>
         <div id="voice-focus-setting" class="inline-switch" hidden>
@@ -202,29 +211,47 @@
           <div id="add-voice-focus-info" class="setting-help" hidden>Voice Focus is not supported on this device.</div>
         </div>
         <div class="field">
-          <label class="field-label" for="audio-output">Speaker</label>
-          <div class="field-inline">
-            <select id="audio-output" class="select"></select>
-            <button id="button-test-sound" type="button" class="button button-ghost" title="Play a short tone">Test</button>
+          <span id="prejoin-speaker-label" class="field-label">Speaker</span>
+          <button type="button" id="prejoin-speaker" class="select select-button" aria-labelledby="prejoin-speaker-label prejoin-speaker-value">
+            <span data-icon="volume2"></span><span id="prejoin-speaker-value" class="select-button-value"></span>
+          </button>
+          <div id="prejoin-speaker-menu" class="menu-select">
+            <div class="menu-footer" role="group" aria-label="Check your speaker">
+              <button type="button" id="button-test-sound" class="menu-item" role="menuitem">
+                <span class="menu-icon"><span data-icon="play"></span></span>
+                <span class="menu-label"><span>Play test sound</span><span class="menu-description">A short tone on this speaker</span></span>
+              </button>
+            </div>
           </div>
         </div>
-        <label class="field">
-          <span class="field-label">Camera</span>
-          <select id="video-input" class="select"></select>
-        </label>
-        <div id="video-input-filter-container">
-          <label class="field">
-            <span class="field-label">Background effect</span>
-            <select id="video-input-filter" class="select">
-              <option value="None" selected>None</option>
-            </select>
-          </label>
+        <div class="field">
+          <span id="prejoin-camera-label" class="field-label">Camera</span>
+          <button type="button" id="prejoin-camera" class="select select-button" aria-labelledby="prejoin-camera-label prejoin-camera-value">
+            <span data-icon="video"></span><span id="prejoin-camera-value" class="select-button-value"></span>
+          </button>
+          <div id="prejoin-camera-menu" class="menu-select">
+            <div class="menu-footer" role="group" aria-label="Check what you share">
+              <button type="button" id="prejoin-content-share-test" class="menu-item" role="menuitem">
+                <span class="menu-icon"><span data-icon="screenShare"></span></span>
+                <span class="menu-label"><span>Test content share</span><span class="menu-description">Preview a screen or file before you join</span></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="prejoin-background-field" class="field" hidden>
+          <span id="prejoin-background-label" class="field-label">Background effect</span>
+          <button type="button" id="prejoin-background" class="select select-button select-button-dialog" aria-haspopup="dialog" aria-labelledby="prejoin-background-label prejoin-background-value">
+            <span data-icon="sparkles"></span><span id="prejoin-background-value" class="select-button-value"></span><span data-icon="chevronRight"></span>
+          </button>
         </div>
       </div>
     </div>
-    <div class="button-row prejoin-actions">
-      <button id="prejoin-back" type="button" class="button button-ghost">Back</button>
-      <button id="joinButton" class="button button-primary button-large" type="submit">Join now</button>
+    <div class="prejoin-actions">
+      <div class="button-row">
+        <button id="prejoin-back" type="button" class="button button-ghost">Back</button>
+        <button id="joinButton" class="button button-primary button-large" type="submit">Join now</button>
+      </div>
+      <p id="connection-status" class="connection-status" role="status" hidden></p>
     </div>
     <div id="progress-join" class="progress" role="progressbar" aria-label="Joining" hidden>
       <div class="progress-bar"></div>
@@ -254,6 +281,11 @@
       <div id="stage-empty" class="stage-empty" hidden>
         <span data-icon="users"></span>
         <p>No one else has their camera on.</p>
+      </div>
+      <div id="popout-placeholder" class="stage-empty popout-placeholder" hidden>
+        <span data-icon="pictureInPicture"></span>
+        <p>Your call is in another window.</p>
+        <button type="button" id="popout-return" class="button button-primary button-small">Close picture-in-picture</button>
       </div>
       <div id="sharing-bar" class="stage-banner sharing-bar" role="status" hidden>
         <span data-icon="screenShare"></span>
@@ -660,103 +692,44 @@
   </div>
 </dialog>
 
-<!-- integration/pages/MeetingReadinessCheckerPage.js finds the results by id. -->
-<dialog id="readiness-dialog" class="dialog readiness-dialog" aria-labelledby="readiness-header">
+<dialog id="content-share-test-dialog" class="dialog dialog-wide" aria-labelledby="content-share-test-title">
   <header class="dialog-header">
-    <h2 id="readiness-header">Test your setup</h2>
+    <h2 id="content-share-test-title">Test content share</h2>
     <button type="button" class="icon-button" data-dialog-close aria-label="Close"><span data-icon="x"></span></button>
   </header>
-  <div class="dialog-body stack">
-    <p class="muted small readiness-intro">Make sure your speaker, microphone, camera and network work before you join.</p>
-    <div id="readiness-results" class="stack">
-      <div id="readiness-summary" class="readiness-summary" data-state="running">
-        <span id="readiness-summary-text" class="readiness-summary-text" role="status"></span>
-        <div id="readiness-meter" class="readiness-meter" role="progressbar" aria-labelledby="readiness-summary-text" aria-valuemin="0">
-          <div id="readiness-meter-bar" class="readiness-meter-bar"></div>
-        </div>
+  <div class="dialog-body share-test">
+    <div class="share-test-sources">
+      <p class="muted small">See what others would see. Nothing is sent: the preview stays on this device.</p>
+      <div id="content-share-test-sources" class="share-test-source-list" role="group" aria-label="Preview">
+        <button type="button" class="menu-item" aria-pressed="false" data-source="dropdown-item-content-share-screen-capture">
+          <span class="menu-icon"><span data-icon="screenShare"></span></span>
+          <span class="menu-label"><span>A screen, window or tab</span><span class="menu-description">The browser asks which one</span></span>
+          <span class="menu-check"><span data-icon="check"></span></span>
+        </button>
+        <button type="button" class="menu-item" aria-pressed="false" data-source="dropdown-item-content-share-file-item">
+          <span class="menu-icon"><span data-icon="fileVideo"></span></span>
+          <span class="menu-label"><span>A video or audio file</span></span>
+          <span class="menu-check"><span data-icon="check"></span></span>
+        </button>
       </div>
-      <section class="readiness-group" aria-labelledby="readiness-group-devices">
-        <h3 id="readiness-group-devices" class="readiness-group-title">Devices</h3>
-        <ul class="readiness-rows">
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="volume2"></span>
-            <label class="readiness-name" for="readiness-audio-output">Speaker</label>
-            <span class="readiness-status">
-              <button type="button" id="speakertest-button" class="button button-ghost button-small">Play tone</button>
-              <span id="speaker-test" class="readiness-result" hidden></span>
-            </span>
-            <select id="readiness-audio-output" class="select readiness-device"></select>
-            <span id="speaker-user-feedback" class="readiness-feedback" hidden>
-              <span>Can you hear the tone?</span>
-              <button type="button" id="speaker-yes" class="button button-ghost button-small">Yes</button>
-              <button type="button" id="speaker-no" class="button button-ghost button-small">No</button>
-            </span>
-            <audio id="speaker-test-audio-element" hidden></audio>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="mic"></span>
-            <label class="readiness-name" for="readiness-audio-input">Microphone</label>
-            <span class="readiness-status"><span id="mic-test" class="readiness-result"></span></span>
-            <select id="readiness-audio-input" class="select readiness-device"></select>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="video"></span>
-            <label class="readiness-name" for="readiness-video-input">Camera</label>
-            <span class="readiness-status"><span id="video-test" class="readiness-result"></span></span>
-            <select id="readiness-video-input" class="select readiness-device"></select>
-            <span class="readiness-sub">
-              <span class="readiness-sub-label">Resolutions</span>
-              <span id="camera-test1" class="readiness-result" data-label="640×480"></span>
-              <span id="camera-test2" class="readiness-result" data-label="1280×720"></span>
-              <span id="camera-test3" class="readiness-result" data-label="1920×1080"></span>
-            </span>
-          </li>
-        </ul>
-      </section>
-      <section class="readiness-group" aria-labelledby="readiness-group-network">
-        <h3 id="readiness-group-network" class="readiness-group-title">Network</h3>
-        <ul class="readiness-rows">
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="network"></span>
-            <span class="readiness-name">Standard connection<span class="readiness-hint">UDP, the usual route for audio and video</span></span>
-            <span class="readiness-status"><span id="networkudp-test" class="readiness-result"></span></span>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="cable"></span>
-            <span class="readiness-name">Fallback connection<span class="readiness-hint">TCP, for networks that block UDP</span></span>
-            <span class="readiness-status"><span id="networktcp-test" class="readiness-result"></span></span>
-          </li>
-        </ul>
-      </section>
-      <section class="readiness-group" aria-labelledby="readiness-group-media">
-        <h3 id="readiness-group-media" class="readiness-group-title">Audio and video</h3>
-        <ul class="readiness-rows">
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="audioLines"></span>
-            <span class="readiness-name">Audio<span class="readiness-hint">Connects and receives sound</span></span>
-            <span class="readiness-status"><span id="audioconnectivity-test" class="readiness-result"></span></span>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="clapperboard"></span>
-            <span class="readiness-name">Video<span class="readiness-hint">Sends your camera</span></span>
-            <span class="readiness-status"><span id="videoconnectivity-test" class="readiness-result"></span></span>
-          </li>
-          <li class="readiness-row">
-            <span class="readiness-icon" data-icon="screenShare"></span>
-            <span class="readiness-name">Screen sharing<span class="readiness-hint">Shares your screen for a moment</span></span>
-            <span class="readiness-status">
-              <button type="button" id="contentshare-button" class="button button-ghost button-small" disabled>Share screen</button>
-              <span id="contentshare-test" class="readiness-result" hidden></span>
-            </span>
-          </li>
-        </ul>
-      </section>
-      <p class="small muted developer-only"><span id="readiness-region"></span> Test meeting <span id="readiness-meeting-id" class="code"></span></p>
+      <input id="content-share-test-file" type="file" accept="video/*,audio/*" hidden>
+      <label class="setting">
+        <span class="setting-label"><span>Share computer sound</span><span class="setting-help">With a screen, window or tab</span></span>
+        <input type="checkbox" id="content-share-test-include-audio" class="switch" checked>
+      </label>
     </div>
-    <p id="readiness-error" class="readiness-error small" role="alert" hidden></p>
+    <div class="share-test-output">
+      <div class="preview-frame share-test-preview">
+        <video id="content-share-test-preview" autoplay muted playsinline></video>
+        <div id="content-share-test-placeholder" class="preview-placeholder"><span data-icon="screenShare"></span><span class="preview-placeholder-label">Choose something to preview</span></div>
+      </div>
+      <div class="share-test-level" title="Shared sound level"><span data-icon="volume2"></span><div class="level"><div id="content-share-test-level" class="level-bar"></div></div></div>
+      <p id="content-share-test-status" class="small muted" role="status"></p>
+    </div>
+    <video id="content-share-test-file-media" playsinline hidden></video>
   </div>
   <footer class="dialog-footer">
-    <button type="button" id="readiness-run-again" class="button button-ghost" hidden><span data-icon="rotateCcw"></span>Run again</button>
+    <button type="button" id="content-share-test-stop" class="button button-ghost" disabled>Stop preview</button>
     <button type="button" class="button button-primary" data-dialog-close>Done</button>
   </footer>
 </dialog>

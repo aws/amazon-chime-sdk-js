@@ -25,7 +25,10 @@ const supportsPopover = typeof HTMLElement !== 'undefined' && 'popover' in HTMLE
 export default class Menu {
   /** `corner`: grows out of the invoker's corner and covers it. `beside`: above or below it. */
   placement: 'beside' | 'corner' = 'beside';
+  /** `checked`: opens on the checked item, as a `<select>` does. */
+  initialFocus: 'first' | 'checked' = 'first';
   private readonly openHandlers = new Set<() => void>();
+  private readonly closeHandlers = new Set<() => void>();
   private readonly outsidePress = (event: PointerEvent): void => {
     const target = event.target as Node;
     if (!this.element.contains(target) && !this.invoker?.contains(target)) {
@@ -86,6 +89,7 @@ export default class Menu {
     this.invoker?.removeEventListener('click', this.onInvokerClick);
     document.removeEventListener('pointerdown', this.outsidePress);
     this.openHandlers.clear();
+    this.closeHandlers.clear();
   }
 
   static byId(id: string, invoker?: HTMLElement, openOnInvokerClick = true): Menu {
@@ -140,12 +144,15 @@ export default class Menu {
     this.position();
     this.invoker?.setAttribute('aria-expanded', 'true');
     document.addEventListener('pointerdown', this.outsidePress);
-    this.focusFirstItem();
+    this.focusInitialItem();
   }
 
   private didClose(): void {
     this.invoker?.setAttribute('aria-expanded', 'false');
     document.removeEventListener('pointerdown', this.outsidePress);
+    for (const handler of this.closeHandlers) {
+      handler();
+    }
   }
 
   toggle(): void {
@@ -154,6 +161,10 @@ export default class Menu {
 
   onOpen(handler: () => void): void {
     this.openHandlers.add(handler);
+  }
+
+  onClose(handler: () => void): void {
+    this.closeHandlers.add(handler);
   }
 
   clear(): void {
@@ -253,9 +264,13 @@ export default class Menu {
     ).filter(item => !item.hidden && getComputedStyle(item).display !== 'none');
   }
 
-  private focusFirstItem(): void {
-    const first = this.items()[0];
-    first?.focus();
+  private focusInitialItem(): void {
+    const items = this.items();
+    const checked =
+      this.initialFocus === 'checked'
+        ? items.find(item => item.getAttribute('aria-checked') === 'true')
+        : undefined;
+    (checked ?? items[0])?.focus();
   }
 
   private readonly onKeyDown = (event: KeyboardEvent): void => {
