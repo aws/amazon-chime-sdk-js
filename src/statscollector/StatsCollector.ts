@@ -16,6 +16,7 @@ import RedundantAudioRecoveryMetricsObserver from '../redundantaudiorecoverymetr
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import SignalingClient from '../signalingclient/SignalingClient';
 import {
+  SdkClientDimension,
   SdkClientMetricFrame,
   SdkDimensionValue,
   SdkMetric,
@@ -99,6 +100,7 @@ export default class StatsCollector
   private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
   private encodedTransformMediaMetricsTimestamp: number = 0;
   private computePressureMonitor: ComputePressureMonitor | null = null;
+  private iceRelayProtocol: string | null = null;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -507,6 +509,44 @@ export default class StatsCollector
     clientMetricFrame.globalMetrics.push(metricFrame);
   }
 
+  private updateIceRelayProtocol(rawMetricReports: RawMetricReport[]): void {
+    this.iceRelayProtocol = null;
+
+    const candidatePairs = new Map<string, RawMetricReport>();
+    const localCandidates = new Map<string, RawMetricReport>();
+    let selectedCandidatePairId: string | undefined;
+    for (const report of rawMetricReports) {
+      if (report.type === 'candidate-pair') {
+        candidatePairs.set(report.id, report);
+      } else if (report.type === 'local-candidate') {
+        localCandidates.set(report.id, report);
+      } else if (report.type === 'transport' && report.selectedCandidatePairId) {
+        selectedCandidatePairId = report.selectedCandidatePairId;
+      }
+    }
+    const localCandidateId = candidatePairs.get(selectedCandidatePairId)?.localCandidateId;
+    const localCandidate = localCandidates.get(localCandidateId);
+    if (localCandidate?.candidateType !== 'relay') {
+      return;
+    }
+    const relayProtocol = localCandidate.relayProtocol;
+    if (typeof relayProtocol === 'string' && relayProtocol !== '') {
+      this.iceRelayProtocol = relayProtocol;
+    }
+  }
+
+  private maybeAddIceRelayProtocolDimension(clientMetricFrame: SdkClientMetricFrame): void {
+    if (this.iceRelayProtocol === null) {
+      return;
+    }
+    const dimension = SdkClientDimension.create();
+    dimension.type = SdkClientDimension.Type.ICE_RELAY_PROTOCOL;
+    const dimensionValue = SdkDimensionValue.create();
+    dimensionValue.stringValue = this.iceRelayProtocol;
+    dimension.value = dimensionValue;
+    clientMetricFrame.dimensions.push(dimension);
+  }
+
   /**
    * Packages metrics in StreamMetricReport into the MetricFrame.
    */
@@ -571,6 +611,7 @@ export default class StatsCollector
     clientMetricFrame.streamMetricFrames = [];
     this.addGlobalMetricsToProtobuf(clientMetricFrame);
     this.addStreamMetricsToProtobuf(clientMetricFrame);
+    this.maybeAddIceRelayProtocolDimension(clientMetricFrame);
     return clientMetricFrame;
   }
 
@@ -727,6 +768,7 @@ export default class StatsCollector
     this.maybeAddRedRecoveryMetrics(customStatsReports);
     this.maybeAddTransformMetrics(customStatsReports, filteredRawMetricReports);
     this.addVideoEndToEndDelayMetrics(rawMetricReports, customStatsReports);
+    this.updateIceRelayProtocol(rawMetricReports);
     // We cannot use 'this.clientMetricsReport.getVideoUpstreamSsrc()' because the value
     // is dependent on the call to 'this.processRawMetricReports()' below, i.e. it depends on
     // the previous handling of raw metrics reports. This would lead to the addition of custom metrics

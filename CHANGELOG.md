@@ -9,12 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added the `ICE_RELAY_PROTOCOL` client metric dimension, the client's protocol to the TURN server for the selected candidate, sent as the `RTCIceCandidateStats.relayProtocol` string the browser reports (such as `udp`, `tcp` or `tls`), which only the client can see. Nothing is sent when the selected candidate is not a relay or the browser does not report its relay protocol.
+
 ### Removed
 
 ### Changed
 
 ### Fixed
 
+- Fixed remote video that sometimes never decodes on Chrome 159 and later after a resubscription, for example when a remote attendee restarts their video or starts content share. Chrome references an `RTCRtpScriptTransformer` only weakly until it has connected it, so the encoded transform worker now keeps each transformer for 10 seconds after `onrtctransform`.
 - Fixed `StatsCollector` logging `Cannot read properties of null (reading 'currentState')` when a WebRTC stats request that was in flight at `stop()` completes afterwards, for example when leaving a meeting. That last report is now processed without the CPU pressure metric instead of being dropped.
 
 ## [3.33.0] - 2026-07-08

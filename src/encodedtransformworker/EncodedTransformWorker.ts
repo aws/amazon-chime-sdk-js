@@ -10,6 +10,10 @@ import {
 } from './MediaMetricsEncodedTransform';
 import RedundantAudioEncodedTransform from './RedundantAudioEncodedTransform';
 
+// Chrome connects a transformer one main-thread round trip after `onrtctransform`, so this only
+// needs to cover a busy main thread.
+export const TRANSFORMER_HOLD_MS = 10000;
+
 /**
  * Configuration for disabled transforms passed from main thread.
  */
@@ -79,6 +83,7 @@ export default class EncodedTransformWorker {
         } else if (options.mediaType === 'video' && options.operation === 'receive') {
           EncodedTransformWorker.setupVideoReceiverPipeline(transformer);
         }
+        EncodedTransformWorker.holdTransformer(transformer);
       };
     }
 
@@ -142,6 +147,18 @@ export default class EncodedTransformWorker {
   private static audioReceiverMetricsTransform: AudioReceiverMetricsTransform | null = null;
   private static videoSenderMetricsTransform: VideoSenderMetricsTransform | null = null;
   private static videoReceiverMetricsTransform: VideoReceiverMetricsTransform | null = null;
+
+  // Chrome references a transformer only weakly until it has connected it. If the worker collects
+  // it first the transform never gets frames, which since Chrome 159 stalls a receiver whose
+  // transform was set in `ontrack`.
+  private static heldTransformers = new Set<object>();
+
+  private static holdTransformer(transformer: object): void {
+    EncodedTransformWorker.heldTransformers.add(transformer);
+    setTimeout(() => {
+      EncodedTransformWorker.heldTransformers.delete(transformer);
+    }, TRANSFORMER_HOLD_MS);
+  }
 
   /**
    * Posts a log message to the main thread.

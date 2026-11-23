@@ -3171,6 +3171,9 @@ export interface ISdkClientMetricFrame {
 
     /** SdkClientMetricFrame streamMetricFrames */
     streamMetricFrames?: (ISdkStreamMetricFrame[]|null);
+
+    /** SdkClientMetricFrame dimensions */
+    dimensions?: (ISdkClientDimension[]|null);
 }
 
 /** Represents a SdkClientMetricFrame. */
@@ -3187,6 +3190,9 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
 
     /** SdkClientMetricFrame streamMetricFrames. */
     public streamMetricFrames: ISdkStreamMetricFrame[];
+
+    /** SdkClientMetricFrame dimensions. */
+    public dimensions: ISdkClientDimension[];
 
     /**
      * Creates a new SdkClientMetricFrame instance using the specified properties.
@@ -3378,6 +3384,117 @@ export namespace SdkStreamDimension {
         VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE = 3,
         VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE = 4,
         VIDEO_PROCESSOR_NAME = 5
+    }
+}
+
+/** Properties of a SdkClientDimension. */
+export interface ISdkClientDimension {
+
+    /** SdkClientDimension type */
+    type?: (SdkClientDimension.Type|null);
+
+    /** SdkClientDimension value */
+    value?: (ISdkDimensionValue|null);
+}
+
+/** Represents a SdkClientDimension. */
+export class SdkClientDimension implements ISdkClientDimension {
+
+    /**
+     * Constructs a new SdkClientDimension.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkClientDimension);
+
+    /** SdkClientDimension type. */
+    public type: SdkClientDimension.Type;
+
+    /** SdkClientDimension value. */
+    public value?: (ISdkDimensionValue|null);
+
+    /**
+     * Creates a new SdkClientDimension instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkClientDimension instance
+     */
+    public static create(properties?: ISdkClientDimension): SdkClientDimension;
+
+    /**
+     * Encodes the specified SdkClientDimension message. Does not implicitly {@link SdkClientDimension.verify|verify} messages.
+     * @param message SdkClientDimension message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkClientDimension, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkClientDimension message, length delimited. Does not implicitly {@link SdkClientDimension.verify|verify} messages.
+     * @param message SdkClientDimension message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkClientDimension, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkClientDimension message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkClientDimension
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkClientDimension;
+
+    /**
+     * Decodes a SdkClientDimension message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkClientDimension
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkClientDimension;
+
+    /**
+     * Verifies a SdkClientDimension message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkClientDimension message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkClientDimension
+     */
+    public static fromObject(object: { [k: string]: any }): SdkClientDimension;
+
+    /**
+     * Creates a plain object from a SdkClientDimension message. Also converts values to other types if specified.
+     * @param message SdkClientDimension
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkClientDimension, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkClientDimension to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkClientDimension
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+export namespace SdkClientDimension {
+
+    /** Type enum. */
+    enum Type {
+        ICE_RELAY_PROTOCOL = 1
     }
 }
 
