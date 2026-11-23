@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed remote video that sometimes never decodes on Chrome 159 and later after a resubscription, for example when a remote attendee restarts their video or starts content share. Chrome references an `RTCRtpScriptTransformer` only weakly until it has connected it, so the encoded transform worker now keeps each transformer for 10 seconds after `onrtctransform`.
 - Fixed `StatsCollector` logging `Cannot read properties of null (reading 'currentState')` when a WebRTC stats request that was in flight at `stop()` completes afterwards, for example when leaving a meeting. That last report is now processed without the CPU pressure metric instead of being dropped.
 
 ## [3.33.0] - 2026-07-08
