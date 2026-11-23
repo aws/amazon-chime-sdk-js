@@ -371,6 +371,7 @@ message SdkStreamMetricFrame {
 message SdkClientMetricFrame {
     repeated SdkMetric global_metrics = 1;
     repeated SdkStreamMetricFrame stream_metric_frames = 2;
+    repeated SdkClientDimension dimensions = 3;
 }
 
 
@@ -381,6 +382,14 @@ message SdkStreamDimension {
         VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE = 3;
         VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE = 4;
         VIDEO_PROCESSOR_NAME = 5;
+    }
+    optional Type type = 1;
+    optional SdkDimensionValue value = 2;
+}
+
+message SdkClientDimension {
+    enum Type {
+        ICE_RELAY_PROTOCOL = 1;
     }
     optional Type type = 1;
     optional SdkDimensionValue value = 2;
