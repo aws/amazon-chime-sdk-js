@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
 import NoOpDeviceController, {
   NoOpDeviceControllerWithEventController,
 } from '../../src/devicecontroller/NoOpDeviceController';
@@ -12,12 +13,15 @@ import DefaultEncodedTransformWorkerManager from '../../src/encodedtransformmana
 import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import EventController from '../../src/eventcontroller/EventController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import DeviceControllerBasedMediaStreamBroker from '../../src/mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import DefaultMeetingSession from '../../src/meetingsession/DefaultMeetingSession';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
+import VDIAdapter from '../../src/vdi/VDIAdapter';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { makeCitrixAdapter } from '../vdi/citrix/FakeCitrixUCSDK';
 
 describe('DefaultMeetingSession', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -60,6 +64,67 @@ describe('DefaultMeetingSession', () => {
 
       // This is safe to call twice.
       await session.destroy();
+    });
+
+    describe('vdi adapter', () => {
+      let mockBuilder: DOMMockBuilder;
+
+      beforeEach(() => {
+        mockBuilder = new DOMMockBuilder();
+      });
+
+      afterEach(() => {
+        mockBuilder.cleanup();
+      });
+
+      function createSession(
+        configAdapter: VDIAdapter | undefined,
+        deviceController: DeviceControllerBasedMediaStreamBroker
+      ): DefaultMeetingSession {
+        const configuration = new NoOpAudioVideoController().configuration;
+        configuration.vdiAdapter = configAdapter;
+        return new DefaultMeetingSession(configuration, new NoOpLogger(), deviceController);
+      }
+
+      it('accepts the same adapter in the configuration and the device controller', () => {
+        const adapter = makeCitrixAdapter();
+        const logger = new NoOpLogger();
+        expect(createSession(adapter, new DefaultDeviceController(logger, { vdiAdapter: adapter })))
+          .to.exist;
+        expect(createSession(undefined, new DefaultDeviceController(logger))).to.exist;
+      });
+
+      it('throws when only the configuration has the adapter', () => {
+        expect(() =>
+          createSession(makeCitrixAdapter(), new DefaultDeviceController(new NoOpLogger()))
+        ).to.throw(
+          'The device controller uses VDI adapter undefined but the meeting session ' +
+            'configuration uses CitrixVDIAdapter; pass the same adapter to both'
+        );
+      });
+
+      it('throws when only the device controller has the adapter', () => {
+        const deviceController = new DefaultDeviceController(new NoOpLogger(), {
+          vdiAdapter: makeCitrixAdapter(),
+        });
+        expect(() => createSession(undefined, deviceController)).to.throw(
+          'The device controller uses VDI adapter CitrixVDIAdapter but the meeting session ' +
+            'configuration uses undefined; pass the same adapter to both'
+        );
+      });
+
+      it('throws when the two adapters are different objects', () => {
+        const deviceController = new DefaultDeviceController(new NoOpLogger(), {
+          vdiAdapter: makeCitrixAdapter(),
+        });
+        expect(() => createSession(makeCitrixAdapter(), deviceController)).to.throw(
+          'pass the same adapter to both'
+        );
+      });
+
+      it('does not check a device controller other than DefaultDeviceController', () => {
+        expect(createSession(makeCitrixAdapter(), new NoOpDeviceController())).to.exist;
+      });
     });
 
     it('can be constructed with an unsupported browser', () => {
