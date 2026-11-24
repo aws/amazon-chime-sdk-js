@@ -8438,6 +8438,10 @@ $root.SdkMetric = (function() {
             case 127:
             case 128:
             case 129:
+            case 130:
+            case 131:
+            case 132:
+            case 133:
             case 134:
             case 135:
             case 136:
@@ -8886,6 +8890,22 @@ $root.SdkMetric = (function() {
         case 129:
             message.type = 129;
             break;
+        case "VIDEO_QUALITY_LIMITATION_RESOLUTION_CHANGES":
+        case 130:
+            message.type = 130;
+            break;
+        case "VIDEO_TARGET_ENCODED_BYTES":
+        case 131:
+            message.type = 131;
+            break;
+        case "VIDEO_PACKET_SEND_DELAY_MS":
+        case 132:
+            message.type = 132;
+            break;
+        case "VIDEO_HUGE_FRAMES_SENT":
+        case 133:
+            message.type = 133;
+            break;
         case "VIDEO_END_TO_END_DELAY_MS":
         case 134:
             message.type = 134;
@@ -9110,6 +9130,10 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE=127 VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE value
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE=128 VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE value
      * @property {number} VIDEO_RECEIVED_RETRANSMIT_BITRATE=129 VIDEO_RECEIVED_RETRANSMIT_BITRATE value
+     * @property {number} VIDEO_QUALITY_LIMITATION_RESOLUTION_CHANGES=130 VIDEO_QUALITY_LIMITATION_RESOLUTION_CHANGES value
+     * @property {number} VIDEO_TARGET_ENCODED_BYTES=131 VIDEO_TARGET_ENCODED_BYTES value
+     * @property {number} VIDEO_PACKET_SEND_DELAY_MS=132 VIDEO_PACKET_SEND_DELAY_MS value
+     * @property {number} VIDEO_HUGE_FRAMES_SENT=133 VIDEO_HUGE_FRAMES_SENT value
      * @property {number} VIDEO_END_TO_END_DELAY_MS=134 VIDEO_END_TO_END_DELAY_MS value
      * @property {number} VIDEO_INTER_FRAME_DELAY_MS=135 VIDEO_INTER_FRAME_DELAY_MS value
      * @property {number} VIDEO_INTER_FRAME_DELAY_STDDEV_MS=136 VIDEO_INTER_FRAME_DELAY_STDDEV_MS value
@@ -9228,6 +9252,10 @@ $root.SdkMetric = (function() {
         values[valuesById[127] = "VIDEO_BACKGROUND_SEGMENTATION_COMPATIBILITY_FAILURE"] = 127;
         values[valuesById[128] = "VIDEO_BACKGROUND_SEGMENTATION_PROCESSOR_CREATION_FAILURE"] = 128;
         values[valuesById[129] = "VIDEO_RECEIVED_RETRANSMIT_BITRATE"] = 129;
+        values[valuesById[130] = "VIDEO_QUALITY_LIMITATION_RESOLUTION_CHANGES"] = 130;
+        values[valuesById[131] = "VIDEO_TARGET_ENCODED_BYTES"] = 131;
+        values[valuesById[132] = "VIDEO_PACKET_SEND_DELAY_MS"] = 132;
+        values[valuesById[133] = "VIDEO_HUGE_FRAMES_SENT"] = 133;
         values[valuesById[134] = "VIDEO_END_TO_END_DELAY_MS"] = 134;
         values[valuesById[135] = "VIDEO_INTER_FRAME_DELAY_MS"] = 135;
         values[valuesById[136] = "VIDEO_INTER_FRAME_DELAY_STDDEV_MS"] = 136;
@@ -10138,6 +10166,7 @@ $root.SdkStreamDimension = (function() {
             case 3:
             case 4:
             case 5:
+            case 6:
                 break;
             }
         if (message.value != null && Object.hasOwnProperty.call(message, "value")) {
@@ -10192,6 +10221,10 @@ $root.SdkStreamDimension = (function() {
         case "VIDEO_PROCESSOR_NAME":
         case 5:
             message.type = 5;
+            break;
+        case "VIDEO_SCALABILITY_MODE":
+        case 6:
+            message.type = 6;
             break;
         }
         if (object.value != null) {
@@ -10265,6 +10298,7 @@ $root.SdkStreamDimension = (function() {
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE=3 VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE value
      * @property {number} VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE=4 VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE value
      * @property {number} VIDEO_PROCESSOR_NAME=5 VIDEO_PROCESSOR_NAME value
+     * @property {number} VIDEO_SCALABILITY_MODE=6 VIDEO_SCALABILITY_MODE value
      */
     SdkStreamDimension.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -10273,6 +10307,7 @@ $root.SdkStreamDimension = (function() {
         values[valuesById[3] = "VIDEO_BACKGROUND_SEGMENTATION_MODEL_TYPE"] = 3;
         values[valuesById[4] = "VIDEO_BACKGROUND_SEGMENTATION_DELEGATE_TYPE"] = 4;
         values[valuesById[5] = "VIDEO_PROCESSOR_NAME"] = 5;
+        values[valuesById[6] = "VIDEO_SCALABILITY_MODE"] = 6;
         return values;
     })();
 
