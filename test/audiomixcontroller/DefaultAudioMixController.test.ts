@@ -13,6 +13,8 @@ import MediaStreamBrokerObserver from '../../src/mediastreambrokerobserver/Media
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import { createFakeTimers } from '../utils/fakeTimerHelper';
+import { citrixStream, makeCitrixAdapter, makeUcsdk } from '../vdi/citrix/FakeCitrixUCSDK';
+import MockVDIAdapter from '../vdi/MockVDIAdapter';
 
 describe('DefaultAudioMixController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -431,6 +433,78 @@ describe('DefaultAudioMixController', () => {
       expect(spy.calledOnceWith(null)).to.be.true;
       mediaStreamBroker.removeMediaStreamBrokerObserver(defaultAudioMixController);
       spy.restore();
+    });
+  });
+
+  describe('VDI adapter', () => {
+    it('binds the element before assigning the stream', async () => {
+      const adapter = new MockVDIAdapter();
+      const controller = new DefaultAudioMixController(logger, adapter);
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(stream);
+
+      const calls = adapter.callsOf('bindAudioElement');
+      expect(calls.length).to.equal(1);
+      expect(calls[0][0]).to.equal(element);
+      expect(calls[0][1]).to.equal(stream);
+      expect(calls[0][2]).to.not.equal(stream);
+      expect(element.srcObject).to.equal(stream);
+    });
+
+    it('unbinds the element after clearing the stream', async () => {
+      const adapter = new MockVDIAdapter();
+      const controller = new DefaultAudioMixController(logger, adapter);
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(stream);
+      controller.unbindAudioElement();
+
+      expect(adapter.callsOf('unbindAudioElement')).to.deep.equal([[element, null, null]]);
+    });
+
+    it('keeps the element bound across a Chromium sink change', async () => {
+      behavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(behavior);
+      const adapter = new MockVDIAdapter();
+      const controller = new DefaultAudioMixController(logger, adapter);
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(stream);
+
+      await controller.bindAudioDevice(device);
+
+      expect(adapter.calls.map(call => call[0])).to.deep.equal(['bindAudioElement']);
+      expect(element.srcObject).to.equal(stream);
+    });
+
+    it('changes the sink and unbinds an element mapped by the Citrix UCSDK', async () => {
+      behavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(behavior);
+      const ucsdk = makeUcsdk();
+      const controller = new DefaultAudioMixController(logger, makeCitrixAdapter(ucsdk));
+      const citrix = citrixStream();
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(citrix);
+
+      await controller.bindAudioDevice(device);
+      expect(element.sinkId).to.equal('device-id');
+      await controller.bindAudioDevice(null);
+      expect(element.sinkId).to.equal('default');
+      expect(element.srcObject).to.equal(citrix);
+
+      controller.unbindAudioElement();
+      expect((ucsdk.disposeAudioElement as sinon.SinonSpy).calledOnceWith(element)).to.be.true;
+    });
+
+    it('only assigns srcObject without an adapter', async () => {
+      behavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(behavior);
+      const controller = new DefaultAudioMixController(logger);
+      await controller.bindAudioElement(element);
+      await controller.bindAudioStream(stream);
+      expect(element.srcObject).to.equal(stream);
+
+      await controller.bindAudioDevice(device);
+      controller.unbindAudioElement();
+      expect(element.srcObject).to.equal(null);
     });
   });
 });

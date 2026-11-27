@@ -5,6 +5,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
+import VDIAdapter from '../vdi/VDIAdapter';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoElementResolutionMonitor from './VideoElementResolutionMonitor';
 import VideoTile from './VideoTile';
@@ -18,11 +19,13 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
    * @param videoStream The video stream input.
    * @param videoElement The video element input.
    * @param localTile Flag to indicate whether this is a local video.
+   * @param vdiAdapter Told about the element before the stream is assigned.
    */
   static connectVideoStreamToVideoElement(
     videoStream: MediaStream,
     videoElement: HTMLVideoElement,
-    localTile: boolean
+    localTile: boolean,
+    vdiAdapter?: VDIAdapter
   ): void {
     const transform =
       localTile && videoStream.getVideoTracks()[0].getSettings().facingMode !== 'environment'
@@ -59,6 +62,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     }
 
     if (videoElement.srcObject !== videoStream) {
+      vdiAdapter?.bindVideoElement?.(videoElement, videoStream);
       videoElement.srcObject = videoStream;
 
       // In Safari, a hidden video element can show a black screen.
@@ -141,6 +145,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
         this.tileState.boundVideoElement,
         false
       );
+      this.tileController.vdiAdapter?.unbindVideoElement?.(this.tileState.boundVideoElement);
     }
     this.tileState = new VideoTileState();
   }
@@ -327,7 +332,8 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       DefaultVideoTile.connectVideoStreamToVideoElement(
         this.tileState.boundVideoStream,
         this.tileState.boundVideoElement,
-        this.tileState.localTile
+        this.tileState.localTile,
+        this.tileController.vdiAdapter
       );
     } else {
       DefaultVideoTile.disconnectVideoStreamFromVideoElement(

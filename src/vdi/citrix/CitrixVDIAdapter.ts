@@ -31,6 +31,52 @@ export default class CitrixVDIAdapter implements VDIAdapter {
     return new this.ucsdk.CitrixPeerConnection(configuration);
   }
 
+  // The endpoint draws redirected video over the browser window and plays
+  // redirected audio itself, so the UCSDK maps the elements that show its streams.
+  // A mapped element keeps the mapping while its stream changes and is disposed
+  // when the SDK releases it or gives it a browser stream.
+  bindVideoElement(element: HTMLVideoElement, stream: MediaStream): void {
+    if (!isCitrixStream(stream)) {
+      this.unbindVideoElement(element);
+      return;
+    }
+    if (isMapped(element, 'remoteVideoElement')) {
+      return;
+    }
+    this.ucsdk.mapVideoElement(element, this.windowHandle);
+  }
+
+  unbindVideoElement(element: HTMLVideoElement): void {
+    if (isMapped(element, 'remoteVideoElement')) {
+      this.ucsdk.disposeVideoElement(element, this.windowHandle);
+      restore(element, VIDEO_PROPERTIES);
+    }
+  }
+
+  bindAudioElement(element: HTMLAudioElement, stream: MediaStream): void {
+    if (!isCitrixStream(stream)) {
+      this.unbindAudioElement(element);
+      return;
+    }
+    if (isMapped(element, 'remoteAudioElement')) {
+      return;
+    }
+    this.ucsdk.mapAudioElement(element);
+    if (!isMapped(element, 'remoteAudioElement')) {
+      return;
+    }
+    // The UCSDK rejects the empty sink ID the SDK uses for the default device.
+    const setSinkId = element.setSinkId.bind(element);
+    element.setSinkId = (sinkId: string): Promise<void> => setSinkId(sinkId || 'default');
+  }
+
+  unbindAudioElement(element: HTMLAudioElement): void {
+    if (isMapped(element, 'remoteAudioElement')) {
+      this.ucsdk.disposeAudioElement(element);
+      restore(element, AUDIO_PROPERTIES);
+    }
+  }
+
   /**
    * Initializes the Bootstrap and the UCSDK, waits for the endpoint to connect, and returns
    * an adapter for it. Rejects if the window handle or the endpoint connection does not
@@ -79,6 +125,54 @@ export default class CitrixVDIAdapter implements VDIAdapter {
     await withTimeout(connected, timeoutMs, 'endpoint connection');
     return new CitrixVDIAdapter({ ucsdk, windowHandle, logger });
   }
+}
+
+/** A UCSDK proxy track exposes `object_id()`; a browser track does not. */
+function isCitrixStream(stream: MediaStream): boolean {
+  const tracks = stream.getTracks();
+  return (
+    tracks.length > 0 &&
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tracks.every(track => typeof (track as any).object_id === 'function')
+  );
+}
+
+// The members mapVideoElement and mapAudioElement redefine on the element to forward
+// to the endpoint. Dispose leaves them in place, so they are removed to restore the
+// element's own.
+const VIDEO_PROPERTIES = [
+  'srcObject',
+  'sinkId',
+  'setSinkId',
+  'play',
+  'pause',
+  'readyState',
+  'videoWidth',
+  'videoHeight',
+];
+const AUDIO_PROPERTIES = [
+  'srcObject',
+  'sinkId',
+  'setSinkId',
+  'play',
+  'pause',
+  'autoplay',
+  'loop',
+  'src',
+  'error',
+];
+
+function restore(element: HTMLMediaElement, properties: string[]): void {
+  for (const property of properties) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (element as any)[property];
+  }
+}
+
+/** The UCSDK sets this property on an element it maps and clears it on dispose. */
+function isMapped(element: HTMLMediaElement, property: string): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (element as any)[property] !== undefined;
 }
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, what: string): Promise<T> {

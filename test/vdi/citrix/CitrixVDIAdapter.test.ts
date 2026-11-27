@@ -13,7 +13,13 @@ import CitrixVDIAdapter from '../../../src/vdi/citrix/CitrixVDIAdapter';
 import CitrixVMEvent from '../../../src/vdi/citrix/CitrixVMEvent';
 import DOMMockBehavior from '../../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../../dommock/DOMMockBuilder';
-import { FakePeerConnection, makeUcsdk } from './FakeCitrixUCSDK';
+import {
+  browserStream,
+  citrixStream,
+  FakePeerConnection,
+  FakeUcsdk,
+  makeUcsdk,
+} from './FakeCitrixUCSDK';
 
 describe('CitrixVDIAdapter', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -51,6 +57,130 @@ describe('CitrixVDIAdapter', () => {
     expect(
       new CitrixVDIAdapter({ ucsdk, windowHandle: '0x1f' }).createPeerConnection({})
     ).to.be.instanceOf(FakePeerConnection);
+  });
+
+  describe('elements', () => {
+    let fake: FakeUcsdk;
+    let adapter: CitrixVDIAdapter;
+
+    beforeEach(() => {
+      fake = ucsdk as FakeUcsdk;
+      adapter = new CitrixVDIAdapter({ ucsdk, windowHandle: '0x1f' });
+    });
+
+    describe('video elements', () => {
+      let element: HTMLVideoElement;
+
+      beforeEach(() => {
+        element = document.createElement('video');
+      });
+
+      it('maps an element showing a Citrix stream once', () => {
+        adapter.bindVideoElement(element, citrixStream());
+        adapter.bindVideoElement(element, citrixStream());
+        expect((ucsdk.mapVideoElement as sinon.SinonSpy).calledOnceWith(element, '0x1f')).to.be
+          .true;
+      });
+
+      it('leaves an element showing a browser stream or no tracks alone', () => {
+        adapter.bindVideoElement(element, browserStream());
+        adapter.bindVideoElement(element, {
+          getTracks: (): unknown[] => [],
+        } as unknown as MediaStream);
+        adapter.unbindVideoElement(element);
+        expect((ucsdk.mapVideoElement as sinon.SinonSpy).called).to.be.false;
+        expect((ucsdk.disposeVideoElement as sinon.SinonSpy).called).to.be.false;
+      });
+
+      it('disposes a mapped element with the window handle and maps it again later', () => {
+        adapter.bindVideoElement(element, citrixStream());
+        adapter.unbindVideoElement(element);
+        adapter.bindVideoElement(element, citrixStream());
+        expect((ucsdk.disposeVideoElement as sinon.SinonSpy).calledOnceWith(element, '0x1f')).to.be
+          .true;
+        expect((ucsdk.mapVideoElement as sinon.SinonSpy).calledTwice).to.be.true;
+      });
+
+      it('disposes a mapped element given a browser stream, which it then shows', () => {
+        adapter.bindVideoElement(element, citrixStream());
+        const stream = browserStream();
+        adapter.bindVideoElement(element, stream);
+        element.srcObject = stream;
+        expect((ucsdk.disposeVideoElement as sinon.SinonSpy).calledOnceWith(element, '0x1f')).to.be
+          .true;
+        expect(element.srcObject).to.equal(stream);
+      });
+
+      it('maps again an element the UCSDK ignored while disconnected', () => {
+        fake.disconnected = true;
+        adapter.bindVideoElement(element, citrixStream());
+        fake.disconnected = false;
+        adapter.bindVideoElement(element, citrixStream());
+        expect((ucsdk.mapVideoElement as sinon.SinonSpy).calledTwice).to.be.true;
+      });
+    });
+
+    describe('audio elements', () => {
+      let element: HTMLAudioElement;
+
+      beforeEach(() => {
+        element = new HTMLAudioElement();
+      });
+
+      it('maps an element playing a Citrix stream once', () => {
+        adapter.bindAudioElement(element, citrixStream());
+        adapter.bindAudioElement(element, citrixStream());
+        expect((ucsdk.mapAudioElement as sinon.SinonSpy).calledOnceWith(element)).to.be.true;
+      });
+
+      it('leaves an element playing a browser stream alone', () => {
+        adapter.bindAudioElement(element, browserStream());
+        adapter.unbindAudioElement(element);
+        expect((ucsdk.mapAudioElement as sinon.SinonSpy).called).to.be.false;
+        expect((ucsdk.disposeAudioElement as sinon.SinonSpy).called).to.be.false;
+      });
+
+      it('disposes a mapped element and maps it again later', () => {
+        adapter.bindAudioElement(element, citrixStream());
+        adapter.unbindAudioElement(element);
+        adapter.bindAudioElement(element, citrixStream());
+        expect((ucsdk.disposeAudioElement as sinon.SinonSpy).calledOnceWith(element)).to.be.true;
+        expect((ucsdk.mapAudioElement as sinon.SinonSpy).calledTwice).to.be.true;
+      });
+
+      it('disposes a mapped element given a browser stream, which it then plays', () => {
+        adapter.bindAudioElement(element, citrixStream());
+        const stream = browserStream();
+        adapter.bindAudioElement(element, stream);
+        element.srcObject = stream;
+        expect((ucsdk.disposeAudioElement as sinon.SinonSpy).calledOnceWith(element)).to.be.true;
+        expect(element.srcObject).to.equal(stream);
+      });
+
+      it('restores the element after dispose', () => {
+        adapter.bindAudioElement(element, citrixStream());
+        adapter.unbindAudioElement(element);
+        expect((): void => {
+          element.srcObject = null;
+        }).to.not.throw();
+      });
+
+      it('maps again an element the UCSDK ignored while disconnected', () => {
+        fake.disconnected = true;
+        adapter.bindAudioElement(element, citrixStream());
+        fake.disconnected = false;
+        adapter.bindAudioElement(element, citrixStream());
+        expect((ucsdk.mapAudioElement as sinon.SinonSpy).calledTwice).to.be.true;
+      });
+
+      it('sets the default sink on the endpoint for the empty sink ID', async () => {
+        adapter.bindAudioElement(element, citrixStream());
+        await element.setSinkId('speaker');
+        expect(element.sinkId).to.equal('speaker');
+        await element.setSinkId('');
+        expect(element.sinkId).to.equal('default');
+      });
+    });
   });
 
   describe('connect', () => {

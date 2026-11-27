@@ -86,6 +86,7 @@ import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import ChromeSDPMock from '../sdp/ChromeSDPMock';
 import { createFakeTimers, tick as tickHelper } from '../utils/fakeTimerHelper';
+import { citrixStream, makeCitrixAdapter } from '../vdi/citrix/FakeCitrixUCSDK';
 
 const defaultDelay = new DOMMockBehavior().asyncWaitMs * 5;
 
@@ -4497,6 +4498,43 @@ describe('DefaultAudioVideoController', () => {
       );
 
       expect(mediaStreamBroker).to.equal(audioVideoController.mediaStreamBroker);
+    });
+  });
+
+  describe('vdi adapter', () => {
+    it('gives the audio mix controller the configured adapter', async () => {
+      const adapter = makeCitrixAdapter();
+      configuration.vdiAdapter = adapter;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      const element = new HTMLAudioElement();
+      await audioVideoController.audioMixController.bindAudioElement(element);
+      await audioVideoController.audioMixController.bindAudioStream(citrixStream());
+
+      expect((adapter.ucsdk.mapAudioElement as sinon.SinonSpy).calledOnceWith(element)).to.be.true;
+    });
+
+    it('plays the meeting audio in the browser without an adapter', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      const element = new HTMLAudioElement();
+      const stream = new MediaStream();
+      await audioVideoController.audioMixController.bindAudioElement(element);
+      await audioVideoController.audioMixController.bindAudioStream(stream);
+
+      expect(element.srcObject).to.equal(stream);
     });
   });
 

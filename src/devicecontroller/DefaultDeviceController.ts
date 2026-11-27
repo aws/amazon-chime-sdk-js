@@ -547,13 +547,15 @@ export default class DefaultDeviceController
         ? this.chosenVideoTransformDevice.outputMediaStream
         : this.activeDevices['video'].stream,
       element,
-      true
+      true,
+      this.vdiAdapter
     );
     this.trace('startVideoPreviewForVideoInput', element.id);
   }
 
   stopVideoPreviewForVideoInput(element: HTMLVideoElement): void {
     DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
+    this.vdiAdapter?.unbindVideoElement?.(element);
     this.trace('stopVideoPreviewForVideoInput', element.id);
   }
 
