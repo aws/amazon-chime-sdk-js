@@ -4,6 +4,7 @@
 import Logger from '../../logger/Logger';
 import VDIAdapter from '../VDIAdapter';
 import CitrixMediaDevices from './CitrixMediaDevices';
+import CitrixRTCPeerConnection from './CitrixRTCPeerConnection';
 import CitrixUCSDK from './CitrixUCSDK';
 import CitrixVDIAdapterConnectOptions from './CitrixVDIAdapterConnectOptions';
 import CitrixVDIAdapterOptions from './CitrixVDIAdapterOptions';
@@ -28,7 +29,7 @@ export default class CitrixVDIAdapter implements VDIAdapter {
 
   createPeerConnection(configuration: RTCConfiguration): RTCPeerConnection {
     this.logger?.info('CitrixVDIAdapter: peer connection is redirected');
-    return new this.ucsdk.CitrixPeerConnection(configuration);
+    return new CitrixRTCPeerConnection(new this.ucsdk.CitrixPeerConnection(configuration), this);
   }
 
   // The endpoint draws redirected video over the browser window and plays

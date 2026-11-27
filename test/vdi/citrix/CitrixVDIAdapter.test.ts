@@ -8,6 +8,7 @@ import * as sinon from 'sinon';
 import NoOpLogger from '../../../src/logger/NoOpLogger';
 import CitrixBootstrap from '../../../src/vdi/citrix/CitrixBootstrap';
 import CitrixMediaDevices from '../../../src/vdi/citrix/CitrixMediaDevices';
+import CitrixRTCPeerConnection, { unwrap } from '../../../src/vdi/citrix/CitrixRTCPeerConnection';
 import CitrixUCSDK from '../../../src/vdi/citrix/CitrixUCSDK';
 import CitrixVDIAdapter from '../../../src/vdi/citrix/CitrixVDIAdapter';
 import CitrixVMEvent from '../../../src/vdi/citrix/CitrixVMEvent';
@@ -48,14 +49,15 @@ describe('CitrixVDIAdapter', () => {
     expect(adapter.mediaDevices).to.be.instanceOf(CitrixMediaDevices);
   });
 
-  it('creates the UCSDK peer connection', () => {
+  it('creates the UCSDK peer connection, wrapped', () => {
     const configuration = { iceServers: [] as RTCIceServer[] };
     const adapter = new CitrixVDIAdapter({ ucsdk, windowHandle: '0x1f', logger: new NoOpLogger() });
     const peer = adapter.createPeerConnection(configuration);
-    expect(peer).to.be.instanceOf(FakePeerConnection);
-    expect((peer as unknown as FakePeerConnection).configuration).to.equal(configuration);
+    expect(peer).to.be.instanceOf(CitrixRTCPeerConnection);
+    expect(unwrap(peer)).to.be.instanceOf(FakePeerConnection);
+    expect((unwrap(peer) as unknown as FakePeerConnection).configuration).to.equal(configuration);
     expect(
-      new CitrixVDIAdapter({ ucsdk, windowHandle: '0x1f' }).createPeerConnection({})
+      unwrap(new CitrixVDIAdapter({ ucsdk, windowHandle: '0x1f' }).createPeerConnection({}))
     ).to.be.instanceOf(FakePeerConnection);
   });
 
